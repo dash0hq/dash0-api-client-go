@@ -1,0 +1,10 @@
+package: dash0
+output: generated.go
+generate:
+  client: true
+  models: true
+  embedded-spec: false
+output-options:
+  skip-fmt: false
+  skip-prune: false
+  client-type-name: generatedClient
