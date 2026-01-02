@@ -43,6 +43,14 @@ type Client interface {
 	DeleteView(ctx context.Context, originOrID string, dataset *string) error
 	ListViewsIter(ctx context.Context, dataset *string) *Iter[ViewApiListItem]
 
+	// Sampling Rules
+	ListSamplingRules(ctx context.Context, dataset *string) ([]*SamplingDefinition, error)
+	GetSamplingRule(ctx context.Context, originOrID string, dataset *string) (*SamplingDefinition, error)
+	CreateSamplingRule(ctx context.Context, rule *SamplingDefinition, dataset *string) (*SamplingDefinition, error)
+	UpdateSamplingRule(ctx context.Context, originOrID string, rule *SamplingDefinition, dataset *string) (*SamplingDefinition, error)
+	DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error
+	ListSamplingRulesIter(ctx context.Context, dataset *string) *Iter[SamplingDefinition]
+
 	// Spans
 	GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSpansResponse, error)
 	GetSpansIter(ctx context.Context, request *GetSpansRequest) *Iter[ResourceSpans]

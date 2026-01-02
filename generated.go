@@ -122,6 +122,31 @@ const (
 	Kubernetes ResourceOrchestration = "kubernetes"
 )
 
+// Defines values for SamplingConditionAndKind.
+const (
+	And SamplingConditionAndKind = "and"
+)
+
+// Defines values for SamplingConditionErrorKind.
+const (
+	SamplingConditionErrorKindError SamplingConditionErrorKind = "error"
+)
+
+// Defines values for SamplingConditionOttlKind.
+const (
+	Ottl SamplingConditionOttlKind = "ottl"
+)
+
+// Defines values for SamplingConditionProbabilisticKind.
+const (
+	Probabilistic SamplingConditionProbabilisticKind = "probabilistic"
+)
+
+// Defines values for SamplingDefinitionKind.
+const (
+	Dash0Sampling SamplingDefinitionKind = "Dash0Sampling"
+)
+
 // Defines values for SamplingMode.
 const (
 	SamplingModeAdaptive SamplingMode = "adaptive"
@@ -599,6 +624,11 @@ type GetLogRecordsResponse struct {
 	TimeRange    *TimeRange     `json:"timeRange,omitempty"`
 }
 
+// GetSamplingRulesResponse defines model for GetSamplingRulesResponse.
+type GetSamplingRulesResponse struct {
+	SamplingRules []SamplingDefinition `json:"samplingRules"`
+}
+
 // GetSpansRequest defines model for GetSpansRequest.
 type GetSpansRequest struct {
 	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
@@ -1048,8 +1078,135 @@ type Sampling struct {
 	TimeRange TimeReferenceRange `json:"timeRange"`
 }
 
+// SamplingCondition defines model for SamplingCondition.
+type SamplingCondition struct {
+	union json.RawMessage
+}
+
+// SamplingConditionAnd defines model for SamplingConditionAnd.
+type SamplingConditionAnd struct {
+	Kind SamplingConditionAndKind `json:"kind"`
+	Spec SamplingConditionAndSpec `json:"spec"`
+}
+
+// SamplingConditionAndKind defines model for SamplingConditionAnd.Kind.
+type SamplingConditionAndKind string
+
+// SamplingConditionAndSpec defines model for SamplingConditionAndSpec.
+type SamplingConditionAndSpec struct {
+	Conditions []SamplingCondition `json:"conditions"`
+}
+
+// SamplingConditionError Matches spans that have the have `otel.span.status.code=ERROR`
+type SamplingConditionError struct {
+	Kind SamplingConditionErrorKind `json:"kind"`
+	Spec SamplingConditionErrorSpec `json:"spec"`
+}
+
+// SamplingConditionErrorKind defines model for SamplingConditionError.Kind.
+type SamplingConditionErrorKind string
+
+// SamplingConditionErrorSpec defines model for SamplingConditionErrorSpec.
+type SamplingConditionErrorSpec = interface{}
+
+// SamplingConditionOttl defines model for SamplingConditionOttl.
+type SamplingConditionOttl struct {
+	Kind SamplingConditionOttlKind `json:"kind"`
+	Spec SamplingConditionOttlSpec `json:"spec"`
+}
+
+// SamplingConditionOttlKind defines model for SamplingConditionOttl.Kind.
+type SamplingConditionOttlKind string
+
+// SamplingConditionOttlSpec defines model for SamplingConditionOttlSpec.
+type SamplingConditionOttlSpec struct {
+	Ottl string `json:"ottl"`
+}
+
+// SamplingConditionProbabilistic defines model for SamplingConditionProbabilistic.
+type SamplingConditionProbabilistic struct {
+	Kind SamplingConditionProbabilisticKind `json:"kind"`
+	Spec SamplingConditionProbabilisticSpec `json:"spec"`
+}
+
+// SamplingConditionProbabilisticKind defines model for SamplingConditionProbabilistic.Kind.
+type SamplingConditionProbabilisticKind string
+
+// SamplingConditionProbabilisticSpec defines model for SamplingConditionProbabilisticSpec.
+type SamplingConditionProbabilisticSpec struct {
+	// Rate A value between 0 and 1 reflecting the percentage of traces that should be sampled probabilistically.
+	// This sampling decision is made deterministically by inspecting the trace ID.
+	Rate float32 `json:"rate"`
+}
+
+// SamplingDefinition defines model for SamplingDefinition.
+type SamplingDefinition struct {
+	Kind     SamplingDefinitionKind `json:"kind"`
+	Metadata SamplingMetadata       `json:"metadata"`
+	Spec     SamplingSpec           `json:"spec"`
+}
+
+// SamplingDefinitionKind defines model for SamplingDefinition.Kind.
+type SamplingDefinitionKind string
+
+// SamplingDisplay defines model for SamplingDisplay.
+type SamplingDisplay struct {
+	// Name Short-form name for the view to be shown prominently within the view list and atop
+	// the screen when the view is selected.
+	Name string `json:"name"`
+}
+
+// SamplingLabels defines model for SamplingLabels.
+type SamplingLabels struct {
+	Custom          *map[string]string `json:"custom,omitempty"`
+	Dash0Comdataset *string            `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
+	Dash0Comversion *string            `json:"dash0.com/version,omitempty"`
+}
+
+// SamplingMetadata defines model for SamplingMetadata.
+type SamplingMetadata struct {
+	Labels *SamplingLabels `json:"labels,omitempty"`
+	Name   string          `json:"name"`
+}
+
 // SamplingMode defines model for SamplingMode.
 type SamplingMode string
+
+// SamplingRateLimit Rate limit is helpful to avoid ingesting extremely large amounts of spans when the sampling conditions are
+// triggering much more frequently than expected. For example, when the tail sampling rule is configured to match
+// every error, then a system-wide outage can result in a huge amount of spans being ingested.
+//
+// Note: Probabilistic-only sampling rules do not support rate limiting.
+type SamplingRateLimit struct {
+	// Rate The maximum number of traces per minute that should be allowed for this sampling rule. Dash0 will make every
+	// effort not to exceed this rate. However, there is also no guarantee that Dash0 will match exactly this rate.
+	// Dash0 is attempting to hit a rate that is lower than or equal to the configured rate.
+	//
+	// Dash0 cannot guarantee that very low rate limits (<=16) are upheld.
+	Rate int `json:"rate"`
+}
+
+// SamplingRuleCreateRequest defines model for SamplingRuleCreateRequest.
+type SamplingRuleCreateRequest = SamplingDefinition
+
+// SamplingRuleResponse defines model for SamplingRuleResponse.
+type SamplingRuleResponse = SamplingDefinition
+
+// SamplingSpec defines model for SamplingSpec.
+type SamplingSpec struct {
+	Conditions SamplingCondition `json:"conditions"`
+	Display    *SamplingDisplay  `json:"display,omitempty"`
+	Enabled    bool              `json:"enabled"`
+
+	// RateLimit Rate limit is helpful to avoid ingesting extremely large amounts of spans when the sampling conditions are
+	// triggering much more frequently than expected. For example, when the tail sampling rule is configured to match
+	// every error, then a system-wide outage can result in a huge amount of spans being ingested.
+	//
+	// Note: Probabilistic-only sampling rules do not support rate limiting.
+	RateLimit *SamplingRateLimit `json:"rateLimit,omitempty"`
+}
 
 // ScopeLogs defines model for ScopeLogs.
 type ScopeLogs struct {
@@ -1705,6 +1862,31 @@ type PostApiImportViewParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiSamplingRulesParams defines parameters for GetApiSamplingRules.
+type GetApiSamplingRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PostApiSamplingRulesParams defines parameters for PostApiSamplingRules.
+type PostApiSamplingRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiSamplingRulesOriginOrIdParams defines parameters for DeleteApiSamplingRulesOriginOrId.
+type DeleteApiSamplingRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiSamplingRulesOriginOrIdParams defines parameters for GetApiSamplingRulesOriginOrId.
+type GetApiSamplingRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiSamplingRulesOriginOrIdParams defines parameters for PutApiSamplingRulesOriginOrId.
+type PutApiSamplingRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiSyntheticChecksParams defines parameters for GetApiSyntheticChecks.
 type GetApiSyntheticChecksParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -1781,6 +1963,12 @@ type PostApiImportViewJSONRequestBody = ViewDefinition
 
 // PostApiLogsJSONRequestBody defines body for PostApiLogs for application/json ContentType.
 type PostApiLogsJSONRequestBody = GetLogRecordsRequest
+
+// PostApiSamplingRulesJSONRequestBody defines body for PostApiSamplingRules for application/json ContentType.
+type PostApiSamplingRulesJSONRequestBody = SamplingRuleCreateRequest
+
+// PutApiSamplingRulesOriginOrIdJSONRequestBody defines body for PutApiSamplingRulesOriginOrId for application/json ContentType.
+type PutApiSamplingRulesOriginOrIdJSONRequestBody = SamplingRuleResponse
 
 // PostApiSpansJSONRequestBody defines body for PostApiSpans for application/json ContentType.
 type PostApiSpansJSONRequestBody = GetSpansRequest
@@ -2113,6 +2301,120 @@ func (t *HttpCheckAssertion) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsSamplingConditionAnd returns the union data inside the SamplingCondition as a SamplingConditionAnd
+func (t SamplingCondition) AsSamplingConditionAnd() (SamplingConditionAnd, error) {
+	var body SamplingConditionAnd
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSamplingConditionAnd overwrites any union data inside the SamplingCondition as the provided SamplingConditionAnd
+func (t *SamplingCondition) FromSamplingConditionAnd(v SamplingConditionAnd) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSamplingConditionAnd performs a merge with any union data inside the SamplingCondition, using the provided SamplingConditionAnd
+func (t *SamplingCondition) MergeSamplingConditionAnd(v SamplingConditionAnd) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSamplingConditionOttl returns the union data inside the SamplingCondition as a SamplingConditionOttl
+func (t SamplingCondition) AsSamplingConditionOttl() (SamplingConditionOttl, error) {
+	var body SamplingConditionOttl
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSamplingConditionOttl overwrites any union data inside the SamplingCondition as the provided SamplingConditionOttl
+func (t *SamplingCondition) FromSamplingConditionOttl(v SamplingConditionOttl) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSamplingConditionOttl performs a merge with any union data inside the SamplingCondition, using the provided SamplingConditionOttl
+func (t *SamplingCondition) MergeSamplingConditionOttl(v SamplingConditionOttl) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSamplingConditionProbabilistic returns the union data inside the SamplingCondition as a SamplingConditionProbabilistic
+func (t SamplingCondition) AsSamplingConditionProbabilistic() (SamplingConditionProbabilistic, error) {
+	var body SamplingConditionProbabilistic
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSamplingConditionProbabilistic overwrites any union data inside the SamplingCondition as the provided SamplingConditionProbabilistic
+func (t *SamplingCondition) FromSamplingConditionProbabilistic(v SamplingConditionProbabilistic) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSamplingConditionProbabilistic performs a merge with any union data inside the SamplingCondition, using the provided SamplingConditionProbabilistic
+func (t *SamplingCondition) MergeSamplingConditionProbabilistic(v SamplingConditionProbabilistic) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSamplingConditionError returns the union data inside the SamplingCondition as a SamplingConditionError
+func (t SamplingCondition) AsSamplingConditionError() (SamplingConditionError, error) {
+	var body SamplingConditionError
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSamplingConditionError overwrites any union data inside the SamplingCondition as the provided SamplingConditionError
+func (t *SamplingCondition) FromSamplingConditionError(v SamplingConditionError) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSamplingConditionError performs a merge with any union data inside the SamplingCondition, using the provided SamplingConditionError
+func (t *SamplingCondition) MergeSamplingConditionError(v SamplingConditionError) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SamplingCondition) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SamplingCondition) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsSyntheticHttpCheckPlugin returns the union data inside the SyntheticCheckPlugin as a SyntheticHttpCheckPlugin
 func (t SyntheticCheckPlugin) AsSyntheticHttpCheckPlugin() (SyntheticHttpCheckPlugin, error) {
 	var body SyntheticHttpCheckPlugin
@@ -2398,6 +2700,25 @@ type ClientInterface interface {
 	PostApiLogsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiLogs(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSamplingRules request
+	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiSamplingRulesWithBody request with any body
+	PostApiSamplingRulesWithBody(ctx context.Context, params *PostApiSamplingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSamplingRules(ctx context.Context, params *PostApiSamplingRulesParams, body PostApiSamplingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiSamplingRulesOriginOrId request
+	DeleteApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSamplingRulesOriginOrId request
+	GetApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiSamplingRulesOriginOrIdWithBody request with any body
+	PutApiSamplingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiSpansWithBody request with any body
 	PostApiSpansWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2721,6 +3042,90 @@ func (c *generatedClient) PostApiLogsWithBody(ctx context.Context, contentType s
 
 func (c *generatedClient) PostApiLogs(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiLogsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSamplingRulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSamplingRulesWithBody(ctx context.Context, params *PostApiSamplingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSamplingRulesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSamplingRules(ctx context.Context, params *PostApiSamplingRulesParams, body PostApiSamplingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSamplingRulesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiSamplingRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSamplingRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSamplingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSamplingRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSamplingRulesOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -3827,6 +4232,298 @@ func NewPostApiLogsRequestWithBody(server string, contentType string, body io.Re
 	return req, nil
 }
 
+// NewGetApiSamplingRulesRequest generates requests for GetApiSamplingRules
+func NewGetApiSamplingRulesRequest(server string, params *GetApiSamplingRulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/sampling-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiSamplingRulesRequest calls the generic PostApiSamplingRules builder with application/json body
+func NewPostApiSamplingRulesRequest(server string, params *PostApiSamplingRulesParams, body PostApiSamplingRulesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSamplingRulesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiSamplingRulesRequestWithBody generates requests for PostApiSamplingRules with any type of body
+func NewPostApiSamplingRulesRequestWithBody(server string, params *PostApiSamplingRulesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/sampling-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiSamplingRulesOriginOrIdRequest generates requests for DeleteApiSamplingRulesOriginOrId
+func NewDeleteApiSamplingRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiSamplingRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/sampling-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiSamplingRulesOriginOrIdRequest generates requests for GetApiSamplingRulesOriginOrId
+func NewGetApiSamplingRulesOriginOrIdRequest(server string, originOrId string, params *GetApiSamplingRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/sampling-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiSamplingRulesOriginOrIdRequest calls the generic PutApiSamplingRulesOriginOrId builder with application/json body
+func NewPutApiSamplingRulesOriginOrIdRequest(server string, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiSamplingRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiSamplingRulesOriginOrIdRequestWithBody generates requests for PutApiSamplingRulesOriginOrId with any type of body
+func NewPutApiSamplingRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/sampling-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewPostApiSpansRequest calls the generic PostApiSpans builder with application/json body
 func NewPostApiSpansRequest(server string, body PostApiSpansJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -4557,6 +5254,25 @@ type ClientWithResponsesInterface interface {
 
 	PostApiLogsWithResponse(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLogsResponse, error)
 
+	// GetApiSamplingRulesWithResponse request
+	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
+
+	// PostApiSamplingRulesWithBodyWithResponse request with any body
+	PostApiSamplingRulesWithBodyWithResponse(ctx context.Context, params *PostApiSamplingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSamplingRulesResponse, error)
+
+	PostApiSamplingRulesWithResponse(ctx context.Context, params *PostApiSamplingRulesParams, body PostApiSamplingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSamplingRulesResponse, error)
+
+	// DeleteApiSamplingRulesOriginOrIdWithResponse request
+	DeleteApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSamplingRulesOriginOrIdResponse, error)
+
+	// GetApiSamplingRulesOriginOrIdWithResponse request
+	GetApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesOriginOrIdResponse, error)
+
+	// PutApiSamplingRulesOriginOrIdWithBodyWithResponse request with any body
+	PutApiSamplingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSamplingRulesOriginOrIdResponse, error)
+
+	PutApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSamplingRulesOriginOrIdResponse, error)
+
 	// PostApiSpansWithBodyWithResponse request with any body
 	PostApiSpansWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpansResponse, error)
 
@@ -4938,6 +5654,123 @@ func (r PostApiLogsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiLogsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSamplingRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetSamplingRulesResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSamplingRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSamplingRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiSamplingRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SamplingRuleResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSamplingRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSamplingRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiSamplingRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiSamplingRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiSamplingRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSamplingRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SamplingRuleResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSamplingRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSamplingRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiSamplingRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SamplingRuleResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiSamplingRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiSamplingRulesOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5400,6 +6233,67 @@ func (c *ClientWithResponses) PostApiLogsWithResponse(ctx context.Context, body 
 		return nil, err
 	}
 	return ParsePostApiLogsResponse(rsp)
+}
+
+// GetApiSamplingRulesWithResponse request returning *GetApiSamplingRulesResponse
+func (c *ClientWithResponses) GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error) {
+	rsp, err := c.GetApiSamplingRules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSamplingRulesResponse(rsp)
+}
+
+// PostApiSamplingRulesWithBodyWithResponse request with arbitrary body returning *PostApiSamplingRulesResponse
+func (c *ClientWithResponses) PostApiSamplingRulesWithBodyWithResponse(ctx context.Context, params *PostApiSamplingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSamplingRulesResponse, error) {
+	rsp, err := c.PostApiSamplingRulesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSamplingRulesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSamplingRulesWithResponse(ctx context.Context, params *PostApiSamplingRulesParams, body PostApiSamplingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSamplingRulesResponse, error) {
+	rsp, err := c.PostApiSamplingRules(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSamplingRulesResponse(rsp)
+}
+
+// DeleteApiSamplingRulesOriginOrIdWithResponse request returning *DeleteApiSamplingRulesOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSamplingRulesOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiSamplingRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiSamplingRulesOriginOrIdResponse(rsp)
+}
+
+// GetApiSamplingRulesOriginOrIdWithResponse request returning *GetApiSamplingRulesOriginOrIdResponse
+func (c *ClientWithResponses) GetApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSamplingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesOriginOrIdResponse, error) {
+	rsp, err := c.GetApiSamplingRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSamplingRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiSamplingRulesOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiSamplingRulesOriginOrIdResponse
+func (c *ClientWithResponses) PutApiSamplingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSamplingRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSamplingRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSamplingRulesOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSamplingRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSamplingRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSamplingRulesOriginOrIdResponse(rsp)
 }
 
 // PostApiSpansWithBodyWithResponse request with arbitrary body returning *PostApiSpansResponse
@@ -6009,6 +6903,185 @@ func ParsePostApiLogsResponse(rsp *http.Response) (*PostApiLogsResponse, error) 
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSamplingRulesResponse parses an HTTP response from a GetApiSamplingRulesWithResponse call
+func ParseGetApiSamplingRulesResponse(rsp *http.Response) (*GetApiSamplingRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSamplingRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetSamplingRulesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiSamplingRulesResponse parses an HTTP response from a PostApiSamplingRulesWithResponse call
+func ParsePostApiSamplingRulesResponse(rsp *http.Response) (*PostApiSamplingRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSamplingRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SamplingRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiSamplingRulesOriginOrIdResponse parses an HTTP response from a DeleteApiSamplingRulesOriginOrIdWithResponse call
+func ParseDeleteApiSamplingRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiSamplingRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiSamplingRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSamplingRulesOriginOrIdResponse parses an HTTP response from a GetApiSamplingRulesOriginOrIdWithResponse call
+func ParseGetApiSamplingRulesOriginOrIdResponse(rsp *http.Response) (*GetApiSamplingRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSamplingRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SamplingRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiSamplingRulesOriginOrIdResponse parses an HTTP response from a PutApiSamplingRulesOriginOrIdWithResponse call
+func ParsePutApiSamplingRulesOriginOrIdResponse(rsp *http.Response) (*PutApiSamplingRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiSamplingRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SamplingRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

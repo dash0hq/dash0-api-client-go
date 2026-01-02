@@ -50,6 +50,14 @@ type MockClient struct {
 	DeleteViewFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListViewsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.ViewApiListItem]
 
+	// Sampling Rules
+	ListSamplingRulesFunc     func(ctx context.Context, dataset *string) ([]*dash0.SamplingDefinition, error)
+	GetSamplingRuleFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.SamplingDefinition, error)
+	CreateSamplingRuleFunc    func(ctx context.Context, rule *dash0.SamplingDefinition, dataset *string) (*dash0.SamplingDefinition, error)
+	UpdateSamplingRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.SamplingDefinition, dataset *string) (*dash0.SamplingDefinition, error)
+	DeleteSamplingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
+
 	// Spans
 	GetSpansFunc     func(ctx context.Context, request *dash0.GetSpansRequest) (*dash0.GetSpansResponse, error)
 	GetSpansIterFunc func(ctx context.Context, request *dash0.GetSpansRequest) *dash0.Iter[dash0.ResourceSpans]
@@ -240,6 +248,50 @@ func (m *MockClient) DeleteView(ctx context.Context, originOrID string, dataset 
 func (m *MockClient) ListViewsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.ViewApiListItem] {
 	if m.ListViewsIterFunc != nil {
 		return m.ListViewsIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Sampling Rules
+
+func (m *MockClient) ListSamplingRules(ctx context.Context, dataset *string) ([]*dash0.SamplingDefinition, error) {
+	if m.ListSamplingRulesFunc != nil {
+		return m.ListSamplingRulesFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetSamplingRule(ctx context.Context, originOrID string, dataset *string) (*dash0.SamplingDefinition, error) {
+	if m.GetSamplingRuleFunc != nil {
+		return m.GetSamplingRuleFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateSamplingRule(ctx context.Context, rule *dash0.SamplingDefinition, dataset *string) (*dash0.SamplingDefinition, error) {
+	if m.CreateSamplingRuleFunc != nil {
+		return m.CreateSamplingRuleFunc(ctx, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateSamplingRule(ctx context.Context, originOrID string, rule *dash0.SamplingDefinition, dataset *string) (*dash0.SamplingDefinition, error) {
+	if m.UpdateSamplingRuleFunc != nil {
+		return m.UpdateSamplingRuleFunc(ctx, originOrID, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteSamplingRuleFunc != nil {
+		return m.DeleteSamplingRuleFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition] {
+	if m.ListSamplingRulesIterFunc != nil {
+		return m.ListSamplingRulesIterFunc(ctx, dataset)
 	}
 	return nil
 }
