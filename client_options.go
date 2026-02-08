@@ -1,7 +1,9 @@
 package dash0
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -28,6 +30,14 @@ const (
 	MaxRetries = 5
 )
 
+// OtlpEncoding specifies the wire format for OTLP data.
+type OtlpEncoding string
+
+const (
+	// OtlpEncodingJSON is the OTLP/JSON encoding over HTTP.
+	OtlpEncodingJSON OtlpEncoding = "otlp/json"
+)
+
 // ClientOption configures a Dash0 client.
 type ClientOption func(*clientConfig)
 
@@ -41,6 +51,8 @@ type clientConfig struct {
 	maxRetries    int
 	retryWaitMin  time.Duration
 	retryWaitMax  time.Duration
+	otlpEncoding  OtlpEncoding
+	otlpEndpoint  string
 }
 
 func defaultConfig() *clientConfig {
@@ -55,7 +67,7 @@ func defaultConfig() *clientConfig {
 }
 
 // WithApiUrl sets the Dash0 API URL.
-// This is required and must be a valid Dash0 API endpoint URL.
+// This is required for REST API operations (dashboards, check rules, etc.).
 // Examples:
 //   - https://api.eu-west-1.aws.dash0.com
 //   - https://api.eu-central-1.aws.dash0.com
@@ -143,4 +155,53 @@ func WithRetryWaitMax(d time.Duration) ClientOption {
 	return func(c *clientConfig) {
 		c.retryWaitMax = d
 	}
+}
+
+// otlpPathSuffixes are OTLP signal-specific path suffixes that should not
+// appear at the end of the base endpoint URL.
+var otlpPathSuffixes = []string{
+	"/v1/traces",
+	"/v1/metrics",
+	"/v1/logs",
+	"/v1/profiles",
+	"/v1development/profiles",
+}
+
+// WithOtlpEndpoint configures the client to push telemetry data via OTLP/HTTP.
+// The encoding parameter specifies the wire format; currently only
+// OtlpEncodingJSON is supported.
+// The url is the base OTLP endpoint (e.g., "https://otlp.example.com:4318");
+// signal-specific paths like /v1/traces are appended automatically.
+//
+// This option is optional. If not set, SendTraces, SendMetrics, and SendLogs
+// will return an error.
+func WithOtlpEndpoint(encoding OtlpEncoding, url string) ClientOption {
+	return func(c *clientConfig) {
+		c.otlpEncoding = encoding
+		c.otlpEndpoint = url
+	}
+}
+
+// validateOtlpConfig validates the OTLP encoding and endpoint together.
+// The encoding determines what URL schemes are valid for the endpoint.
+func validateOtlpConfig(encoding OtlpEncoding, endpoint string) error {
+	switch encoding {
+	case OtlpEncodingJSON:
+		if !strings.HasPrefix(endpoint, "http://") && !strings.HasPrefix(endpoint, "https://") {
+			return fmt.Errorf(
+				"dash0: OTLP endpoint for encoding %q must start with http:// or https://, got %q",
+				encoding, endpoint)
+		}
+	default:
+		return fmt.Errorf("dash0: unsupported OTLP encoding %q (supported: %s)", encoding, OtlpEncodingJSON)
+	}
+
+	for _, suffix := range otlpPathSuffixes {
+		if strings.HasSuffix(endpoint, suffix) {
+			return fmt.Errorf(
+				"dash0: OTLP endpoint URL must not end with %q; "+
+					"signal-specific paths are appended automatically", suffix)
+		}
+	}
+	return nil
 }

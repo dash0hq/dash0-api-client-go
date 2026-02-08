@@ -1,21 +1,23 @@
 package dash0
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"strings"
 	"testing"
 )
 
 func TestNewClient(t *testing.T) {
-	t.Run("requires API URL", func(t *testing.T) {
+	t.Run("requires at least API URL or OTLP endpoint", func(t *testing.T) {
 		_, err := NewClient(
 			WithAuthToken("auth_test123"),
 		)
 
 		if err == nil {
-			t.Fatal("expected error for missing API URL")
+			t.Fatal("expected error for missing API URL and OTLP endpoint")
 		}
-		if !strings.Contains(err.Error(), "API URL is required") {
+		if !strings.Contains(err.Error(), "at least one of API URL or OTLP endpoint is required") {
 			t.Errorf("unexpected error message: %v", err)
 		}
 	})
@@ -120,6 +122,30 @@ func TestNewClient(t *testing.T) {
 		_, isRateLimited := retry.base.(*rateLimitedTransport)
 		if !isRateLimited {
 			t.Error("expected rate limiting to be applied with custom HTTP client")
+		}
+	})
+
+	t.Run("REST API methods return ErrAPINotConfigured without WithApiUrl", func(t *testing.T) {
+		c, err := NewClient(
+			WithAuthToken("auth_test123"),
+			WithOtlpEndpoint(OtlpEncodingJSON, "https://otlp.example.com"),
+		)
+		if err != nil {
+			t.Fatalf("failed to create OTLP-only client: %v", err)
+		}
+
+		_, err = c.ListDashboards(context.Background(), nil)
+		if !errors.Is(err, ErrAPINotConfigured) {
+			t.Errorf("ListDashboards: expected ErrAPINotConfigured, got %v", err)
+		}
+
+		_, err = c.GetDashboard(context.Background(), "test", nil)
+		if !errors.Is(err, ErrAPINotConfigured) {
+			t.Errorf("GetDashboard: expected ErrAPINotConfigured, got %v", err)
+		}
+
+		if c.Inner() != nil {
+			t.Error("Inner() should return nil for OTLP-only client")
 		}
 	})
 

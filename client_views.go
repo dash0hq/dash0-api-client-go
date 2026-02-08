@@ -8,6 +8,9 @@ import (
 
 // ListViews retrieves all views.
 func (c *client) ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiViewsParams{
 		Dataset: dataset,
 	}
@@ -26,6 +29,9 @@ func (c *client) ListViews(ctx context.Context, dataset *string) ([]*ViewApiList
 
 // GetView retrieves a view by origin or ID.
 func (c *client) GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiViewsOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -41,6 +47,9 @@ func (c *client) GetView(ctx context.Context, originOrID string, dataset *string
 
 // CreateView creates a new view.
 func (c *client) CreateView(ctx context.Context, view *ViewDefinition, dataset *string) (*ViewDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiViewsParams{
 		Dataset: dataset,
 	}
@@ -56,6 +65,9 @@ func (c *client) CreateView(ctx context.Context, view *ViewDefinition, dataset *
 
 // UpdateView updates an existing view.
 func (c *client) UpdateView(ctx context.Context, originOrID string, view *ViewDefinition, dataset *string) (*ViewDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PutApiViewsOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -71,6 +83,9 @@ func (c *client) UpdateView(ctx context.Context, originOrID string, view *ViewDe
 
 // DeleteView deletes a view by origin or ID.
 func (c *client) DeleteView(ctx context.Context, originOrID string, dataset *string) error {
+	if err := c.requireAPI(); err != nil {
+		return err
+	}
 	params := &DeleteApiViewsOriginOrIdParams{
 		Dataset: dataset,
 	}

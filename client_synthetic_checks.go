@@ -8,6 +8,9 @@ import (
 
 // ListSyntheticChecks retrieves all synthetic checks.
 func (c *client) ListSyntheticChecks(ctx context.Context, dataset *string) ([]*SyntheticChecksApiListItem, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiSyntheticChecksParams{
 		Dataset: dataset,
 	}
@@ -26,6 +29,9 @@ func (c *client) ListSyntheticChecks(ctx context.Context, dataset *string) ([]*S
 
 // GetSyntheticCheck retrieves a synthetic check by origin or ID.
 func (c *client) GetSyntheticCheck(ctx context.Context, originOrID string, dataset *string) (*SyntheticCheckDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiSyntheticChecksOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -41,6 +47,9 @@ func (c *client) GetSyntheticCheck(ctx context.Context, originOrID string, datas
 
 // CreateSyntheticCheck creates a new synthetic check.
 func (c *client) CreateSyntheticCheck(ctx context.Context, check *SyntheticCheckDefinition, dataset *string) (*SyntheticCheckDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiSyntheticChecksParams{
 		Dataset: dataset,
 	}
@@ -56,6 +65,9 @@ func (c *client) CreateSyntheticCheck(ctx context.Context, check *SyntheticCheck
 
 // UpdateSyntheticCheck updates an existing synthetic check.
 func (c *client) UpdateSyntheticCheck(ctx context.Context, originOrID string, check *SyntheticCheckDefinition, dataset *string) (*SyntheticCheckDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PutApiSyntheticChecksOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -71,6 +83,9 @@ func (c *client) UpdateSyntheticCheck(ctx context.Context, originOrID string, ch
 
 // DeleteSyntheticCheck deletes a synthetic check by origin or ID.
 func (c *client) DeleteSyntheticCheck(ctx context.Context, originOrID string, dataset *string) error {
+	if err := c.requireAPI(); err != nil {
+		return err
+	}
 	params := &DeleteApiSyntheticChecksOriginOrIdParams{
 		Dataset: dataset,
 	}

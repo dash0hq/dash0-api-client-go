@@ -4,6 +4,9 @@ import (
 	"context"
 
 	"github.com/dash0hq/dash0-api-client-go"
+	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
 // MockClient is a configurable mock implementation of dash0.Client.
@@ -71,6 +74,12 @@ type MockClient struct {
 	ImportDashboardFunc      func(ctx context.Context, dashboard *dash0.PostApiImportDashboardJSONRequestBody, dataset *string) (*dash0.DashboardDefinition, error)
 	ImportSyntheticCheckFunc func(ctx context.Context, check *dash0.PostApiImportSyntheticCheckJSONRequestBody, dataset *string) (*dash0.SyntheticCheckDefinition, error)
 	ImportViewFunc           func(ctx context.Context, view *dash0.PostApiImportViewJSONRequestBody, dataset *string) (*dash0.ViewDefinition, error)
+
+	// OTLP
+	SendTracesFunc  func(ctx context.Context, traces ptrace.Traces) error
+	SendMetricsFunc func(ctx context.Context, metrics pmetric.Metrics) error
+	SendLogsFunc    func(ctx context.Context, logs plog.Logs) error
+	CloseFunc       func(ctx context.Context) error
 
 	// Inner
 	InnerFunc func() *dash0.ClientWithResponses
@@ -356,6 +365,36 @@ func (m *MockClient) ImportView(ctx context.Context, view *dash0.PostApiImportVi
 		return m.ImportViewFunc(ctx, view, dataset)
 	}
 	return nil, nil
+}
+
+// OTLP
+
+func (m *MockClient) SendTraces(ctx context.Context, traces ptrace.Traces) error {
+	if m.SendTracesFunc != nil {
+		return m.SendTracesFunc(ctx, traces)
+	}
+	return nil
+}
+
+func (m *MockClient) SendMetrics(ctx context.Context, metrics pmetric.Metrics) error {
+	if m.SendMetricsFunc != nil {
+		return m.SendMetricsFunc(ctx, metrics)
+	}
+	return nil
+}
+
+func (m *MockClient) SendLogs(ctx context.Context, logs plog.Logs) error {
+	if m.SendLogsFunc != nil {
+		return m.SendLogsFunc(ctx, logs)
+	}
+	return nil
+}
+
+func (m *MockClient) Close(ctx context.Context) error {
+	if m.CloseFunc != nil {
+		return m.CloseFunc(ctx)
+	}
+	return nil
 }
 
 // Inner
