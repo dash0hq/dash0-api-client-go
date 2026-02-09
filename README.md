@@ -59,14 +59,14 @@ The client can push OpenTelemetry traces, metrics, and logs to an OTLP endpoint 
 // OTLP-only client (no REST API access)
 client, err := dash0.NewClient(
     dash0.WithAuthToken("auth_your-auth-token"),
-    dash0.WithOtlpEndpoint(dash0.OtlpEncodingJSON, "https://otlp.eu-west-1.aws.dash0.com"),
+    dash0.WithOtlpEndpoint(dash0.OtlpEncodingJson, "https://otlp.eu-west-1.aws.dash0.com"),
 )
 
 // Combined client (REST API + OTLP)
 client, err := dash0.NewClient(
     dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
     dash0.WithAuthToken("auth_your-auth-token"),
-    dash0.WithOtlpEndpoint(dash0.OtlpEncodingJSON, "https://otlp.eu-west-1.aws.dash0.com"),
+    dash0.WithOtlpEndpoint(dash0.OtlpEncodingJson, "https://otlp.eu-west-1.aws.dash0.com"),
 )
 ```
 

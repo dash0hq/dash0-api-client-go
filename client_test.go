@@ -128,7 +128,7 @@ func TestNewClient(t *testing.T) {
 	t.Run("REST API methods return ErrAPINotConfigured without WithApiUrl", func(t *testing.T) {
 		c, err := NewClient(
 			WithAuthToken("auth_test123"),
-			WithOtlpEndpoint(OtlpEncodingJSON, "https://otlp.example.com"),
+			WithOtlpEndpoint(OtlpEncodingJson, "https://otlp.example.com"),
 		)
 		if err != nil {
 			t.Fatalf("failed to create OTLP-only client: %v", err)

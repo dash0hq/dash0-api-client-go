@@ -108,7 +108,7 @@ func newOTLPClient(t *testing.T, serverURL string) Client {
 	c, err := NewClient(
 		WithApiUrl(apiServer.URL),
 		WithAuthToken("auth_test123"),
-		WithOtlpEndpoint(OtlpEncodingJSON, serverURL),
+		WithOtlpEndpoint(OtlpEncodingJson, serverURL),
 		WithRetryWaitMin(1*time.Millisecond),
 		WithRetryWaitMax(10*time.Millisecond),
 	)
@@ -315,7 +315,7 @@ func TestClient_OTLP(t *testing.T) {
 		_, err := NewClient(
 			WithApiUrl(apiServer.URL),
 			WithAuthToken("auth_test123"),
-			WithOtlpEndpoint(OtlpEncodingJSON, "grpc://otlp.example.com"),
+			WithOtlpEndpoint(OtlpEncodingJson, "grpc://otlp.example.com"),
 		)
 		if err == nil {
 			t.Fatal("expected error for endpoint with wrong scheme")
@@ -334,7 +334,7 @@ func TestClient_OTLP(t *testing.T) {
 		_, err := NewClient(
 			WithApiUrl(apiServer.URL),
 			WithAuthToken("auth_test123"),
-			WithOtlpEndpoint(OtlpEncodingJSON, "https://otlp.example.com/v1/traces"),
+			WithOtlpEndpoint(OtlpEncodingJson, "https://otlp.example.com/v1/traces"),
 		)
 		if err == nil {
 			t.Fatal("expected error for endpoint with signal path suffix")

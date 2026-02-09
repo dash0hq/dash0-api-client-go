@@ -270,7 +270,7 @@ func TestOTLPCollector(t *testing.T) {
 
 	// Create a dash0 client pointed at the collector's OTLP endpoint.
 	c, err := NewClient(
-		WithOtlpEndpoint(OtlpEncodingJSON, fmt.Sprintf("http://127.0.0.1:%d", port)),
+		WithOtlpEndpoint(OtlpEncodingJson, fmt.Sprintf("http://127.0.0.1:%d", port)),
 		WithAuthToken("auth_test123"),
 	)
 	if err != nil {

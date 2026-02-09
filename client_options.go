@@ -34,8 +34,8 @@ const (
 type OtlpEncoding string
 
 const (
-	// OtlpEncodingJSON is the OTLP/JSON encoding over HTTP.
-	OtlpEncodingJSON OtlpEncoding = "otlp/json"
+	// OtlpEncodingJson is the OTLP/JSON encoding over HTTP.
+	OtlpEncodingJson OtlpEncoding = "otlp/json"
 )
 
 // ClientOption configures a Dash0 client.
@@ -169,7 +169,7 @@ var otlpPathSuffixes = []string{
 
 // WithOtlpEndpoint configures the client to push telemetry data via OTLP/HTTP.
 // The encoding parameter specifies the wire format; currently only
-// OtlpEncodingJSON is supported.
+// OtlpEncodingJson is supported.
 // The url is the base OTLP endpoint (e.g., "https://otlp.example.com:4318");
 // signal-specific paths like /v1/traces are appended automatically.
 //
@@ -186,14 +186,14 @@ func WithOtlpEndpoint(encoding OtlpEncoding, url string) ClientOption {
 // The encoding determines what URL schemes are valid for the endpoint.
 func validateOtlpConfig(encoding OtlpEncoding, endpoint string) error {
 	switch encoding {
-	case OtlpEncodingJSON:
+	case OtlpEncodingJson:
 		if !strings.HasPrefix(endpoint, "http://") && !strings.HasPrefix(endpoint, "https://") {
 			return fmt.Errorf(
 				"dash0: OTLP endpoint for encoding %q must start with http:// or https://, got %q",
 				encoding, endpoint)
 		}
 	default:
-		return fmt.Errorf("dash0: unsupported OTLP encoding %q (supported: %s)", encoding, OtlpEncodingJSON)
+		return fmt.Errorf("dash0: unsupported OTLP encoding %q (supported: %s)", encoding, OtlpEncodingJson)
 	}
 
 	for _, suffix := range otlpPathSuffixes {
