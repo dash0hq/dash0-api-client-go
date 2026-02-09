@@ -47,9 +47,43 @@ func readOtelcolVersion(t *testing.T) string {
 	return strings.TrimSpace(string(data))
 }
 
+// resolveLatestOtelcolVersion resolves "latest" to an actual version number
+// by following the GitHub releases/latest redirect.
+func resolveLatestOtelcolVersion(t *testing.T) string {
+	t.Helper()
+	// Use a client that does not follow redirects so we can read the Location header.
+	httpClient := &http.Client{
+		CheckRedirect: func(*http.Request, []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	resp, err := httpClient.Get("https://github.com/open-telemetry/opentelemetry-collector-releases/releases/latest")
+	if err != nil {
+		t.Fatalf("failed to resolve latest OTel Collector version: %v", err)
+	}
+	_ = resp.Body.Close()
+
+	loc := resp.Header.Get("Location")
+	// Location looks like: .../releases/tag/v0.145.0
+	if i := strings.LastIndex(loc, "/v"); i != -1 {
+		version := loc[i+2:]
+		t.Logf("resolved 'latest' to OTel Collector version %s", version)
+		return version
+	}
+	t.Fatalf("could not parse version from redirect Location: %s", loc)
+	return ""
+}
+
 // ensureOtelcol returns the path to a cached collector binary, downloading it if necessary.
+// If version is "latest", it resolves the actual version from GitHub releases.
 func ensureOtelcol(t *testing.T, version string) string {
 	t.Helper()
+
+	version = strings.TrimPrefix(version, "v")
+
+	if version == "latest" {
+		version = resolveLatestOtelcolVersion(t)
+	}
 
 	goos := runtime.GOOS
 	goarch := runtime.GOARCH
@@ -88,8 +122,14 @@ func ensureOtelcol(t *testing.T, version string) string {
 	}
 	defer func() { _ = resp.Body.Close() }()
 
+	if resp.StatusCode == http.StatusNotFound {
+		t.Fatalf("OTel Collector version %s not found (HTTP 404).\n"+
+			"Check that .otelcol-version contains a valid release version from:\n"+
+			"https://github.com/open-telemetry/opentelemetry-collector-releases/releases",
+			version)
+	}
 	if resp.StatusCode != http.StatusOK {
-		t.Skipf("failed to download OTel Collector (HTTP %d, skipping)", resp.StatusCode)
+		t.Fatalf("failed to download OTel Collector (HTTP %d) from %s", resp.StatusCode, url)
 	}
 
 	if err := os.MkdirAll(cacheDir, 0755); err != nil {
