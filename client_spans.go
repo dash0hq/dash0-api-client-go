@@ -9,6 +9,9 @@ import (
 // GetSpans retrieves spans based on the provided request.
 // This is a POST endpoint but is idempotent (read-only query).
 func (c *client) GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSpansResponse, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	ctx = withIdempotent(ctx)
 	resp, err := c.inner.PostApiSpansWithResponse(ctx, *request)
 	if err != nil {

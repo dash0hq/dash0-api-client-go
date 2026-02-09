@@ -3,10 +3,20 @@ package dash0
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+
+	"go.opentelemetry.io/collector/pdata/plog"
+	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/ptrace"
 )
+
+// ErrAPINotConfigured is returned when a REST API method is called on a client
+// created without WithApiUrl.
+var ErrAPINotConfigured = errors.New("dash0: API endpoint not configured (use WithApiUrl)")
+
 
 // Client defines the Dash0 API client interface.
 // Use NewClient to create a concrete implementation.
@@ -65,21 +75,31 @@ type Client interface {
 	ImportSyntheticCheck(ctx context.Context, check *PostApiImportSyntheticCheckJSONRequestBody, dataset *string) (*SyntheticCheckDefinition, error)
 	ImportView(ctx context.Context, view *PostApiImportViewJSONRequestBody, dataset *string) (*ViewDefinition, error)
 
+	// OTLP
+	SendTraces(ctx context.Context, traces ptrace.Traces) error
+	SendMetrics(ctx context.Context, metrics pmetric.Metrics) error
+	SendLogs(ctx context.Context, logs plog.Logs) error
+
+	// Close releases resources associated with the client. Callers should
+	// call Close when the client is no longer needed.
+	Close(ctx context.Context) error
+
 	// Inner returns the underlying generated client for advanced use cases.
 	Inner() *ClientWithResponses
 }
 
 // client is the concrete implementation of the Client interface.
 type client struct {
-	inner  *ClientWithResponses
-	config *clientConfig
+	inner      *ClientWithResponses
+	config     *clientConfig
+	httpClient *http.Client
 }
 
 // NewClient creates a new Dash0 API client.
 //
 // Required options:
-//   - WithApiUrl: The Dash0 API endpoint URL
 //   - WithAuthToken: The auth token for authentication
+//   - At least one of WithApiUrl or WithOtlpEndpoint
 //
 // Example:
 //
@@ -94,8 +114,8 @@ func NewClient(opts ...ClientOption) (Client, error) {
 	}
 
 	// Validate required configuration
-	if cfg.apiUrl == "" {
-		return nil, fmt.Errorf("dash0: API URL is required (use WithApiUrl)")
+	if cfg.apiUrl == "" && cfg.otlpEndpoint == "" {
+		return nil, fmt.Errorf("dash0: at least one of API URL or OTLP endpoint is required (use WithApiUrl and/or WithOtlpEndpoint)")
 	}
 	if cfg.authToken == "" {
 		return nil, fmt.Errorf("dash0: auth token is required (use WithAuthToken)")
@@ -148,27 +168,45 @@ func NewClient(opts ...ClientOption) (Client, error) {
 		httpClient.Jar = cfg.httpClient.Jar
 	}
 
-	// Create auth token request editor
-	authEditor := func(ctx context.Context, req *http.Request) error {
-		req.Header.Set("Authorization", "Bearer "+cfg.authToken)
-		req.Header.Set("User-Agent", cfg.userAgent)
-		return nil
+	// Create generated REST API client only when API URL is configured
+	var inner *ClientWithResponses
+	if cfg.apiUrl != "" {
+		authEditor := func(ctx context.Context, req *http.Request) error {
+			req.Header.Set("Authorization", "Bearer "+cfg.authToken)
+			req.Header.Set("User-Agent", cfg.userAgent)
+			return nil
+		}
+		var err error
+		inner, err = NewClientWithResponses(
+			cfg.apiUrl,
+			withGeneratedHTTPClient(httpClient),
+			WithRequestEditorFn(authEditor),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("dash0: failed to create client: %w", err)
+		}
 	}
 
-	// Create generated client with responses
-	inner, err := NewClientWithResponses(
-		cfg.apiUrl,
-		withGeneratedHTTPClient(httpClient),
-		WithRequestEditorFn(authEditor),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("dash0: failed to create client: %w", err)
+	// Validate OTLP config if configured
+	if cfg.otlpEndpoint != "" {
+		if err := validateOtlpConfig(cfg.otlpEncoding, cfg.otlpEndpoint); err != nil {
+			return nil, err
+		}
 	}
 
 	return &client{
-		inner:  inner,
-		config: cfg,
+		inner:      inner,
+		config:     cfg,
+		httpClient: httpClient,
 	}, nil
+}
+
+// requireAPI returns an error if the REST API client is not configured.
+func (c *client) requireAPI() error {
+	if c.inner == nil {
+		return ErrAPINotConfigured
+	}
+	return nil
 }
 
 // Inner returns the underlying generated client for advanced use cases.

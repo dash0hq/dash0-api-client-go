@@ -8,6 +8,9 @@ import (
 
 // ListSamplingRules retrieves all sampling rules.
 func (c *client) ListSamplingRules(ctx context.Context, dataset *string) ([]*SamplingDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiSamplingRulesParams{
 		Dataset: dataset,
 	}
@@ -26,6 +29,9 @@ func (c *client) ListSamplingRules(ctx context.Context, dataset *string) ([]*Sam
 
 // GetSamplingRule retrieves a sampling rule by origin or ID.
 func (c *client) GetSamplingRule(ctx context.Context, originOrID string, dataset *string) (*SamplingDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiSamplingRulesOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -41,6 +47,9 @@ func (c *client) GetSamplingRule(ctx context.Context, originOrID string, dataset
 
 // CreateSamplingRule creates a new sampling rule.
 func (c *client) CreateSamplingRule(ctx context.Context, rule *SamplingDefinition, dataset *string) (*SamplingDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiSamplingRulesParams{
 		Dataset: dataset,
 	}
@@ -56,6 +65,9 @@ func (c *client) CreateSamplingRule(ctx context.Context, rule *SamplingDefinitio
 
 // UpdateSamplingRule updates an existing sampling rule.
 func (c *client) UpdateSamplingRule(ctx context.Context, originOrID string, rule *SamplingDefinition, dataset *string) (*SamplingDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PutApiSamplingRulesOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -71,6 +83,9 @@ func (c *client) UpdateSamplingRule(ctx context.Context, originOrID string, rule
 
 // DeleteSamplingRule deletes a sampling rule by origin or ID.
 func (c *client) DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error {
+	if err := c.requireAPI(); err != nil {
+		return err
+	}
 	params := &DeleteApiSamplingRulesOriginOrIdParams{
 		Dataset: dataset,
 	}

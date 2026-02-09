@@ -8,6 +8,9 @@ import (
 
 // ImportCheckRule imports a check rule
 func (c *client) ImportCheckRule(ctx context.Context, rule *PostApiImportCheckRuleJSONRequestBody, dataset *string) (*PrometheusAlertRule, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiImportCheckRuleParams{
 		Dataset: dataset,
 	}
@@ -23,6 +26,9 @@ func (c *client) ImportCheckRule(ctx context.Context, rule *PostApiImportCheckRu
 
 // ImportDashboard imports a dashboard
 func (c *client) ImportDashboard(ctx context.Context, dashboard *PostApiImportDashboardJSONRequestBody, dataset *string) (*DashboardDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiImportDashboardParams{
 		Dataset: dataset,
 	}
@@ -38,6 +44,9 @@ func (c *client) ImportDashboard(ctx context.Context, dashboard *PostApiImportDa
 
 // ImportSyntheticCheck imports a synthetic check.
 func (c *client) ImportSyntheticCheck(ctx context.Context, check *PostApiImportSyntheticCheckJSONRequestBody, dataset *string) (*SyntheticCheckDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiImportSyntheticCheckParams{
 		Dataset: dataset,
 	}
@@ -53,6 +62,9 @@ func (c *client) ImportSyntheticCheck(ctx context.Context, check *PostApiImportS
 
 // ImportView imports a view.
 func (c *client) ImportView(ctx context.Context, view *PostApiImportViewJSONRequestBody, dataset *string) (*ViewDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiImportViewParams{
 		Dataset: dataset,
 	}

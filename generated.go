@@ -52,6 +52,14 @@ const (
 	Dashboard DashboardDefinitionKind = "Dashboard"
 )
 
+// Defines values for DashboardSource.
+const (
+	Api       DashboardSource = "api"
+	Operator  DashboardSource = "operator"
+	Terraform DashboardSource = "terraform"
+	Ui        DashboardSource = "ui"
+)
+
 // Defines values for ErrorAssertionKind.
 const (
 	ErrorAssertionKindError ErrorAssertionKind = "error"
@@ -260,6 +268,19 @@ const (
 	Builtin     ViewLabelsDash0Comsource = "builtin"
 	External    ViewLabelsDash0Comsource = "external"
 	Userdefined ViewLabelsDash0Comsource = "userdefined"
+)
+
+// Defines values for ViewSpecServiceMapPropertiesExternalServices.
+const (
+	All   ViewSpecServiceMapPropertiesExternalServices = "all"
+	Group ViewSpecServiceMapPropertiesExternalServices = "group"
+	Hide  ViewSpecServiceMapPropertiesExternalServices = "hide"
+)
+
+// Defines values for ViewSpecServiceMapPropertiesLayout.
+const (
+	Flow  ViewSpecServiceMapPropertiesLayout = "flow"
+	Force ViewSpecServiceMapPropertiesLayout = "force"
 )
 
 // Defines values for ViewType.
@@ -473,14 +494,19 @@ type DashboardAnnotations struct {
 	Dash0ComdeletedAt  *time.Time `json:"dash0.com/deleted-at,omitempty"`
 	Dash0ComfolderPath *string    `json:"dash0.com/folder-path,omitempty"`
 	Dash0Comsharing    *string    `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0Comsource The source that created the dashboard.
+	Dash0Comsource *DashboardSource `json:"dash0.com/source,omitempty"`
 }
 
 // DashboardApiListItem defines model for DashboardApiListItem.
 type DashboardApiListItem struct {
-	Dataset string  `json:"dataset"`
-	Id      string  `json:"id"`
-	Name    *string `json:"name,omitempty"`
-	Origin  *string `json:"origin,omitempty"`
+	Dataset     string   `json:"dataset"`
+	Description *string  `json:"description,omitempty"`
+	Id          string   `json:"id"`
+	Name        *string  `json:"name,omitempty"`
+	Origin      *string  `json:"origin,omitempty"`
+	Tags        []string `json:"tags"`
 }
 
 // DashboardDefinition A dashboard definition that is compatible with Perses' dashboarding system.
@@ -522,6 +548,9 @@ type DashboardMetadataExtensions struct {
 	Origin *string   `json:"origin,omitempty"`
 	Tags   *[]string `json:"tags,omitempty"`
 }
+
+// DashboardSource The source that created the dashboard.
+type DashboardSource string
 
 // Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
 type Dataset = string
@@ -1725,10 +1754,11 @@ type ViewSpec struct {
 	// GroupBy A set of attribute keys to group the view by. This property may be missing to indicate that
 	// no configuration was historically made for this view, i.e., the view was saved before the
 	// grouping capability was added. In that case, you can assume a default grouping should be used.
-	GroupBy        *[]string         `json:"groupBy,omitempty"`
-	ImplicitFilter *FilterCriteria   `json:"implicitFilter,omitempty"`
-	Permissions    *[]ViewPermission `json:"permissions,omitempty"`
-	Table          *ViewTable        `json:"table,omitempty"`
+	GroupBy              *[]string                     `json:"groupBy,omitempty"`
+	ImplicitFilter       *FilterCriteria               `json:"implicitFilter,omitempty"`
+	Permissions          *[]ViewPermission             `json:"permissions,omitempty"`
+	ServiceMapProperties *ViewSpecServiceMapProperties `json:"serviceMapProperties,omitempty"`
+	Table                *ViewTable                    `json:"table,omitempty"`
 
 	// Type The view type describes where this view configuration is intended to be applied in the UI.
 	Type ViewType `json:"type"`
@@ -1736,6 +1766,25 @@ type ViewSpec struct {
 	// Visualizations A visualization configuration for the view. We only support a single visualization for now per view.
 	Visualizations *[]ViewVisualization `json:"visualizations,omitempty"`
 }
+
+// ViewSpecServiceMapProperties defines model for ViewSpecServiceMapProperties.
+type ViewSpecServiceMapProperties struct {
+	// ExpandedGroups A list of expanded group identifiers in the service map. When external services are grouped,
+	// individual groups can be expanded to show all services within. This list stores which groups
+	// are currently expanded.
+	ExpandedGroups   *[]string                                    `json:"expandedGroups,omitempty"`
+	ExternalServices ViewSpecServiceMapPropertiesExternalServices `json:"externalServices"`
+	Layout           ViewSpecServiceMapPropertiesLayout           `json:"layout"`
+	NodeSizing       bool                                         `json:"nodeSizing"`
+	Particles        bool                                         `json:"particles"`
+	SelectedMetric   string                                       `json:"selectedMetric"`
+}
+
+// ViewSpecServiceMapPropertiesExternalServices defines model for ViewSpecServiceMapProperties.ExternalServices.
+type ViewSpecServiceMapPropertiesExternalServices string
+
+// ViewSpecServiceMapPropertiesLayout defines model for ViewSpecServiceMapProperties.Layout.
+type ViewSpecServiceMapPropertiesLayout string
 
 // ViewTable defines model for ViewTable.
 type ViewTable struct {

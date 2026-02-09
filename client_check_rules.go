@@ -8,6 +8,9 @@ import (
 
 // ListCheckRules retrieves all check rules.
 func (c *client) ListCheckRules(ctx context.Context, dataset *string) ([]*PrometheusAlertRuleApiListItem, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiAlertingCheckRulesParams{
 		Dataset: dataset,
 	}
@@ -26,6 +29,9 @@ func (c *client) ListCheckRules(ctx context.Context, dataset *string) ([]*Promet
 
 // GetCheckRule retrieves a check rule by origin or ID.
 func (c *client) GetCheckRule(ctx context.Context, originOrID string, dataset *string) (*PrometheusAlertRule, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiAlertingCheckRulesOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -41,6 +47,9 @@ func (c *client) GetCheckRule(ctx context.Context, originOrID string, dataset *s
 
 // CreateCheckRule creates a new check rule.
 func (c *client) CreateCheckRule(ctx context.Context, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiAlertingCheckRulesParams{
 		Dataset: dataset,
 	}
@@ -56,6 +65,9 @@ func (c *client) CreateCheckRule(ctx context.Context, rule *PrometheusAlertRule,
 
 // UpdateCheckRule updates an existing check rule.
 func (c *client) UpdateCheckRule(ctx context.Context, originOrID string, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PutApiAlertingCheckRulesOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -71,6 +83,9 @@ func (c *client) UpdateCheckRule(ctx context.Context, originOrID string, rule *P
 
 // DeleteCheckRule deletes a check rule by origin or ID.
 func (c *client) DeleteCheckRule(ctx context.Context, originOrID string, dataset *string) error {
+	if err := c.requireAPI(); err != nil {
+		return err
+	}
 	params := &DeleteApiAlertingCheckRulesOriginOrIdParams{
 		Dataset: dataset,
 	}

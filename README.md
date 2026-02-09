@@ -29,11 +29,12 @@ func main() {
     // Create a new client
     client, err := dash0.NewClient(
         dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
-        dash0.WithAuthToken("your-auth-token"),
+        dash0.WithAuthToken("auth_your-auth-token"),
     )
     if err != nil {
         log.Fatal(err)
     }
+    defer client.Close(context.Background())
 
     // List dashboards in the "default" dataset
     dashboards, err := client.ListDashboards(context.Background(), dash0.String("default"))
@@ -50,27 +51,67 @@ func main() {
 }
 ```
 
+## Sending Telemetry Data (OTLP)
+
+The client can push OpenTelemetry traces, metrics, and logs to an OTLP endpoint with `otlp/json` encoding. You can create a client with only an OTLP endpoint, only a REST API URL, or both:
+
+```go
+// OTLP-only client (no REST API access)
+client, err := dash0.NewClient(
+    dash0.WithAuthToken("auth_your-auth-token"),
+    dash0.WithOtlpEndpoint(dash0.OtlpEncodingJson, "https://otlp.eu-west-1.aws.dash0.com"),
+)
+
+// Combined client (REST API + OTLP)
+client, err := dash0.NewClient(
+    dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+    dash0.WithAuthToken("auth_your-auth-token"),
+    dash0.WithOtlpEndpoint(dash0.OtlpEncodingJson, "https://otlp.eu-west-1.aws.dash0.com"),
+)
+```
+
+The `SendTraces`, `SendMetrics`, and `SendLogs` methods accept [pdata](https://pkg.go.dev/go.opentelemetry.io/collector/pdata) types (`ptrace.Traces`, `pmetric.Metrics`, `plog.Logs`). Signal-specific paths (`/v1/traces`, `/v1/metrics`, `/v1/logs`) are appended automatically to the base endpoint URL.
+
+```go
+// Send traces
+err = client.SendTraces(ctx, traces)
+
+// Send metrics
+err = client.SendMetrics(ctx, metrics)
+
+// Send logs
+err = client.SendLogs(ctx, logs)
+```
+
+OTLP requests use the same HTTP client, retry logic, and rate limiting as the REST API calls. Call `Close` when the underlying HTTP client is no longer needed.
+
 ## Configuration Options
 
 | Option                         | Description                              | Default                     |
 |--------------------------------|------------------------------------------|-----------------------------|
-| `WithApiUrl(url)`              | Dash0 API URL (required)                 | -                           |
+| `WithApiUrl(url)`              | Dash0 API URL (required for REST API)    | -                           |
 | `WithAuthToken(token)`         | Auth token for authentication (required) | -                           |
+| `WithOtlpEndpoint(enc, url)`   | OTLP/HTTP endpoint for telemetry push (required for OTLP)   | -                           |
 | `WithMaxConcurrentRequests(n)` | Maximum concurrent API requests (1-10)   | 3                           |
 | `WithTimeout(duration)`        | HTTP request timeout                     | 30s                         |
 | `WithHTTPClient(client)`       | Custom HTTP client                       | -                           |
 | `WithUserAgent(ua)`            | Custom User-Agent header                 | `dash0-api-client-go/1.0.0` |
+| `WithMaxRetries(n)`            | Maximum retries for failed requests (0-5)| 1                           |
+| `WithRetryWaitMin(duration)`   | Minimum wait between retries             | 500ms                       |
+| `WithRetryWaitMax(duration)`   | Maximum wait between retries             | 30s                         |
+
+`NewClient` requires `WithAuthToken` and at least one of `WithApiUrl` or `WithOtlpEndpoint`. REST API methods (dashboards, check rules, etc.) require `WithApiUrl`; OTLP methods (`SendTraces`, `SendMetrics`, `SendLogs`) require `WithOtlpEndpoint`. Calling a method whose endpoint was not configured returns an error.
 
 ## Automatic Retries
 
 The client automatically retries failed requests with exponential backoff:
 
 - **Retried errors**: 429 (rate limited) and 5xx (server errors)
-- **Max retries**: 3 attempts
+- **Max retries**: 1 (configurable up to 5 via `WithMaxRetries`)
 - **Backoff**: Exponential with jitter, starting at 500ms up to 30s
 - **Retry-After**: Respected when present in response headers
 
-Only idempotent requests (GET, PUT, DELETE, HEAD, OPTIONS) are retried automatically.
+Only idempotent requests (GET, PUT, DELETE, HEAD, OPTIONS) and OTLP sends are retried automatically.
 
 ## Pagination with Iterators
 
@@ -96,10 +137,12 @@ if err := iter.Err(); err != nil {
 
 ## Error Handling
 
-All API errors are returned as `*dash0.APIError`, which includes the status code, message, and trace ID for support:
+### HTTP errors
+
+Both REST API and OTLP methods return `*dash0.APIError` for non-2xx HTTP responses. The error includes the status code, message, and trace ID for support:
 
 ```go
-dashboards, err := client.ListDashboards(ctx, nil)
+err := client.SendTraces(ctx, traces)
 if err != nil {
     if apiErr, ok := err.(*dash0.APIError); ok {
         fmt.Printf("API error: %s (status: %d, trace_id: %s)\n",
@@ -108,17 +151,11 @@ if err != nil {
 }
 ```
 
-Helper functions for common error checks:
+The same helper functions work for both REST API and OTLP errors:
 
 ```go
-if dash0.IsNotFound(err) {
-    // Handle 404
-}
 if dash0.IsUnauthorized(err) {
     // Handle 401 - invalid or expired token
-}
-if dash0.IsForbidden(err) {
-    // Handle 403 - insufficient permissions
 }
 if dash0.IsRateLimited(err) {
     // Handle 429 - too many requests
@@ -126,11 +163,30 @@ if dash0.IsRateLimited(err) {
 if dash0.IsServerError(err) {
     // Handle 5xx - server errors
 }
+if dash0.IsNotFound(err) {
+    // Handle 404
+}
+if dash0.IsForbidden(err) {
+    // Handle 403 - insufficient permissions
+}
 if dash0.IsBadRequest(err) {
     // Handle 400 - invalid request
 }
 if dash0.IsConflict(err) {
     // Handle 409 - resource conflict
+}
+```
+
+### Not-configured errors
+
+Calling a method whose endpoint was not configured returns a sentinel error that can be checked with `errors.Is`:
+
+```go
+if errors.Is(err, dash0.ErrOTLPNotConfigured) {
+    // SendTraces/SendMetrics/SendLogs called without WithOtlpEndpoint
+}
+if errors.Is(err, dash0.ErrAPINotConfigured) {
+    // REST API method called without WithApiUrl
 }
 ```
 

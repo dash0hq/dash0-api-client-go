@@ -9,6 +9,9 @@ import (
 // GetLogRecords retrieves log records based on the provided request.
 // This is a POST endpoint but is idempotent (read-only query).
 func (c *client) GetLogRecords(ctx context.Context, request *GetLogRecordsRequest) (*GetLogRecordsResponse, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	ctx = withIdempotent(ctx)
 	resp, err := c.inner.PostApiLogsWithResponse(ctx, *request)
 	if err != nil {

@@ -8,6 +8,9 @@ import (
 
 // ListDashboards retrieves all dashboards.
 func (c *client) ListDashboards(ctx context.Context, dataset *string) ([]*DashboardApiListItem, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiDashboardsParams{
 		Dataset: dataset,
 	}
@@ -26,6 +29,9 @@ func (c *client) ListDashboards(ctx context.Context, dataset *string) ([]*Dashbo
 
 // GetDashboard retrieves a dashboard by origin or ID.
 func (c *client) GetDashboard(ctx context.Context, originOrID string, dataset *string) (*DashboardDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &GetApiDashboardsOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -41,6 +47,9 @@ func (c *client) GetDashboard(ctx context.Context, originOrID string, dataset *s
 
 // CreateDashboard creates a new dashboard.
 func (c *client) CreateDashboard(ctx context.Context, dashboard *DashboardDefinition, dataset *string) (*DashboardDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PostApiDashboardsParams{
 		Dataset: dataset,
 	}
@@ -56,6 +65,9 @@ func (c *client) CreateDashboard(ctx context.Context, dashboard *DashboardDefini
 
 // UpdateDashboard updates an existing dashboard.
 func (c *client) UpdateDashboard(ctx context.Context, originOrID string, dashboard *DashboardDefinition, dataset *string) (*DashboardDefinition, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
 	params := &PutApiDashboardsOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -71,6 +83,9 @@ func (c *client) UpdateDashboard(ctx context.Context, originOrID string, dashboa
 
 // DeleteDashboard deletes a dashboard by origin or ID.
 func (c *client) DeleteDashboard(ctx context.Context, originOrID string, dataset *string) error {
+	if err := c.requireAPI(); err != nil {
+		return err
+	}
 	params := &DeleteApiDashboardsOriginOrIdParams{
 		Dataset: dataset,
 	}
