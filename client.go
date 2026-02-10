@@ -17,7 +17,6 @@ import (
 // created without WithApiUrl.
 var ErrAPINotConfigured = errors.New("dash0: API endpoint not configured (use WithApiUrl)")
 
-
 // Client defines the Dash0 API client interface.
 // Use NewClient to create a concrete implementation.
 type Client interface {
@@ -76,9 +75,9 @@ type Client interface {
 	ImportView(ctx context.Context, view *PostApiImportViewJSONRequestBody, dataset *string) (*ViewDefinition, error)
 
 	// OTLP
-	SendTraces(ctx context.Context, traces ptrace.Traces) error
-	SendMetrics(ctx context.Context, metrics pmetric.Metrics) error
-	SendLogs(ctx context.Context, logs plog.Logs) error
+	SendLogs(ctx context.Context, logs plog.Logs, dataset *string) error
+	SendMetrics(ctx context.Context, metrics pmetric.Metrics, dataset *string) error
+	SendTraces(ctx context.Context, traces ptrace.Traces, dataset *string) error
 
 	// Close releases resources associated with the client. Callers should
 	// call Close when the client is no longer needed.

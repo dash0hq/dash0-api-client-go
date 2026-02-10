@@ -70,17 +70,18 @@ client, err := dash0.NewClient(
 )
 ```
 
-The `SendTraces`, `SendMetrics`, and `SendLogs` methods accept [pdata](https://pkg.go.dev/go.opentelemetry.io/collector/pdata) types (`ptrace.Traces`, `pmetric.Metrics`, `plog.Logs`). Signal-specific paths (`/v1/traces`, `/v1/metrics`, `/v1/logs`) are appended automatically to the base endpoint URL.
+The `SendTraces`, `SendMetrics`, and `SendLogs` methods accept [pdata](https://pkg.go.dev/go.opentelemetry.io/collector/pdata) types (`ptrace.Traces`, `pmetric.Metrics`, `plog.Logs`). Signal-specific paths (`/v1/traces`, `/v1/metrics`, `/v1/logs`) are appended automatically to the base endpoint URL. Pass `nil` as the dataset to send data to the `default` dataset in Dash0.
 
 ```go
-// Send traces
-err = client.SendTraces(ctx, traces)
+// Send to the default dataset
+err = client.SendTraces(ctx, traces, nil)
+err = client.SendMetrics(ctx, metrics, nil)
+err = client.SendLogs(ctx, logs, nil)
 
-// Send metrics
-err = client.SendMetrics(ctx, metrics)
-
-// Send logs
-err = client.SendLogs(ctx, logs)
+// Send to a specific dataset
+err = client.SendTraces(ctx, traces, dash0.String("my-dataset"))
+err = client.SendMetrics(ctx, metrics, dash0.String("my-dataset"))
+err = client.SendLogs(ctx, logs, dash0.String("my-dataset"))
 ```
 
 OTLP requests use the same HTTP client, retry logic, and rate limiting as the REST API calls. Call `Close` when the underlying HTTP client is no longer needed.
@@ -142,7 +143,7 @@ if err := iter.Err(); err != nil {
 Both REST API and OTLP methods return `*dash0.APIError` for non-2xx HTTP responses. The error includes the status code, message, and trace ID for support:
 
 ```go
-err := client.SendTraces(ctx, traces)
+err := client.SendTraces(ctx, traces, nil)
 if err != nil {
     if apiErr, ok := err.(*dash0.APIError); ok {
         fmt.Printf("API error: %s (status: %d, trace_id: %s)\n",

@@ -22,7 +22,7 @@ var ErrOTLPNotConfigured = errors.New("dash0: OTLP endpoint not configured (use 
 // given signal path (e.g. "/v1/traces"). It uses the shared HTTP client with
 // the retry and rate-limit transport stack. The request is marked as idempotent
 // so the retry transport can retry on transient failures.
-func (c *client) sendOTLP(ctx context.Context, path string, body []byte) error {
+func (c *client) sendOTLP(ctx context.Context, path string, body []byte, dataset *string) error {
 	url := strings.TrimRight(c.config.otlpEndpoint, "/") + path
 
 	req, err := http.NewRequestWithContext(
@@ -38,6 +38,9 @@ func (c *client) sendOTLP(ctx context.Context, path string, body []byte) error {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.config.authToken)
 	req.Header.Set("User-Agent", c.config.userAgent)
+	if dataset != nil && *dataset != "" {
+		req.Header.Set("Dash0-Dataset", *dataset)
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -58,8 +61,9 @@ func (c *client) sendOTLP(ctx context.Context, path string, body []byte) error {
 }
 
 // SendTraces marshals trace data to OTLP/JSON and sends it to the
-// configured OTLP endpoint.
-func (c *client) SendTraces(ctx context.Context, traces ptrace.Traces) error {
+// configured OTLP endpoint. If dataset is non-nil, it is sent via the
+// Dash0-Dataset HTTP header; otherwise the organization's default dataset is used.
+func (c *client) SendTraces(ctx context.Context, traces ptrace.Traces, dataset *string) error {
 	if c.config.otlpEndpoint == "" {
 		return ErrOTLPNotConfigured
 	}
@@ -68,12 +72,13 @@ func (c *client) SendTraces(ctx context.Context, traces ptrace.Traces) error {
 	if err != nil {
 		return fmt.Errorf("dash0: failed to marshal traces: %w", err)
 	}
-	return c.sendOTLP(ctx, "/v1/traces", body)
+	return c.sendOTLP(ctx, "/v1/traces", body, dataset)
 }
 
 // SendMetrics marshals metric data to OTLP/JSON and sends it to the
-// configured OTLP endpoint.
-func (c *client) SendMetrics(ctx context.Context, metrics pmetric.Metrics) error {
+// configured OTLP endpoint. If dataset is non-nil, it is sent via the
+// Dash0-Dataset HTTP header; otherwise the organization's default dataset is used.
+func (c *client) SendMetrics(ctx context.Context, metrics pmetric.Metrics, dataset *string) error {
 	if c.config.otlpEndpoint == "" {
 		return ErrOTLPNotConfigured
 	}
@@ -82,12 +87,13 @@ func (c *client) SendMetrics(ctx context.Context, metrics pmetric.Metrics) error
 	if err != nil {
 		return fmt.Errorf("dash0: failed to marshal metrics: %w", err)
 	}
-	return c.sendOTLP(ctx, "/v1/metrics", body)
+	return c.sendOTLP(ctx, "/v1/metrics", body, dataset)
 }
 
 // SendLogs marshals log data to OTLP/JSON and sends it to the
-// configured OTLP endpoint.
-func (c *client) SendLogs(ctx context.Context, logs plog.Logs) error {
+// configured OTLP endpoint. If dataset is non-nil, it is sent via the
+// Dash0-Dataset HTTP header; otherwise the organization's default dataset is used.
+func (c *client) SendLogs(ctx context.Context, logs plog.Logs, dataset *string) error {
 	if c.config.otlpEndpoint == "" {
 		return ErrOTLPNotConfigured
 	}
@@ -96,7 +102,7 @@ func (c *client) SendLogs(ctx context.Context, logs plog.Logs) error {
 	if err != nil {
 		return fmt.Errorf("dash0: failed to marshal logs: %w", err)
 	}
-	return c.sendOTLP(ctx, "/v1/logs", body)
+	return c.sendOTLP(ctx, "/v1/logs", body, dataset)
 }
 
 // Close is a no-op in the current implementation. The underlying HTTP client

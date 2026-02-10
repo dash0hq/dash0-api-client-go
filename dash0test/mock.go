@@ -76,10 +76,10 @@ type MockClient struct {
 	ImportViewFunc           func(ctx context.Context, view *dash0.PostApiImportViewJSONRequestBody, dataset *string) (*dash0.ViewDefinition, error)
 
 	// OTLP
-	SendTracesFunc  func(ctx context.Context, traces ptrace.Traces) error
-	SendMetricsFunc func(ctx context.Context, metrics pmetric.Metrics) error
-	SendLogsFunc    func(ctx context.Context, logs plog.Logs) error
-	CloseFunc       func(ctx context.Context) error
+	SendLogsFunc    func(ctx context.Context, logs plog.Logs, dataset *string) error
+	SendMetricsFunc func(ctx context.Context, metrics pmetric.Metrics, dataset *string) error
+	SendTracesFunc  func(ctx context.Context, traces ptrace.Traces, dataset *string) error
+	CloseFunc         func(ctx context.Context) error
 
 	// Inner
 	InnerFunc func() *dash0.ClientWithResponses
@@ -369,23 +369,23 @@ func (m *MockClient) ImportView(ctx context.Context, view *dash0.PostApiImportVi
 
 // OTLP
 
-func (m *MockClient) SendTraces(ctx context.Context, traces ptrace.Traces) error {
+func (m *MockClient) SendTraces(ctx context.Context, traces ptrace.Traces, dataset *string) error {
 	if m.SendTracesFunc != nil {
-		return m.SendTracesFunc(ctx, traces)
+		return m.SendTracesFunc(ctx, traces, dataset)
 	}
 	return nil
 }
 
-func (m *MockClient) SendMetrics(ctx context.Context, metrics pmetric.Metrics) error {
+func (m *MockClient) SendMetrics(ctx context.Context, metrics pmetric.Metrics, dataset *string) error {
 	if m.SendMetricsFunc != nil {
-		return m.SendMetricsFunc(ctx, metrics)
+		return m.SendMetricsFunc(ctx, metrics, dataset)
 	}
 	return nil
 }
 
-func (m *MockClient) SendLogs(ctx context.Context, logs plog.Logs) error {
+func (m *MockClient) SendLogs(ctx context.Context, logs plog.Logs, dataset *string) error {
 	if m.SendLogsFunc != nil {
-		return m.SendLogsFunc(ctx, logs)
+		return m.SendLogsFunc(ctx, logs, dataset)
 	}
 	return nil
 }
