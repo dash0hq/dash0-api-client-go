@@ -280,19 +280,19 @@ func TestOTLPCollector(t *testing.T) {
 
 	// Send all three signal types.
 	t.Run("send traces", func(t *testing.T) {
-		if err := c.SendTraces(context.Background(), newTestTraces()); err != nil {
+		if err := c.SendTraces(context.Background(), newTestTraces(), nil); err != nil {
 			t.Fatalf("SendTraces failed: %v", err)
 		}
 	})
 
 	t.Run("send metrics", func(t *testing.T) {
-		if err := c.SendMetrics(context.Background(), newTestMetrics()); err != nil {
+		if err := c.SendMetrics(context.Background(), newTestMetrics(), nil); err != nil {
 			t.Fatalf("SendMetrics failed: %v", err)
 		}
 	})
 
 	t.Run("send logs", func(t *testing.T) {
-		if err := c.SendLogs(context.Background(), newTestLogs()); err != nil {
+		if err := c.SendLogs(context.Background(), newTestLogs(), nil); err != nil {
 			t.Fatalf("SendLogs failed: %v", err)
 		}
 	})

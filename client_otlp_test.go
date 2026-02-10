@@ -57,11 +57,12 @@ func newTestLogs() plog.Logs {
 
 // otlpRequest captures an HTTP request received by the mock server.
 type otlpRequest struct {
-	method      string
-	path        string
-	contentType string
-	authHeader  string
-	body        []byte
+	method        string
+	path          string
+	contentType   string
+	authHeader    string
+	datasetHeader string
+	body          []byte
 }
 
 // newMockOTLPServer creates an httptest.Server that records requests and responds with 200.
@@ -80,11 +81,12 @@ func newMockOTLPServer(t *testing.T) (*httptest.Server, *[]otlpRequest) {
 
 		mu.Lock()
 		requests = append(requests, otlpRequest{
-			method:      r.Method,
-			path:        r.URL.Path,
-			contentType: r.Header.Get("Content-Type"),
-			authHeader:  r.Header.Get("Authorization"),
-			body:        body,
+			method:        r.Method,
+			path:          r.URL.Path,
+			contentType:   r.Header.Get("Content-Type"),
+			authHeader:    r.Header.Get("Authorization"),
+			datasetHeader: r.Header.Get("Dash0-Dataset"),
+			body:          body,
 		})
 		mu.Unlock()
 
@@ -125,7 +127,7 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		err := c.SendTraces(context.Background(), newTestTraces())
+		err := c.SendTraces(context.Background(), newTestTraces(), nil)
 		if err != nil {
 			t.Fatalf("SendTraces failed: %v", err)
 		}
@@ -168,7 +170,7 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		err := c.SendMetrics(context.Background(), newTestMetrics())
+		err := c.SendMetrics(context.Background(), newTestMetrics(), nil)
 		if err != nil {
 			t.Fatalf("SendMetrics failed: %v", err)
 		}
@@ -200,7 +202,7 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		err := c.SendLogs(context.Background(), newTestLogs())
+		err := c.SendLogs(context.Background(), newTestLogs(), nil)
 		if err != nil {
 			t.Fatalf("SendLogs failed: %v", err)
 		}
@@ -227,6 +229,49 @@ func TestClient_OTLP(t *testing.T) {
 		}
 	})
 
+	t.Run("SendTraces sets Dash0-Dataset header when dataset is provided", func(t *testing.T) {
+		server, requests := newMockOTLPServer(t)
+		defer server.Close()
+
+		c := newOTLPClient(t, server.URL)
+		ds := "my-dataset"
+		err := c.SendTraces(context.Background(), newTestTraces(), &ds)
+		if err != nil {
+			t.Fatalf("SendTraces failed: %v", err)
+		}
+
+		for _, req := range *requests {
+			if req.path == "/v1/traces" {
+				if req.datasetHeader != "my-dataset" {
+					t.Errorf("expected Dash0-Dataset header 'my-dataset', got %q", req.datasetHeader)
+				}
+				return
+			}
+		}
+		t.Error("no request received at /v1/traces")
+	})
+
+	t.Run("SendTraces omits Dash0-Dataset header when dataset is nil", func(t *testing.T) {
+		server, requests := newMockOTLPServer(t)
+		defer server.Close()
+
+		c := newOTLPClient(t, server.URL)
+		err := c.SendTraces(context.Background(), newTestTraces(), nil)
+		if err != nil {
+			t.Fatalf("SendTraces failed: %v", err)
+		}
+
+		for _, req := range *requests {
+			if req.path == "/v1/traces" {
+				if req.datasetHeader != "" {
+					t.Errorf("expected no Dash0-Dataset header, got %q", req.datasetHeader)
+				}
+				return
+			}
+		}
+		t.Error("no request received at /v1/traces")
+	})
+
 	t.Run("SendTraces returns ErrOTLPNotConfigured", func(t *testing.T) {
 		apiServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -241,7 +286,7 @@ func TestClient_OTLP(t *testing.T) {
 			t.Fatalf("failed to create client: %v", err)
 		}
 
-		err = c.SendTraces(context.Background(), newTestTraces())
+		err = c.SendTraces(context.Background(), newTestTraces(), nil)
 		if !errors.Is(err, ErrOTLPNotConfigured) {
 			t.Errorf("expected ErrOTLPNotConfigured, got %v", err)
 		}
@@ -261,7 +306,7 @@ func TestClient_OTLP(t *testing.T) {
 			t.Fatalf("failed to create client: %v", err)
 		}
 
-		err = c.SendMetrics(context.Background(), newTestMetrics())
+		err = c.SendMetrics(context.Background(), newTestMetrics(), nil)
 		if !errors.Is(err, ErrOTLPNotConfigured) {
 			t.Errorf("expected ErrOTLPNotConfigured, got %v", err)
 		}
@@ -281,7 +326,7 @@ func TestClient_OTLP(t *testing.T) {
 			t.Fatalf("failed to create client: %v", err)
 		}
 
-		err = c.SendLogs(context.Background(), newTestLogs())
+		err = c.SendLogs(context.Background(), newTestLogs(), nil)
 		if !errors.Is(err, ErrOTLPNotConfigured) {
 			t.Errorf("expected ErrOTLPNotConfigured, got %v", err)
 		}
@@ -374,7 +419,7 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		err := c.SendTraces(context.Background(), newTestTraces())
+		err := c.SendTraces(context.Background(), newTestTraces(), nil)
 		if err == nil {
 			t.Fatal("expected error")
 		}
@@ -406,7 +451,7 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		err := c.SendMetrics(context.Background(), newTestMetrics())
+		err := c.SendMetrics(context.Background(), newTestMetrics(), nil)
 		if err == nil {
 			t.Fatal("expected error")
 		}
@@ -425,7 +470,7 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		err := c.SendLogs(context.Background(), newTestLogs())
+		err := c.SendLogs(context.Background(), newTestLogs(), nil)
 		if err == nil {
 			t.Fatal("expected error")
 		}
@@ -440,9 +485,9 @@ func TestClient_OTLP(t *testing.T) {
 		defer server.Close()
 
 		c := newOTLPClient(t, server.URL)
-		_ = c.SendTraces(context.Background(), newTestTraces())
-		_ = c.SendMetrics(context.Background(), newTestMetrics())
-		_ = c.SendLogs(context.Background(), newTestLogs())
+		_ = c.SendTraces(context.Background(), newTestTraces(), nil)
+		_ = c.SendMetrics(context.Background(), newTestMetrics(), nil)
+		_ = c.SendLogs(context.Background(), newTestLogs(), nil)
 
 		err := c.Close(context.Background())
 		if err != nil {
