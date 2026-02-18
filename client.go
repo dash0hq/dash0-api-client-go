@@ -60,6 +60,22 @@ type Client interface {
 	DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIter(ctx context.Context, dataset *string) *Iter[SamplingDefinition]
 
+	// Members
+	ListMembers(ctx context.Context) ([]*MemberDefinition, error)
+	InviteMember(ctx context.Context, request *InviteMemberRequest) error
+	DeleteMember(ctx context.Context, memberID string) error
+	ListMembersIter(ctx context.Context) *Iter[MemberDefinition]
+
+	// Teams
+	ListTeams(ctx context.Context) ([]*TeamsListItem, error)
+	CreateTeam(ctx context.Context, team *TeamDefinition) (*TeamDefinition, error)
+	GetTeam(ctx context.Context, originOrID string) (*GetTeamResponse, error)
+	DeleteTeam(ctx context.Context, originOrID string) error
+	UpdateTeamDisplay(ctx context.Context, originOrID string, display *TeamDisplay) error
+	AddTeamMembers(ctx context.Context, originOrID string, request *AddTeamMembersRequest) error
+	RemoveTeamMember(ctx context.Context, originOrID string, memberID string) error
+	ListTeamsIter(ctx context.Context) *Iter[TeamsListItem]
+
 	// Spans
 	GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSpansResponse, error)
 	GetSpansIter(ctx context.Context, request *GetSpansRequest) *Iter[ResourceSpans]

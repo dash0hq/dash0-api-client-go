@@ -61,6 +61,22 @@ type MockClient struct {
 	DeleteSamplingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
 
+	// Members
+	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
+	InviteMemberFunc    func(ctx context.Context, request *dash0.InviteMemberRequest) error
+	DeleteMemberFunc    func(ctx context.Context, memberID string) error
+	ListMembersIterFunc func(ctx context.Context) *dash0.Iter[dash0.MemberDefinition]
+
+	// Teams
+	ListTeamsFunc         func(ctx context.Context) ([]*dash0.TeamsListItem, error)
+	CreateTeamFunc        func(ctx context.Context, team *dash0.TeamDefinition) (*dash0.TeamDefinition, error)
+	GetTeamFunc           func(ctx context.Context, originOrID string) (*dash0.GetTeamResponse, error)
+	DeleteTeamFunc        func(ctx context.Context, originOrID string) error
+	UpdateTeamDisplayFunc func(ctx context.Context, originOrID string, display *dash0.TeamDisplay) error
+	AddTeamMembersFunc    func(ctx context.Context, originOrID string, request *dash0.AddTeamMembersRequest) error
+	RemoveTeamMemberFunc  func(ctx context.Context, originOrID string, memberID string) error
+	ListTeamsIterFunc     func(ctx context.Context) *dash0.Iter[dash0.TeamsListItem]
+
 	// Spans
 	GetSpansFunc     func(ctx context.Context, request *dash0.GetSpansRequest) (*dash0.GetSpansResponse, error)
 	GetSpansIterFunc func(ctx context.Context, request *dash0.GetSpansRequest) *dash0.Iter[dash0.ResourceSpans]
@@ -79,7 +95,7 @@ type MockClient struct {
 	SendLogsFunc    func(ctx context.Context, logs plog.Logs, dataset *string) error
 	SendMetricsFunc func(ctx context.Context, metrics pmetric.Metrics, dataset *string) error
 	SendTracesFunc  func(ctx context.Context, traces ptrace.Traces, dataset *string) error
-	CloseFunc         func(ctx context.Context) error
+	CloseFunc       func(ctx context.Context) error
 
 	// Inner
 	InnerFunc func() *dash0.ClientWithResponses
@@ -301,6 +317,94 @@ func (m *MockClient) DeleteSamplingRule(ctx context.Context, originOrID string, 
 func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition] {
 	if m.ListSamplingRulesIterFunc != nil {
 		return m.ListSamplingRulesIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Members
+
+func (m *MockClient) ListMembers(ctx context.Context) ([]*dash0.MemberDefinition, error) {
+	if m.ListMembersFunc != nil {
+		return m.ListMembersFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) InviteMember(ctx context.Context, request *dash0.InviteMemberRequest) error {
+	if m.InviteMemberFunc != nil {
+		return m.InviteMemberFunc(ctx, request)
+	}
+	return nil
+}
+
+func (m *MockClient) DeleteMember(ctx context.Context, memberID string) error {
+	if m.DeleteMemberFunc != nil {
+		return m.DeleteMemberFunc(ctx, memberID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListMembersIter(ctx context.Context) *dash0.Iter[dash0.MemberDefinition] {
+	if m.ListMembersIterFunc != nil {
+		return m.ListMembersIterFunc(ctx)
+	}
+	return nil
+}
+
+// Teams
+
+func (m *MockClient) ListTeams(ctx context.Context) ([]*dash0.TeamsListItem, error) {
+	if m.ListTeamsFunc != nil {
+		return m.ListTeamsFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateTeam(ctx context.Context, team *dash0.TeamDefinition) (*dash0.TeamDefinition, error) {
+	if m.CreateTeamFunc != nil {
+		return m.CreateTeamFunc(ctx, team)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetTeam(ctx context.Context, originOrID string) (*dash0.GetTeamResponse, error) {
+	if m.GetTeamFunc != nil {
+		return m.GetTeamFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteTeam(ctx context.Context, originOrID string) error {
+	if m.DeleteTeamFunc != nil {
+		return m.DeleteTeamFunc(ctx, originOrID)
+	}
+	return nil
+}
+
+func (m *MockClient) UpdateTeamDisplay(ctx context.Context, originOrID string, display *dash0.TeamDisplay) error {
+	if m.UpdateTeamDisplayFunc != nil {
+		return m.UpdateTeamDisplayFunc(ctx, originOrID, display)
+	}
+	return nil
+}
+
+func (m *MockClient) AddTeamMembers(ctx context.Context, originOrID string, request *dash0.AddTeamMembersRequest) error {
+	if m.AddTeamMembersFunc != nil {
+		return m.AddTeamMembersFunc(ctx, originOrID, request)
+	}
+	return nil
+}
+
+func (m *MockClient) RemoveTeamMember(ctx context.Context, originOrID string, memberID string) error {
+	if m.RemoveTeamMemberFunc != nil {
+		return m.RemoveTeamMemberFunc(ctx, originOrID, memberID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListTeamsIter(ctx context.Context) *dash0.Iter[dash0.TeamsListItem] {
+	if m.ListTeamsIterFunc != nil {
+		return m.ListTeamsIterFunc(ctx)
 	}
 	return nil
 }
