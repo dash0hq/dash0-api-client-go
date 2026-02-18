@@ -109,6 +109,11 @@ const (
 	TextBody HttpResponseTextBodyAssertionKind = "text_body"
 )
 
+// Defines values for MemberDefinitionKind.
+const (
+	Dash0Member MemberDefinitionKind = "Dash0Member"
+)
+
 // Defines values for NumericAssertionOperator.
 const (
 	NumericAssertionOperatorGt    NumericAssertionOperator = "gt"
@@ -236,6 +241,11 @@ const (
 	SyntheticHttpErrorTypeUnknown SyntheticHttpErrorType = "unknown"
 )
 
+// Defines values for TeamDefinitionKind.
+const (
+	Dash0Team TeamDefinitionKind = "Dash0Team"
+)
+
 // Defines values for TimingAssertionKind.
 const (
 	Timing TimingAssertionKind = "timing"
@@ -341,6 +351,40 @@ const (
 	TracesExploreroutliers               ViewVisualizationRenderer = "traces-explorer/*/outliers"
 	TracesExplorerred                    ViewVisualizationRenderer = "traces-explorer/*/red"
 )
+
+// AccessibleAsset defines model for AccessibleAsset.
+type AccessibleAsset struct {
+	// CreatedAt A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	CreatedAt FixedTime         `json:"createdAt"`
+	Creator   *MemberDefinition `json:"creator,omitempty"`
+
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset Dataset `json:"dataset"`
+
+	// HasAccess returns the information if the logged-in user has access to this asset
+	HasAccess        bool     `json:"hasAccess"`
+	Id               string   `json:"id"`
+	Name             string   `json:"name"`
+	PermittedActions []Action `json:"permittedActions"`
+
+	// Type returns for views the information which type of view it is
+	Type *string `json:"type,omitempty"`
+}
+
+// Action Not defined as an enum, because we will eventually support wildcards like `ingest:*`.
+type Action = string
+
+// AddTeamMembersRequest defines model for AddTeamMembersRequest.
+type AddTeamMembersRequest struct {
+	// MemberIds Add an existing organization member to this team.
+	MemberIds []string `json:"memberIds"`
+}
 
 // AnyValue AnyValue is used to represent any type of attribute value. AnyValue may contain a primitive value such as a string or integer or it may contain an arbitrary nested object containing arrays, key-value lists and primitives.
 type AnyValue struct {
@@ -584,6 +628,16 @@ type ErrorResponse struct {
 	Error Error `json:"error"`
 }
 
+// FailedHttpCheckAssertion Information about a failed HTTP check assertion
+type FailedHttpCheckAssertion struct {
+	// ActualValue The actual value that was received in the response
+	ActualValue *string            `json:"actualValue,omitempty"`
+	Assertion   HttpCheckAssertion `json:"assertion"`
+
+	// Explanation A human-readable message explaining why the assertion failed
+	Explanation string `json:"explanation"`
+}
+
 // FilterCriteria defines model for FilterCriteria.
 type FilterCriteria = []AttributeFilter
 
@@ -706,6 +760,23 @@ type GetSpansResponse struct {
 	// it is guaranteed that all data is sorted across paged requests.
 	ResourceSpans []ResourceSpans `json:"resourceSpans"`
 	TimeRange     *TimeRange      `json:"timeRange,omitempty"`
+}
+
+// GetTeamResponse defines model for GetTeamResponse.
+type GetTeamResponse struct {
+	CheckRules      []AccessibleAsset  `json:"checkRules"`
+	Dashboards      []AccessibleAsset  `json:"dashboards"`
+	Datasets        []AccessibleAsset  `json:"datasets"`
+	Members         []MemberDefinition `json:"members"`
+	SyntheticChecks []AccessibleAsset  `json:"syntheticChecks"`
+	Team            TeamDefinition     `json:"team"`
+	Views           []AccessibleAsset  `json:"views"`
+}
+
+// Gradient A color gradient from one color to another.
+type Gradient struct {
+	From string `json:"from"`
+	To   string `json:"to"`
 }
 
 // HttpBasicAuthentication defines model for HttpBasicAuthentication.
@@ -831,6 +902,12 @@ type InstrumentationScope struct {
 	Version *string `json:"version,omitempty"`
 }
 
+// InviteMemberRequest defines model for InviteMemberRequest.
+type InviteMemberRequest struct {
+	EmailAddress string `json:"emailAddress"`
+	Role         string `json:"role"`
+}
+
 // KeyValue KeyValue is a key-value pair that is used to store Span attributes, Link attributes, etc.
 type KeyValue struct {
 	Key string `json:"key"`
@@ -888,6 +965,41 @@ type LogRecord struct {
 	SpanId         *[]byte         `json:"spanId,omitempty"`
 	TimeUnixNano   string          `json:"timeUnixNano"`
 	TraceId        *[]byte         `json:"traceId,omitempty"`
+}
+
+// MemberDefinition defines model for MemberDefinition.
+type MemberDefinition struct {
+	Kind     MemberDefinitionKind `json:"kind"`
+	Metadata MemberMetadata       `json:"metadata"`
+	Spec     MemberSpec           `json:"spec"`
+}
+
+// MemberDefinitionKind defines model for MemberDefinition.Kind.
+type MemberDefinitionKind string
+
+// MemberDisplay defines model for MemberDisplay.
+type MemberDisplay struct {
+	Email     *string `json:"email,omitempty"`
+	FirstName *string `json:"firstName,omitempty"`
+	ImageUrl  *string `json:"imageUrl,omitempty"`
+	LastName  *string `json:"lastName,omitempty"`
+}
+
+// MemberLabels defines model for MemberLabels.
+type MemberLabels struct {
+	Dash0Comid       *string    `json:"dash0.com/id,omitempty"`
+	Dash0ComjoinedAt *time.Time `json:"dash0.com/joinedAt,omitempty"`
+}
+
+// MemberMetadata defines model for MemberMetadata.
+type MemberMetadata struct {
+	Labels *MemberLabels `json:"labels,omitempty"`
+	Name   string        `json:"name"`
+}
+
+// MemberSpec defines model for MemberSpec.
+type MemberSpec struct {
+	Display MemberDisplay `json:"display"`
 }
 
 // NameValuePair defines model for NameValuePair.
@@ -1440,6 +1552,120 @@ type SyntheticCheckAnnotations struct {
 	Dash0Comsharing    *string    `json:"dash0.com/sharing,omitempty"`
 }
 
+// SyntheticCheckAttempt defines model for SyntheticCheckAttempt.
+type SyntheticCheckAttempt struct {
+	// AttemptId Unique identifier for the attempt
+	AttemptId string `json:"attemptId"`
+
+	// Duration duration in nanoseconds
+	Duration int64 `json:"duration"`
+
+	// ErrorMessage Error message of the synthetic check attempt, if any
+	ErrorMessage *string                 `json:"errorMessage,omitempty"`
+	ErrorType    *SyntheticHttpErrorType `json:"errorType,omitempty"`
+
+	// FailedCriticalAssertions List of critical assertions that failed
+	FailedCriticalAssertions []FailedHttpCheckAssertion `json:"failedCriticalAssertions"`
+
+	// FailedDegradedAssertions List of degraded assertions that failed
+	FailedDegradedAssertions []FailedHttpCheckAssertion `json:"failedDegradedAssertions"`
+	IsTestRun                bool                       `json:"isTestRun"`
+
+	// Location Location is reported for every check attempt individually, in case we ever want to allow retries
+	// from multiple locations. This will make an eventual migration easier. Not super likely to happen
+	// in the first year, but better to be prepared.
+	Location string `json:"location"`
+
+	// PassedCriticalAssertions List of critical assertions that passed
+	PassedCriticalAssertions []HttpCheckAssertion `json:"passedCriticalAssertions"`
+
+	// PassedDegradedAssertions List of degraded assertions that passed
+	PassedDegradedAssertions []HttpCheckAssertion `json:"passedDegradedAssertions"`
+
+	// RunId Run ID this attempt belongs to
+	RunId  string `json:"runId"`
+	SpanId []byte `json:"spanId"`
+
+	// StartTime A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	StartTime FixedTime `json:"startTime"`
+
+	// StatusCode HTTP status code
+	StatusCode int `json:"statusCode"`
+
+	// SyntheticCheckId ID of the synthetic check
+	SyntheticCheckId string `json:"syntheticCheckId"`
+
+	// SyntheticCheckVersion Version of the synthetic check
+	SyntheticCheckVersion string `json:"syntheticCheckVersion"`
+	TraceId               []byte `json:"traceId"`
+}
+
+// SyntheticCheckAttemptDetails defines model for SyntheticCheckAttemptDetails.
+type SyntheticCheckAttemptDetails struct {
+	// AttemptId Unique identifier for the attempt
+	AttemptId string `json:"attemptId"`
+
+	// Duration duration in nanoseconds
+	Duration int64 `json:"duration"`
+
+	// ErrorMessage Error message of the synthetic check attempt, if any
+	ErrorMessage *string                 `json:"errorMessage,omitempty"`
+	ErrorType    *SyntheticHttpErrorType `json:"errorType,omitempty"`
+
+	// Events Span events using OTLP SpanEvent format
+	Events []SpanEvent `json:"events"`
+
+	// FailedCriticalAssertions List of critical assertions that failed
+	FailedCriticalAssertions []FailedHttpCheckAssertion `json:"failedCriticalAssertions"`
+
+	// FailedDegradedAssertions List of degraded assertions that failed
+	FailedDegradedAssertions []FailedHttpCheckAssertion `json:"failedDegradedAssertions"`
+	IsTestRun                bool                       `json:"isTestRun"`
+
+	// Location Location is reported for every check attempt individually, in case we ever want to allow retries
+	// from multiple locations. This will make an eventual migration easier. Not super likely to happen
+	// in the first year, but better to be prepared.
+	Location string `json:"location"`
+
+	// PassedCriticalAssertions List of critical assertions that passed
+	PassedCriticalAssertions []HttpCheckAssertion `json:"passedCriticalAssertions"`
+
+	// PassedDegradedAssertions List of degraded assertions that passed
+	PassedDegradedAssertions []HttpCheckAssertion `json:"passedDegradedAssertions"`
+
+	// RunId Run ID this attempt belongs to
+	RunId string `json:"runId"`
+
+	// SpanAttributes Span attributes using OTLP KeyValue format
+	SpanAttributes []KeyValue `json:"spanAttributes"`
+	SpanId         []byte     `json:"spanId"`
+
+	// StartTime A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	StartTime FixedTime `json:"startTime"`
+
+	// StatusCode HTTP status code
+	StatusCode int `json:"statusCode"`
+
+	// SyntheticCheckId ID of the synthetic check
+	SyntheticCheckId string `json:"syntheticCheckId"`
+
+	// SyntheticCheckVersion Version of the synthetic check
+	SyntheticCheckVersion string `json:"syntheticCheckVersion"`
+	TraceId               []byte `json:"traceId"`
+}
+
 // SyntheticCheckDefinition defines model for SyntheticCheckDefinition.
 type SyntheticCheckDefinition struct {
 	Kind     SyntheticCheckDefinitionKind `json:"kind"`
@@ -1617,6 +1843,67 @@ type SyntheticHttpCheckPluginSpec struct {
 
 // SyntheticHttpErrorType defines model for SyntheticHttpErrorType.
 type SyntheticHttpErrorType string
+
+// TeamDefinition defines model for TeamDefinition.
+type TeamDefinition struct {
+	Kind     TeamDefinitionKind `json:"kind"`
+	Metadata TeamMetadata       `json:"metadata"`
+	Spec     TeamSpec           `json:"spec"`
+}
+
+// TeamDefinitionKind defines model for TeamDefinition.Kind.
+type TeamDefinitionKind string
+
+// TeamDisplay defines model for TeamDisplay.
+type TeamDisplay struct {
+	// Color A color gradient from one color to another.
+	Color Gradient `json:"color"`
+	Name  string   `json:"name"`
+}
+
+// TeamLabels defines model for TeamLabels.
+type TeamLabels struct {
+	Dash0Comid     *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+}
+
+// TeamMetadata defines model for TeamMetadata.
+type TeamMetadata struct {
+	Labels *TeamLabels `json:"labels,omitempty"`
+	Name   string      `json:"name"`
+}
+
+// TeamSpec defines model for TeamSpec.
+type TeamSpec struct {
+	Display TeamDisplay `json:"display"`
+	Members []string    `json:"members"`
+}
+
+// TeamsListItem defines model for TeamsListItem.
+type TeamsListItem struct {
+	// Color A color gradient from one color to another.
+	Color Gradient `json:"color"`
+	Id    string   `json:"id"`
+
+	// Members A sample of five members. You can inspect the total member count via `totalMemberCount`. This array
+	// is restricted to at most five members, because this could otherwise be too much data.
+	Members          []MemberDefinition `json:"members"`
+	Name             string             `json:"name"`
+	Origin           *string            `json:"origin,omitempty"`
+	TotalMemberCount int                `json:"totalMemberCount"`
+}
+
+// TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
+type TestSyntheticCheckRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset    *Dataset                 `json:"dataset,omitempty"`
+	Definition SyntheticCheckDefinition `json:"definition"`
+}
+
+// TestSyntheticCheckResponse defines model for TestSyntheticCheckResponse.
+type TestSyntheticCheckResponse struct {
+	SyntheticCheckAttempt SyntheticCheckAttemptDetails `json:"syntheticCheckAttempt"`
+}
 
 // TimeRange defines model for TimeRange.
 type TimeRange struct {
@@ -2013,6 +2300,9 @@ type PostApiImportViewJSONRequestBody = ViewDefinition
 // PostApiLogsJSONRequestBody defines body for PostApiLogs for application/json ContentType.
 type PostApiLogsJSONRequestBody = GetLogRecordsRequest
 
+// PostApiMembersJSONRequestBody defines body for PostApiMembers for application/json ContentType.
+type PostApiMembersJSONRequestBody = InviteMemberRequest
+
 // PostApiSamplingRulesJSONRequestBody defines body for PostApiSamplingRules for application/json ContentType.
 type PostApiSamplingRulesJSONRequestBody = SamplingRuleCreateRequest
 
@@ -2025,8 +2315,20 @@ type PostApiSpansJSONRequestBody = GetSpansRequest
 // PostApiSyntheticChecksJSONRequestBody defines body for PostApiSyntheticChecks for application/json ContentType.
 type PostApiSyntheticChecksJSONRequestBody = SyntheticCheckDefinition
 
+// PostApiSyntheticChecksTestJSONRequestBody defines body for PostApiSyntheticChecksTest for application/json ContentType.
+type PostApiSyntheticChecksTestJSONRequestBody = TestSyntheticCheckRequest
+
 // PutApiSyntheticChecksOriginOrIdJSONRequestBody defines body for PutApiSyntheticChecksOriginOrId for application/json ContentType.
 type PutApiSyntheticChecksOriginOrIdJSONRequestBody = SyntheticCheckDefinition
+
+// PostApiTeamsJSONRequestBody defines body for PostApiTeams for application/json ContentType.
+type PostApiTeamsJSONRequestBody = TeamDefinition
+
+// PutApiTeamsOriginOrIdDisplayJSONRequestBody defines body for PutApiTeamsOriginOrIdDisplay for application/json ContentType.
+type PutApiTeamsOriginOrIdDisplayJSONRequestBody = TeamDisplay
+
+// PostApiTeamsOriginOrIdMembersJSONRequestBody defines body for PostApiTeamsOriginOrIdMembers for application/json ContentType.
+type PostApiTeamsOriginOrIdMembersJSONRequestBody = AddTeamMembersRequest
 
 // PostApiViewsJSONRequestBody defines body for PostApiViews for application/json ContentType.
 type PostApiViewsJSONRequestBody = ViewDefinition
@@ -2750,6 +3052,17 @@ type ClientInterface interface {
 
 	PostApiLogs(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiMembers request
+	GetApiMembers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiMembersWithBody request with any body
+	PostApiMembersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiMembers(ctx context.Context, body PostApiMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiMembersMemberID request
+	DeleteApiMembersMemberID(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiSamplingRules request
 	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2782,6 +3095,11 @@ type ClientInterface interface {
 
 	PostApiSyntheticChecks(ctx context.Context, params *PostApiSyntheticChecksParams, body PostApiSyntheticChecksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiSyntheticChecksTestWithBody request with any body
+	PostApiSyntheticChecksTestWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSyntheticChecksTest(ctx context.Context, body PostApiSyntheticChecksTestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiSyntheticChecksOriginOrId request
 	DeleteApiSyntheticChecksOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSyntheticChecksOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2792,6 +3110,33 @@ type ClientInterface interface {
 	PutApiSyntheticChecksOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSyntheticChecksOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiSyntheticChecksOriginOrId(ctx context.Context, originOrId string, params *PutApiSyntheticChecksOriginOrIdParams, body PutApiSyntheticChecksOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiTeams request
+	GetApiTeams(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTeamsWithBody request with any body
+	PostApiTeamsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiTeams(ctx context.Context, body PostApiTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiTeamsOriginOrId request
+	DeleteApiTeamsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiTeamsOriginOrId request
+	GetApiTeamsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTeamsOriginOrIdDisplayWithBody request with any body
+	PutApiTeamsOriginOrIdDisplayWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiTeamsOriginOrIdDisplay(ctx context.Context, originOrId string, body PutApiTeamsOriginOrIdDisplayJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTeamsOriginOrIdMembersWithBody request with any body
+	PostApiTeamsOriginOrIdMembersWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiTeamsOriginOrIdMembers(ctx context.Context, originOrId string, body PostApiTeamsOriginOrIdMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiTeamsOriginOrIdMembersMemberID request
+	DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiViews request
 	GetApiViews(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3101,6 +3446,54 @@ func (c *generatedClient) PostApiLogs(ctx context.Context, body PostApiLogsJSONR
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) GetApiMembers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiMembersRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiMembersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiMembersRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiMembers(ctx context.Context, body PostApiMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiMembersRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiMembersMemberID(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiMembersMemberIDRequest(c.Server, memberID)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiSamplingRulesRequest(c.Server, params)
 	if err != nil {
@@ -3245,6 +3638,30 @@ func (c *generatedClient) PostApiSyntheticChecks(ctx context.Context, params *Po
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) PostApiSyntheticChecksTestWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSyntheticChecksTestRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSyntheticChecksTest(ctx context.Context, body PostApiSyntheticChecksTestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSyntheticChecksTestRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) DeleteApiSyntheticChecksOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSyntheticChecksOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteApiSyntheticChecksOriginOrIdRequest(c.Server, originOrId, params)
 	if err != nil {
@@ -3283,6 +3700,126 @@ func (c *generatedClient) PutApiSyntheticChecksOriginOrIdWithBody(ctx context.Co
 
 func (c *generatedClient) PutApiSyntheticChecksOriginOrId(ctx context.Context, originOrId string, params *PutApiSyntheticChecksOriginOrIdParams, body PutApiSyntheticChecksOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiSyntheticChecksOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiTeams(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTeamsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTeamsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTeamsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTeams(ctx context.Context, body PostApiTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTeamsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiTeamsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiTeamsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiTeamsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTeamsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiTeamsOriginOrIdDisplayWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTeamsOriginOrIdDisplayRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiTeamsOriginOrIdDisplay(ctx context.Context, originOrId string, body PutApiTeamsOriginOrIdDisplayJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTeamsOriginOrIdDisplayRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTeamsOriginOrIdMembersWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTeamsOriginOrIdMembersRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTeamsOriginOrIdMembers(ctx context.Context, originOrId string, body PostApiTeamsOriginOrIdMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTeamsOriginOrIdMembersRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(c.Server, originOrId, memberID)
 	if err != nil {
 		return nil, err
 	}
@@ -4281,6 +4818,107 @@ func NewPostApiLogsRequestWithBody(server string, contentType string, body io.Re
 	return req, nil
 }
 
+// NewGetApiMembersRequest generates requests for GetApiMembers
+func NewGetApiMembersRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/members")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiMembersRequest calls the generic PostApiMembers builder with application/json body
+func NewPostApiMembersRequest(server string, body PostApiMembersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiMembersRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiMembersRequestWithBody generates requests for PostApiMembers with any type of body
+func NewPostApiMembersRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/members")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiMembersMemberIDRequest generates requests for DeleteApiMembersMemberID
+func NewDeleteApiMembersMemberIDRequest(server string, memberID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "memberID", runtime.ParamLocationPath, memberID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/members/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetApiSamplingRulesRequest generates requests for GetApiSamplingRules
 func NewGetApiSamplingRulesRequest(server string, params *GetApiSamplingRulesParams) (*http.Request, error) {
 	var err error
@@ -4724,6 +5362,46 @@ func NewPostApiSyntheticChecksRequestWithBody(server string, params *PostApiSynt
 	return req, nil
 }
 
+// NewPostApiSyntheticChecksTestRequest calls the generic PostApiSyntheticChecksTest builder with application/json body
+func NewPostApiSyntheticChecksTestRequest(server string, body PostApiSyntheticChecksTestJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSyntheticChecksTestRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiSyntheticChecksTestRequestWithBody generates requests for PostApiSyntheticChecksTest with any type of body
+func NewPostApiSyntheticChecksTestRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/synthetic-checks/test")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteApiSyntheticChecksOriginOrIdRequest generates requests for DeleteApiSyntheticChecksOriginOrId
 func NewDeleteApiSyntheticChecksOriginOrIdRequest(server string, originOrId string, params *DeleteApiSyntheticChecksOriginOrIdParams) (*http.Request, error) {
 	var err error
@@ -4901,6 +5579,276 @@ func NewPutApiSyntheticChecksOriginOrIdRequestWithBody(server string, originOrId
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiTeamsRequest generates requests for GetApiTeams
+func NewGetApiTeamsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiTeamsRequest calls the generic PostApiTeams builder with application/json body
+func NewPostApiTeamsRequest(server string, body PostApiTeamsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTeamsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiTeamsRequestWithBody generates requests for PostApiTeams with any type of body
+func NewPostApiTeamsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiTeamsOriginOrIdRequest generates requests for DeleteApiTeamsOriginOrId
+func NewDeleteApiTeamsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiTeamsOriginOrIdRequest generates requests for GetApiTeamsOriginOrId
+func NewGetApiTeamsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiTeamsOriginOrIdDisplayRequest calls the generic PutApiTeamsOriginOrIdDisplay builder with application/json body
+func NewPutApiTeamsOriginOrIdDisplayRequest(server string, originOrId string, body PutApiTeamsOriginOrIdDisplayJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiTeamsOriginOrIdDisplayRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiTeamsOriginOrIdDisplayRequestWithBody generates requests for PutApiTeamsOriginOrIdDisplay with any type of body
+func NewPutApiTeamsOriginOrIdDisplayRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams/%s/display", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostApiTeamsOriginOrIdMembersRequest calls the generic PostApiTeamsOriginOrIdMembers builder with application/json body
+func NewPostApiTeamsOriginOrIdMembersRequest(server string, originOrId string, body PostApiTeamsOriginOrIdMembersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTeamsOriginOrIdMembersRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPostApiTeamsOriginOrIdMembersRequestWithBody generates requests for PostApiTeamsOriginOrIdMembers with any type of body
+func NewPostApiTeamsOriginOrIdMembersRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams/%s/members", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest generates requests for DeleteApiTeamsOriginOrIdMembersMemberID
+func NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(server string, originOrId string, memberID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "memberID", runtime.ParamLocationPath, memberID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/teams/%s/members/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -5303,6 +6251,17 @@ type ClientWithResponsesInterface interface {
 
 	PostApiLogsWithResponse(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLogsResponse, error)
 
+	// GetApiMembersWithResponse request
+	GetApiMembersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMembersResponse, error)
+
+	// PostApiMembersWithBodyWithResponse request with any body
+	PostApiMembersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiMembersResponse, error)
+
+	PostApiMembersWithResponse(ctx context.Context, body PostApiMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiMembersResponse, error)
+
+	// DeleteApiMembersMemberIDWithResponse request
+	DeleteApiMembersMemberIDWithResponse(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersMemberIDResponse, error)
+
 	// GetApiSamplingRulesWithResponse request
 	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
 
@@ -5335,6 +6294,11 @@ type ClientWithResponsesInterface interface {
 
 	PostApiSyntheticChecksWithResponse(ctx context.Context, params *PostApiSyntheticChecksParams, body PostApiSyntheticChecksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksResponse, error)
 
+	// PostApiSyntheticChecksTestWithBodyWithResponse request with any body
+	PostApiSyntheticChecksTestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksTestResponse, error)
+
+	PostApiSyntheticChecksTestWithResponse(ctx context.Context, body PostApiSyntheticChecksTestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksTestResponse, error)
+
 	// DeleteApiSyntheticChecksOriginOrIdWithResponse request
 	DeleteApiSyntheticChecksOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSyntheticChecksOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSyntheticChecksOriginOrIdResponse, error)
 
@@ -5345,6 +6309,33 @@ type ClientWithResponsesInterface interface {
 	PutApiSyntheticChecksOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSyntheticChecksOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSyntheticChecksOriginOrIdResponse, error)
 
 	PutApiSyntheticChecksOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSyntheticChecksOriginOrIdParams, body PutApiSyntheticChecksOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSyntheticChecksOriginOrIdResponse, error)
+
+	// GetApiTeamsWithResponse request
+	GetApiTeamsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiTeamsResponse, error)
+
+	// PostApiTeamsWithBodyWithResponse request with any body
+	PostApiTeamsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTeamsResponse, error)
+
+	PostApiTeamsWithResponse(ctx context.Context, body PostApiTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTeamsResponse, error)
+
+	// DeleteApiTeamsOriginOrIdWithResponse request
+	DeleteApiTeamsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdResponse, error)
+
+	// GetApiTeamsOriginOrIdWithResponse request
+	GetApiTeamsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiTeamsOriginOrIdResponse, error)
+
+	// PutApiTeamsOriginOrIdDisplayWithBodyWithResponse request with any body
+	PutApiTeamsOriginOrIdDisplayWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTeamsOriginOrIdDisplayResponse, error)
+
+	PutApiTeamsOriginOrIdDisplayWithResponse(ctx context.Context, originOrId string, body PutApiTeamsOriginOrIdDisplayJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTeamsOriginOrIdDisplayResponse, error)
+
+	// PostApiTeamsOriginOrIdMembersWithBodyWithResponse request with any body
+	PostApiTeamsOriginOrIdMembersWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTeamsOriginOrIdMembersResponse, error)
+
+	PostApiTeamsOriginOrIdMembersWithResponse(ctx context.Context, originOrId string, body PostApiTeamsOriginOrIdMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTeamsOriginOrIdMembersResponse, error)
+
+	// DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse request
+	DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error)
 
 	// GetApiViewsWithResponse request
 	GetApiViewsWithResponse(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*GetApiViewsResponse, error)
@@ -5709,6 +6700,73 @@ func (r PostApiLogsResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiMembersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]MemberDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiMembersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiMembersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiMembersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiMembersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiMembersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiMembersMemberIDResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiMembersMemberIDResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiMembersMemberIDResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiSamplingRulesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5895,6 +6953,29 @@ func (r PostApiSyntheticChecksResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiSyntheticChecksTestResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TestSyntheticCheckResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSyntheticChecksTestResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSyntheticChecksTestResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteApiSyntheticChecksOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5957,6 +7038,163 @@ func (r PutApiSyntheticChecksOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiSyntheticChecksOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiTeamsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]TeamsListItem
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTeamsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTeamsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiTeamsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TeamDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTeamsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTeamsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiTeamsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiTeamsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiTeamsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiTeamsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetTeamResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTeamsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTeamsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiTeamsOriginOrIdDisplayResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiTeamsOriginOrIdDisplayResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiTeamsOriginOrIdDisplayResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiTeamsOriginOrIdMembersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTeamsOriginOrIdMembersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTeamsOriginOrIdMembersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiTeamsOriginOrIdMembersMemberIDResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -6284,6 +7522,41 @@ func (c *ClientWithResponses) PostApiLogsWithResponse(ctx context.Context, body 
 	return ParsePostApiLogsResponse(rsp)
 }
 
+// GetApiMembersWithResponse request returning *GetApiMembersResponse
+func (c *ClientWithResponses) GetApiMembersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMembersResponse, error) {
+	rsp, err := c.GetApiMembers(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiMembersResponse(rsp)
+}
+
+// PostApiMembersWithBodyWithResponse request with arbitrary body returning *PostApiMembersResponse
+func (c *ClientWithResponses) PostApiMembersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiMembersResponse, error) {
+	rsp, err := c.PostApiMembersWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiMembersResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiMembersWithResponse(ctx context.Context, body PostApiMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiMembersResponse, error) {
+	rsp, err := c.PostApiMembers(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiMembersResponse(rsp)
+}
+
+// DeleteApiMembersMemberIDWithResponse request returning *DeleteApiMembersMemberIDResponse
+func (c *ClientWithResponses) DeleteApiMembersMemberIDWithResponse(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersMemberIDResponse, error) {
+	rsp, err := c.DeleteApiMembersMemberID(ctx, memberID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiMembersMemberIDResponse(rsp)
+}
+
 // GetApiSamplingRulesWithResponse request returning *GetApiSamplingRulesResponse
 func (c *ClientWithResponses) GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error) {
 	rsp, err := c.GetApiSamplingRules(ctx, params, reqEditors...)
@@ -6388,6 +7661,23 @@ func (c *ClientWithResponses) PostApiSyntheticChecksWithResponse(ctx context.Con
 	return ParsePostApiSyntheticChecksResponse(rsp)
 }
 
+// PostApiSyntheticChecksTestWithBodyWithResponse request with arbitrary body returning *PostApiSyntheticChecksTestResponse
+func (c *ClientWithResponses) PostApiSyntheticChecksTestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksTestResponse, error) {
+	rsp, err := c.PostApiSyntheticChecksTestWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSyntheticChecksTestResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSyntheticChecksTestWithResponse(ctx context.Context, body PostApiSyntheticChecksTestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksTestResponse, error) {
+	rsp, err := c.PostApiSyntheticChecksTest(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSyntheticChecksTestResponse(rsp)
+}
+
 // DeleteApiSyntheticChecksOriginOrIdWithResponse request returning *DeleteApiSyntheticChecksOriginOrIdResponse
 func (c *ClientWithResponses) DeleteApiSyntheticChecksOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSyntheticChecksOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSyntheticChecksOriginOrIdResponse, error) {
 	rsp, err := c.DeleteApiSyntheticChecksOriginOrId(ctx, originOrId, params, reqEditors...)
@@ -6421,6 +7711,93 @@ func (c *ClientWithResponses) PutApiSyntheticChecksOriginOrIdWithResponse(ctx co
 		return nil, err
 	}
 	return ParsePutApiSyntheticChecksOriginOrIdResponse(rsp)
+}
+
+// GetApiTeamsWithResponse request returning *GetApiTeamsResponse
+func (c *ClientWithResponses) GetApiTeamsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiTeamsResponse, error) {
+	rsp, err := c.GetApiTeams(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTeamsResponse(rsp)
+}
+
+// PostApiTeamsWithBodyWithResponse request with arbitrary body returning *PostApiTeamsResponse
+func (c *ClientWithResponses) PostApiTeamsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTeamsResponse, error) {
+	rsp, err := c.PostApiTeamsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTeamsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiTeamsWithResponse(ctx context.Context, body PostApiTeamsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTeamsResponse, error) {
+	rsp, err := c.PostApiTeams(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTeamsResponse(rsp)
+}
+
+// DeleteApiTeamsOriginOrIdWithResponse request returning *DeleteApiTeamsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiTeamsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiTeamsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiTeamsOriginOrIdResponse(rsp)
+}
+
+// GetApiTeamsOriginOrIdWithResponse request returning *GetApiTeamsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiTeamsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiTeamsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiTeamsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTeamsOriginOrIdResponse(rsp)
+}
+
+// PutApiTeamsOriginOrIdDisplayWithBodyWithResponse request with arbitrary body returning *PutApiTeamsOriginOrIdDisplayResponse
+func (c *ClientWithResponses) PutApiTeamsOriginOrIdDisplayWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTeamsOriginOrIdDisplayResponse, error) {
+	rsp, err := c.PutApiTeamsOriginOrIdDisplayWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTeamsOriginOrIdDisplayResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiTeamsOriginOrIdDisplayWithResponse(ctx context.Context, originOrId string, body PutApiTeamsOriginOrIdDisplayJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTeamsOriginOrIdDisplayResponse, error) {
+	rsp, err := c.PutApiTeamsOriginOrIdDisplay(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTeamsOriginOrIdDisplayResponse(rsp)
+}
+
+// PostApiTeamsOriginOrIdMembersWithBodyWithResponse request with arbitrary body returning *PostApiTeamsOriginOrIdMembersResponse
+func (c *ClientWithResponses) PostApiTeamsOriginOrIdMembersWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTeamsOriginOrIdMembersResponse, error) {
+	rsp, err := c.PostApiTeamsOriginOrIdMembersWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTeamsOriginOrIdMembersResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiTeamsOriginOrIdMembersWithResponse(ctx context.Context, originOrId string, body PostApiTeamsOriginOrIdMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTeamsOriginOrIdMembersResponse, error) {
+	rsp, err := c.PostApiTeamsOriginOrIdMembers(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTeamsOriginOrIdMembersResponse(rsp)
+}
+
+// DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse request returning *DeleteApiTeamsOriginOrIdMembersMemberIDResponse
+func (c *ClientWithResponses) DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error) {
+	rsp, err := c.DeleteApiTeamsOriginOrIdMembersMemberID(ctx, originOrId, memberID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp)
 }
 
 // GetApiViewsWithResponse request returning *GetApiViewsResponse
@@ -6965,6 +8342,91 @@ func ParsePostApiLogsResponse(rsp *http.Response) (*PostApiLogsResponse, error) 
 	return response, nil
 }
 
+// ParseGetApiMembersResponse parses an HTTP response from a GetApiMembersWithResponse call
+func ParseGetApiMembersResponse(rsp *http.Response) (*GetApiMembersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiMembersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []MemberDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiMembersResponse parses an HTTP response from a PostApiMembersWithResponse call
+func ParsePostApiMembersResponse(rsp *http.Response) (*PostApiMembersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiMembersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiMembersMemberIDResponse parses an HTTP response from a DeleteApiMembersMemberIDWithResponse call
+func ParseDeleteApiMembersMemberIDResponse(rsp *http.Response) (*DeleteApiMembersMemberIDResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiMembersMemberIDResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetApiSamplingRulesResponse parses an HTTP response from a GetApiSamplingRulesWithResponse call
 func ParseGetApiSamplingRulesResponse(rsp *http.Response) (*GetApiSamplingRulesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -7243,6 +8705,39 @@ func ParsePostApiSyntheticChecksResponse(rsp *http.Response) (*PostApiSyntheticC
 	return response, nil
 }
 
+// ParsePostApiSyntheticChecksTestResponse parses an HTTP response from a PostApiSyntheticChecksTestWithResponse call
+func ParsePostApiSyntheticChecksTestResponse(rsp *http.Response) (*PostApiSyntheticChecksTestResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSyntheticChecksTestResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TestSyntheticCheckResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteApiSyntheticChecksOriginOrIdResponse parses an HTTP response from a DeleteApiSyntheticChecksOriginOrIdWithResponse call
 func ParseDeleteApiSyntheticChecksOriginOrIdResponse(rsp *http.Response) (*DeleteApiSyntheticChecksOriginOrIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -7323,6 +8818,209 @@ func ParsePutApiSyntheticChecksOriginOrIdResponse(rsp *http.Response) (*PutApiSy
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTeamsResponse parses an HTTP response from a GetApiTeamsWithResponse call
+func ParseGetApiTeamsResponse(rsp *http.Response) (*GetApiTeamsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTeamsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []TeamsListItem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTeamsResponse parses an HTTP response from a PostApiTeamsWithResponse call
+func ParsePostApiTeamsResponse(rsp *http.Response) (*PostApiTeamsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTeamsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TeamDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiTeamsOriginOrIdResponse parses an HTTP response from a DeleteApiTeamsOriginOrIdWithResponse call
+func ParseDeleteApiTeamsOriginOrIdResponse(rsp *http.Response) (*DeleteApiTeamsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiTeamsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTeamsOriginOrIdResponse parses an HTTP response from a GetApiTeamsOriginOrIdWithResponse call
+func ParseGetApiTeamsOriginOrIdResponse(rsp *http.Response) (*GetApiTeamsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTeamsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetTeamResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiTeamsOriginOrIdDisplayResponse parses an HTTP response from a PutApiTeamsOriginOrIdDisplayWithResponse call
+func ParsePutApiTeamsOriginOrIdDisplayResponse(rsp *http.Response) (*PutApiTeamsOriginOrIdDisplayResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiTeamsOriginOrIdDisplayResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTeamsOriginOrIdMembersResponse parses an HTTP response from a PostApiTeamsOriginOrIdMembersWithResponse call
+func ParsePostApiTeamsOriginOrIdMembersResponse(rsp *http.Response) (*PostApiTeamsOriginOrIdMembersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTeamsOriginOrIdMembersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse parses an HTTP response from a DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse call
+func ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp *http.Response) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiTeamsOriginOrIdMembersMemberIDResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
