@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.0
+- add support for member and team management
+
 ## v1.1.0
 - add sampling rules CRUD support
 
