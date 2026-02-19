@@ -25,7 +25,8 @@ git tag to GitHub. The Go module proxy picks up the tag automatically.
    git pull origin main
    # edit CHANGELOG.md
    git add CHANGELOG.md
-   git commit -m "docs: add changelog for vX.Y.Z"
+   # change the comment below to reflect the new version and a short description of the changes. This will be be shown as description in the list of tags on GitHub.
+   git commit -m "feat: <short description of changes for vX.Y.Z>"
    git push origin main
    ```
 
