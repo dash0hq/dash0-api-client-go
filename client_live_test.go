@@ -149,4 +149,20 @@ func TestLiveAPI(t *testing.T) {
 		}
 		t.Logf("Iterated over %d resource logs", count)
 	})
+
+	t.Run("ListTeams", func(t *testing.T) {
+		resp, err := client.ListTeams(ctx)
+		if err != nil {
+			t.Fatalf("ListTeams failed: %v", err)
+		}
+
+		if len(resp) == 0 {
+			t.Error("expected at least one team in the response, got none")
+		} else {
+			t.Logf("Found teams: %v", len(resp))
+			for _, team := range resp {
+				t.Logf("Team name: %s (members: %v)", team.Name, team.TotalMemberCount)
+			}
+		}
+	})
 }
