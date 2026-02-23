@@ -93,7 +93,7 @@ func (c *client) AddTeamMembers(ctx context.Context, originOrID string, request 
 	if err != nil {
 		return fmt.Errorf("dash0: add team members failed: %w", err)
 	}
-	if resp.StatusCode() != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusCreated {
 		return newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
 	return nil
