@@ -1554,7 +1554,7 @@ type SyntheticCheckAnnotations struct {
 
 // SyntheticCheckAttempt defines model for SyntheticCheckAttempt.
 type SyntheticCheckAttempt struct {
-	// AttemptId Unique identifier for the attempt
+	// AttemptId (Internal) Unique identifier for the attempt
 	AttemptId string `json:"attemptId"`
 
 	// Duration duration in nanoseconds
@@ -1569,11 +1569,11 @@ type SyntheticCheckAttempt struct {
 
 	// FailedDegradedAssertions List of degraded assertions that failed
 	FailedDegradedAssertions []FailedHttpCheckAssertion `json:"failedDegradedAssertions"`
-	IsTestRun                bool                       `json:"isTestRun"`
 
-	// Location Location is reported for every check attempt individually, in case we ever want to allow retries
-	// from multiple locations. This will make an eventual migration easier. Not super likely to happen
-	// in the first year, but better to be prepared.
+	// IsTestRun (Internal) Whether this attempt was triggered as a test run
+	IsTestRun bool `json:"isTestRun"`
+
+	// Location The geographic location from which the check was executed.
 	Location string `json:"location"`
 
 	// PassedCriticalAssertions List of critical assertions that passed
@@ -1582,8 +1582,10 @@ type SyntheticCheckAttempt struct {
 	// PassedDegradedAssertions List of degraded assertions that passed
 	PassedDegradedAssertions []HttpCheckAssertion `json:"passedDegradedAssertions"`
 
-	// RunId Run ID this attempt belongs to
-	RunId  string `json:"runId"`
+	// RunId (Internal) Run ID this attempt belongs to
+	RunId string `json:"runId"`
+
+	// SpanId (Internal) Span ID associated with this attempt
 	SpanId []byte `json:"spanId"`
 
 	// StartTime A fixed point in time represented as an RFC 3339 date-time string.
@@ -1603,12 +1605,14 @@ type SyntheticCheckAttempt struct {
 
 	// SyntheticCheckVersion Version of the synthetic check
 	SyntheticCheckVersion string `json:"syntheticCheckVersion"`
-	TraceId               []byte `json:"traceId"`
+
+	// TraceId (Internal) Trace ID associated with this attempt
+	TraceId []byte `json:"traceId"`
 }
 
 // SyntheticCheckAttemptDetails defines model for SyntheticCheckAttemptDetails.
 type SyntheticCheckAttemptDetails struct {
-	// AttemptId Unique identifier for the attempt
+	// AttemptId (Internal) Unique identifier for the attempt
 	AttemptId string `json:"attemptId"`
 
 	// Duration duration in nanoseconds
@@ -1626,11 +1630,11 @@ type SyntheticCheckAttemptDetails struct {
 
 	// FailedDegradedAssertions List of degraded assertions that failed
 	FailedDegradedAssertions []FailedHttpCheckAssertion `json:"failedDegradedAssertions"`
-	IsTestRun                bool                       `json:"isTestRun"`
 
-	// Location Location is reported for every check attempt individually, in case we ever want to allow retries
-	// from multiple locations. This will make an eventual migration easier. Not super likely to happen
-	// in the first year, but better to be prepared.
+	// IsTestRun (Internal) Whether this attempt was triggered as a test run
+	IsTestRun bool `json:"isTestRun"`
+
+	// Location The geographic location from which the check was executed.
 	Location string `json:"location"`
 
 	// PassedCriticalAssertions List of critical assertions that passed
@@ -1639,12 +1643,14 @@ type SyntheticCheckAttemptDetails struct {
 	// PassedDegradedAssertions List of degraded assertions that passed
 	PassedDegradedAssertions []HttpCheckAssertion `json:"passedDegradedAssertions"`
 
-	// RunId Run ID this attempt belongs to
+	// RunId (Internal) Run ID this attempt belongs to
 	RunId string `json:"runId"`
 
 	// SpanAttributes Span attributes using OTLP KeyValue format
 	SpanAttributes []KeyValue `json:"spanAttributes"`
-	SpanId         []byte     `json:"spanId"`
+
+	// SpanId (Internal) Span ID associated with this attempt
+	SpanId []byte `json:"spanId"`
 
 	// StartTime A fixed point in time represented as an RFC 3339 date-time string.
 	//
@@ -1663,7 +1669,9 @@ type SyntheticCheckAttemptDetails struct {
 
 	// SyntheticCheckVersion Version of the synthetic check
 	SyntheticCheckVersion string `json:"syntheticCheckVersion"`
-	TraceId               []byte `json:"traceId"`
+
+	// TraceId (Internal) Trace ID associated with this attempt
+	TraceId []byte `json:"traceId"`
 }
 
 // SyntheticCheckDefinition defines model for SyntheticCheckDefinition.
@@ -1980,6 +1988,9 @@ type ViewApiListItem struct {
 	Id      string  `json:"id"`
 	Name    *string `json:"name,omitempty"`
 	Origin  *string `json:"origin,omitempty"`
+
+	// Type The view type describes where this view configuration is intended to be applied in the UI.
+	Type ViewType `json:"type"`
 }
 
 // ViewDefinition defines model for ViewDefinition.
