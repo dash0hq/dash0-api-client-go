@@ -18,7 +18,7 @@ const (
 	DefaultTimeout = 30 * time.Second
 
 	// DefaultUserAgent is the default User-Agent header value.
-	DefaultUserAgent = "dash0-api-client-go/1.0.0"
+	DefaultUserAgent = "dash0-api-client-go/" + Version
 
 	// DefaultRetryWaitMin is the default minimum wait time between retries.
 	DefaultRetryWaitMin = 500 * time.Millisecond
@@ -115,7 +115,7 @@ func WithTimeout(d time.Duration) ClientOption {
 }
 
 // WithUserAgent sets a custom User-Agent header.
-// Default is "dash0-api-client-go/1.0.0".
+// Default is "dash0-api-client-go/" followed by the current library version.
 func WithUserAgent(ua string) ClientOption {
 	return func(c *clientConfig) {
 		c.userAgent = ua

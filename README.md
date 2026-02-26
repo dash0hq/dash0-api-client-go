@@ -96,7 +96,7 @@ OTLP requests use the same HTTP client, retry logic, and rate limiting as the RE
 | `WithMaxConcurrentRequests(n)` | Maximum concurrent API requests (1-10)   | 3                           |
 | `WithTimeout(duration)`        | HTTP request timeout                     | 30s                         |
 | `WithHTTPClient(client)`       | Custom HTTP client                       | -                           |
-| `WithUserAgent(ua)`            | Custom User-Agent header                 | `dash0-api-client-go/1.0.0` |
+| `WithUserAgent(ua)`            | Custom User-Agent header                 | `dash0-api-client-go/<version>` |
 | `WithMaxRetries(n)`            | Maximum retries for failed requests (0-5)| 1                           |
 | `WithRetryWaitMin(duration)`   | Minimum wait between retries             | 500ms                       |
 | `WithRetryWaitMax(duration)`   | Maximum wait between retries             | 30s                         |
