@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.5.0
+- updates to ViewApiListItem and SyntheticCheckAttempt
+
 ## v1.4.1
 - fix wrong status-code expectations for AddTeamMembers
 
