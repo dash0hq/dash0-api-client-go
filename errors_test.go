@@ -33,7 +33,26 @@ func TestAPIError_Error(t *testing.T) {
 			expected: "dash0 api error: invalid request (status: 400)",
 		},
 		{
-			name: "with status and trace ID",
+			name: "with body and trace ID when message is empty",
+			err: &APIError{
+				StatusCode: 400,
+				Status:     "400 Bad Request",
+				Body:       `{"details": "field is required"}`,
+				TraceID:    "def456",
+			},
+			expected: `dash0 api error: {"details": "field is required"} (status: 400, trace_id: def456)`,
+		},
+		{
+			name: "with body only when message is empty",
+			err: &APIError{
+				StatusCode: 400,
+				Status:     "400 Bad Request",
+				Body:       `{"details": "field is required"}`,
+			},
+			expected: `dash0 api error: {"details": "field is required"} (status: 400)`,
+		},
+		{
+			name: "with status and trace ID when both message and body are empty",
 			err: &APIError{
 				StatusCode: 500,
 				Status:     "500 Internal Server Error",
@@ -42,7 +61,7 @@ func TestAPIError_Error(t *testing.T) {
 			expected: "dash0 api error: 500 Internal Server Error (trace_id: def456)",
 		},
 		{
-			name: "with status only",
+			name: "with status only when both message and body are empty",
 			err: &APIError{
 				StatusCode: 500,
 				Status:     "500 Internal Server Error",
@@ -137,6 +156,11 @@ func TestNewAPIError(t *testing.T) {
 		}
 		if apiErr.Message != "" {
 			t.Errorf("Message = %q, want empty", apiErr.Message)
+		}
+		// Body is included in Error() when Message is empty
+		expected := "dash0 api error: plain text error (status: 500)"
+		if apiErr.Error() != expected {
+			t.Errorf("Error() = %q, want %q", apiErr.Error(), expected)
 		}
 	})
 

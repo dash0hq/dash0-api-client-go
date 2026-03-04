@@ -27,12 +27,16 @@ type APIError struct {
 
 // Error implements the error interface.
 func (e *APIError) Error() string {
-	if e.Message != "" {
+	detail := e.Message
+	if detail == "" {
+		detail = e.Body
+	}
+	if detail != "" {
 		if e.TraceID != "" {
 			return fmt.Sprintf("dash0 api error: %s (status: %d, trace_id: %s)",
-				e.Message, e.StatusCode, e.TraceID)
+				detail, e.StatusCode, e.TraceID)
 		}
-		return fmt.Sprintf("dash0 api error: %s (status: %d)", e.Message, e.StatusCode)
+		return fmt.Sprintf("dash0 api error: %s (status: %d)", detail, e.StatusCode)
 	}
 	if e.TraceID != "" {
 		return fmt.Sprintf("dash0 api error: %s (trace_id: %s)", e.Status, e.TraceID)
