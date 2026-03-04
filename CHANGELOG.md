@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.5.1
+
+
+### Bug Fixes
+- extract error message from JSON body when Message is not set
+
 ## v1.5.0
 - updates to ViewApiListItem and SyntheticCheckAttempt
 
