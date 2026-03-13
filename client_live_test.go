@@ -150,6 +150,14 @@ func TestLiveAPI(t *testing.T) {
 		t.Logf("Iterated over %d resource logs", count)
 	})
 
+	t.Run("ListRecordingRuleGroups", func(t *testing.T) {
+		resp, err := client.ListRecordingRuleGroups(ctx, nil)
+		if err != nil {
+			t.Fatalf("ListRecordingRuleGroups failed: %v", err)
+		}
+		t.Logf("Found %d recording rule groups", len(resp))
+	})
+
 	t.Run("ListTeams", func(t *testing.T) {
 		resp, err := client.ListTeams(ctx)
 		if err != nil {

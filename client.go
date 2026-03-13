@@ -60,6 +60,14 @@ type Client interface {
 	DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIter(ctx context.Context, dataset *string) *Iter[SamplingDefinition]
 
+	// Recording Rule Groups
+	ListRecordingRuleGroups(ctx context.Context, dataset *string) ([]*RecordingRuleGroupDefinition, error)
+	GetRecordingRuleGroup(ctx context.Context, originOrID string, dataset *string) (*RecordingRuleGroupDefinition, error)
+	CreateRecordingRuleGroup(ctx context.Context, group *RecordingRuleGroupDefinition) (*RecordingRuleGroupDefinition, error)
+	UpdateRecordingRuleGroup(ctx context.Context, originOrID string, group *RecordingRuleGroupDefinition) (*RecordingRuleGroupDefinition, error)
+	DeleteRecordingRuleGroup(ctx context.Context, originOrID string, dataset *string) error
+	ListRecordingRuleGroupsIter(ctx context.Context, dataset *string) *Iter[RecordingRuleGroupDefinition]
+
 	// Members
 	ListMembers(ctx context.Context) ([]*MemberDefinition, error)
 	InviteMember(ctx context.Context, request *InviteMemberRequest) error
