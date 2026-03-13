@@ -329,6 +329,50 @@ func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string)
 	return nil
 }
 
+// Recording Rule Groups
+
+func (m *MockClient) ListRecordingRuleGroups(ctx context.Context, dataset *string) ([]*dash0.RecordingRuleGroupDefinition, error) {
+	if m.ListRecordingRuleGroupsFunc != nil {
+		return m.ListRecordingRuleGroupsFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetRecordingRuleGroup(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRuleGroupDefinition, error) {
+	if m.GetRecordingRuleGroupFunc != nil {
+		return m.GetRecordingRuleGroupFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateRecordingRuleGroup(ctx context.Context, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error) {
+	if m.CreateRecordingRuleGroupFunc != nil {
+		return m.CreateRecordingRuleGroupFunc(ctx, group)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateRecordingRuleGroup(ctx context.Context, originOrID string, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error) {
+	if m.UpdateRecordingRuleGroupFunc != nil {
+		return m.UpdateRecordingRuleGroupFunc(ctx, originOrID, group)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteRecordingRuleGroup(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteRecordingRuleGroupFunc != nil {
+		return m.DeleteRecordingRuleGroupFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListRecordingRuleGroupsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRuleGroupDefinition] {
+	if m.ListRecordingRuleGroupsIterFunc != nil {
+		return m.ListRecordingRuleGroupsIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
 // Members
 
 func (m *MockClient) ListMembers(ctx context.Context) ([]*dash0.MemberDefinition, error) {
