@@ -54,10 +54,16 @@ const (
 
 // Defines values for DashboardSource.
 const (
-	Api       DashboardSource = "api"
-	Operator  DashboardSource = "operator"
-	Terraform DashboardSource = "terraform"
-	Ui        DashboardSource = "ui"
+	DashboardSourceApi       DashboardSource = "api"
+	DashboardSourceOperator  DashboardSource = "operator"
+	DashboardSourceTerraform DashboardSource = "terraform"
+	DashboardSourceUi        DashboardSource = "ui"
+)
+
+// Defines values for DatasetRestriction.
+const (
+	Restricted   DatasetRestriction = "restricted"
+	Unrestricted DatasetRestriction = "unrestricted"
 )
 
 // Defines values for ErrorAssertionKind.
@@ -124,10 +130,57 @@ const (
 	NumericAssertionOperatorLte   NumericAssertionOperator = "lte"
 )
 
+// Defines values for OAuthCodeChallengeMethod.
+const (
+	S256 OAuthCodeChallengeMethod = "S256"
+)
+
+// Defines values for OAuthGrantType.
+const (
+	OAuthGrantTypeAuthorizationCode OAuthGrantType = "authorization_code"
+	OAuthGrantTypeRefreshToken      OAuthGrantType = "refresh_token"
+)
+
+// Defines values for OAuthResponseType.
+const (
+	Code OAuthResponseType = "code"
+)
+
+// Defines values for OAuthTokenEndpointAuthMethod.
+const (
+	None OAuthTokenEndpointAuthMethod = "none"
+)
+
+// Defines values for OAuthTokenType.
+const (
+	OAuthTokenTypeAccessToken  OAuthTokenType = "access_token"
+	OAuthTokenTypeRefreshToken OAuthTokenType = "refresh_token"
+)
+
 // Defines values for OrderingDirection.
 const (
 	Ascending  OrderingDirection = "ascending"
 	Descending OrderingDirection = "descending"
+)
+
+// Defines values for RecordingRuleGroupAction.
+const (
+	RecordingRuleGroupDelete RecordingRuleGroupAction = "recording_rule_group:delete"
+	RecordingRuleGroupRead   RecordingRuleGroupAction = "recording_rule_group:read"
+	RecordingRuleGroupWrite  RecordingRuleGroupAction = "recording_rule_group:write"
+)
+
+// Defines values for RecordingRuleGroupDefinitionKind.
+const (
+	Dash0RecordingRuleGroup RecordingRuleGroupDefinitionKind = "Dash0RecordingRuleGroup"
+)
+
+// Defines values for RecordingRuleSource.
+const (
+	RecordingRuleSourceApi       RecordingRuleSource = "api"
+	RecordingRuleSourceOperator  RecordingRuleSource = "operator"
+	RecordingRuleSourceTerraform RecordingRuleSource = "terraform"
+	RecordingRuleSourceUi        RecordingRuleSource = "ui"
 )
 
 // Defines values for ResourceOrchestration.
@@ -599,6 +652,9 @@ type DashboardSource string
 // Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
 type Dataset = string
 
+// DatasetRestriction defines model for DatasetRestriction.
+type DatasetRestriction string
+
 // Duration defines model for Duration.
 type Duration = string
 
@@ -1024,6 +1080,212 @@ type NextCursors struct {
 // NumericAssertionOperator defines model for NumericAssertionOperator.
 type NumericAssertionOperator string
 
+// OAuthAuthorizationServerMetadata defines model for OAuthAuthorizationServerMetadata.
+type OAuthAuthorizationServerMetadata struct {
+	// AuthorizationEndpoint URL of the authorization endpoint.
+	AuthorizationEndpoint string `json:"authorization_endpoint"`
+
+	// CodeChallengeMethodsSupported List of supported PKCE code challenge methods.
+	CodeChallengeMethodsSupported *[]OAuthCodeChallengeMethod `json:"code_challenge_methods_supported,omitempty"`
+
+	// GrantTypesSupported List of supported grant types.
+	GrantTypesSupported *[]OAuthGrantType `json:"grant_types_supported,omitempty"`
+
+	// IntrospectionEndpoint URL of the token introspection endpoint.
+	IntrospectionEndpoint *string `json:"introspection_endpoint,omitempty"`
+
+	// Issuer The authorization server's issuer identifier (URL).
+	Issuer string `json:"issuer"`
+
+	// RegistrationEndpoint URL of the dynamic client registration endpoint.
+	RegistrationEndpoint *string `json:"registration_endpoint,omitempty"`
+
+	// ResponseTypesSupported List of supported response types.
+	ResponseTypesSupported []OAuthResponseType `json:"response_types_supported"`
+
+	// RevocationEndpoint URL of the token revocation endpoint.
+	RevocationEndpoint *string `json:"revocation_endpoint,omitempty"`
+
+	// ScopesSupported List of scopes supported by the authorization server.
+	ScopesSupported *[]string `json:"scopes_supported,omitempty"`
+
+	// TokenEndpoint URL of the token endpoint.
+	TokenEndpoint string `json:"token_endpoint"`
+
+	// TokenEndpointAuthMethodsSupported List of supported token endpoint authentication methods.
+	TokenEndpointAuthMethodsSupported *[]OAuthTokenEndpointAuthMethod `json:"token_endpoint_auth_methods_supported,omitempty"`
+}
+
+// OAuthClientRegistrationRequest defines model for OAuthClientRegistrationRequest.
+type OAuthClientRegistrationRequest struct {
+	// ClientName Human-readable name of the client.
+	ClientName string `json:"client_name"`
+
+	// ClientUri URL of the client's home page.
+	ClientUri *string `json:"client_uri,omitempty"`
+
+	// GrantTypes Grant types the client intends to use.
+	GrantTypes *[]OAuthGrantType `json:"grant_types,omitempty"`
+
+	// LogoUri URL of the client's logo image.
+	LogoUri *string `json:"logo_uri,omitempty"`
+
+	// RedirectUris Array of allowed redirect URIs.
+	RedirectUris []string `json:"redirect_uris"`
+
+	// ResponseTypes Response types the client intends to use.
+	ResponseTypes *[]OAuthResponseType `json:"response_types,omitempty"`
+
+	// Scope Space-separated list of scopes the client is requesting.
+	Scope *string `json:"scope,omitempty"`
+
+	// TokenEndpointAuthMethod - `none`: Public client, no client authentication (used by CLI/MCP clients).
+	// Only public clients are supported. This deviates from RFC 7591 which defaults
+	// to `client_secret_basic` when omitted.
+	TokenEndpointAuthMethod *OAuthTokenEndpointAuthMethod `json:"token_endpoint_auth_method,omitempty"`
+}
+
+// OAuthClientRegistrationResponse defines model for OAuthClientRegistrationResponse.
+type OAuthClientRegistrationResponse struct {
+	// ClientId Unique client identifier issued by the authorization server.
+	ClientId string `json:"client_id"`
+
+	// ClientName Human-readable name of the client.
+	ClientName string `json:"client_name"`
+
+	// ClientUri URL of the client's home page.
+	ClientUri *string `json:"client_uri,omitempty"`
+
+	// GrantTypes Grant types the client is registered for.
+	GrantTypes *[]OAuthGrantType `json:"grant_types,omitempty"`
+
+	// LogoUri URL of the client's logo image.
+	LogoUri *string `json:"logo_uri,omitempty"`
+
+	// RedirectUris Array of allowed redirect URIs.
+	RedirectUris []string `json:"redirect_uris"`
+
+	// RegistrationAccessToken Token for managing this client registration (RFC 7592).
+	RegistrationAccessToken string `json:"registration_access_token"`
+
+	// ResponseTypes Response types the client is registered for.
+	ResponseTypes *[]OAuthResponseType `json:"response_types,omitempty"`
+
+	// Scope Space-separated list of scopes the client is registered for.
+	Scope *string `json:"scope,omitempty"`
+
+	// TokenEndpointAuthMethod - `none`: Public client, no client authentication (used by CLI/MCP clients).
+	// Only public clients are supported. This deviates from RFC 7591 which defaults
+	// to `client_secret_basic` when omitted.
+	TokenEndpointAuthMethod *OAuthTokenEndpointAuthMethod `json:"token_endpoint_auth_method,omitempty"`
+}
+
+// OAuthCodeChallengeMethod - `S256`: SHA-256 based code challenge method for PKCE (RFC 7636 section 4.2).
+type OAuthCodeChallengeMethod string
+
+// OAuthGrantType - `authorization_code`: The standard authorization code grant (RFC 6749 section 4.1).
+// - `refresh_token`: Exchange a refresh token for new tokens (RFC 6749 section 6).
+type OAuthGrantType string
+
+// OAuthProtectedResourceMetadata defines model for OAuthProtectedResourceMetadata.
+type OAuthProtectedResourceMetadata struct {
+	// AuthorizationServers Array of authorization server issuer identifiers that can issue tokens accepted by this resource.
+	AuthorizationServers []string `json:"authorization_servers"`
+
+	// BearerMethodsSupported Methods supported for sending bearer tokens to this resource (e.g., "header").
+	BearerMethodsSupported *[]string `json:"bearer_methods_supported,omitempty"`
+
+	// Resource The resource server's resource identifier (its canonical URI).
+	Resource string `json:"resource"`
+
+	// ResourceDocumentation URL of documentation for this protected resource.
+	ResourceDocumentation *string `json:"resource_documentation,omitempty"`
+
+	// ScopesSupported List of scopes supported by this resource server.
+	ScopesSupported *[]string `json:"scopes_supported,omitempty"`
+}
+
+// OAuthResponseType - `code`: The authorization code response type (RFC 6749 section 4.1.1).
+type OAuthResponseType string
+
+// OAuthRevocationRequest defines model for OAuthRevocationRequest.
+type OAuthRevocationRequest struct {
+	// Token The token to be revoked.
+	Token string `json:"token"`
+
+	// TokenTypeHint - `access_token`: An OAuth 2.0 access token.
+	// - `refresh_token`: An OAuth 2.0 refresh token.
+	TokenTypeHint *OAuthTokenType `json:"token_type_hint,omitempty"`
+}
+
+// OAuthTokenEndpointAuthMethod - `none`: Public client, no client authentication (used by CLI/MCP clients).
+// Only public clients are supported. This deviates from RFC 7591 which defaults
+// to `client_secret_basic` when omitted.
+type OAuthTokenEndpointAuthMethod string
+
+// OAuthTokenErrorResponse defines model for OAuthTokenErrorResponse.
+type OAuthTokenErrorResponse struct {
+	// Error A single ASCII error code. Standard values include:
+	// invalid_request, invalid_client, invalid_grant, unauthorized_client,
+	// unsupported_grant_type, invalid_scope.
+	Error string `json:"error"`
+
+	// ErrorDescription Human-readable description providing additional information.
+	ErrorDescription *string `json:"error_description,omitempty"`
+
+	// ErrorUri URI identifying a human-readable web page with error information.
+	ErrorUri *string `json:"error_uri,omitempty"`
+}
+
+// OAuthTokenRequest defines model for OAuthTokenRequest.
+type OAuthTokenRequest struct {
+	// ClientId The client identifier.
+	ClientId *string `json:"client_id,omitempty"`
+
+	// Code The authorization code (required for authorization_code grant).
+	Code *string `json:"code,omitempty"`
+
+	// CodeVerifier PKCE code verifier (required for authorization_code grant). All public clients must use PKCE (RFC 7636).
+	CodeVerifier *string `json:"code_verifier,omitempty"`
+
+	// GrantType - `authorization_code`: The standard authorization code grant (RFC 6749 section 4.1).
+	// - `refresh_token`: Exchange a refresh token for new tokens (RFC 6749 section 6).
+	GrantType OAuthGrantType `json:"grant_type"`
+
+	// RedirectUri Must match the redirect_uri used in the authorization request (required for authorization_code grant).
+	RedirectUri *string `json:"redirect_uri,omitempty"`
+
+	// RefreshToken The refresh token (required for refresh_token grant).
+	RefreshToken *string `json:"refresh_token,omitempty"`
+
+	// Scope Space-separated list of requested scopes. For refresh_token grant, must be equal to or a subset of the originally granted scopes.
+	Scope *string `json:"scope,omitempty"`
+}
+
+// OAuthTokenResponse defines model for OAuthTokenResponse.
+type OAuthTokenResponse struct {
+	// AccessToken The access token issued by the authorization server.
+	AccessToken        string              `json:"access_token"`
+	DatasetRestriction *DatasetRestriction `json:"dataset_restriction,omitempty"`
+	Datasets           *[]string           `json:"datasets,omitempty"`
+
+	// ExpiresIn Lifetime of the access token in seconds.
+	ExpiresIn int64 `json:"expires_in"`
+
+	// RefreshToken The refresh token for obtaining new access tokens.
+	RefreshToken *string `json:"refresh_token,omitempty"`
+
+	// Scope Space-separated list of granted scopes.
+	Scope *string `json:"scope,omitempty"`
+
+	// TokenType The type of token issued (always "Bearer").
+	TokenType string `json:"token_type"`
+}
+
+// OAuthTokenType - `access_token`: An OAuth 2.0 access token.
+// - `refresh_token`: An OAuth 2.0 refresh token.
+type OAuthTokenType string
+
 // OrderingCriteria Any supported attribute keys to order by.
 type OrderingCriteria = []OrderingCriterion
 
@@ -1114,6 +1376,126 @@ type PrometheusAlertRuleApiListItem struct {
 	// Origin User defined origin for getting/updating/deleting the alert rule through the API.
 	Origin *string `json:"origin,omitempty"`
 }
+
+// RecordingRule An individual recording rule that pre-computes a PromQL expression and stores the result as a new metric. Follows the Prometheus recording rule format (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/).
+type RecordingRule struct {
+	// Expression PromQL expression to evaluate. The result is stored under the metric name defined by 'record'.
+	Expression string `json:"expression"`
+
+	// Labels Additional labels to add to recorded metrics
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Record Name of the output metric. Must be a valid Prometheus metric name.
+	Record string `json:"record"`
+}
+
+// RecordingRuleGroupAction defines model for RecordingRuleGroupAction.
+type RecordingRuleGroupAction string
+
+// RecordingRuleGroupAnnotations defines model for RecordingRuleGroupAnnotations.
+type RecordingRuleGroupAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the group was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the group has been deleted but not yet purged. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// RecordingRuleGroupDefinition A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
+type RecordingRuleGroupDefinition struct {
+	Kind     RecordingRuleGroupDefinitionKind `json:"kind"`
+	Metadata RecordingRuleGroupMetadata       `json:"metadata"`
+	Spec     RecordingRuleGroupSpec           `json:"spec"`
+}
+
+// RecordingRuleGroupDefinitionKind defines model for RecordingRuleGroupDefinition.Kind.
+type RecordingRuleGroupDefinitionKind string
+
+// RecordingRuleGroupDisplay defines model for RecordingRuleGroupDisplay.
+type RecordingRuleGroupDisplay struct {
+	// Name Short-form name for UI display
+	Name string `json:"name"`
+}
+
+// RecordingRuleGroupLabels defines model for RecordingRuleGroupLabels.
+type RecordingRuleGroupLabels struct {
+	// Dash0Comdataset Dataset this group belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the recording rule group. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created groups; non-empty for groups created via the internal API. Groups with a non-empty origin have write access controlled exclusively through explicit permission entries rather than by the admin role.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of the recording rule group. 'ui' — created interactively in the Dash0 UI. 'terraform' — managed via the Dash0 Terraform provider. 'operator' — managed via the Dash0 Kubernetes operator. 'api' — created directly through the internal API.
+	Dash0Comsource *RecordingRuleSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Current version of the group. Needs to be set when updating a group to prevent conflicting writes.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// RecordingRuleGroupListResponse defines model for RecordingRuleGroupListResponse.
+type RecordingRuleGroupListResponse struct {
+	RecordingRuleGroups []RecordingRuleGroupResponse `json:"recordingRuleGroups"`
+}
+
+// RecordingRuleGroupMetadata defines model for RecordingRuleGroupMetadata.
+type RecordingRuleGroupMetadata struct {
+	Annotations *RecordingRuleGroupAnnotations `json:"annotations,omitempty"`
+	Labels      *RecordingRuleGroupLabels      `json:"labels,omitempty"`
+
+	// Name Group name (e.g., "http_metrics")
+	Name string `json:"name"`
+}
+
+// RecordingRuleGroupPermission An access control entry granting a set of actions to a single principal. Exactly one of teamId, userId, or role should be set.
+type RecordingRuleGroupPermission struct {
+	// Actions Actions granted to this principal on the recording rule group.
+	Actions []RecordingRuleGroupAction `json:"actions"`
+
+	// Role organization role (e.g. 'admin'). Role-based entries are managed implicitly by the server and are not included in write requests.
+	Role *string `json:"role,omitempty"`
+
+	// TeamId Internal team ID. The granted actions apply to all members of this team.
+	TeamId *string `json:"teamId,omitempty"`
+
+	// UserId Internal user ID (UUID). The granted actions apply to this specific user.
+	UserId *string `json:"userId,omitempty"`
+}
+
+// RecordingRuleGroupResponse A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
+type RecordingRuleGroupResponse = RecordingRuleGroupDefinition
+
+// RecordingRuleGroupSpec defines model for RecordingRuleGroupSpec.
+type RecordingRuleGroupSpec struct {
+	Display RecordingRuleGroupDisplay `json:"display"`
+
+	// Enabled Whether the group's rules are actively evaluated.
+	Enabled  bool     `json:"enabled"`
+	Interval Duration `json:"interval"`
+
+	// Permissions Access control entries for this group. Each entry grants a set of actions to a specific user, team, or role. Returned with every group response. Include in PUT requests to replace the permission set; absent or empty leaves existing permissions unchanged.
+	Permissions *[]RecordingRuleGroupPermission `json:"permissions,omitempty"`
+
+	// PermittedActions Computed, read-only. The set of actions the requesting user is permitted to perform on this group, derived from their role, team memberships, and explicit permission entries.
+	PermittedActions *[]RecordingRuleGroupAction `json:"permittedActions,omitempty"`
+
+	// Rules List of recording rules in this group.
+	Rules []RecordingRule `json:"rules"`
+}
+
+// RecordingRuleSource Origin of the recording rule group. 'ui' — created interactively in the Dash0 UI. 'terraform' — managed via the Dash0 Terraform provider. 'operator' — managed via the Dash0 Kubernetes operator. 'api' — created directly through the internal API.
+type RecordingRuleSource string
 
 // RelativeTime A relative time reference based on the current time ("now").
 //
@@ -1573,8 +1955,8 @@ type SyntheticCheckAttempt struct {
 	// IsTestRun (Internal) Whether this attempt was triggered as a test run
 	IsTestRun bool `json:"isTestRun"`
 
-	// Location The geographic location from which the check was executed.
-	Location string `json:"location"`
+	// Location A geographic location identifier from which synthetic checks can be executed.
+	Location SyntheticCheckLocation `json:"location"`
 
 	// PassedCriticalAssertions List of critical assertions that passed
 	PassedCriticalAssertions []HttpCheckAssertion `json:"passedCriticalAssertions"`
@@ -1634,8 +2016,8 @@ type SyntheticCheckAttemptDetails struct {
 	// IsTestRun (Internal) Whether this attempt was triggered as a test run
 	IsTestRun bool `json:"isTestRun"`
 
-	// Location The geographic location from which the check was executed.
-	Location string `json:"location"`
+	// Location A geographic location identifier from which synthetic checks can be executed.
+	Location SyntheticCheckLocation `json:"location"`
 
 	// PassedCriticalAssertions List of critical assertions that passed
 	PassedCriticalAssertions []HttpCheckAssertion `json:"passedCriticalAssertions"`
@@ -1700,6 +2082,9 @@ type SyntheticCheckLabels struct {
 	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
 	Dash0Comversion *string            `json:"dash0.com/version,omitempty"`
 }
+
+// SyntheticCheckLocation A geographic location identifier from which synthetic checks can be executed.
+type SyntheticCheckLocation = string
 
 // SyntheticCheckMetadata defines model for SyntheticCheckMetadata.
 type SyntheticCheckMetadata struct {
@@ -1798,8 +2183,8 @@ type SyntheticCheckRetriesOffSpec = interface{}
 
 // SyntheticCheckSchedule defines model for SyntheticCheckSchedule.
 type SyntheticCheckSchedule struct {
-	Interval  Duration `json:"interval"`
-	Locations []string `json:"locations"`
+	Interval  Duration                 `json:"interval"`
+	Locations []SyntheticCheckLocation `json:"locations"`
 
 	// Strategy Whether to run checks against all specified locations for every run, or just a single location per run.
 	Strategy SyntheticCheckSchedulingStrategy `json:"strategy"`
@@ -2209,6 +2594,29 @@ type PostApiImportViewParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiRecordingRuleGroupsParams defines parameters for GetApiRecordingRuleGroups.
+type GetApiRecordingRuleGroupsParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+}
+
+// DeleteApiRecordingRuleGroupsOriginOrIdParams defines parameters for DeleteApiRecordingRuleGroupsOriginOrId.
+type DeleteApiRecordingRuleGroupsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiRecordingRuleGroupsOriginOrIdParams defines parameters for GetApiRecordingRuleGroupsOriginOrId.
+type GetApiRecordingRuleGroupsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams defines parameters for GetApiRecordingRuleGroupsOriginOrIdVersionsVersion.
+type GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiSamplingRulesParams defines parameters for GetApiSamplingRules.
 type GetApiSamplingRulesParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -2284,6 +2692,33 @@ type PutApiViewsOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetOauthAuthorizeParams defines parameters for GetOauthAuthorize.
+type GetOauthAuthorizeParams struct {
+	// ResponseType Must be "code" for the authorization code flow.
+	ResponseType string `form:"response_type" json:"response_type"`
+
+	// ClientId The client identifier obtained during registration.
+	ClientId string `form:"client_id" json:"client_id"`
+
+	// RedirectUri Must match one of the client's registered redirect URIs.
+	RedirectUri string `form:"redirect_uri" json:"redirect_uri"`
+
+	// Scope Space-separated list of requested scopes.
+	Scope *string `form:"scope,omitempty" json:"scope,omitempty"`
+
+	// State Opaque value for CSRF protection, returned unchanged in the redirect.
+	State *string `form:"state,omitempty" json:"state,omitempty"`
+
+	// CodeChallenge PKCE code challenge (RFC 7636).
+	CodeChallenge string `form:"code_challenge" json:"code_challenge"`
+
+	// CodeChallengeMethod Must be "S256".
+	CodeChallengeMethod string `form:"code_challenge_method" json:"code_challenge_method"`
+
+	// Prompt Space-separated list of prompt directives. Supported value: "consent".
+	Prompt *string `form:"prompt,omitempty" json:"prompt,omitempty"`
+}
+
 // PostApiAlertingCheckRulesJSONRequestBody defines body for PostApiAlertingCheckRules for application/json ContentType.
 type PostApiAlertingCheckRulesJSONRequestBody = PrometheusAlertRule
 
@@ -2313,6 +2748,12 @@ type PostApiLogsJSONRequestBody = GetLogRecordsRequest
 
 // PostApiMembersJSONRequestBody defines body for PostApiMembers for application/json ContentType.
 type PostApiMembersJSONRequestBody = InviteMemberRequest
+
+// PostApiRecordingRuleGroupsJSONRequestBody defines body for PostApiRecordingRuleGroups for application/json ContentType.
+type PostApiRecordingRuleGroupsJSONRequestBody = RecordingRuleGroupDefinition
+
+// PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody defines body for PutApiRecordingRuleGroupsOriginOrId for application/json ContentType.
+type PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody = RecordingRuleGroupDefinition
 
 // PostApiSamplingRulesJSONRequestBody defines body for PostApiSamplingRules for application/json ContentType.
 type PostApiSamplingRulesJSONRequestBody = SamplingRuleCreateRequest
@@ -2346,6 +2787,15 @@ type PostApiViewsJSONRequestBody = ViewDefinition
 
 // PutApiViewsOriginOrIdJSONRequestBody defines body for PutApiViewsOriginOrId for application/json ContentType.
 type PutApiViewsOriginOrIdJSONRequestBody = ViewDefinition
+
+// PostOauthRegisterJSONRequestBody defines body for PostOauthRegister for application/json ContentType.
+type PostOauthRegisterJSONRequestBody = OAuthClientRegistrationRequest
+
+// PostOauthRevokeFormdataRequestBody defines body for PostOauthRevoke for application/x-www-form-urlencoded ContentType.
+type PostOauthRevokeFormdataRequestBody = OAuthRevocationRequest
+
+// PostOauthTokenFormdataRequestBody defines body for PostOauthToken for application/x-www-form-urlencoded ContentType.
+type PostOauthTokenFormdataRequestBody = OAuthTokenRequest
 
 // AsAttributeFilterStringValue returns the union data inside the AttributeFilter_Value as a AttributeFilterStringValue
 func (t AttributeFilter_Value) AsAttributeFilterStringValue() (AttributeFilterStringValue, error) {
@@ -3000,6 +3450,12 @@ func WithRequestEditorFn(fn RequestEditorFn) generatedClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetWellKnownOauthAuthorizationServer request
+	GetWellKnownOauthAuthorizationServer(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetWellKnownOauthProtectedResource request
+	GetWellKnownOauthProtectedResource(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiAlertingCheckRules request
 	GetApiAlertingCheckRules(ctx context.Context, params *GetApiAlertingCheckRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3074,6 +3530,28 @@ type ClientInterface interface {
 	// DeleteApiMembersMemberID request
 	DeleteApiMembersMemberID(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiRecordingRuleGroups request
+	GetApiRecordingRuleGroups(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiRecordingRuleGroupsWithBody request with any body
+	PostApiRecordingRuleGroupsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiRecordingRuleGroups(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiRecordingRuleGroupsOriginOrId request
+	DeleteApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiRecordingRuleGroupsOriginOrId request
+	GetApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiRecordingRuleGroupsOriginOrIdWithBody request with any body
+	PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiRecordingRuleGroupsOriginOrIdVersionsVersion request
+	GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiSamplingRules request
 	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3105,6 +3583,9 @@ type ClientInterface interface {
 	PostApiSyntheticChecksWithBody(ctx context.Context, params *PostApiSyntheticChecksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiSyntheticChecks(ctx context.Context, params *PostApiSyntheticChecksParams, body PostApiSyntheticChecksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSyntheticChecksLocations request
+	GetApiSyntheticChecksLocations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiSyntheticChecksTestWithBody request with any body
 	PostApiSyntheticChecksTestWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3167,6 +3648,48 @@ type ClientInterface interface {
 	PutApiViewsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiViewsOriginOrId(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, body PutApiViewsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetOauthAuthorize request
+	GetOauthAuthorize(ctx context.Context, params *GetOauthAuthorizeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostOauthRegisterWithBody request with any body
+	PostOauthRegisterWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostOauthRegister(ctx context.Context, body PostOauthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostOauthRevokeWithBody request with any body
+	PostOauthRevokeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostOauthRevokeWithFormdataBody(ctx context.Context, body PostOauthRevokeFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostOauthTokenWithBody request with any body
+	PostOauthTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostOauthTokenWithFormdataBody(ctx context.Context, body PostOauthTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *generatedClient) GetWellKnownOauthAuthorizationServer(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWellKnownOauthAuthorizationServerRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetWellKnownOauthProtectedResource(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetWellKnownOauthProtectedResourceRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *generatedClient) GetApiAlertingCheckRules(ctx context.Context, params *GetApiAlertingCheckRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3505,6 +4028,102 @@ func (c *generatedClient) DeleteApiMembersMemberID(ctx context.Context, memberID
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) GetApiRecordingRuleGroups(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiRecordingRuleGroupsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiRecordingRuleGroupsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiRecordingRuleGroupsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiRecordingRuleGroups(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiRecordingRuleGroupsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(c.Server, originOrId, version, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiSamplingRulesRequest(c.Server, params)
 	if err != nil {
@@ -3639,6 +4258,18 @@ func (c *generatedClient) PostApiSyntheticChecksWithBody(ctx context.Context, pa
 
 func (c *generatedClient) PostApiSyntheticChecks(ctx context.Context, params *PostApiSyntheticChecksParams, body PostApiSyntheticChecksJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiSyntheticChecksRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSyntheticChecksLocations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSyntheticChecksLocationsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -3923,6 +4554,144 @@ func (c *generatedClient) PutApiViewsOriginOrId(ctx context.Context, originOrId 
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetOauthAuthorize(ctx context.Context, params *GetOauthAuthorizeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetOauthAuthorizeRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostOauthRegisterWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostOauthRegisterRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostOauthRegister(ctx context.Context, body PostOauthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostOauthRegisterRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostOauthRevokeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostOauthRevokeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostOauthRevokeWithFormdataBody(ctx context.Context, body PostOauthRevokeFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostOauthRevokeRequestWithFormdataBody(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostOauthTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostOauthTokenRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostOauthTokenWithFormdataBody(ctx context.Context, body PostOauthTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostOauthTokenRequestWithFormdataBody(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// NewGetWellKnownOauthAuthorizationServerRequest generates requests for GetWellKnownOauthAuthorizationServer
+func NewGetWellKnownOauthAuthorizationServerRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/.well-known/oauth-authorization-server")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetWellKnownOauthProtectedResourceRequest generates requests for GetWellKnownOauthProtectedResource
+func NewGetWellKnownOauthProtectedResourceRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/.well-known/oauth-protected-resource")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewGetApiAlertingCheckRulesRequest generates requests for GetApiAlertingCheckRules
@@ -4930,6 +5699,333 @@ func NewDeleteApiMembersMemberIDRequest(server string, memberID string) (*http.R
 	return req, nil
 }
 
+// NewGetApiRecordingRuleGroupsRequest generates requests for GetApiRecordingRuleGroups
+func NewGetApiRecordingRuleGroupsRequest(server string, params *GetApiRecordingRuleGroupsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/recording-rule-groups")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "originPrefix", runtime.ParamLocationQuery, *params.OriginPrefix); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiRecordingRuleGroupsRequest calls the generic PostApiRecordingRuleGroups builder with application/json body
+func NewPostApiRecordingRuleGroupsRequest(server string, body PostApiRecordingRuleGroupsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiRecordingRuleGroupsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiRecordingRuleGroupsRequestWithBody generates requests for PostApiRecordingRuleGroups with any type of body
+func NewPostApiRecordingRuleGroupsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/recording-rule-groups")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiRecordingRuleGroupsOriginOrIdRequest generates requests for DeleteApiRecordingRuleGroupsOriginOrId
+func NewDeleteApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiRecordingRuleGroupsOriginOrIdRequest generates requests for GetApiRecordingRuleGroupsOriginOrId
+func NewGetApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiRecordingRuleGroupsOriginOrIdRequest calls the generic PutApiRecordingRuleGroupsOriginOrId builder with application/json body
+func NewPutApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody generates requests for PutApiRecordingRuleGroupsOriginOrId with any type of body
+func NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest generates requests for GetApiRecordingRuleGroupsOriginOrIdVersionsVersion
+func NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(server string, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetApiSamplingRulesRequest generates requests for GetApiSamplingRules
 func NewGetApiSamplingRulesRequest(server string, params *GetApiSamplingRulesParams) (*http.Request, error) {
 	var err error
@@ -5369,6 +6465,33 @@ func NewPostApiSyntheticChecksRequestWithBody(server string, params *PostApiSynt
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiSyntheticChecksLocationsRequest generates requests for GetApiSyntheticChecksLocations
+func NewGetApiSyntheticChecksLocationsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/synthetic-checks/locations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -6156,6 +7279,267 @@ func NewPutApiViewsOriginOrIdRequestWithBody(server string, originOrId string, p
 	return req, nil
 }
 
+// NewGetOauthAuthorizeRequest generates requests for GetOauthAuthorize
+func NewGetOauthAuthorizeRequest(server string, params *GetOauthAuthorizeParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/oauth/authorize")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "response_type", runtime.ParamLocationQuery, params.ResponseType); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "client_id", runtime.ParamLocationQuery, params.ClientId); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "redirect_uri", runtime.ParamLocationQuery, params.RedirectUri); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Scope != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "scope", runtime.ParamLocationQuery, *params.Scope); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.State != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "state", runtime.ParamLocationQuery, *params.State); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "code_challenge", runtime.ParamLocationQuery, params.CodeChallenge); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "code_challenge_method", runtime.ParamLocationQuery, params.CodeChallengeMethod); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Prompt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "prompt", runtime.ParamLocationQuery, *params.Prompt); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostOauthRegisterRequest calls the generic PostOauthRegister builder with application/json body
+func NewPostOauthRegisterRequest(server string, body PostOauthRegisterJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostOauthRegisterRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostOauthRegisterRequestWithBody generates requests for PostOauthRegister with any type of body
+func NewPostOauthRegisterRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/oauth/register")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostOauthRevokeRequestWithFormdataBody calls the generic PostOauthRevoke builder with application/x-www-form-urlencoded body
+func NewPostOauthRevokeRequestWithFormdataBody(server string, body PostOauthRevokeFormdataRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	bodyStr, err := runtime.MarshalForm(body, nil)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = strings.NewReader(bodyStr.Encode())
+	return NewPostOauthRevokeRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
+}
+
+// NewPostOauthRevokeRequestWithBody generates requests for PostOauthRevoke with any type of body
+func NewPostOauthRevokeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/oauth/revoke")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostOauthTokenRequestWithFormdataBody calls the generic PostOauthToken builder with application/x-www-form-urlencoded body
+func NewPostOauthTokenRequestWithFormdataBody(server string, body PostOauthTokenFormdataRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	bodyStr, err := runtime.MarshalForm(body, nil)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = strings.NewReader(bodyStr.Encode())
+	return NewPostOauthTokenRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
+}
+
+// NewPostOauthTokenRequestWithBody generates requests for PostOauthToken with any type of body
+func NewPostOauthTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/oauth/token")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 func (c *generatedClient) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -6199,6 +7583,12 @@ func withGeneratedApiUrl(baseURL string) generatedClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetWellKnownOauthAuthorizationServerWithResponse request
+	GetWellKnownOauthAuthorizationServerWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetWellKnownOauthAuthorizationServerResponse, error)
+
+	// GetWellKnownOauthProtectedResourceWithResponse request
+	GetWellKnownOauthProtectedResourceWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetWellKnownOauthProtectedResourceResponse, error)
+
 	// GetApiAlertingCheckRulesWithResponse request
 	GetApiAlertingCheckRulesWithResponse(ctx context.Context, params *GetApiAlertingCheckRulesParams, reqEditors ...RequestEditorFn) (*GetApiAlertingCheckRulesResponse, error)
 
@@ -6273,6 +7663,28 @@ type ClientWithResponsesInterface interface {
 	// DeleteApiMembersMemberIDWithResponse request
 	DeleteApiMembersMemberIDWithResponse(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersMemberIDResponse, error)
 
+	// GetApiRecordingRuleGroupsWithResponse request
+	GetApiRecordingRuleGroupsWithResponse(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsResponse, error)
+
+	// PostApiRecordingRuleGroupsWithBodyWithResponse request with any body
+	PostApiRecordingRuleGroupsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error)
+
+	PostApiRecordingRuleGroupsWithResponse(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error)
+
+	// DeleteApiRecordingRuleGroupsOriginOrIdWithResponse request
+	DeleteApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRuleGroupsOriginOrIdResponse, error)
+
+	// GetApiRecordingRuleGroupsOriginOrIdWithResponse request
+	GetApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdResponse, error)
+
+	// PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse request with any body
+	PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
+
+	PutApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
+
+	// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse request
+	GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error)
+
 	// GetApiSamplingRulesWithResponse request
 	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
 
@@ -6304,6 +7716,9 @@ type ClientWithResponsesInterface interface {
 	PostApiSyntheticChecksWithBodyWithResponse(ctx context.Context, params *PostApiSyntheticChecksParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksResponse, error)
 
 	PostApiSyntheticChecksWithResponse(ctx context.Context, params *PostApiSyntheticChecksParams, body PostApiSyntheticChecksJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksResponse, error)
+
+	// GetApiSyntheticChecksLocationsWithResponse request
+	GetApiSyntheticChecksLocationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSyntheticChecksLocationsResponse, error)
 
 	// PostApiSyntheticChecksTestWithBodyWithResponse request with any body
 	PostApiSyntheticChecksTestWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSyntheticChecksTestResponse, error)
@@ -6366,6 +7781,70 @@ type ClientWithResponsesInterface interface {
 	PutApiViewsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiViewsOriginOrIdResponse, error)
 
 	PutApiViewsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, body PutApiViewsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiViewsOriginOrIdResponse, error)
+
+	// GetOauthAuthorizeWithResponse request
+	GetOauthAuthorizeWithResponse(ctx context.Context, params *GetOauthAuthorizeParams, reqEditors ...RequestEditorFn) (*GetOauthAuthorizeResponse, error)
+
+	// PostOauthRegisterWithBodyWithResponse request with any body
+	PostOauthRegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostOauthRegisterResponse, error)
+
+	PostOauthRegisterWithResponse(ctx context.Context, body PostOauthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostOauthRegisterResponse, error)
+
+	// PostOauthRevokeWithBodyWithResponse request with any body
+	PostOauthRevokeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostOauthRevokeResponse, error)
+
+	PostOauthRevokeWithFormdataBodyWithResponse(ctx context.Context, body PostOauthRevokeFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostOauthRevokeResponse, error)
+
+	// PostOauthTokenWithBodyWithResponse request with any body
+	PostOauthTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostOauthTokenResponse, error)
+
+	PostOauthTokenWithFormdataBodyWithResponse(ctx context.Context, body PostOauthTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostOauthTokenResponse, error)
+}
+
+type GetWellKnownOauthAuthorizationServerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *OAuthAuthorizationServerMetadata
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWellKnownOauthAuthorizationServerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWellKnownOauthAuthorizationServerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetWellKnownOauthProtectedResourceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *OAuthProtectedResourceMetadata
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetWellKnownOauthProtectedResourceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetWellKnownOauthProtectedResourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetApiAlertingCheckRulesResponse struct {
@@ -6778,6 +8257,143 @@ func (r DeleteApiMembersMemberIDResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiRecordingRuleGroupsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RecordingRuleGroupListResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiRecordingRuleGroupsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiRecordingRuleGroupsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiRecordingRuleGroupsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *RecordingRuleGroupDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiRecordingRuleGroupsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiRecordingRuleGroupsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiRecordingRuleGroupsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiRecordingRuleGroupsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RecordingRuleGroupDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiRecordingRuleGroupsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RecordingRuleGroupDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *RecordingRuleGroupDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiSamplingRulesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -6958,6 +8574,29 @@ func (r PostApiSyntheticChecksResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiSyntheticChecksResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSyntheticChecksLocationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]SyntheticCheckLocation
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSyntheticChecksLocationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSyntheticChecksLocationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -7326,6 +8965,115 @@ func (r PutApiViewsOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
+type GetOauthAuthorizeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetOauthAuthorizeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetOauthAuthorizeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostOauthRegisterResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *OAuthClientRegistrationResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostOauthRegisterResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostOauthRegisterResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostOauthRevokeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostOauthRevokeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostOauthRevokeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostOauthTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *OAuthTokenResponse
+	JSON400      *OAuthTokenErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostOauthTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostOauthTokenResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// GetWellKnownOauthAuthorizationServerWithResponse request returning *GetWellKnownOauthAuthorizationServerResponse
+func (c *ClientWithResponses) GetWellKnownOauthAuthorizationServerWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetWellKnownOauthAuthorizationServerResponse, error) {
+	rsp, err := c.GetWellKnownOauthAuthorizationServer(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWellKnownOauthAuthorizationServerResponse(rsp)
+}
+
+// GetWellKnownOauthProtectedResourceWithResponse request returning *GetWellKnownOauthProtectedResourceResponse
+func (c *ClientWithResponses) GetWellKnownOauthProtectedResourceWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetWellKnownOauthProtectedResourceResponse, error) {
+	rsp, err := c.GetWellKnownOauthProtectedResource(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetWellKnownOauthProtectedResourceResponse(rsp)
+}
+
 // GetApiAlertingCheckRulesWithResponse request returning *GetApiAlertingCheckRulesResponse
 func (c *ClientWithResponses) GetApiAlertingCheckRulesWithResponse(ctx context.Context, params *GetApiAlertingCheckRulesParams, reqEditors ...RequestEditorFn) (*GetApiAlertingCheckRulesResponse, error) {
 	rsp, err := c.GetApiAlertingCheckRules(ctx, params, reqEditors...)
@@ -7568,6 +9316,76 @@ func (c *ClientWithResponses) DeleteApiMembersMemberIDWithResponse(ctx context.C
 	return ParseDeleteApiMembersMemberIDResponse(rsp)
 }
 
+// GetApiRecordingRuleGroupsWithResponse request returning *GetApiRecordingRuleGroupsResponse
+func (c *ClientWithResponses) GetApiRecordingRuleGroupsWithResponse(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsResponse, error) {
+	rsp, err := c.GetApiRecordingRuleGroups(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiRecordingRuleGroupsResponse(rsp)
+}
+
+// PostApiRecordingRuleGroupsWithBodyWithResponse request with arbitrary body returning *PostApiRecordingRuleGroupsResponse
+func (c *ClientWithResponses) PostApiRecordingRuleGroupsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error) {
+	rsp, err := c.PostApiRecordingRuleGroupsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiRecordingRuleGroupsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiRecordingRuleGroupsWithResponse(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error) {
+	rsp, err := c.PostApiRecordingRuleGroups(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiRecordingRuleGroupsResponse(rsp)
+}
+
+// DeleteApiRecordingRuleGroupsOriginOrIdWithResponse request returning *DeleteApiRecordingRuleGroupsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiRecordingRuleGroupsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+}
+
+// GetApiRecordingRuleGroupsOriginOrIdWithResponse request returning *GetApiRecordingRuleGroupsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiRecordingRuleGroupsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+}
+
+// PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiRecordingRuleGroupsOriginOrIdResponse
+func (c *ClientWithResponses) PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiRecordingRuleGroupsOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+}
+
+// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse request returning *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse
+func (c *ClientWithResponses) GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error) {
+	rsp, err := c.GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx, originOrId, version, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse(rsp)
+}
+
 // GetApiSamplingRulesWithResponse request returning *GetApiSamplingRulesResponse
 func (c *ClientWithResponses) GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error) {
 	rsp, err := c.GetApiSamplingRules(ctx, params, reqEditors...)
@@ -7670,6 +9488,15 @@ func (c *ClientWithResponses) PostApiSyntheticChecksWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParsePostApiSyntheticChecksResponse(rsp)
+}
+
+// GetApiSyntheticChecksLocationsWithResponse request returning *GetApiSyntheticChecksLocationsResponse
+func (c *ClientWithResponses) GetApiSyntheticChecksLocationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSyntheticChecksLocationsResponse, error) {
+	rsp, err := c.GetApiSyntheticChecksLocations(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSyntheticChecksLocationsResponse(rsp)
 }
 
 // PostApiSyntheticChecksTestWithBodyWithResponse request with arbitrary body returning *PostApiSyntheticChecksTestResponse
@@ -7870,6 +9697,132 @@ func (c *ClientWithResponses) PutApiViewsOriginOrIdWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParsePutApiViewsOriginOrIdResponse(rsp)
+}
+
+// GetOauthAuthorizeWithResponse request returning *GetOauthAuthorizeResponse
+func (c *ClientWithResponses) GetOauthAuthorizeWithResponse(ctx context.Context, params *GetOauthAuthorizeParams, reqEditors ...RequestEditorFn) (*GetOauthAuthorizeResponse, error) {
+	rsp, err := c.GetOauthAuthorize(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetOauthAuthorizeResponse(rsp)
+}
+
+// PostOauthRegisterWithBodyWithResponse request with arbitrary body returning *PostOauthRegisterResponse
+func (c *ClientWithResponses) PostOauthRegisterWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostOauthRegisterResponse, error) {
+	rsp, err := c.PostOauthRegisterWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostOauthRegisterResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostOauthRegisterWithResponse(ctx context.Context, body PostOauthRegisterJSONRequestBody, reqEditors ...RequestEditorFn) (*PostOauthRegisterResponse, error) {
+	rsp, err := c.PostOauthRegister(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostOauthRegisterResponse(rsp)
+}
+
+// PostOauthRevokeWithBodyWithResponse request with arbitrary body returning *PostOauthRevokeResponse
+func (c *ClientWithResponses) PostOauthRevokeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostOauthRevokeResponse, error) {
+	rsp, err := c.PostOauthRevokeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostOauthRevokeResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostOauthRevokeWithFormdataBodyWithResponse(ctx context.Context, body PostOauthRevokeFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostOauthRevokeResponse, error) {
+	rsp, err := c.PostOauthRevokeWithFormdataBody(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostOauthRevokeResponse(rsp)
+}
+
+// PostOauthTokenWithBodyWithResponse request with arbitrary body returning *PostOauthTokenResponse
+func (c *ClientWithResponses) PostOauthTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostOauthTokenResponse, error) {
+	rsp, err := c.PostOauthTokenWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostOauthTokenResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostOauthTokenWithFormdataBodyWithResponse(ctx context.Context, body PostOauthTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostOauthTokenResponse, error) {
+	rsp, err := c.PostOauthTokenWithFormdataBody(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostOauthTokenResponse(rsp)
+}
+
+// ParseGetWellKnownOauthAuthorizationServerResponse parses an HTTP response from a GetWellKnownOauthAuthorizationServerWithResponse call
+func ParseGetWellKnownOauthAuthorizationServerResponse(rsp *http.Response) (*GetWellKnownOauthAuthorizationServerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWellKnownOauthAuthorizationServerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest OAuthAuthorizationServerMetadata
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetWellKnownOauthProtectedResourceResponse parses an HTTP response from a GetWellKnownOauthProtectedResourceWithResponse call
+func ParseGetWellKnownOauthProtectedResourceResponse(rsp *http.Response) (*GetWellKnownOauthProtectedResourceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetWellKnownOauthProtectedResourceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest OAuthProtectedResourceMetadata
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetApiAlertingCheckRulesResponse parses an HTTP response from a GetApiAlertingCheckRulesWithResponse call
@@ -8438,6 +10391,197 @@ func ParseDeleteApiMembersMemberIDResponse(rsp *http.Response) (*DeleteApiMember
 	return response, nil
 }
 
+// ParseGetApiRecordingRuleGroupsResponse parses an HTTP response from a GetApiRecordingRuleGroupsWithResponse call
+func ParseGetApiRecordingRuleGroupsResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiRecordingRuleGroupsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RecordingRuleGroupListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiRecordingRuleGroupsResponse parses an HTTP response from a PostApiRecordingRuleGroupsWithResponse call
+func ParsePostApiRecordingRuleGroupsResponse(rsp *http.Response) (*PostApiRecordingRuleGroupsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiRecordingRuleGroupsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest RecordingRuleGroupDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse parses an HTTP response from a DeleteApiRecordingRuleGroupsOriginOrIdWithResponse call
+func ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*DeleteApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiRecordingRuleGroupsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiRecordingRuleGroupsOriginOrIdResponse parses an HTTP response from a GetApiRecordingRuleGroupsOriginOrIdWithResponse call
+func ParseGetApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiRecordingRuleGroupsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RecordingRuleGroupDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiRecordingRuleGroupsOriginOrIdResponse parses an HTTP response from a PutApiRecordingRuleGroupsOriginOrIdWithResponse call
+func ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiRecordingRuleGroupsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RecordingRuleGroupDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse parses an HTTP response from a GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse call
+func ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RecordingRuleGroupDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetApiSamplingRulesResponse parses an HTTP response from a GetApiSamplingRulesWithResponse call
 func ParseGetApiSamplingRulesResponse(rsp *http.Response) (*GetApiSamplingRulesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -8699,6 +10843,39 @@ func ParsePostApiSyntheticChecksResponse(rsp *http.Response) (*PostApiSyntheticC
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest SyntheticCheckDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSyntheticChecksLocationsResponse parses an HTTP response from a GetApiSyntheticChecksLocationsWithResponse call
+func ParseGetApiSyntheticChecksLocationsResponse(rsp *http.Response) (*GetApiSyntheticChecksLocationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSyntheticChecksLocationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []SyntheticCheckLocation
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -9189,6 +11366,131 @@ func ParsePutApiViewsOriginOrIdResponse(rsp *http.Response) (*PutApiViewsOriginO
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetOauthAuthorizeResponse parses an HTTP response from a GetOauthAuthorizeWithResponse call
+func ParseGetOauthAuthorizeResponse(rsp *http.Response) (*GetOauthAuthorizeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetOauthAuthorizeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostOauthRegisterResponse parses an HTTP response from a PostOauthRegisterWithResponse call
+func ParsePostOauthRegisterResponse(rsp *http.Response) (*PostOauthRegisterResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostOauthRegisterResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest OAuthClientRegistrationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostOauthRevokeResponse parses an HTTP response from a PostOauthRevokeWithResponse call
+func ParsePostOauthRevokeResponse(rsp *http.Response) (*PostOauthRevokeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostOauthRevokeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostOauthTokenResponse parses an HTTP response from a PostOauthTokenWithResponse call
+func ParsePostOauthTokenResponse(rsp *http.Response) (*PostOauthTokenResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostOauthTokenResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest OAuthTokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest OAuthTokenErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
