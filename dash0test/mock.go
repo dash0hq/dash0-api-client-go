@@ -61,6 +61,14 @@ type MockClient struct {
 	DeleteSamplingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
 
+	// Recording Rule Groups
+	ListRecordingRuleGroupsFunc     func(ctx context.Context, dataset *string) ([]*dash0.RecordingRuleGroupDefinition, error)
+	GetRecordingRuleGroupFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRuleGroupDefinition, error)
+	CreateRecordingRuleGroupFunc    func(ctx context.Context, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error)
+	UpdateRecordingRuleGroupFunc    func(ctx context.Context, originOrID string, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error)
+	DeleteRecordingRuleGroupFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListRecordingRuleGroupsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRuleGroupDefinition]
+
 	// Members
 	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
 	InviteMemberFunc    func(ctx context.Context, request *dash0.InviteMemberRequest) error
