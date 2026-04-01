@@ -108,3 +108,52 @@ func (c *client) ListSyntheticChecksIter(ctx context.Context, dataset *string) *
 	}
 	return newIter(items, false, nil, nil)
 }
+
+// StripSyntheticCheckServerFields removes server-generated fields from a synthetic check definition.
+func StripSyntheticCheckServerFields(check *SyntheticCheckDefinition) {
+	if check.Metadata.Annotations != nil {
+		check.Metadata.Annotations.Dash0ComdeletedAt = nil
+	}
+	if check.Metadata.Labels != nil {
+		check.Metadata.Labels.Dash0Comversion = nil
+		check.Metadata.Labels.Custom = nil
+		check.Metadata.Labels.Dash0Comdataset = nil
+		check.Metadata.Labels.Dash0Comorigin = nil
+	}
+}
+
+// ClearSyntheticCheckID removes the ID from a synthetic check definition.
+func ClearSyntheticCheckID(check *SyntheticCheckDefinition) {
+	if check.Metadata.Labels != nil {
+		check.Metadata.Labels.Dash0Comid = nil
+	}
+}
+
+// GetSyntheticCheckID extracts the ID from a synthetic check definition.
+func GetSyntheticCheckID(check *SyntheticCheckDefinition) string {
+	if check.Metadata.Labels != nil && check.Metadata.Labels.Dash0Comid != nil {
+		return *check.Metadata.Labels.Dash0Comid
+	}
+	return ""
+}
+
+// GetSyntheticCheckName extracts the display name from a synthetic check
+// definition, falling back to metadata.name if no display name is set.
+func GetSyntheticCheckName(check *SyntheticCheckDefinition) string {
+	if check.Spec.Display != nil && check.Spec.Display.Name != "" {
+		return check.Spec.Display.Name
+	}
+	return check.Metadata.Name
+}
+
+// SetSyntheticCheckID sets the dash0.com/id label on a synthetic check
+// definition, initializing the labels struct if needed. It is a no-op if the
+// ID is already set.
+func SetSyntheticCheckID(check *SyntheticCheckDefinition, id string) {
+	if check.Metadata.Labels == nil {
+		check.Metadata.Labels = &SyntheticCheckLabels{}
+	}
+	if check.Metadata.Labels.Dash0Comid == nil {
+		check.Metadata.Labels.Dash0Comid = &id
+	}
+}

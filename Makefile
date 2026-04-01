@@ -13,13 +13,8 @@ all: clean generate tidy fmt lint build test
 generate:
 	@echo "Generating code from OpenAPI spec..."
 	$(OAPI_CODEGEN) --config=oapi-codegen.yaml $(OPENAPI_URL)
-	@echo "Post-processing generated code to resolve naming conflicts..."
-	@sed -i.bak \
-		-e 's/ClientOption/generatedClientOption/g' \
-		-e 's/NewClient(/newGeneratedClient(/g' \
-		-e 's/WithHTTPClient/withGeneratedHTTPClient/g' \
-		-e 's/WithBaseURL/withGeneratedApiUrl/g' \
-		generated.go && rm generated.go.bak
+	@echo "Post-processing generated code..."
+	@go run ./tools/postprocess generated.go
 
 # Build the library
 build:

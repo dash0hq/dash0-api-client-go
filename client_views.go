@@ -108,3 +108,51 @@ func (c *client) ListViewsIter(ctx context.Context, dataset *string) *Iter[ViewA
 	}
 	return newIter(items, false, nil, nil)
 }
+
+// StripViewServerFields removes server-generated fields from a view definition.
+func StripViewServerFields(view *ViewDefinition) {
+	if view.Metadata.Annotations != nil {
+		view.Metadata.Annotations.Dash0ComdeletedAt = nil
+	}
+	if view.Metadata.Labels != nil {
+		view.Metadata.Labels.Dash0Comversion = nil
+		view.Metadata.Labels.Dash0Comsource = nil
+		view.Metadata.Labels.Dash0Comdataset = nil
+		view.Metadata.Labels.Dash0Comorigin = nil
+	}
+}
+
+// ClearViewID removes the ID from a view definition.
+func ClearViewID(view *ViewDefinition) {
+	if view.Metadata.Labels != nil {
+		view.Metadata.Labels.Dash0Comid = nil
+	}
+}
+
+// GetViewID extracts the ID from a view definition.
+func GetViewID(view *ViewDefinition) string {
+	if view.Metadata.Labels != nil && view.Metadata.Labels.Dash0Comid != nil {
+		return *view.Metadata.Labels.Dash0Comid
+	}
+	return ""
+}
+
+// GetViewName extracts the display name from a view definition, falling
+// back to metadata.name if the display name is empty.
+func GetViewName(view *ViewDefinition) string {
+	if view.Spec.Display.Name != "" {
+		return view.Spec.Display.Name
+	}
+	return view.Metadata.Name
+}
+
+// SetViewID sets the dash0.com/id label on a view definition, initializing
+// the labels struct if needed. It is a no-op if the ID is already set.
+func SetViewID(view *ViewDefinition, id string) {
+	if view.Metadata.Labels == nil {
+		view.Metadata.Labels = &ViewLabels{}
+	}
+	if view.Metadata.Labels.Dash0Comid == nil {
+		view.Metadata.Labels.Dash0Comid = &id
+	}
+}

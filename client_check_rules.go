@@ -108,3 +108,37 @@ func (c *client) ListCheckRulesIter(ctx context.Context, dataset *string) *Iter[
 	}
 	return newIter(items, false, nil, nil)
 }
+
+// StripCheckRuleServerFields removes server-generated fields from a check rule definition.
+func StripCheckRuleServerFields(rule *PrometheusAlertRule) {
+	rule.Dataset = nil
+	if rule.Labels != nil {
+		delete(*rule.Labels, "dash0.com/origin")
+	}
+}
+
+// ClearCheckRuleID removes the ID from a check rule definition.
+func ClearCheckRuleID(rule *PrometheusAlertRule) {
+	rule.Id = nil
+}
+
+// GetCheckRuleID extracts the ID from a check rule definition.
+func GetCheckRuleID(rule *PrometheusAlertRule) string {
+	if rule.Id != nil {
+		return *rule.Id
+	}
+	return ""
+}
+
+// GetCheckRuleName extracts the name from a check rule definition.
+func GetCheckRuleName(rule *PrometheusAlertRule) string {
+	return rule.Name
+}
+
+// SetCheckRuleID sets the ID on a check rule definition.
+// It is a no-op if the ID is already set.
+func SetCheckRuleID(rule *PrometheusAlertRule, id string) {
+	if rule.Id == nil {
+		rule.Id = &id
+	}
+}

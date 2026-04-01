@@ -108,3 +108,58 @@ func (c *client) ListDashboardsIter(ctx context.Context, dataset *string) *Iter[
 	}
 	return newIter(items, false, nil, nil)
 }
+
+// StripDashboardServerFields removes server-generated metadata fields from a dashboard definition.
+func StripDashboardServerFields(dashboard *DashboardDefinition) {
+	if dashboard.Metadata.Annotations != nil {
+		dashboard.Metadata.Annotations.Dash0ComdeletedAt = nil
+	}
+	dashboard.Metadata.CreatedAt = nil
+	dashboard.Metadata.UpdatedAt = nil
+	dashboard.Metadata.Version = nil
+	if dashboard.Metadata.Dash0Extensions != nil {
+		dashboard.Metadata.Dash0Extensions.Dataset = nil
+	}
+}
+
+// ClearDashboardID removes the ID from a dashboard definition.
+func ClearDashboardID(dashboard *DashboardDefinition) {
+	if dashboard.Metadata.Dash0Extensions != nil {
+		dashboard.Metadata.Dash0Extensions.Id = nil
+	}
+}
+
+// GetDashboardID extracts the ID from a dashboard definition.
+func GetDashboardID(dashboard *DashboardDefinition) string {
+	if dashboard.Metadata.Dash0Extensions != nil && dashboard.Metadata.Dash0Extensions.Id != nil && *dashboard.Metadata.Dash0Extensions.Id != "" {
+		return *dashboard.Metadata.Dash0Extensions.Id
+	}
+	return ""
+}
+
+// GetDashboardName extracts the display name from a dashboard definition.
+func GetDashboardName(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Spec == nil {
+		return ""
+	}
+	display, ok := dashboard.Spec["display"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	name, ok := display["name"].(string)
+	if !ok {
+		return ""
+	}
+	return name
+}
+
+// SetDashboardID sets the ID on a dashboard definition, initializing the
+// dash0Extensions struct if needed. It is a no-op if the ID is already set.
+func SetDashboardID(dashboard *DashboardDefinition, id string) {
+	if dashboard.Metadata.Dash0Extensions == nil {
+		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
+	}
+	if dashboard.Metadata.Dash0Extensions.Id == nil {
+		dashboard.Metadata.Dash0Extensions.Id = &id
+	}
+}

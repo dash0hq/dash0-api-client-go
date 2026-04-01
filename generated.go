@@ -122,12 +122,14 @@ const (
 
 // Defines values for NumericAssertionOperator.
 const (
-	NumericAssertionOperatorGt    NumericAssertionOperator = "gt"
-	NumericAssertionOperatorGte   NumericAssertionOperator = "gte"
-	NumericAssertionOperatorIs    NumericAssertionOperator = "is"
-	NumericAssertionOperatorIsNot NumericAssertionOperator = "is_not"
-	NumericAssertionOperatorLt    NumericAssertionOperator = "lt"
-	NumericAssertionOperatorLte   NumericAssertionOperator = "lte"
+	NumericAssertionOperatorGt         NumericAssertionOperator = "gt"
+	NumericAssertionOperatorGte        NumericAssertionOperator = "gte"
+	NumericAssertionOperatorIs         NumericAssertionOperator = "is"
+	NumericAssertionOperatorIsNot      NumericAssertionOperator = "is_not"
+	NumericAssertionOperatorIsNotOneOf NumericAssertionOperator = "is_not_one_of"
+	NumericAssertionOperatorIsOneOf    NumericAssertionOperator = "is_one_of"
+	NumericAssertionOperatorLt         NumericAssertionOperator = "lt"
+	NumericAssertionOperatorLte        NumericAssertionOperator = "lte"
 )
 
 // Defines values for OAuthCodeChallengeMethod.
@@ -354,6 +356,7 @@ const (
 	Resources    ViewType = "resources"
 	Services     ViewType = "services"
 	Spans        ViewType = "spans"
+	Sql          ViewType = "sql"
 	WebEvents    ViewType = "web_events"
 )
 
@@ -556,11 +559,11 @@ type AxisScale string
 type CheckThresholds struct {
 	// Degraded The threshold value that defines when the check is in a degraded state. The value will be
 	// interpolated into the expression field as `$__threshold`.
-	Degraded *float32 `json:"degraded,omitempty"`
+	Degraded *float64 `json:"degraded,omitempty"`
 
 	// Failed The threshold value that defines when the check is in a failed state. The value will be
 	// interpolated into the expression field as `$__threshold`.
-	Failed *float32 `json:"failed,omitempty"`
+	Failed *float64 `json:"failed,omitempty"`
 }
 
 // Cursor The cursor to another set of results. The value of this field is opaque to the
@@ -585,6 +588,9 @@ type CursorPagination struct {
 	// Limit The maximum number of results to return. If not set, there is a default limit to the number of results returned.
 	Limit *int64 `json:"limit,omitempty"`
 }
+
+// D0QLWarnings defines model for D0QLWarnings.
+type D0QLWarnings = []string
 
 // DashboardAnnotations defines model for DashboardAnnotations.
 type DashboardAnnotations struct {
@@ -682,6 +688,34 @@ type ErrorAssertionSpec struct {
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	Error Error `json:"error"`
+}
+
+// ExecuteSqlRequest defines model for ExecuteSqlRequest.
+type ExecuteSqlRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset `json:"dataset,omitempty"`
+	Query   string   `json:"query"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange TimeReferenceRange `json:"timeRange"`
+}
+
+// ExecuteSqlResponse defines model for ExecuteSqlResponse.
+type ExecuteSqlResponse struct {
+	Error *string `json:"error,omitempty"`
+
+	// ExecutionTime A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	ExecutionTime FixedTime    `json:"executionTime"`
+	Progress      *Progress    `json:"progress,omitempty"`
+	ResultRows    *ResultRows  `json:"resultRows,omitempty"`
+	TimeRange     TimeRange    `json:"timeRange"`
+	Warnings      D0QLWarnings `json:"warnings"`
 }
 
 // FailedHttpCheckAssertion Information about a failed HTTP check assertion
@@ -1303,20 +1337,26 @@ type OrderingDirection string
 // OrderingKey Any attribute key to order by.
 type OrderingKey = string
 
+// Progress defines model for Progress.
+type Progress struct {
+	BytesRead           uint64 `json:"bytesRead"`
+	ExecutionTimeMillis uint64 `json:"executionTimeMillis"`
+	RowsRead            uint64 `json:"rowsRead"`
+	TotalRowsToRead     uint64 `json:"totalRowsToRead"`
+}
+
 // PrometheusAlertRule Check rules represent a periodically evaluated expression to determine the health of a resource.
 // The result of the evaluation are zero or more CheckEvaluations.
 type PrometheusAlertRule struct {
 	// Annotations Annotations are key-value pairs that can be used to add additional metadata to a check. They map
 	// to Prometheus alerting rules' "annotations" field.
-	Annotations *map[string]string `json:"annotations,omitempty"`
+	//
+	// The "summary" and "description" annotations are expected and are used as the human-readable
+	// summary and description of the check rule.
+	Annotations *PrometheusAlertRule_Annotations `json:"annotations,omitempty"`
 
 	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
 	Dataset *Dataset `json:"dataset,omitempty"`
-
-	// Description Human-readable and templatable description for the check that allows you to customize the way the
-	// rationale of the check is textually described in the Dash0 UI, in notifications, etc. This will
-	// be optimized in the design for long form viewing.
-	Description *string `json:"description,omitempty"`
 
 	// Enabled A boolean flag to enable or disable the check rule. When a check rule is disabled, it will not be
 	// evaluated, and no check evaluations will be created. This field is optional and defaults to true.
@@ -1340,9 +1380,10 @@ type PrometheusAlertRule struct {
 	For        *Duration `json:"for,omitempty"`
 
 	// Id User defined id for getting/updating/deleting the alert rule through the API.
-	Id            *string   `json:"id,omitempty"`
-	Interval      *Duration `json:"interval,omitempty"`
-	KeepFiringFor *Duration `json:"keepFiringFor,omitempty"`
+	Id       *string   `json:"id,omitempty"`
+	Interval *Duration `json:"interval,omitempty"`
+
+	KeepFiringFor *Duration `json:"keep_firing_for,omitempty"`
 
 	// Labels Label are key-value pairs that can be used to add additional metadata to a check. They map
 	// to Prometheus alerting rules' "labels" field.
@@ -1351,12 +1392,25 @@ type PrometheusAlertRule struct {
 	// Name Human-readable and templatable name for the check. In Prometheus alerting rules this is called "alert".
 	Name string `json:"name"`
 
-	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
-	// is textually described in short form in the Dash0 UI, in notifications, etc
-	Summary *string `json:"summary,omitempty"`
-
 	// Thresholds Thresholds to use for the `$__threshold` variable in the expression field.
 	Thresholds *CheckThresholds `json:"thresholds,omitempty"`
+}
+
+// PrometheusAlertRule_Annotations Annotations are key-value pairs that can be used to add additional metadata to a check. They map
+// to Prometheus alerting rules' "annotations" field.
+//
+// The "summary" and "description" annotations are expected and are used as the human-readable
+// summary and description of the check rule.
+type PrometheusAlertRule_Annotations struct {
+	// Description Human-readable and templatable description for the check that allows you to customize the way the
+	// rationale of the check is textually described in the Dash0 UI, in notifications, etc. This will
+	// be optimized in the design for long form viewing.
+	Description *string `json:"description,omitempty"`
+
+	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
+	// is textually described in short form in the Dash0 UI, in notifications, etc.
+	Summary              *string           `json:"summary,omitempty"`
+	AdditionalProperties map[string]string `json:"-"`
 }
 
 // PrometheusAlertRuleApiListItem The ID, origin, dataset, and the name of a check rule.
@@ -1409,6 +1463,9 @@ type RecordingRuleGroupAnnotations struct {
 	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
 	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
 }
+
+// RecordingRuleGroupCreateRequest A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
+type RecordingRuleGroupCreateRequest = RecordingRuleGroupDefinition
 
 // RecordingRuleGroupDefinition A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
 type RecordingRuleGroupDefinition struct {
@@ -1493,6 +1550,9 @@ type RecordingRuleGroupSpec struct {
 	// Rules List of recording rules in this group.
 	Rules []RecordingRule `json:"rules"`
 }
+
+// RecordingRuleGroupUpdateRequest A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
+type RecordingRuleGroupUpdateRequest = RecordingRuleGroupDefinition
 
 // RecordingRuleSource Origin of the recording rule group. 'ui' — created interactively in the Dash0 UI. 'terraform' — managed via the Dash0 Terraform provider. 'operator' — managed via the Dash0 Kubernetes operator. 'api' — created directly through the internal API.
 type RecordingRuleSource string
@@ -1592,6 +1652,14 @@ type ResourceSpans struct {
 	SchemaUrl  *string      `json:"schemaUrl,omitempty"`
 	ScopeSpans []ScopeSpans `json:"scopeSpans"`
 }
+
+// ResultRow defines model for ResultRow.
+type ResultRow struct {
+	Values []KeyValue `json:"values"`
+}
+
+// ResultRows defines model for ResultRows.
+type ResultRows = []ResultRow
 
 // Sampling defines model for Sampling.
 type Sampling struct {
@@ -2437,9 +2505,13 @@ type ViewSpec struct {
 	// GroupBy A set of attribute keys to group the view by. This property may be missing to indicate that
 	// no configuration was historically made for this view, i.e., the view was saved before the
 	// grouping capability was added. In that case, you can assume a default grouping should be used.
-	GroupBy              *[]string                     `json:"groupBy,omitempty"`
-	ImplicitFilter       *FilterCriteria               `json:"implicitFilter,omitempty"`
-	Permissions          *[]ViewPermission             `json:"permissions,omitempty"`
+	GroupBy        *[]string         `json:"groupBy,omitempty"`
+	ImplicitFilter *FilterCriteria   `json:"implicitFilter,omitempty"`
+	Permissions    *[]ViewPermission `json:"permissions,omitempty"`
+
+	// Query The SQL query associated with this view. Only applicable when type is "sql".
+	// When the view is loaded, this query is used to populate the editor and auto-executed.
+	Query                *string                       `json:"query,omitempty"`
 	ServiceMapProperties *ViewSpecServiceMapProperties `json:"serviceMapProperties,omitempty"`
 	Table                *ViewTable                    `json:"table,omitempty"`
 
@@ -2596,6 +2668,7 @@ type PostApiImportViewParams struct {
 
 // GetApiRecordingRuleGroupsParams defines parameters for GetApiRecordingRuleGroups.
 type GetApiRecordingRuleGroupsParams struct {
+	// Dataset Filter by dataset.
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 
 	// OriginPrefix Filter by origin prefix.
@@ -2750,10 +2823,10 @@ type PostApiLogsJSONRequestBody = GetLogRecordsRequest
 type PostApiMembersJSONRequestBody = InviteMemberRequest
 
 // PostApiRecordingRuleGroupsJSONRequestBody defines body for PostApiRecordingRuleGroups for application/json ContentType.
-type PostApiRecordingRuleGroupsJSONRequestBody = RecordingRuleGroupDefinition
+type PostApiRecordingRuleGroupsJSONRequestBody = RecordingRuleGroupCreateRequest
 
 // PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody defines body for PutApiRecordingRuleGroupsOriginOrId for application/json ContentType.
-type PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody = RecordingRuleGroupDefinition
+type PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody = RecordingRuleGroupUpdateRequest
 
 // PostApiSamplingRulesJSONRequestBody defines body for PostApiSamplingRules for application/json ContentType.
 type PostApiSamplingRulesJSONRequestBody = SamplingRuleCreateRequest
@@ -2763,6 +2836,9 @@ type PutApiSamplingRulesOriginOrIdJSONRequestBody = SamplingRuleResponse
 
 // PostApiSpansJSONRequestBody defines body for PostApiSpans for application/json ContentType.
 type PostApiSpansJSONRequestBody = GetSpansRequest
+
+// PostApiSqlJSONRequestBody defines body for PostApiSql for application/json ContentType.
+type PostApiSqlJSONRequestBody = ExecuteSqlRequest
 
 // PostApiSyntheticChecksJSONRequestBody defines body for PostApiSyntheticChecks for application/json ContentType.
 type PostApiSyntheticChecksJSONRequestBody = SyntheticCheckDefinition
@@ -2796,6 +2872,89 @@ type PostOauthRevokeFormdataRequestBody = OAuthRevocationRequest
 
 // PostOauthTokenFormdataRequestBody defines body for PostOauthToken for application/x-www-form-urlencoded ContentType.
 type PostOauthTokenFormdataRequestBody = OAuthTokenRequest
+
+// Getter for additional properties for PrometheusAlertRule_Annotations. Returns the specified
+// element and whether it was found
+func (a PrometheusAlertRule_Annotations) Get(fieldName string) (value string, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for PrometheusAlertRule_Annotations
+func (a *PrometheusAlertRule_Annotations) Set(fieldName string, value string) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]string)
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for PrometheusAlertRule_Annotations to handle AdditionalProperties
+func (a *PrometheusAlertRule_Annotations) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["description"]; found {
+		err = json.Unmarshal(raw, &a.Description)
+		if err != nil {
+			return fmt.Errorf("error reading 'description': %w", err)
+		}
+		delete(object, "description")
+	}
+
+	if raw, found := object["summary"]; found {
+		err = json.Unmarshal(raw, &a.Summary)
+		if err != nil {
+			return fmt.Errorf("error reading 'summary': %w", err)
+		}
+		delete(object, "summary")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]string)
+		for fieldName, fieldBuf := range object {
+			var fieldVal string
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for PrometheusAlertRule_Annotations to handle AdditionalProperties
+func (a PrometheusAlertRule_Annotations) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Description != nil {
+		object["description"], err = json.Marshal(a.Description)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	if a.Summary != nil {
+		object["summary"], err = json.Marshal(a.Summary)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'summary': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // AsAttributeFilterStringValue returns the union data inside the AttributeFilter_Value as a AttributeFilterStringValue
 func (t AttributeFilter_Value) AsAttributeFilterStringValue() (AttributeFilterStringValue, error) {
@@ -3404,7 +3563,7 @@ type generatedClient struct {
 	RequestEditors []RequestEditorFn
 }
 
-// generatedClientOption allows setting custom parameters during construction
+// ClientOption allows setting custom parameters during construction
 type generatedClientOption func(*generatedClient) error
 
 // Creates a new generatedClient, with reasonable defaults
@@ -3430,7 +3589,7 @@ func newGeneratedClient(server string, opts ...generatedClientOption) (*generate
 	return &client, nil
 }
 
-// withGeneratedHTTPClient allows overriding the default Doer, which is
+// WithHTTPClient allows overriding the default Doer, which is
 // automatically created using http.Client. This is useful for tests.
 func withGeneratedHTTPClient(doer HttpRequestDoer) generatedClientOption {
 	return func(c *generatedClient) error {
@@ -3550,7 +3709,7 @@ type ClientInterface interface {
 	PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiRecordingRuleGroupsOriginOrIdVersionsVersion request
-	GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiSamplingRules request
 	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3575,6 +3734,11 @@ type ClientInterface interface {
 	PostApiSpansWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiSpans(ctx context.Context, body PostApiSpansJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiSqlWithBody request with any body
+	PostApiSqlWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSql(ctx context.Context, body PostApiSqlJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiSyntheticChecks request
 	GetApiSyntheticChecks(ctx context.Context, params *GetApiSyntheticChecksParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4112,7 +4276,7 @@ func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrId(ctx context.Contex
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(c.Server, originOrId, version, params)
 	if err != nil {
 		return nil, err
@@ -4222,6 +4386,30 @@ func (c *generatedClient) PostApiSpansWithBody(ctx context.Context, contentType 
 
 func (c *generatedClient) PostApiSpans(ctx context.Context, body PostApiSpansJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiSpansRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSqlWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSqlRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSql(ctx context.Context, body PostApiSqlJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSqlRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5964,7 +6152,7 @@ func NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server string, origin
 }
 
 // NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest generates requests for GetApiRecordingRuleGroupsOriginOrIdVersionsVersion
-func NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(server string, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams) (*http.Request, error) {
+func NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(server string, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6339,6 +6527,46 @@ func NewPostApiSpansRequestWithBody(server string, contentType string, body io.R
 	}
 
 	operationPath := fmt.Sprintf("/api/spans")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostApiSqlRequest calls the generic PostApiSql builder with application/json body
+func NewPostApiSqlRequest(server string, body PostApiSqlJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSqlRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiSqlRequestWithBody generates requests for PostApiSql with any type of body
+func NewPostApiSqlRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/sql")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -7569,7 +7797,7 @@ func NewClientWithResponses(server string, opts ...generatedClientOption) (*Clie
 	return &ClientWithResponses{client}, nil
 }
 
-// withGeneratedApiUrl overrides the baseURL.
+// WithBaseURL overrides the baseURL.
 func withGeneratedApiUrl(baseURL string) generatedClientOption {
 	return func(c *generatedClient) error {
 		newBaseURL, err := url.Parse(baseURL)
@@ -7683,7 +7911,7 @@ type ClientWithResponsesInterface interface {
 	PutApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
 
 	// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse request
-	GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error)
+	GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error)
 
 	// GetApiSamplingRulesWithResponse request
 	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
@@ -7708,6 +7936,11 @@ type ClientWithResponsesInterface interface {
 	PostApiSpansWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpansResponse, error)
 
 	PostApiSpansWithResponse(ctx context.Context, body PostApiSpansJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSpansResponse, error)
+
+	// PostApiSqlWithBodyWithResponse request with any body
+	PostApiSqlWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSqlResponse, error)
+
+	PostApiSqlWithResponse(ctx context.Context, body PostApiSqlJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSqlResponse, error)
 
 	// GetApiSyntheticChecksWithResponse request
 	GetApiSyntheticChecksWithResponse(ctx context.Context, params *GetApiSyntheticChecksParams, reqEditors ...RequestEditorFn) (*GetApiSyntheticChecksResponse, error)
@@ -8283,7 +8516,7 @@ func (r GetApiRecordingRuleGroupsResponse) StatusCode() int {
 type PostApiRecordingRuleGroupsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *RecordingRuleGroupDefinition
+	JSON201      *RecordingRuleGroupResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -8328,7 +8561,7 @@ func (r DeleteApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
 type GetApiRecordingRuleGroupsOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupDefinition
+	JSON200      *RecordingRuleGroupResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -8351,7 +8584,7 @@ func (r GetApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
 type PutApiRecordingRuleGroupsOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupDefinition
+	JSON200      *RecordingRuleGroupResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -8374,7 +8607,7 @@ func (r PutApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
 type GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupDefinition
+	JSON200      *RecordingRuleGroupResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -8528,6 +8761,29 @@ func (r PostApiSpansResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiSpansResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiSqlResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ExecuteSqlResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSqlResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSqlResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9378,7 +9634,7 @@ func (c *ClientWithResponses) PutApiRecordingRuleGroupsOriginOrIdWithResponse(ct
 }
 
 // GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse request returning *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse
-func (c *ClientWithResponses) GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error) {
+func (c *ClientWithResponses) GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error) {
 	rsp, err := c.GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx, originOrId, version, params, reqEditors...)
 	if err != nil {
 		return nil, err
@@ -9462,6 +9718,23 @@ func (c *ClientWithResponses) PostApiSpansWithResponse(ctx context.Context, body
 		return nil, err
 	}
 	return ParsePostApiSpansResponse(rsp)
+}
+
+// PostApiSqlWithBodyWithResponse request with arbitrary body returning *PostApiSqlResponse
+func (c *ClientWithResponses) PostApiSqlWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSqlResponse, error) {
+	rsp, err := c.PostApiSqlWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSqlResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSqlWithResponse(ctx context.Context, body PostApiSqlJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSqlResponse, error) {
+	rsp, err := c.PostApiSql(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSqlResponse(rsp)
 }
 
 // GetApiSyntheticChecksWithResponse request returning *GetApiSyntheticChecksResponse
@@ -10439,7 +10712,7 @@ func ParsePostApiRecordingRuleGroupsResponse(rsp *http.Response) (*PostApiRecord
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest RecordingRuleGroupDefinition
+		var dest RecordingRuleGroupResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -10498,7 +10771,7 @@ func ParseGetApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*GetA
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupDefinition
+		var dest RecordingRuleGroupResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -10531,7 +10804,7 @@ func ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*PutA
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupDefinition
+		var dest RecordingRuleGroupResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -10564,7 +10837,7 @@ func ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse(rsp *http.R
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupDefinition
+		var dest RecordingRuleGroupResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -10777,6 +11050,39 @@ func ParsePostApiSpansResponse(rsp *http.Response) (*PostApiSpansResponse, error
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest GetSpansResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiSqlResponse parses an HTTP response from a PostApiSqlWithResponse call
+func ParsePostApiSqlResponse(rsp *http.Response) (*PostApiSqlResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSqlResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ExecuteSqlResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
