@@ -105,7 +105,20 @@ All struct tags in `yaml/` use `json:` only (no `yaml:` tags), because `sigs.k8s
 
 The CI workflow runs [`gorelease`](https://pkg.go.dev/golang.org/x/exp/cmd/gorelease) on pull requests to detect breaking API changes against the latest release tag.
 It checks full type signatures (not just symbol names), covering both hand-written and generated code.
-The output is informational -- reviewers must assess whether flagged changes are intentional.
+The build fails if unallowed incompatible changes are detected.
+
+Intentional breaking changes (e.g., from upstream OpenAPI spec updates) must be listed in `api_compatibility_exceptions.txt`, one symbol per line.
+Clear this file when cutting a new release tag.
+
+When introducing a breaking change:
+
+1. Add the symbol to `api_compatibility_exceptions.txt` with a version comment (e.g., `# <NEXT_RELEASE>: reason`).
+2. If possible, add a backwards-compatible alias in `compat.go` with a `// Deprecated: since <NEXT_RELEASE>. Use [NewName] instead.` doc comment.
+   Use `<NEXT_RELEASE>` as the version placeholder -- the prepare-release workflow replaces it with the actual version at release time.
+   Go tooling (`go vet`, `staticcheck`, IDE hints) surfaces `// Deprecated:` annotations automatically, guiding both humans and AI agents to the replacement.
+3. Document the migration in the `compat.go` file-level doc comment under the "Migration guide" section.
+   This comment is visible via `go doc dash0`, which is how agents and developers discover migration steps when upgrading.
+   Use `go doc` [linking syntax](https://tip.golang.org/doc/comment#links) (`[NewSymbol]`) to cross-reference replacement symbols.
 
 To run locally:
 

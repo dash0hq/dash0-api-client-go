@@ -52,10 +52,39 @@ tidy:
 	@echo "Tidying dependencies..."
 	go mod tidy
 
-# Check API compatibility against latest release tag
+# Check API compatibility against latest release tag.
+# gorelease detects all incompatible changes; the script then filters out
+# changes listed in api_compatibility_exceptions.txt.
+# If unallowed incompatible changes remain, the target fails.
 api-compat:
 	@echo "Checking API compatibility..."
-	go run golang.org/x/exp/cmd/gorelease@latest
+	@go run golang.org/x/exp/cmd/gorelease@latest 2>&1 | tee /tmp/gorelease-output.txt; \
+	INCOMPAT=$$(sed -n '/^## incompatible changes/,/^## compatible changes/p' /tmp/gorelease-output.txt | grep -v '^##' | grep -v '^$$' | grep -v ': added$$'); \
+	if [ -z "$$INCOMPAT" ]; then \
+		echo "No incompatible changes detected."; \
+		exit 0; \
+	fi; \
+	if [ -f api_compatibility_exceptions.txt ]; then \
+		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$$$/$$$$/' | paste -sd'|' -); \
+		UNALLOWED=$$(echo "$$INCOMPAT" | while IFS= read -r line; do \
+			SYMBOL=$$(echo "$$line" | sed 's/:.*//' | tr -d ' '); \
+			if ! echo "$$SYMBOL" | grep -qE "$$PATTERNS"; then \
+				echo "  $$line"; \
+			fi; \
+		done); \
+	else \
+		UNALLOWED=$$(echo "$$INCOMPAT" | sed 's/^/  /'); \
+	fi; \
+	if [ -n "$$UNALLOWED" ]; then \
+		echo ""; \
+		echo "Unallowed incompatible changes:"; \
+		echo "$$UNALLOWED"; \
+		echo ""; \
+		echo "If intentional, add the symbol name to api_compatibility_exceptions.txt."; \
+		exit 1; \
+	else \
+		echo "All incompatible changes are allowed via api_compatibility_exceptions.txt."; \
+	fi
 
 # Download dependencies
 deps:

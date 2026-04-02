@@ -39,8 +39,8 @@ var symbolRenames = map[string]string{
 // future, it will be left alone.
 var deprecatedFields = map[string]map[string]bool{
 	"PrometheusAlertRule": {
-		"Description":  true,
-		"Summary":      true,
+		"Description":   true,
+		"Summary":       true,
 		"KeepFiringFor": true,
 	},
 }
