@@ -139,7 +139,6 @@ func TestDeeplinkURL_ViewTypes(t *testing.T) {
 	}
 }
 
-
 func TestFiltersToDeeplinkFilters(t *testing.T) {
 	t.Run("nil input", func(t *testing.T) {
 		got := FiltersToDeeplinkFilters(nil)

@@ -5,7 +5,7 @@ import "testing"
 func TestStripCheckRuleServerFields(t *testing.T) {
 	dataset := "ds"
 	labels := map[string]string{
-		"severity":        "critical",
+		"severity":         "critical",
 		"dash0.com/origin": "terraform",
 	}
 	r := &PrometheusAlertRule{
