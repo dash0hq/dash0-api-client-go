@@ -100,6 +100,19 @@ All struct tags in `yaml/` use `json:` only (no `yaml:` tags), because `sigs.k8s
 | `yaml/dashboards.go` | Dashboard conversion, extraction, and parsing (`ParseAsDashboard`, `ConvertPersesDashboardToDashboard`, etc.) |
 | `yaml/kind.go` | `DetectKind` -- sniffs asset kind from raw YAML/JSON bytes |
 
+### API compatibility
+
+The CI workflow runs [`gorelease`](https://pkg.go.dev/golang.org/x/exp/cmd/gorelease) on pull requests to detect breaking API changes against the latest release tag.
+It checks full type signatures (not just symbol names), covering both hand-written and generated code.
+The output is informational -- reviewers must assess whether flagged changes are intentional.
+
+To run locally:
+
+```bash
+go install golang.org/x/exp/cmd/gorelease@latest
+gorelease
+```
+
 ### Code review
 
 See [REVIEW-CRITERIA.md](REVIEW-CRITERIA.md) for the review lenses used on this codebase: abstraction cleanliness, reusability, and encapsulation.
