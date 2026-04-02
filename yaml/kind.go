@@ -4,22 +4,28 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-// DetectKind extracts the "kind" field from raw YAML/JSON bytes. When the
-// document has no explicit "kind" (e.g. a check rule exported via
+// kindProbe is a minimal struct that captures only the top-level fields needed
+// to detect the document kind, avoiding a full unmarshal into map[string]any.
+type kindProbe struct {
+	Kind       string `json:"kind"`
+	Name       string `json:"name"`
+	Expression string `json:"expression"`
+}
+
+// DetectKind extracts the "kind" field from raw YAML/JSON bytes.
+// When the document has no explicit "kind" (e.g., a check rule exported via
 // `check-rules get -o yaml`), the kind is inferred from the document
 // structure: the "expression" field is required for check rules and absent
 // in all other asset types.
 func DetectKind(data []byte) string {
-	var doc map[string]any
-	if err := sigsyaml.Unmarshal(data, &doc); err != nil {
+	var probe kindProbe
+	if err := sigsyaml.Unmarshal(data, &probe); err != nil {
 		return ""
 	}
-	if kind, ok := doc["kind"].(string); ok && kind != "" {
-		return kind
+	if probe.Kind != "" {
+		return probe.Kind
 	}
-	_, hasName := doc["name"]
-	_, hasExpr := doc["expression"]
-	if hasName && hasExpr {
+	if probe.Name != "" && probe.Expression != "" {
 		return "CheckRule"
 	}
 	return ""
