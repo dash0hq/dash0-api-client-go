@@ -44,18 +44,8 @@ jobs:
         with:
           go-version: '1.25'
 
-      - name: Install gorelease
-        run: go install golang.org/x/exp/cmd/gorelease@latest
-
       - name: Check API compatibility
-        run: |
-          echo "Comparing against latest tag..."
-          gorelease 2>&1 | tee /tmp/gorelease-output.txt
-          # gorelease exits 0 if the version is valid, non-zero otherwise.
-          # We print the output for review but do not fail the build — the
-          # output is informational for PR reviewers to assess whether
-          # breaking changes are intentional.
-        continue-on-error: true
+        run: make api-compat
 
   collector-test:
     runs-on: ubuntu-latest

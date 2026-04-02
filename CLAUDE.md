@@ -10,6 +10,7 @@ make test         # Run tests with race detection and coverage
 make lint         # Run golangci-lint
 make generate     # Regenerate generated.go from OpenAPI spec
 make test-coverage # Generate HTML coverage report
+make api-compat   # Check API compatibility against latest release tag
 ```
 
 Run a single test:
@@ -109,8 +110,7 @@ The output is informational -- reviewers must assess whether flagged changes are
 To run locally:
 
 ```bash
-go install golang.org/x/exp/cmd/gorelease@latest
-gorelease
+make api-compat
 ```
 
 ### Code review

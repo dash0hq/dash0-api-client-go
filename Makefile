@@ -4,7 +4,7 @@
 OPENAPI_URL := https://api.eu-west-1.aws.dash0-dev.com/openapi.yaml
 OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@1401fbe26ce7e128e9963786742490ff444e3795
 
-.PHONY: all generate build test test-collector lint clean tidy help
+.PHONY: all generate build test test-collector lint clean tidy api-compat help
 
 # Default target
 all: clean generate tidy fmt lint build test
@@ -52,6 +52,11 @@ tidy:
 	@echo "Tidying dependencies..."
 	go mod tidy
 
+# Check API compatibility against latest release tag
+api-compat:
+	@echo "Checking API compatibility..."
+	go run golang.org/x/exp/cmd/gorelease@latest
+
 # Download dependencies
 deps:
 	@echo "Downloading dependencies..."
@@ -80,6 +85,7 @@ help:
 	@echo "  lint           - Run linter"
 	@echo "  fmt            - Format code"
 	@echo "  tidy           - Tidy go.mod"
+	@echo "  api-compat     - Check API compatibility against latest tag"
 	@echo "  deps           - Download dependencies"
 	@echo "  clean          - Remove generated files"
 	@echo "  verify-spec    - Check if OpenAPI spec URL is accessible"
