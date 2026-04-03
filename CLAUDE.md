@@ -75,7 +75,6 @@ Keep helpers co-located with their domain's CRUD methods.
 | `iterator.go` | Generic pagination iterator |
 | `context.go` | Context helpers (idempotent POST marking) |
 | `errors.go` | `APIError` type and helpers (`IsNotFound`, `IsUnauthorized`, etc.) |
-| `deeplink.go` | Deeplink URL construction for Dash0 UI |
 | `dataset.go` | `DatasetPtr` helper |
 | `dependencies_test.go` | Guard test: verifies YAML deps don't leak into root package |
 | `dash0test/mock.go` | `MockClient` for testing |
@@ -205,7 +204,6 @@ Clear<Asset>ID(<param> *<Type>)
 
 **Typed constants** over free-form strings:
 
-- `DeeplinkType` for deeplink URL types, not raw strings.
 - Use typed constants for any value passed by callers where typos would fail silently.
 
 ### Dependency isolation

@@ -38,7 +38,7 @@ Evaluates whether functions can be composed and called from different contexts w
   Every asset type must have the full set of helpers (`Strip*`, `Get*`, `Set*`, `Clear*`) with consistent parameter names and nil-safety guarantees.
 - Are parameters typed narrowly enough?
   Free-form `string` parameters where a finite set of values is valid invite typos that fail silently.
-  Use typed constants (e.g., `DeeplinkType`) instead.
+  Use typed constants (e.g., `OtlpEncoding`) instead.
 - Do Parse/Marshal functions use `[]byte` consistently?
   Mixing `string` and `[]byte` for the same kind of data forces unnecessary conversions at call sites.
 - Are naming conventions followed?
@@ -47,7 +47,6 @@ Evaluates whether functions can be composed and called from different contexts w
 
 **Example findings:**
 
-- `deeplinkPathAndQuery` accepted untyped strings with ad-hoc aliases (`"checkrule"`, `"check rule"`, `"prometheusrule"`) -- replaced with `DeeplinkType` constants.
 - `UnmarshalPrometheusRule` took a `string` while all other parse functions took `[]byte` -- unified to `[]byte`.
 
 ---
@@ -75,7 +74,7 @@ Evaluates whether implementation details are hidden behind clean boundaries, and
 **Example findings:**
 
 - `DetectKind` fully unmarshaled documents into `map[string]any` just to check 3 top-level keys -- replaced with a minimal `kindProbe` struct.
-- `AppBaseURL` encodes an undocumented two-label TLD assumption (breaks for `.co.uk`).
+- `DetectKind` relied on an undocumented assumption about document structure that was not validated.
 
 ---
 
