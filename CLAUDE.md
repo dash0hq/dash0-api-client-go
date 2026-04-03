@@ -188,11 +188,14 @@ Strip<Asset>ServerFields(<param> *<Type>)
 Get<Asset>ID(<param> *<Type>) string
 Get<Asset>Name(<param> *<Type>) string
 Set<Asset>ID(<param> *<Type>, id string)
+Set<Asset>IDIfAbsent(<param> *<Type>, id string)
 Clear<Asset>ID(<param> *<Type>)
 ```
 
+- `Set*ID` unconditionally overwrites the ID.
+  `Set*IDIfAbsent` only sets the ID when it is not already present.
 - Parameter names must be consistent within a file (e.g., all functions in `client_check_rules.go` use `rule`, not `r`).
-- All `Clear*` and `Strip*` methods must be nil-safe (no panics on zero-value structs or nil pointers).
+- All helper functions that take a pointer parameter must be nil-safe (no panics on nil pointers or zero-value structs).
 
 **Parse/Marshal functions** in the `yaml/` subpackage:
 
@@ -225,7 +228,7 @@ Shared test helpers go in `helpers_test.go`.
 **URL assertions**: When testing URL output, parse with `net/url` and assert on scheme, host, path, and query parameters individually.
 Do not use substring matching on URL strings.
 
-**Nil-safety tests**: Every `Clear*` and `Strip*` function must have a test that passes a zero-value struct to verify it does not panic.
+**Nil-safety tests**: Every helper function that takes a pointer parameter (`Get*`, `Set*`, `Clear*`, `Strip*`) must have a test that passes `nil` to verify it does not panic.
 
 Use `dash0test.MockClient` with function fields to mock specific methods:
 
@@ -236,3 +239,8 @@ mock := &dash0test.MockClient{
     },
 }
 ```
+
+**Example tests**: Each package has a single `example_test.go` file containing `Example*` functions.
+When adding a new public function or method, add a corresponding `Example` function in `example_test.go`.
+Examples must include an `// Output:` comment so `go test` verifies them.
+Do not split examples across multiple files.
