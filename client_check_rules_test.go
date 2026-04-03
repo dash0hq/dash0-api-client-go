@@ -71,9 +71,25 @@ func TestSetCheckRuleID(t *testing.T) {
 	}
 }
 
-func TestSetCheckRuleID_NoOpWhenAlreadySet(t *testing.T) {
+func TestSetCheckRuleID_Overwrites(t *testing.T) {
 	r := &PrometheusAlertRule{Id: Ptr("existing-id")}
 	SetCheckRuleID(r, "new-id")
+	if *r.Id != "new-id" {
+		t.Errorf("ID = %q, want %q", *r.Id, "new-id")
+	}
+}
+
+func TestSetCheckRuleIDIfAbsent(t *testing.T) {
+	r := &PrometheusAlertRule{Name: "test"}
+	SetCheckRuleIDIfAbsent(r, "new-id")
+	if r.Id == nil || *r.Id != "new-id" {
+		t.Error("expected ID to be set to new-id")
+	}
+}
+
+func TestSetCheckRuleIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	r := &PrometheusAlertRule{Id: Ptr("existing-id")}
+	SetCheckRuleIDIfAbsent(r, "new-id")
 	if *r.Id != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", *r.Id, "existing-id")
 	}

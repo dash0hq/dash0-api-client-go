@@ -147,8 +147,17 @@ func GetViewName(view *ViewDefinition) string {
 }
 
 // SetViewID sets the dash0.com/id label on a view definition, initializing
-// the labels struct if needed. It is a no-op if the ID is already set.
+// the labels struct if needed.
 func SetViewID(view *ViewDefinition, id string) {
+	if view.Metadata.Labels == nil {
+		view.Metadata.Labels = &ViewLabels{}
+	}
+	view.Metadata.Labels.Dash0Comid = &id
+}
+
+// SetViewIDIfAbsent sets the dash0.com/id label on a view definition only if
+// it is not already set, initializing the labels struct if needed.
+func SetViewIDIfAbsent(view *ViewDefinition, id string) {
 	if view.Metadata.Labels == nil {
 		view.Metadata.Labels = &ViewLabels{}
 	}

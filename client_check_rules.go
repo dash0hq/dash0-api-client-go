@@ -136,8 +136,13 @@ func GetCheckRuleName(rule *PrometheusAlertRule) string {
 }
 
 // SetCheckRuleID sets the ID on a check rule definition.
-// It is a no-op if the ID is already set.
 func SetCheckRuleID(rule *PrometheusAlertRule, id string) {
+	rule.Id = &id
+}
+
+// SetCheckRuleIDIfAbsent sets the ID on a check rule definition only if it is
+// not already set.
+func SetCheckRuleIDIfAbsent(rule *PrometheusAlertRule, id string) {
 	if rule.Id == nil {
 		rule.Id = &id
 	}

@@ -116,13 +116,36 @@ func TestSetDashboardID(t *testing.T) {
 	}
 }
 
-func TestSetDashboardID_NoOpWhenAlreadySet(t *testing.T) {
+func TestSetDashboardID_Overwrites(t *testing.T) {
 	d := &DashboardDefinition{
 		Metadata: DashboardMetadata{
 			Dash0Extensions: &DashboardMetadataExtensions{Id: Ptr("existing-id")},
 		},
 	}
 	SetDashboardID(d, "new-id")
+	if *d.Metadata.Dash0Extensions.Id != "new-id" {
+		t.Errorf("ID = %q, want %q", *d.Metadata.Dash0Extensions.Id, "new-id")
+	}
+}
+
+func TestSetDashboardIDIfAbsent(t *testing.T) {
+	d := &DashboardDefinition{}
+	SetDashboardIDIfAbsent(d, "new-id")
+	if d.Metadata.Dash0Extensions == nil || d.Metadata.Dash0Extensions.Id == nil {
+		t.Fatal("expected ID to be set")
+	}
+	if *d.Metadata.Dash0Extensions.Id != "new-id" {
+		t.Errorf("ID = %q, want %q", *d.Metadata.Dash0Extensions.Id, "new-id")
+	}
+}
+
+func TestSetDashboardIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	d := &DashboardDefinition{
+		Metadata: DashboardMetadata{
+			Dash0Extensions: &DashboardMetadataExtensions{Id: Ptr("existing-id")},
+		},
+	}
+	SetDashboardIDIfAbsent(d, "new-id")
 	if *d.Metadata.Dash0Extensions.Id != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", *d.Metadata.Dash0Extensions.Id, "existing-id")
 	}

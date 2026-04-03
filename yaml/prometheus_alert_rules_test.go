@@ -50,13 +50,36 @@ func TestSetPrometheusRuleID(t *testing.T) {
 	}
 }
 
-func TestSetPrometheusRuleID_NoOpWhenAlreadySet(t *testing.T) {
+func TestSetPrometheusRuleID_Overwrites(t *testing.T) {
 	rule := &PrometheusRules{
 		Metadata: PrometheusRulesMetadata{
 			Labels: map[string]string{"dash0.com/id": "existing-id"},
 		},
 	}
 	SetPrometheusRuleID(rule, "new-id")
+	if rule.Metadata.Labels["dash0.com/id"] != "new-id" {
+		t.Errorf("ID = %q, want %q", rule.Metadata.Labels["dash0.com/id"], "new-id")
+	}
+}
+
+func TestSetPrometheusRuleIDIfAbsent(t *testing.T) {
+	rule := &PrometheusRules{}
+	SetPrometheusRuleIDIfAbsent(rule, "new-id")
+	if rule.Metadata.Labels == nil {
+		t.Fatal("expected labels to be initialized")
+	}
+	if rule.Metadata.Labels["dash0.com/id"] != "new-id" {
+		t.Errorf("ID = %q, want %q", rule.Metadata.Labels["dash0.com/id"], "new-id")
+	}
+}
+
+func TestSetPrometheusRuleIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	rule := &PrometheusRules{
+		Metadata: PrometheusRulesMetadata{
+			Labels: map[string]string{"dash0.com/id": "existing-id"},
+		},
+	}
+	SetPrometheusRuleIDIfAbsent(rule, "new-id")
 	if rule.Metadata.Labels["dash0.com/id"] != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", rule.Metadata.Labels["dash0.com/id"], "existing-id")
 	}

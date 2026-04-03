@@ -147,9 +147,18 @@ func GetSyntheticCheckName(check *SyntheticCheckDefinition) string {
 }
 
 // SetSyntheticCheckID sets the dash0.com/id label on a synthetic check
-// definition, initializing the labels struct if needed. It is a no-op if the
-// ID is already set.
+// definition, initializing the labels struct if needed.
 func SetSyntheticCheckID(check *SyntheticCheckDefinition, id string) {
+	if check.Metadata.Labels == nil {
+		check.Metadata.Labels = &SyntheticCheckLabels{}
+	}
+	check.Metadata.Labels.Dash0Comid = &id
+}
+
+// SetSyntheticCheckIDIfAbsent sets the dash0.com/id label on a synthetic check
+// definition only if it is not already set, initializing the labels struct if
+// needed.
+func SetSyntheticCheckIDIfAbsent(check *SyntheticCheckDefinition, id string) {
 	if check.Metadata.Labels == nil {
 		check.Metadata.Labels = &SyntheticCheckLabels{}
 	}

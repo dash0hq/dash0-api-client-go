@@ -102,11 +102,32 @@ func TestSetSyntheticCheckID(t *testing.T) {
 	}
 }
 
-func TestSetSyntheticCheckID_NoOpWhenAlreadySet(t *testing.T) {
+func TestSetSyntheticCheckID_Overwrites(t *testing.T) {
 	c := &SyntheticCheckDefinition{
 		Metadata: SyntheticCheckMetadata{Labels: &SyntheticCheckLabels{Dash0Comid: Ptr("existing-id")}},
 	}
 	SetSyntheticCheckID(c, "new-id")
+	if *c.Metadata.Labels.Dash0Comid != "new-id" {
+		t.Errorf("ID = %q, want %q", *c.Metadata.Labels.Dash0Comid, "new-id")
+	}
+}
+
+func TestSetSyntheticCheckIDIfAbsent(t *testing.T) {
+	c := &SyntheticCheckDefinition{}
+	SetSyntheticCheckIDIfAbsent(c, "new-id")
+	if c.Metadata.Labels == nil || c.Metadata.Labels.Dash0Comid == nil {
+		t.Fatal("expected ID to be set")
+	}
+	if *c.Metadata.Labels.Dash0Comid != "new-id" {
+		t.Errorf("ID = %q, want %q", *c.Metadata.Labels.Dash0Comid, "new-id")
+	}
+}
+
+func TestSetSyntheticCheckIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	c := &SyntheticCheckDefinition{
+		Metadata: SyntheticCheckMetadata{Labels: &SyntheticCheckLabels{Dash0Comid: Ptr("existing-id")}},
+	}
+	SetSyntheticCheckIDIfAbsent(c, "new-id")
 	if *c.Metadata.Labels.Dash0Comid != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", *c.Metadata.Labels.Dash0Comid, "existing-id")
 	}

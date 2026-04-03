@@ -102,11 +102,32 @@ func TestSetViewID(t *testing.T) {
 	}
 }
 
-func TestSetViewID_NoOpWhenAlreadySet(t *testing.T) {
+func TestSetViewID_Overwrites(t *testing.T) {
 	v := &ViewDefinition{
 		Metadata: ViewMetadata{Labels: &ViewLabels{Dash0Comid: Ptr("existing-id")}},
 	}
 	SetViewID(v, "new-id")
+	if *v.Metadata.Labels.Dash0Comid != "new-id" {
+		t.Errorf("ID = %q, want %q", *v.Metadata.Labels.Dash0Comid, "new-id")
+	}
+}
+
+func TestSetViewIDIfAbsent(t *testing.T) {
+	v := &ViewDefinition{}
+	SetViewIDIfAbsent(v, "new-id")
+	if v.Metadata.Labels == nil || v.Metadata.Labels.Dash0Comid == nil {
+		t.Fatal("expected ID to be set")
+	}
+	if *v.Metadata.Labels.Dash0Comid != "new-id" {
+		t.Errorf("ID = %q, want %q", *v.Metadata.Labels.Dash0Comid, "new-id")
+	}
+}
+
+func TestSetViewIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	v := &ViewDefinition{
+		Metadata: ViewMetadata{Labels: &ViewLabels{Dash0Comid: Ptr("existing-id")}},
+	}
+	SetViewIDIfAbsent(v, "new-id")
 	if *v.Metadata.Labels.Dash0Comid != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", *v.Metadata.Labels.Dash0Comid, "existing-id")
 	}

@@ -154,8 +154,17 @@ func GetDashboardName(dashboard *DashboardDefinition) string {
 }
 
 // SetDashboardID sets the ID on a dashboard definition, initializing the
-// dash0Extensions struct if needed. It is a no-op if the ID is already set.
+// dash0Extensions struct if needed.
 func SetDashboardID(dashboard *DashboardDefinition, id string) {
+	if dashboard.Metadata.Dash0Extensions == nil {
+		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
+	}
+	dashboard.Metadata.Dash0Extensions.Id = &id
+}
+
+// SetDashboardIDIfAbsent sets the ID on a dashboard definition only if it is
+// not already set, initializing the dash0Extensions struct if needed.
+func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
 	if dashboard.Metadata.Dash0Extensions == nil {
 		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
 	}

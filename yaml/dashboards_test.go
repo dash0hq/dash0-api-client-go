@@ -302,13 +302,36 @@ func TestSetPersesDashboardID(t *testing.T) {
 	}
 }
 
-func TestSetPersesDashboardID_NoOpWhenAlreadySet(t *testing.T) {
+func TestSetPersesDashboardID_Overwrites(t *testing.T) {
 	perses := &PersesDashboard{
 		Metadata: PersesDashboardMetadata{
 			Labels: map[string]string{"dash0.com/id": "existing-id"},
 		},
 	}
 	SetPersesDashboardID(perses, "new-id")
+	if perses.Metadata.Labels["dash0.com/id"] != "new-id" {
+		t.Errorf("ID = %q, want %q", perses.Metadata.Labels["dash0.com/id"], "new-id")
+	}
+}
+
+func TestSetPersesDashboardIDIfAbsent(t *testing.T) {
+	perses := &PersesDashboard{}
+	SetPersesDashboardIDIfAbsent(perses, "new-id")
+	if perses.Metadata.Labels == nil {
+		t.Fatal("expected labels to be initialized")
+	}
+	if perses.Metadata.Labels["dash0.com/id"] != "new-id" {
+		t.Errorf("ID = %q, want %q", perses.Metadata.Labels["dash0.com/id"], "new-id")
+	}
+}
+
+func TestSetPersesDashboardIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	perses := &PersesDashboard{
+		Metadata: PersesDashboardMetadata{
+			Labels: map[string]string{"dash0.com/id": "existing-id"},
+		},
+	}
+	SetPersesDashboardIDIfAbsent(perses, "new-id")
 	if perses.Metadata.Labels["dash0.com/id"] != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", perses.Metadata.Labels["dash0.com/id"], "existing-id")
 	}

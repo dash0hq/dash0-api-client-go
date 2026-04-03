@@ -147,8 +147,18 @@ func ClearPersesDashboardID(perses *PersesDashboard) {
 }
 
 // SetPersesDashboardID sets the dash0.com/id label on a PersesDashboard CRD,
-// initializing the labels map if needed. It is a no-op if the ID is already set.
+// initializing the labels map if needed.
 func SetPersesDashboardID(perses *PersesDashboard, id string) {
+	if perses.Metadata.Labels == nil {
+		perses.Metadata.Labels = map[string]string{}
+	}
+	perses.Metadata.Labels["dash0.com/id"] = id
+}
+
+// SetPersesDashboardIDIfAbsent sets the dash0.com/id label on a
+// PersesDashboard CRD only if it is not already set, initializing the labels
+// map if needed.
+func SetPersesDashboardIDIfAbsent(perses *PersesDashboard, id string) {
 	if perses.Metadata.Labels == nil {
 		perses.Metadata.Labels = map[string]string{}
 	}
