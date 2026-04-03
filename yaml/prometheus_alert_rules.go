@@ -211,23 +211,26 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 	// Convert *Duration (string) to PromDuration
 	if rule.For != nil {
 		d, err := time.ParseDuration(*rule.For)
-		if err == nil {
-			promRule.For = PromDuration(d)
+		if err != nil {
+			return nil, fmt.Errorf("invalid \"for\" duration %q: %w", *rule.For, err)
 		}
+		promRule.For = PromDuration(d)
 	}
 	if rule.KeepFiringFor != nil {
 		d, err := time.ParseDuration(*rule.KeepFiringFor)
-		if err == nil {
-			promRule.KeepFiringFor = PromDuration(d)
+		if err != nil {
+			return nil, fmt.Errorf("invalid \"keep_firing_for\" duration %q: %w", *rule.KeepFiringFor, err)
 		}
+		promRule.KeepFiringFor = PromDuration(d)
 	}
 
 	var groupInterval PromDuration
 	if rule.Interval != nil {
 		d, err := time.ParseDuration(*rule.Interval)
-		if err == nil {
-			groupInterval = PromDuration(d)
+		if err != nil {
+			return nil, fmt.Errorf("invalid \"interval\" duration %q: %w", *rule.Interval, err)
 		}
+		groupInterval = PromDuration(d)
 	}
 
 	promRules := &PrometheusRules{

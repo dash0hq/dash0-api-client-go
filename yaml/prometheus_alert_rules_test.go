@@ -1,6 +1,7 @@
 package yaml
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -455,4 +456,52 @@ func TestMarshalPrometheusRule(t *testing.T) {
 	}
 	assertEqual(t, "Name", parsed.Name, "my-group - HighErrors")
 	assertEqual(t, "Expression", parsed.Expression, "sum(rate(errors[5m])) > 0.1")
+}
+
+func TestMarshalPrometheusRule_InvalidForDuration(t *testing.T) {
+	badDur := dash0.Duration("not-a-duration")
+	rule := &dash0.PrometheusAlertRule{
+		Name:       "g - r",
+		Expression: "up == 0",
+		For:        &badDur,
+	}
+	_, err := MarshalPrometheusRule(rule)
+	if err == nil {
+		t.Fatal("expected error for invalid \"for\" duration")
+	}
+	if !strings.Contains(err.Error(), "invalid \"for\" duration") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestMarshalPrometheusRule_InvalidKeepFiringForDuration(t *testing.T) {
+	badDur := dash0.Duration("bad")
+	rule := &dash0.PrometheusAlertRule{
+		Name:          "g - r",
+		Expression:    "up == 0",
+		KeepFiringFor: &badDur,
+	}
+	_, err := MarshalPrometheusRule(rule)
+	if err == nil {
+		t.Fatal("expected error for invalid \"keep_firing_for\" duration")
+	}
+	if !strings.Contains(err.Error(), "invalid \"keep_firing_for\" duration") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestMarshalPrometheusRule_InvalidIntervalDuration(t *testing.T) {
+	badDur := dash0.Duration("bad")
+	rule := &dash0.PrometheusAlertRule{
+		Name:       "g - r",
+		Expression: "up == 0",
+		Interval:   &badDur,
+	}
+	_, err := MarshalPrometheusRule(rule)
+	if err == nil {
+		t.Fatal("expected error for invalid \"interval\" duration")
+	}
+	if !strings.Contains(err.Error(), "invalid \"interval\" duration") {
+		t.Errorf("unexpected error: %v", err)
+	}
 }
