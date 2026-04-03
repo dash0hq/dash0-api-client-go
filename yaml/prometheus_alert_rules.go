@@ -258,7 +258,11 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 // the API. A plain CheckRule returns a slice of length 1. A PrometheusRule CRD
 // returns one entry per alerting rule (recording rules are skipped).
 func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, error) {
-	kind := strings.ToLower(DetectKind(data))
+	detectedKind, err := DetectKind(data)
+	if err != nil {
+		return nil, err
+	}
+	kind := strings.ToLower(detectedKind)
 	if kind == "prometheusrule" {
 		var promRule PrometheusRules
 		if err := sigsyaml.Unmarshal(data, &promRule); err != nil {

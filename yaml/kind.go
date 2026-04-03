@@ -1,6 +1,8 @@
 package yaml
 
 import (
+	"fmt"
+
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
@@ -17,16 +19,19 @@ type kindProbe struct {
 // `check-rules get -o yaml`), the kind is inferred from the document
 // structure: the "expression" field is required for check rules and absent
 // in all other asset types.
-func DetectKind(data []byte) string {
+// An empty kind is returned when the input is valid YAML but has no
+// recognizable kind.
+// An error is returned when the input cannot be parsed as YAML.
+func DetectKind(data []byte) (string, error) {
 	var probe kindProbe
 	if err := sigsyaml.Unmarshal(data, &probe); err != nil {
-		return ""
+		return "", fmt.Errorf("failed to detect document kind: %w", err)
 	}
 	if probe.Kind != "" {
-		return probe.Kind
+		return probe.Kind, nil
 	}
 	if probe.Name != "" && probe.Expression != "" {
-		return "CheckRule"
+		return "CheckRule", nil
 	}
-	return ""
+	return "", nil
 }

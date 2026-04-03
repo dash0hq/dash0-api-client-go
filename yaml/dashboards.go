@@ -171,7 +171,11 @@ func SetPersesDashboardIDIfAbsent(perses *PersesDashboard, id string) {
 // CRD, unmarshals it, and returns a normalized DashboardDefinition ready for
 // the API. PersesDashboard CRDs are converted via ConvertPersesDashboardToDashboard.
 func ParseAsDashboard(data []byte) (*dash0.DashboardDefinition, error) {
-	kind := strings.ToLower(DetectKind(data))
+	detectedKind, err := DetectKind(data)
+	if err != nil {
+		return nil, err
+	}
+	kind := strings.ToLower(detectedKind)
 	if kind == "persesdashboard" {
 		var perses PersesDashboard
 		if err := sigsyaml.Unmarshal(data, &perses); err != nil {
