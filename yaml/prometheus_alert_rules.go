@@ -2,6 +2,7 @@ package yaml
 
 import (
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"time"
@@ -76,12 +77,12 @@ func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInter
 	}
 
 	if len(rule.Labels) > 0 {
-		labels := copyMap(rule.Labels)
+		labels := maps.Clone(rule.Labels)
 		checkRule.Labels = &labels
 	}
 
 	// Copy annotations before mutating (threshold/enabled extraction removes keys).
-	annotations := copyMap(rule.Annotations)
+	annotations := maps.Clone(rule.Annotations)
 
 	if forDur := time.Duration(rule.For); forDur != 0 {
 		s := dash0.Duration(FormatDuration(forDur))
@@ -362,14 +363,3 @@ func extractEnabledFromAnnotations(annotations map[string]string) (*bool, error)
 	return &enabled, nil
 }
 
-// copyMap returns a shallow copy of m. If m is nil, it returns nil.
-func copyMap(m map[string]string) map[string]string {
-	if m == nil {
-		return nil
-	}
-	cp := make(map[string]string, len(m))
-	for k, v := range m {
-		cp[k] = v
-	}
-	return cp
-}
