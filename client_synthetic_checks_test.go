@@ -79,6 +79,7 @@ func TestGetSyntheticCheckID(t *testing.T) {
 			&SyntheticCheckDefinition{Metadata: SyntheticCheckMetadata{Labels: &SyntheticCheckLabels{Dash0Comid: Ptr("sc-123")}}},
 			"sc-123",
 		},
+		{"nil check", nil, ""},
 		{"nil labels", &SyntheticCheckDefinition{}, ""},
 		{"nil ID", &SyntheticCheckDefinition{Metadata: SyntheticCheckMetadata{Labels: &SyntheticCheckLabels{}}}, ""},
 	}
@@ -149,6 +150,7 @@ func TestGetSyntheticCheckName(t *testing.T) {
 			&SyntheticCheckDefinition{Metadata: SyntheticCheckMetadata{Name: "meta-name"}},
 			"meta-name",
 		},
+		{"nil check", nil, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

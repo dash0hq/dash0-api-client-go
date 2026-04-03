@@ -14,6 +14,7 @@ func TestGetPrometheusRuleID(t *testing.T) {
 		rule *PrometheusRules
 		want string
 	}{
+		{"nil rule", nil, ""},
 		{"nil labels", &PrometheusRules{}, ""},
 		{"empty labels", &PrometheusRules{Metadata: PrometheusRulesMetadata{Labels: map[string]string{}}}, ""},
 		{"id present", &PrometheusRules{Metadata: PrometheusRulesMetadata{Labels: map[string]string{"dash0.com/id": "abc"}}}, "abc"},
@@ -93,6 +94,9 @@ func TestGetPrometheusRuleName(t *testing.T) {
 	}
 	if got := GetPrometheusRuleName(&PrometheusRules{}); got != "" {
 		t.Errorf("got %q, want empty", got)
+	}
+	if got := GetPrometheusRuleName(nil); got != "" {
+		t.Errorf("got %q, want empty for nil", got)
 	}
 }
 

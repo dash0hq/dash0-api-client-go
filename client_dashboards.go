@@ -111,6 +111,9 @@ func (c *client) ListDashboardsIter(ctx context.Context, dataset *string) *Iter[
 
 // StripDashboardServerFields removes server-generated metadata fields from a dashboard definition.
 func StripDashboardServerFields(dashboard *DashboardDefinition) {
+	if dashboard == nil {
+		return
+	}
 	if dashboard.Metadata.Annotations != nil {
 		dashboard.Metadata.Annotations.Dash0ComdeletedAt = nil
 	}
@@ -124,6 +127,9 @@ func StripDashboardServerFields(dashboard *DashboardDefinition) {
 
 // ClearDashboardID removes the ID from a dashboard definition.
 func ClearDashboardID(dashboard *DashboardDefinition) {
+	if dashboard == nil {
+		return
+	}
 	if dashboard.Metadata.Dash0Extensions != nil {
 		dashboard.Metadata.Dash0Extensions.Id = nil
 	}
@@ -131,10 +137,10 @@ func ClearDashboardID(dashboard *DashboardDefinition) {
 
 // GetDashboardID extracts the ID from a dashboard definition.
 func GetDashboardID(dashboard *DashboardDefinition) string {
-	if dashboard.Metadata.Dash0Extensions != nil && dashboard.Metadata.Dash0Extensions.Id != nil && *dashboard.Metadata.Dash0Extensions.Id != "" {
-		return *dashboard.Metadata.Dash0Extensions.Id
+	if dashboard == nil || dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id == "" {
+		return ""
 	}
-	return ""
+	return *dashboard.Metadata.Dash0Extensions.Id
 }
 
 // GetDashboardName extracts the display name from a dashboard definition.
@@ -156,6 +162,9 @@ func GetDashboardName(dashboard *DashboardDefinition) string {
 // SetDashboardID sets the ID on a dashboard definition, initializing the
 // dash0Extensions struct if needed.
 func SetDashboardID(dashboard *DashboardDefinition, id string) {
+	if dashboard == nil {
+		return
+	}
 	if dashboard.Metadata.Dash0Extensions == nil {
 		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
 	}
@@ -165,6 +174,9 @@ func SetDashboardID(dashboard *DashboardDefinition, id string) {
 // SetDashboardIDIfAbsent sets the ID on a dashboard definition only if it is
 // not already set, initializing the dash0Extensions struct if needed.
 func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
+	if dashboard == nil {
+		return
+	}
 	if dashboard.Metadata.Dash0Extensions == nil {
 		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
 	}

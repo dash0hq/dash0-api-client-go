@@ -111,6 +111,9 @@ func (c *client) ListSyntheticChecksIter(ctx context.Context, dataset *string) *
 
 // StripSyntheticCheckServerFields removes server-generated fields from a synthetic check definition.
 func StripSyntheticCheckServerFields(check *SyntheticCheckDefinition) {
+	if check == nil {
+		return
+	}
 	if check.Metadata.Annotations != nil {
 		check.Metadata.Annotations.Dash0ComdeletedAt = nil
 	}
@@ -124,6 +127,9 @@ func StripSyntheticCheckServerFields(check *SyntheticCheckDefinition) {
 
 // ClearSyntheticCheckID removes the ID from a synthetic check definition.
 func ClearSyntheticCheckID(check *SyntheticCheckDefinition) {
+	if check == nil {
+		return
+	}
 	if check.Metadata.Labels != nil {
 		check.Metadata.Labels.Dash0Comid = nil
 	}
@@ -131,15 +137,18 @@ func ClearSyntheticCheckID(check *SyntheticCheckDefinition) {
 
 // GetSyntheticCheckID extracts the ID from a synthetic check definition.
 func GetSyntheticCheckID(check *SyntheticCheckDefinition) string {
-	if check.Metadata.Labels != nil && check.Metadata.Labels.Dash0Comid != nil {
-		return *check.Metadata.Labels.Dash0Comid
+	if check == nil || check.Metadata.Labels == nil || check.Metadata.Labels.Dash0Comid == nil {
+		return ""
 	}
-	return ""
+	return *check.Metadata.Labels.Dash0Comid
 }
 
 // GetSyntheticCheckName extracts the display name from a synthetic check
 // definition, falling back to metadata.name if no display name is set.
 func GetSyntheticCheckName(check *SyntheticCheckDefinition) string {
+	if check == nil {
+		return ""
+	}
 	if check.Spec.Display != nil && check.Spec.Display.Name != "" {
 		return check.Spec.Display.Name
 	}
@@ -149,6 +158,9 @@ func GetSyntheticCheckName(check *SyntheticCheckDefinition) string {
 // SetSyntheticCheckID sets the dash0.com/id label on a synthetic check
 // definition, initializing the labels struct if needed.
 func SetSyntheticCheckID(check *SyntheticCheckDefinition, id string) {
+	if check == nil {
+		return
+	}
 	if check.Metadata.Labels == nil {
 		check.Metadata.Labels = &SyntheticCheckLabels{}
 	}
@@ -159,6 +171,9 @@ func SetSyntheticCheckID(check *SyntheticCheckDefinition, id string) {
 // definition only if it is not already set, initializing the labels struct if
 // needed.
 func SetSyntheticCheckIDIfAbsent(check *SyntheticCheckDefinition, id string) {
+	if check == nil {
+		return
+	}
 	if check.Metadata.Labels == nil {
 		check.Metadata.Labels = &SyntheticCheckLabels{}
 	}

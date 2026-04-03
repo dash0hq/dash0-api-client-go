@@ -116,6 +116,9 @@ func extractDisplayName(spec map[string]interface{}) string {
 // GetPersesDashboardName returns the display name from the Perses spec,
 // falling back to metadata.name.
 func GetPersesDashboardName(perses *PersesDashboard) string {
+	if perses == nil {
+		return ""
+	}
 	if perses.Spec != nil {
 		// Check after normalization: handle both v1alpha1 and v1alpha2
 		spec := perses.Spec
@@ -133,14 +136,17 @@ func GetPersesDashboardName(perses *PersesDashboard) string {
 
 // GetPersesDashboardID returns the dash0.com/id label value if present.
 func GetPersesDashboardID(perses *PersesDashboard) string {
-	if perses.Metadata.Labels != nil {
-		return perses.Metadata.Labels["dash0.com/id"]
+	if perses == nil || perses.Metadata.Labels == nil {
+		return ""
 	}
-	return ""
+	return perses.Metadata.Labels["dash0.com/id"]
 }
 
 // ClearPersesDashboardID removes the dash0.com/id label from a PersesDashboard CRD.
 func ClearPersesDashboardID(perses *PersesDashboard) {
+	if perses == nil {
+		return
+	}
 	if perses.Metadata.Labels != nil {
 		delete(perses.Metadata.Labels, "dash0.com/id")
 	}
@@ -149,6 +155,9 @@ func ClearPersesDashboardID(perses *PersesDashboard) {
 // SetPersesDashboardID sets the dash0.com/id label on a PersesDashboard CRD,
 // initializing the labels map if needed.
 func SetPersesDashboardID(perses *PersesDashboard, id string) {
+	if perses == nil {
+		return
+	}
 	if perses.Metadata.Labels == nil {
 		perses.Metadata.Labels = map[string]string{}
 	}
@@ -159,6 +168,9 @@ func SetPersesDashboardID(perses *PersesDashboard, id string) {
 // PersesDashboard CRD only if it is not already set, initializing the labels
 // map if needed.
 func SetPersesDashboardIDIfAbsent(perses *PersesDashboard, id string) {
+	if perses == nil {
+		return
+	}
 	if perses.Metadata.Labels == nil {
 		perses.Metadata.Labels = map[string]string{}
 	}

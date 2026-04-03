@@ -53,6 +53,7 @@ func TestGetCheckRuleID(t *testing.T) {
 	}{
 		{"with ID", &PrometheusAlertRule{Id: Ptr("abc")}, "abc"},
 		{"nil ID", &PrometheusAlertRule{}, ""},
+		{"nil rule", nil, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -101,5 +102,8 @@ func TestGetCheckRuleName(t *testing.T) {
 	}
 	if got := GetCheckRuleName(&PrometheusAlertRule{}); got != "" {
 		t.Errorf("got %q, want empty", got)
+	}
+	if got := GetCheckRuleName(nil); got != "" {
+		t.Errorf("got %q, want empty for nil", got)
 	}
 }

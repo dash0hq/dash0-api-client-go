@@ -268,6 +268,7 @@ func TestGetPersesDashboardName(t *testing.T) {
 			},
 			"V1Alpha2 Name",
 		},
+		{"nil perses", nil, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -344,5 +345,8 @@ func TestGetPersesDashboardID(t *testing.T) {
 	}
 	if got := GetPersesDashboardID(&PersesDashboard{}); got != "" {
 		t.Errorf("got %q, want empty", got)
+	}
+	if got := GetPersesDashboardID(nil); got != "" {
+		t.Errorf("got %q, want empty for nil", got)
 	}
 }

@@ -79,6 +79,7 @@ func TestGetViewID(t *testing.T) {
 			&ViewDefinition{Metadata: ViewMetadata{Labels: &ViewLabels{Dash0Comid: Ptr("v-123")}}},
 			"v-123",
 		},
+		{"nil view", nil, ""},
 		{"nil labels", &ViewDefinition{}, ""},
 		{"nil ID", &ViewDefinition{Metadata: ViewMetadata{Labels: &ViewLabels{}}}, ""},
 	}
@@ -149,6 +150,7 @@ func TestGetViewName(t *testing.T) {
 			&ViewDefinition{Metadata: ViewMetadata{Name: "meta-name"}},
 			"meta-name",
 		},
+		{"nil view", nil, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

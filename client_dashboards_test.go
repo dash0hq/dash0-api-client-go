@@ -80,6 +80,7 @@ func TestGetDashboardID(t *testing.T) {
 			}},
 			"abc-123",
 		},
+		{"nil dashboard", nil, ""},
 		{"nil extensions", &DashboardDefinition{}, ""},
 		{
 			"nil ID",
