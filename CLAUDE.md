@@ -59,6 +59,8 @@ Methods like `GetSpansIter` return iterators that auto-fetch pages.
 **Code generation**: `generated.go` is produced by oapi-codegen from the Dash0 OpenAPI spec.
 The `tools/postprocess` Go tool handles post-processing: renaming conflicting symbols and removing deprecated fields.
 Do not use `sed` for codegen post-processing.
+The generated code produces transport-specific type aliases (e.g., `PostApiImportCheckRuleJSONRequestBody = PrometheusAlertRule`).
+The public `Client` interface must use domain types (`*PrometheusAlertRule`, `*DashboardDefinition`, etc.), never generated request/response body type names that leak HTTP methods, paths, or encodings.
 
 **Domain-grouped helpers**: Each `client_*.go` file contains CRUD methods for a domain entity plus free helper functions that operate on that entity's generated types.
 Keep helpers co-located with their domain's CRUD methods.
