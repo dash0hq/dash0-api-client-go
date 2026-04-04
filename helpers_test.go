@@ -1,4 +1,4 @@
-package yaml
+package dash0
 
 import "testing"
 

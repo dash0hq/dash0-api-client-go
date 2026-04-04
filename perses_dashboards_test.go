@@ -1,64 +1,8 @@
-package yaml
+package dash0
 
 import (
 	"testing"
-
-	dash0 "github.com/dash0hq/dash0-api-client-go"
 )
-
-func TestParseAsDashboard_Native(t *testing.T) {
-	data := []byte(`kind: Dashboard
-metadata:
-  name: My Dashboard
-  dash0Extensions:
-    id: dash-123
-spec:
-  display:
-    name: My Dashboard
-`)
-	dashboard, err := ParseAsDashboard(data)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if dashboard.Metadata.Name != "My Dashboard" {
-		t.Errorf("Name = %q, want %q", dashboard.Metadata.Name, "My Dashboard")
-	}
-	if dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id != "dash-123" {
-		t.Error("expected dash0Extensions.id = dash-123")
-	}
-}
-
-func TestParseAsDashboard_PersesDashboard(t *testing.T) {
-	data := []byte(`apiVersion: perses.dev/v1alpha1
-kind: PersesDashboard
-metadata:
-  name: my-perses-dashboard
-  labels:
-    dash0.com/id: perses-123
-spec:
-  display:
-    name: My Perses Dashboard
-  duration: 5m
-  panels: {}
-`)
-	dashboard, err := ParseAsDashboard(data)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if dashboard.Metadata.Name != "My Perses Dashboard" {
-		t.Errorf("Name = %q, want %q", dashboard.Metadata.Name, "My Perses Dashboard")
-	}
-	if dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id != "perses-123" {
-		t.Error("expected dash0Extensions.id = perses-123")
-	}
-}
-
-func TestParseAsDashboard_InvalidYAML(t *testing.T) {
-	_, err := ParseAsDashboard([]byte("{{invalid"))
-	if err == nil {
-		t.Error("expected error for invalid YAML")
-	}
-}
 
 func TestConvertPersesDashboardToDashboard_WithDisplayName(t *testing.T) {
 	perses := &PersesDashboard{
@@ -97,8 +41,8 @@ func TestConvertPersesDashboardToDashboard_WithDisplaySectionButNoName(t *testin
 	if d.Metadata.Name != "metadata-name" {
 		t.Errorf("Name = %q, want %q", d.Metadata.Name, "metadata-name")
 	}
-	if dash0.GetDashboardName(d) != "metadata-name" {
-		t.Errorf("DisplayName = %q, want %q", dash0.GetDashboardName(d), "metadata-name")
+	if GetDashboardName(d) != "metadata-name" {
+		t.Errorf("DisplayName = %q, want %q", GetDashboardName(d), "metadata-name")
 	}
 }
 

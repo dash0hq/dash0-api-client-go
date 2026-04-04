@@ -1,15 +1,15 @@
-package yaml
+package dash0
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 )
 
 // PrometheusRules represents the Kubernetes Prometheus Operator PrometheusRule
-// CRD document in YAML format. This is the user-facing format used by the
-// Terraform provider and Kubernetes operator.
+// CRD document.
+// This is the user-facing format used by the Terraform provider and Kubernetes
+// operator.
 type PrometheusRules struct {
 	APIVersion string                  `json:"apiVersion"`
 	Kind       string                  `json:"kind"`
@@ -34,7 +34,7 @@ type PrometheusRulesSpec struct {
 // PrometheusRulesGroup represents a single rule group in Prometheus format.
 type PrometheusRulesGroup struct {
 	Name     string           `json:"name"`
-	Interval PromDuration     `json:"interval,omitempty"`
+	Interval time.Duration    `json:"interval,omitempty"`
 	Rules    []PrometheusRule `json:"rules"`
 }
 
@@ -42,43 +42,10 @@ type PrometheusRulesGroup struct {
 type PrometheusRule struct {
 	Alert         string            `json:"alert"`
 	Expr          string            `json:"expr"`
-	For           PromDuration      `json:"for,omitempty"`
-	KeepFiringFor PromDuration      `json:"keep_firing_for,omitempty"`
+	For           time.Duration     `json:"for,omitempty"`
+	KeepFiringFor time.Duration     `json:"keep_firing_for,omitempty"`
 	Annotations   map[string]string `json:"annotations"`
 	Labels        map[string]string `json:"labels"`
-}
-
-// PromDuration is a duration type that marshals/unmarshals to/from Go duration
-// strings (e.g., "2m30s"). This is used for the Prometheus rule YAML format.
-// It differs from the generated Duration type (which is a plain string alias).
-type PromDuration time.Duration
-
-// MarshalJSON outputs a quoted Go duration string.
-func (d PromDuration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Duration(d).String())
-}
-
-// UnmarshalJSON parses a Go duration string from JSON. When using
-// sigs.k8s.io/yaml, YAML is converted to JSON first, so this method
-// handles both YAML and JSON input.
-func (d *PromDuration) UnmarshalJSON(b []byte) error {
-	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
-		return err
-	}
-	switch value := v.(type) {
-	case string:
-		duration, err := time.ParseDuration(value)
-		if err != nil {
-			return err
-		}
-		*d = PromDuration(duration)
-	case float64:
-		*d = PromDuration(time.Duration(value))
-	default:
-		return fmt.Errorf("invalid duration type: %T", v)
-	}
-	return nil
 }
 
 // FormatDuration formats a time.Duration as a compact Prometheus-style

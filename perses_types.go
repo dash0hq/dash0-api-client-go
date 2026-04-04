@@ -1,4 +1,4 @@
-package yaml
+package dash0
 
 // PersesDashboard represents the Perses Operator PersesDashboard CRD
 // (perses.dev/v1alpha1 and perses.dev/v1alpha2).

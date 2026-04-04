@@ -277,3 +277,41 @@ func ExampleSetSyntheticCheckID() {
 	fmt.Println(*check.Metadata.Labels.Dash0Comid)
 	// Output: sc-7
 }
+
+// Prometheus rule helpers
+
+func ExampleGetPrometheusRuleName() {
+	rule := &dash0.PrometheusRules{
+		Metadata: dash0.PrometheusRulesMetadata{Name: "my-rules"},
+	}
+	fmt.Println(dash0.GetPrometheusRuleName(rule))
+	// Output: my-rules
+}
+
+// Perses dashboard helpers
+
+func ExampleConvertPersesDashboardToDashboard() {
+	perses := &dash0.PersesDashboard{
+		APIVersion: "perses.dev/v1alpha1",
+		Kind:       "PersesDashboard",
+		Metadata:   dash0.PersesDashboardMetadata{Name: "my-perses-dashboard"},
+		Spec: map[string]any{
+			"display": map[string]any{"name": "Perses Dashboard"},
+		},
+	}
+	dashboard := dash0.ConvertPersesDashboardToDashboard(perses)
+	fmt.Println(dashboard.Metadata.Name)
+	// Output: Perses Dashboard
+}
+
+// FormatDuration
+
+func ExampleFormatDuration() {
+	fmt.Println(dash0.FormatDuration(5 * 60e9))  // 5 minutes
+	fmt.Println(dash0.FormatDuration(90e9))       // 1m30s
+	fmt.Println(dash0.FormatDuration(2 * 3600e9)) // 2 hours
+	// Output:
+	// 5m
+	// 1m30s
+	// 2h
+}

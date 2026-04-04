@@ -1,18 +1,11 @@
-package yaml
-
-import (
-	"fmt"
-	"strings"
-
-	dash0 "github.com/dash0hq/dash0-api-client-go"
-	sigsyaml "sigs.k8s.io/yaml"
-)
+package dash0
 
 // ConvertPersesDashboardToDashboard converts a PersesDashboard CRD into a Dash0
-// DashboardDefinition. It normalizes v1alpha1/v1alpha2 differences (the
-// v1alpha2 CRD wraps the spec in a "config" key) and ensures a display name
-// is set, falling back to metadata.name.
-func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *dash0.DashboardDefinition {
+// DashboardDefinition.
+// It normalizes v1alpha1/v1alpha2 differences (the v1alpha2 CRD wraps the spec
+// in a "config" key) and ensures a display name is set, falling back to
+// metadata.name.
+func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefinition {
 	spec := perses.Spec
 	if spec == nil {
 		spec = make(map[string]interface{})
@@ -45,9 +38,9 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *dash0.Dashboard
 		displayName = perses.Metadata.Name
 	}
 
-	dashboard := &dash0.DashboardDefinition{
-		Kind: dash0.Dashboard,
-		Metadata: dash0.DashboardMetadata{
+	dashboard := &DashboardDefinition{
+		Kind: Dashboard,
+		Metadata: DashboardMetadata{
 			Name: displayName,
 		},
 		Spec: spec,
@@ -60,12 +53,20 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *dash0.Dashboard
 		dashboard.Metadata.Annotations = annotations
 	}
 
-	// Copy dash0.com/id from labels into dash0Extensions.id
+	// Copy dash0.com/id and dash0.com/dataset from labels into dash0Extensions.
 	if perses.Metadata.Labels != nil {
-		if id := perses.Metadata.Labels["dash0.com/id"]; id != "" {
-			dashboard.Metadata.Dash0Extensions = &dash0.DashboardMetadataExtensions{
-				Id: &id,
+		id := perses.Metadata.Labels["dash0.com/id"]
+		ds := perses.Metadata.Labels["dash0.com/dataset"]
+		if id != "" || ds != "" {
+			ext := &DashboardMetadataExtensions{}
+			if id != "" {
+				ext.Id = &id
 			}
+			if ds != "" {
+				dataset := Dataset(ds)
+				ext.Dataset = &dataset
+			}
+			dashboard.Metadata.Dash0Extensions = ext
 		}
 	}
 
@@ -75,11 +76,11 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *dash0.Dashboard
 // convertPersesDashboardAnnotations converts the untyped annotation map from a
 // PersesDashboard CRD into the typed DashboardAnnotations struct, copying only
 // user-settable annotations (folder-path, sharing, source).
-func convertPersesDashboardAnnotations(annotations map[string]string) *dash0.DashboardAnnotations {
+func convertPersesDashboardAnnotations(annotations map[string]string) *DashboardAnnotations {
 	if len(annotations) == 0 {
 		return nil
 	}
-	var result dash0.DashboardAnnotations
+	var result DashboardAnnotations
 	hasAny := false
 	if v, ok := annotations["dash0.com/folder-path"]; ok {
 		result.Dash0ComfolderPath = &v
@@ -90,7 +91,7 @@ func convertPersesDashboardAnnotations(annotations map[string]string) *dash0.Das
 		hasAny = true
 	}
 	if v, ok := annotations["dash0.com/source"]; ok {
-		source := dash0.DashboardSource(v)
+		source := DashboardSource(v)
 		result.Dash0Comsource = &source
 		hasAny = true
 	}
@@ -177,28 +178,4 @@ func SetPersesDashboardIDIfAbsent(perses *PersesDashboard, id string) {
 	if _, ok := perses.Metadata.Labels["dash0.com/id"]; !ok {
 		perses.Metadata.Labels["dash0.com/id"] = id
 	}
-}
-
-// ParseAsDashboard detects whether data is a Dashboard or PersesDashboard
-// CRD, unmarshals it, and returns a normalized DashboardDefinition ready for
-// the API. PersesDashboard CRDs are converted via ConvertPersesDashboardToDashboard.
-func ParseAsDashboard(data []byte) (*dash0.DashboardDefinition, error) {
-	detectedKind, err := DetectKind(data)
-	if err != nil {
-		return nil, err
-	}
-	kind := strings.ToLower(detectedKind)
-	if kind == "persesdashboard" {
-		var perses PersesDashboard
-		if err := sigsyaml.Unmarshal(data, &perses); err != nil {
-			return nil, fmt.Errorf("failed to parse PersesDashboard definition: %w", err)
-		}
-		return ConvertPersesDashboardToDashboard(&perses), nil
-	}
-
-	var dashboard dash0.DashboardDefinition
-	if err := sigsyaml.Unmarshal(data, &dashboard); err != nil {
-		return nil, fmt.Errorf("failed to parse dashboard definition: %w", err)
-	}
-	return &dashboard, nil
 }

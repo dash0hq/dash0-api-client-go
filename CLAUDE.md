@@ -77,29 +77,34 @@ Keep helpers co-located with their domain's CRUD methods.
 | `iterator.go` | Generic pagination iterator |
 | `context.go` | Context helpers (idempotent POST marking) |
 | `errors.go` | `APIError` type and helpers (`IsNotFound`, `IsUnauthorized`, etc.) |
+| `prometheus_types.go` | Prometheus CRD types (`PrometheusRules`, `PrometheusRule`, `PromDuration`) and `FormatDuration` |
+| `prometheus_alert_rules.go` | Prometheus rule helpers (`Get*`/`Set*`/`Clear*`, `ConvertPrometheusRuleToPrometheusAlertRule`) |
+| `perses_types.go` | Perses CRD types (`PersesDashboard`, `PersesDashboardMetadata`) |
+| `perses_dashboards.go` | Perses dashboard helpers (`Get*`/`Set*`/`Clear*`, `ConvertPersesDashboardToDashboard`) |
 | `dataset.go` | `DatasetPtr` helper |
 | `dependencies_test.go` | Guard test: verifies YAML deps don't leak into root package |
 | `dash0test/mock.go` | `MockClient` for testing |
-| `yaml/` | YAML/CRD parsing subpackage (see below) |
+| `yaml/` | YAML marshal/unmarshal/parse subpackage (see below) |
 
 ### YAML subpackage (`yaml/`)
 
-All YAML-related types, parsing, and conversion logic lives in the `yaml/` subpackage.
-This isolates the `sigs.k8s.io/yaml` dependency so that consumers who only use the API client (root package) do not pull it in.
+The `yaml/` subpackage contains only functions that call `sigs.k8s.io/yaml` for marshaling, unmarshaling, and parsing.
+CRD types, conversion helpers, and accessor functions live in the root package.
+This isolates the `sigs.k8s.io/yaml` dependency so that consumers who only use the root package do not pull it in.
 
 **The root package must never import `sigs.k8s.io/yaml`, `gopkg.in/yaml.v3`, or any other YAML library.**
-When adding new YAML/CRD functionality, always place it in `yaml/`.
+When adding a function that calls a YAML library, place it in `yaml/`.
+Types, conversion functions, and helpers that do not need YAML go in the root package.
 The `TestNoYAMLDependency` guard test in `dependencies_test.go` enforces this at CI time.
 
-The subpackage imports the root package for generated API types (e.g., `dash0.DashboardDefinition`, `dash0.PrometheusAlertRule`) -- never the reverse.
-All struct tags in `yaml/` use `json:` only (no `yaml:` tags), because `sigs.k8s.io/yaml` unmarshals via JSON.
+The subpackage imports the root package for types -- never the reverse.
+All struct tags use `json:` only (no `yaml:` tags), because `sigs.k8s.io/yaml` unmarshals via JSON.
 
 | File | Purpose |
 |------|---------|
-| `yaml/prometheus_types.go` | Prometheus CRD types (`PrometheusRules`, `PrometheusRule`, `PromDuration`) and `FormatDuration` |
-| `yaml/perses_types.go` | Perses CRD types (`PersesDashboard`, `PersesDashboardMetadata`) |
-| `yaml/prometheus_alert_rules.go` | Prometheus alert rule marshal/unmarshal, conversion, extraction, and parsing |
-| `yaml/dashboards.go` | Dashboard conversion, extraction, and parsing (`ParseAsDashboard`, `ConvertPersesDashboardToDashboard`, etc.) |
+| `yaml/prometheus_crd.go` | `MarshalPrometheusRule`, `UnmarshalPrometheusRule`, `ParseAsPrometheusAlertRules` |
+| `yaml/prometheus_wire.go` | `prometheusDuration` wire type and domain/wire converters |
+| `yaml/dashboards_crd.go` | `ParseAsDashboard` |
 | `yaml/kind.go` | `DetectKind` -- sniffs asset kind from raw YAML/JSON bytes |
 
 ### API compatibility
