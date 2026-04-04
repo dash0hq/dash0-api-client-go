@@ -6,22 +6,22 @@
 # Note: interface method additions (": added") are filtered out automatically
 # and do not need to be listed here.
 
-# <NEXT_RELEASE>: CheckThresholds fields changed from *float32 to *float64 (upstream
+# v1.6.0: CheckThresholds fields changed from *float32 to *float64 (upstream
 # OpenAPI spec switched from float to double).
 CheckThresholds.Degraded
 CheckThresholds.Failed
 
-# <NEXT_RELEASE>: PrometheusAlertRule.Annotations changed from *map[string]string to
+# v1.6.0: PrometheusAlertRule.Annotations changed from *map[string]string to
 # the typed *PrometheusAlertRule_Annotations struct (upstream spec change).
 PrometheusAlertRule.Annotations
 
-# <NEXT_RELEASE>: PrometheusAlertRule.KeepFiringFor changed from *string (camelCase
+# v1.6.0: PrometheusAlertRule.KeepFiringFor changed from *string (camelCase
 # keepFiringFor) to *Duration (snake_case keep_firing_for). The deprecated
 # camelCase field is removed by tools/postprocess because oapi-codegen generates
 # both as the same Go field name, causing a compilation error.
 PrometheusAlertRule.KeepFiringFor
 
-# <NEXT_RELEASE>: PrometheusAlertRule.Description and .Summary removed by
+# v1.6.0: PrometheusAlertRule.Description and .Summary removed by
 # tools/postprocess. The upstream spec deprecated them in favor of the
 # Annotations.Description and Annotations.Summary fields.
 PrometheusAlertRule.Description

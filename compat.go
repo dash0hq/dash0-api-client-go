@@ -26,14 +26,14 @@ package dash0
 // DashboardSourceTerraform, DashboardSourceUi). The old names still work but
 // are deprecated.
 
-// Deprecated: since <NEXT_RELEASE>. Use [DashboardSourceApi] instead.
+// Deprecated: since v1.6.0. Use [DashboardSourceApi] instead.
 const Api = DashboardSourceApi
 
-// Deprecated: since <NEXT_RELEASE>. Use [DashboardSourceOperator] instead.
+// Deprecated: since v1.6.0. Use [DashboardSourceOperator] instead.
 const Operator = DashboardSourceOperator
 
-// Deprecated: since <NEXT_RELEASE>. Use [DashboardSourceTerraform] instead.
+// Deprecated: since v1.6.0. Use [DashboardSourceTerraform] instead.
 const Terraform = DashboardSourceTerraform
 
-// Deprecated: since <NEXT_RELEASE>. Use [DashboardSourceUi] instead.
+// Deprecated: since v1.6.0. Use [DashboardSourceUi] instead.
 const Ui = DashboardSourceUi

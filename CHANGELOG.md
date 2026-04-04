@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.0
+
+
+### ENG-7866
+- Add recording rules (#6)
+
+### Features
+- extract reusable capabilities from CLI and terraform provider, and introduce yaml subpackage (#7)
+
 ## v1.5.1
 
 
