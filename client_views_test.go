@@ -68,6 +68,41 @@ func TestClearViewID_NilLabels(t *testing.T) {
 	ClearViewID(v) // should not panic
 }
 
+func TestGetViewDataset(t *testing.T) {
+	tests := []struct {
+		name string
+		view *ViewDefinition
+		want string
+	}{
+		{"nil view", nil, ""},
+		{"nil labels", &ViewDefinition{}, ""},
+		{"nil dataset", &ViewDefinition{Metadata: ViewMetadata{Labels: &ViewLabels{}}}, ""},
+		{"with dataset", &ViewDefinition{Metadata: ViewMetadata{Labels: &ViewLabels{Dash0Comdataset: Ptr("production")}}}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetViewDataset(tt.view); got != tt.want {
+				t.Errorf("GetViewDataset() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetViewDataset(t *testing.T) {
+	view := &ViewDefinition{}
+	SetViewDataset(view, "production")
+	if view.Metadata.Labels == nil || view.Metadata.Labels.Dash0Comdataset == nil {
+		t.Fatal("expected dataset to be set")
+	}
+	if *view.Metadata.Labels.Dash0Comdataset != "production" {
+		t.Errorf("Dataset = %q, want %q", *view.Metadata.Labels.Dash0Comdataset, "production")
+	}
+}
+
+func TestSetViewDataset_Nil(t *testing.T) {
+	SetViewDataset(nil, "production") // should not panic
+}
+
 func TestGetViewID(t *testing.T) {
 	tests := []struct {
 		name string

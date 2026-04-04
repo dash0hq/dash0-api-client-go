@@ -116,7 +116,7 @@ func StripCheckRuleServerFields(rule *PrometheusAlertRule) {
 	}
 	rule.Dataset = nil
 	if rule.Labels != nil {
-		delete(*rule.Labels, "dash0.com/origin")
+		delete(*rule.Labels, LabelOrigin)
 	}
 }
 
@@ -126,6 +126,23 @@ func ClearCheckRuleID(rule *PrometheusAlertRule) {
 		return
 	}
 	rule.Id = nil
+}
+
+// GetCheckRuleDataset extracts the dataset from a check rule definition.
+func GetCheckRuleDataset(rule *PrometheusAlertRule) string {
+	if rule == nil || rule.Dataset == nil {
+		return ""
+	}
+	return *rule.Dataset
+}
+
+// SetCheckRuleDataset sets the dataset on a check rule definition.
+func SetCheckRuleDataset(rule *PrometheusAlertRule, dataset string) {
+	if rule == nil {
+		return
+	}
+	ds := Dataset(dataset)
+	rule.Dataset = &ds
 }
 
 // GetCheckRuleID extracts the ID from a check rule definition.

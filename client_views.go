@@ -135,6 +135,26 @@ func ClearViewID(view *ViewDefinition) {
 	}
 }
 
+// GetViewDataset extracts the dataset from a view definition.
+func GetViewDataset(view *ViewDefinition) string {
+	if view == nil || view.Metadata.Labels == nil || view.Metadata.Labels.Dash0Comdataset == nil {
+		return ""
+	}
+	return *view.Metadata.Labels.Dash0Comdataset
+}
+
+// SetViewDataset sets the dataset on a view definition, initializing the
+// labels struct if needed.
+func SetViewDataset(view *ViewDefinition, dataset string) {
+	if view == nil {
+		return
+	}
+	if view.Metadata.Labels == nil {
+		view.Metadata.Labels = &ViewLabels{}
+	}
+	view.Metadata.Labels.Dash0Comdataset = &dataset
+}
+
 // GetViewID extracts the ID from a view definition.
 func GetViewID(view *ViewDefinition) string {
 	if view == nil || view.Metadata.Labels == nil || view.Metadata.Labels.Dash0Comid == nil {

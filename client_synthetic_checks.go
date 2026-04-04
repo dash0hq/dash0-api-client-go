@@ -135,6 +135,26 @@ func ClearSyntheticCheckID(check *SyntheticCheckDefinition) {
 	}
 }
 
+// GetSyntheticCheckDataset extracts the dataset from a synthetic check definition.
+func GetSyntheticCheckDataset(check *SyntheticCheckDefinition) string {
+	if check == nil || check.Metadata.Labels == nil || check.Metadata.Labels.Dash0Comdataset == nil {
+		return ""
+	}
+	return *check.Metadata.Labels.Dash0Comdataset
+}
+
+// SetSyntheticCheckDataset sets the dataset on a synthetic check definition,
+// initializing the labels struct if needed.
+func SetSyntheticCheckDataset(check *SyntheticCheckDefinition, dataset string) {
+	if check == nil {
+		return
+	}
+	if check.Metadata.Labels == nil {
+		check.Metadata.Labels = &SyntheticCheckLabels{}
+	}
+	check.Metadata.Labels.Dash0Comdataset = &dataset
+}
+
 // GetSyntheticCheckID extracts the ID from a synthetic check definition.
 func GetSyntheticCheckID(check *SyntheticCheckDefinition) string {
 	if check == nil || check.Metadata.Labels == nil || check.Metadata.Labels.Dash0Comid == nil {

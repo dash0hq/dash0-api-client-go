@@ -40,7 +40,7 @@ func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 	alertRule.Name = fmt.Sprintf("%s - %s", group.Name, group.Rules[0].Alert)
 
 	// Extract dataset from CRD metadata labels.
-	if ds := promRules.Metadata.Labels["dash0.com/dataset"]; ds != "" {
+	if ds := promRules.Metadata.Labels[dash0.LabelDataset]; ds != "" {
 		alertRule.Dataset = &ds
 	}
 
@@ -171,7 +171,7 @@ func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, err
 
 		ruleID := dash0.GetPrometheusRuleID(promRules)
 		var dataset *string
-		if ds := promRules.Metadata.Labels["dash0.com/dataset"]; ds != "" {
+		if ds := promRules.Metadata.Labels[dash0.LabelDataset]; ds != "" {
 			dataset = &ds
 		}
 

@@ -135,6 +135,47 @@ func ClearDashboardID(dashboard *DashboardDefinition) {
 	}
 }
 
+// GetDashboardFolderPath extracts the folder path from a dashboard definition.
+func GetDashboardFolderPath(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Metadata.Annotations == nil || dashboard.Metadata.Annotations.Dash0ComfolderPath == nil {
+		return ""
+	}
+	return *dashboard.Metadata.Annotations.Dash0ComfolderPath
+}
+
+// SetDashboardFolderPath sets the folder path on a dashboard definition,
+// initializing the annotations struct if needed.
+func SetDashboardFolderPath(dashboard *DashboardDefinition, folderPath string) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Annotations == nil {
+		dashboard.Metadata.Annotations = &DashboardAnnotations{}
+	}
+	dashboard.Metadata.Annotations.Dash0ComfolderPath = &folderPath
+}
+
+// GetDashboardDataset extracts the dataset from a dashboard definition.
+func GetDashboardDataset(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Dataset == nil {
+		return ""
+	}
+	return *dashboard.Metadata.Dash0Extensions.Dataset
+}
+
+// SetDashboardDataset sets the dataset on a dashboard definition, initializing
+// the dash0Extensions struct if needed.
+func SetDashboardDataset(dashboard *DashboardDefinition, dataset string) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Dash0Extensions == nil {
+		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
+	}
+	ds := Dataset(dataset)
+	dashboard.Metadata.Dash0Extensions.Dataset = &ds
+}
+
 // GetDashboardID extracts the ID from a dashboard definition.
 func GetDashboardID(dashboard *DashboardDefinition) string {
 	if dashboard == nil || dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id == "" {

@@ -45,6 +45,37 @@ func TestClearCheckRuleID_AlreadyNil(t *testing.T) {
 	ClearCheckRuleID(r) // should not panic
 }
 
+func TestGetCheckRuleDataset(t *testing.T) {
+	tests := []struct {
+		name string
+		rule *PrometheusAlertRule
+		want string
+	}{
+		{"nil rule", nil, ""},
+		{"nil dataset", &PrometheusAlertRule{}, ""},
+		{"with dataset", &PrometheusAlertRule{Dataset: Ptr("production")}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetCheckRuleDataset(tt.rule); got != tt.want {
+				t.Errorf("GetCheckRuleDataset() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetCheckRuleDataset(t *testing.T) {
+	rule := &PrometheusAlertRule{Name: "test"}
+	SetCheckRuleDataset(rule, "production")
+	if rule.Dataset == nil || *rule.Dataset != "production" {
+		t.Error("expected dataset to be set to production")
+	}
+}
+
+func TestSetCheckRuleDataset_Nil(t *testing.T) {
+	SetCheckRuleDataset(nil, "production") // should not panic
+}
+
 func TestGetCheckRuleID(t *testing.T) {
 	tests := []struct {
 		name string

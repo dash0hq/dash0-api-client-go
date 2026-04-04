@@ -67,6 +67,76 @@ func TestClearDashboardID_NilExtensions(t *testing.T) {
 	ClearDashboardID(d) // should not panic
 }
 
+func TestGetDashboardFolderPath(t *testing.T) {
+	tests := []struct {
+		name      string
+		dashboard *DashboardDefinition
+		want      string
+	}{
+		{"nil dashboard", nil, ""},
+		{"nil annotations", &DashboardDefinition{}, ""},
+		{"nil folder-path", &DashboardDefinition{Metadata: DashboardMetadata{Annotations: &DashboardAnnotations{}}}, ""},
+		{"with folder-path", &DashboardDefinition{Metadata: DashboardMetadata{Annotations: &DashboardAnnotations{Dash0ComfolderPath: Ptr("/team/sre")}}}, "/team/sre"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetDashboardFolderPath(tt.dashboard); got != tt.want {
+				t.Errorf("GetDashboardFolderPath() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetDashboardFolderPath(t *testing.T) {
+	dashboard := &DashboardDefinition{}
+	SetDashboardFolderPath(dashboard, "/team/sre")
+	if dashboard.Metadata.Annotations == nil || dashboard.Metadata.Annotations.Dash0ComfolderPath == nil {
+		t.Fatal("expected folder-path to be set")
+	}
+	if *dashboard.Metadata.Annotations.Dash0ComfolderPath != "/team/sre" {
+		t.Errorf("FolderPath = %q, want %q", *dashboard.Metadata.Annotations.Dash0ComfolderPath, "/team/sre")
+	}
+}
+
+func TestSetDashboardFolderPath_Nil(t *testing.T) {
+	SetDashboardFolderPath(nil, "/team/sre") // should not panic
+}
+
+func TestGetDashboardDataset(t *testing.T) {
+	tests := []struct {
+		name      string
+		dashboard *DashboardDefinition
+		want      string
+	}{
+		{"nil dashboard", nil, ""},
+		{"nil extensions", &DashboardDefinition{}, ""},
+		{"nil dataset", &DashboardDefinition{Metadata: DashboardMetadata{Dash0Extensions: &DashboardMetadataExtensions{}}}, ""},
+		{"with dataset", &DashboardDefinition{Metadata: DashboardMetadata{Dash0Extensions: &DashboardMetadataExtensions{Dataset: Ptr("production")}}}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetDashboardDataset(tt.dashboard); got != tt.want {
+				t.Errorf("GetDashboardDataset() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetDashboardDataset(t *testing.T) {
+	dashboard := &DashboardDefinition{}
+	SetDashboardDataset(dashboard, "production")
+	if dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Dataset == nil {
+		t.Fatal("expected dataset to be set")
+	}
+	if *dashboard.Metadata.Dash0Extensions.Dataset != "production" {
+		t.Errorf("Dataset = %q, want %q", *dashboard.Metadata.Dash0Extensions.Dataset, "production")
+	}
+}
+
+func TestSetDashboardDataset_Nil(t *testing.T) {
+	SetDashboardDataset(nil, "production") // should not panic
+}
+
 func TestGetDashboardID(t *testing.T) {
 	tests := []struct {
 		name      string

@@ -223,6 +223,70 @@ func TestGetPersesDashboardName(t *testing.T) {
 	}
 }
 
+func TestGetPersesDashboardFolderPath(t *testing.T) {
+	tests := []struct {
+		name   string
+		perses *PersesDashboard
+		want   string
+	}{
+		{"nil perses", nil, ""},
+		{"nil annotations", &PersesDashboard{}, ""},
+		{"empty annotations", &PersesDashboard{Metadata: PersesDashboardMetadata{Annotations: map[string]string{}}}, ""},
+		{"folder-path present", &PersesDashboard{Metadata: PersesDashboardMetadata{Annotations: map[string]string{AnnotationFolderPath: "/team/sre"}}}, "/team/sre"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetPersesDashboardFolderPath(tt.perses); got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetPersesDashboardFolderPath(t *testing.T) {
+	perses := &PersesDashboard{}
+	SetPersesDashboardFolderPath(perses, "/team/sre")
+	if perses.Metadata.Annotations[AnnotationFolderPath] != "/team/sre" {
+		t.Errorf("FolderPath = %q, want %q", perses.Metadata.Annotations[AnnotationFolderPath], "/team/sre")
+	}
+}
+
+func TestSetPersesDashboardFolderPath_Nil(t *testing.T) {
+	SetPersesDashboardFolderPath(nil, "/team/sre") // should not panic
+}
+
+func TestGetPersesDashboardDataset(t *testing.T) {
+	tests := []struct {
+		name   string
+		perses *PersesDashboard
+		want   string
+	}{
+		{"nil perses", nil, ""},
+		{"nil labels", &PersesDashboard{}, ""},
+		{"empty labels", &PersesDashboard{Metadata: PersesDashboardMetadata{Labels: map[string]string{}}}, ""},
+		{"dataset present", &PersesDashboard{Metadata: PersesDashboardMetadata{Labels: map[string]string{"dash0.com/dataset": "production"}}}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetPersesDashboardDataset(tt.perses); got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetPersesDashboardDataset(t *testing.T) {
+	perses := &PersesDashboard{}
+	SetPersesDashboardDataset(perses, "production")
+	if perses.Metadata.Labels["dash0.com/dataset"] != "production" {
+		t.Errorf("Dataset = %q, want %q", perses.Metadata.Labels["dash0.com/dataset"], "production")
+	}
+}
+
+func TestSetPersesDashboardDataset_Nil(t *testing.T) {
+	SetPersesDashboardDataset(nil, "production") // should not panic
+}
+
 func TestClearPersesDashboardID(t *testing.T) {
 	perses := &PersesDashboard{Metadata: PersesDashboardMetadata{Labels: map[string]string{"dash0.com/id": "abc"}}}
 	ClearPersesDashboardID(perses)

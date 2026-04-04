@@ -68,6 +68,41 @@ func TestClearSyntheticCheckID_NilLabels(t *testing.T) {
 	ClearSyntheticCheckID(c) // should not panic
 }
 
+func TestGetSyntheticCheckDataset(t *testing.T) {
+	tests := []struct {
+		name  string
+		check *SyntheticCheckDefinition
+		want  string
+	}{
+		{"nil check", nil, ""},
+		{"nil labels", &SyntheticCheckDefinition{}, ""},
+		{"nil dataset", &SyntheticCheckDefinition{Metadata: SyntheticCheckMetadata{Labels: &SyntheticCheckLabels{}}}, ""},
+		{"with dataset", &SyntheticCheckDefinition{Metadata: SyntheticCheckMetadata{Labels: &SyntheticCheckLabels{Dash0Comdataset: Ptr("production")}}}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetSyntheticCheckDataset(tt.check); got != tt.want {
+				t.Errorf("GetSyntheticCheckDataset() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetSyntheticCheckDataset(t *testing.T) {
+	check := &SyntheticCheckDefinition{}
+	SetSyntheticCheckDataset(check, "production")
+	if check.Metadata.Labels == nil || check.Metadata.Labels.Dash0Comdataset == nil {
+		t.Fatal("expected dataset to be set")
+	}
+	if *check.Metadata.Labels.Dash0Comdataset != "production" {
+		t.Errorf("Dataset = %q, want %q", *check.Metadata.Labels.Dash0Comdataset, "production")
+	}
+}
+
+func TestSetSyntheticCheckDataset_Nil(t *testing.T) {
+	SetSyntheticCheckDataset(nil, "production") // should not panic
+}
+
 func TestGetSyntheticCheckID(t *testing.T) {
 	tests := []struct {
 		name  string

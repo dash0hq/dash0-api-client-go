@@ -55,8 +55,8 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefini
 
 	// Copy dash0.com/id and dash0.com/dataset from labels into dash0Extensions.
 	if perses.Metadata.Labels != nil {
-		id := perses.Metadata.Labels["dash0.com/id"]
-		ds := perses.Metadata.Labels["dash0.com/dataset"]
+		id := perses.Metadata.Labels[LabelID]
+		ds := perses.Metadata.Labels[LabelDataset]
 		if id != "" || ds != "" {
 			ext := &DashboardMetadataExtensions{}
 			if id != "" {
@@ -82,15 +82,15 @@ func convertPersesDashboardAnnotations(annotations map[string]string) *Dashboard
 	}
 	var result DashboardAnnotations
 	hasAny := false
-	if v, ok := annotations["dash0.com/folder-path"]; ok {
+	if v, ok := annotations[AnnotationFolderPath]; ok {
 		result.Dash0ComfolderPath = &v
 		hasAny = true
 	}
-	if v, ok := annotations["dash0.com/sharing"]; ok {
+	if v, ok := annotations[AnnotationSharing]; ok {
 		result.Dash0Comsharing = &v
 		hasAny = true
 	}
-	if v, ok := annotations["dash0.com/source"]; ok {
+	if v, ok := annotations[AnnotationSource]; ok {
 		source := DashboardSource(v)
 		result.Dash0Comsource = &source
 		hasAny = true
@@ -135,12 +135,53 @@ func GetPersesDashboardName(perses *PersesDashboard) string {
 	return perses.Metadata.Name
 }
 
+// GetPersesDashboardFolderPath returns the dash0.com/folder-path annotation
+// value if present.
+func GetPersesDashboardFolderPath(perses *PersesDashboard) string {
+	if perses == nil || perses.Metadata.Annotations == nil {
+		return ""
+	}
+	return perses.Metadata.Annotations[AnnotationFolderPath]
+}
+
+// SetPersesDashboardFolderPath sets the dash0.com/folder-path annotation on a
+// PersesDashboard CRD, initializing the annotations map if needed.
+func SetPersesDashboardFolderPath(perses *PersesDashboard, folderPath string) {
+	if perses == nil {
+		return
+	}
+	if perses.Metadata.Annotations == nil {
+		perses.Metadata.Annotations = map[string]string{}
+	}
+	perses.Metadata.Annotations[AnnotationFolderPath] = folderPath
+}
+
+// GetPersesDashboardDataset returns the dash0.com/dataset label value if present.
+func GetPersesDashboardDataset(perses *PersesDashboard) string {
+	if perses == nil || perses.Metadata.Labels == nil {
+		return ""
+	}
+	return perses.Metadata.Labels[LabelDataset]
+}
+
+// SetPersesDashboardDataset sets the dash0.com/dataset label on a
+// PersesDashboard CRD, initializing the labels map if needed.
+func SetPersesDashboardDataset(perses *PersesDashboard, dataset string) {
+	if perses == nil {
+		return
+	}
+	if perses.Metadata.Labels == nil {
+		perses.Metadata.Labels = map[string]string{}
+	}
+	perses.Metadata.Labels[LabelDataset] = dataset
+}
+
 // GetPersesDashboardID returns the dash0.com/id label value if present.
 func GetPersesDashboardID(perses *PersesDashboard) string {
 	if perses == nil || perses.Metadata.Labels == nil {
 		return ""
 	}
-	return perses.Metadata.Labels["dash0.com/id"]
+	return perses.Metadata.Labels[LabelID]
 }
 
 // ClearPersesDashboardID removes the dash0.com/id label from a PersesDashboard CRD.
@@ -149,7 +190,7 @@ func ClearPersesDashboardID(perses *PersesDashboard) {
 		return
 	}
 	if perses.Metadata.Labels != nil {
-		delete(perses.Metadata.Labels, "dash0.com/id")
+		delete(perses.Metadata.Labels, LabelID)
 	}
 }
 
@@ -162,7 +203,7 @@ func SetPersesDashboardID(perses *PersesDashboard, id string) {
 	if perses.Metadata.Labels == nil {
 		perses.Metadata.Labels = map[string]string{}
 	}
-	perses.Metadata.Labels["dash0.com/id"] = id
+	perses.Metadata.Labels[LabelID] = id
 }
 
 // SetPersesDashboardIDIfAbsent sets the dash0.com/id label on a
@@ -175,7 +216,7 @@ func SetPersesDashboardIDIfAbsent(perses *PersesDashboard, id string) {
 	if perses.Metadata.Labels == nil {
 		perses.Metadata.Labels = map[string]string{}
 	}
-	if _, ok := perses.Metadata.Labels["dash0.com/id"]; !ok {
-		perses.Metadata.Labels["dash0.com/id"] = id
+	if _, ok := perses.Metadata.Labels[LabelID]; !ok {
+		perses.Metadata.Labels[LabelID] = id
 	}
 }

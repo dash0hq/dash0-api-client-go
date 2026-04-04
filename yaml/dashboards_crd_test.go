@@ -51,6 +51,51 @@ spec:
 	}
 }
 
+func TestParseAsDashboard_NativeFolderPath(t *testing.T) {
+	data := []byte(`kind: Dashboard
+metadata:
+  name: My Dashboard
+  annotations:
+    dash0.com/folder-path: /team/sre
+spec:
+  display:
+    name: My Dashboard
+`)
+	dashboard, err := ParseAsDashboard(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if dashboard.Metadata.Annotations == nil || dashboard.Metadata.Annotations.Dash0ComfolderPath == nil {
+		t.Fatal("expected folder-path annotation")
+	}
+	if *dashboard.Metadata.Annotations.Dash0ComfolderPath != "/team/sre" {
+		t.Errorf("folder-path = %q, want %q", *dashboard.Metadata.Annotations.Dash0ComfolderPath, "/team/sre")
+	}
+}
+
+func TestParseAsDashboard_PersesFolderPath(t *testing.T) {
+	data := []byte(`apiVersion: perses.dev/v1alpha1
+kind: PersesDashboard
+metadata:
+  name: my-perses-dashboard
+  annotations:
+    dash0.com/folder-path: /team/sre
+spec:
+  display:
+    name: My Perses Dashboard
+`)
+	dashboard, err := ParseAsDashboard(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if dashboard.Metadata.Annotations == nil || dashboard.Metadata.Annotations.Dash0ComfolderPath == nil {
+		t.Fatal("expected folder-path annotation")
+	}
+	if *dashboard.Metadata.Annotations.Dash0ComfolderPath != "/team/sre" {
+		t.Errorf("folder-path = %q, want %q", *dashboard.Metadata.Annotations.Dash0ComfolderPath, "/team/sre")
+	}
+}
+
 func TestParseAsDashboard_InvalidYAML(t *testing.T) {
 	_, err := ParseAsDashboard([]byte("{{invalid"))
 	if err == nil {

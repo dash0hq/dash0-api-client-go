@@ -5,6 +5,38 @@ import (
 	"time"
 )
 
+func TestGetPrometheusRuleDataset(t *testing.T) {
+	tests := []struct {
+		name string
+		rule *PrometheusRules
+		want string
+	}{
+		{"nil rule", nil, ""},
+		{"nil labels", &PrometheusRules{}, ""},
+		{"empty labels", &PrometheusRules{Metadata: PrometheusRulesMetadata{Labels: map[string]string{}}}, ""},
+		{"dataset present", &PrometheusRules{Metadata: PrometheusRulesMetadata{Labels: map[string]string{"dash0.com/dataset": "production"}}}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetPrometheusRuleDataset(tt.rule); got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetPrometheusRuleDataset(t *testing.T) {
+	rule := &PrometheusRules{}
+	SetPrometheusRuleDataset(rule, "production")
+	if rule.Metadata.Labels["dash0.com/dataset"] != "production" {
+		t.Errorf("Dataset = %q, want %q", rule.Metadata.Labels["dash0.com/dataset"], "production")
+	}
+}
+
+func TestSetPrometheusRuleDataset_Nil(t *testing.T) {
+	SetPrometheusRuleDataset(nil, "production") // should not panic
+}
+
 func TestGetPrometheusRuleID(t *testing.T) {
 	tests := []struct {
 		name string

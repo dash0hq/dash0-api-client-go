@@ -7,12 +7,32 @@ import (
 	"time"
 )
 
+// GetPrometheusRuleDataset extracts the dataset from a PrometheusRules definition.
+func GetPrometheusRuleDataset(rule *PrometheusRules) string {
+	if rule == nil || rule.Metadata.Labels == nil {
+		return ""
+	}
+	return rule.Metadata.Labels[LabelDataset]
+}
+
+// SetPrometheusRuleDataset sets the dash0.com/dataset label on a PrometheusRules
+// CRD, initializing the labels map if needed.
+func SetPrometheusRuleDataset(rule *PrometheusRules, dataset string) {
+	if rule == nil {
+		return
+	}
+	if rule.Metadata.Labels == nil {
+		rule.Metadata.Labels = map[string]string{}
+	}
+	rule.Metadata.Labels[LabelDataset] = dataset
+}
+
 // GetPrometheusRuleID extracts the ID from a PrometheusRules definition.
 func GetPrometheusRuleID(rule *PrometheusRules) string {
 	if rule == nil || rule.Metadata.Labels == nil {
 		return ""
 	}
-	return rule.Metadata.Labels["dash0.com/id"]
+	return rule.Metadata.Labels[LabelID]
 }
 
 // GetPrometheusRuleName extracts the name from a PrometheusRules definition.
@@ -29,7 +49,7 @@ func ClearPrometheusRuleID(rule *PrometheusRules) {
 		return
 	}
 	if rule.Metadata.Labels != nil {
-		delete(rule.Metadata.Labels, "dash0.com/id")
+		delete(rule.Metadata.Labels, LabelID)
 	}
 }
 
@@ -42,7 +62,7 @@ func SetPrometheusRuleID(rule *PrometheusRules, id string) {
 	if rule.Metadata.Labels == nil {
 		rule.Metadata.Labels = map[string]string{}
 	}
-	rule.Metadata.Labels["dash0.com/id"] = id
+	rule.Metadata.Labels[LabelID] = id
 }
 
 // SetPrometheusRuleIDIfAbsent sets the dash0.com/id label on a PrometheusRules
@@ -54,8 +74,8 @@ func SetPrometheusRuleIDIfAbsent(rule *PrometheusRules, id string) {
 	if rule.Metadata.Labels == nil {
 		rule.Metadata.Labels = map[string]string{}
 	}
-	if _, ok := rule.Metadata.Labels["dash0.com/id"]; !ok {
-		rule.Metadata.Labels["dash0.com/id"] = id
+	if _, ok := rule.Metadata.Labels[LabelID]; !ok {
+		rule.Metadata.Labels[LabelID] = id
 	}
 }
 

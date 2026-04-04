@@ -123,6 +123,44 @@ func ExampleGetDashboardID() {
 	// Output: d-123
 }
 
+func ExampleGetDashboardFolderPath() {
+	dashboard := &dash0.DashboardDefinition{
+		Metadata: dash0.DashboardMetadata{
+			Annotations: &dash0.DashboardAnnotations{
+				Dash0ComfolderPath: dash0.Ptr("/team/sre"),
+			},
+		},
+	}
+	fmt.Println(dash0.GetDashboardFolderPath(dashboard))
+	// Output: /team/sre
+}
+
+func ExampleSetDashboardFolderPath() {
+	dashboard := &dash0.DashboardDefinition{}
+	dash0.SetDashboardFolderPath(dashboard, "/team/sre")
+	fmt.Println(*dashboard.Metadata.Annotations.Dash0ComfolderPath)
+	// Output: /team/sre
+}
+
+func ExampleGetDashboardDataset() {
+	dashboard := &dash0.DashboardDefinition{
+		Metadata: dash0.DashboardMetadata{
+			Dash0Extensions: &dash0.DashboardMetadataExtensions{
+				Dataset: dash0.Ptr("production"),
+			},
+		},
+	}
+	fmt.Println(dash0.GetDashboardDataset(dashboard))
+	// Output: production
+}
+
+func ExampleSetDashboardDataset() {
+	dashboard := &dash0.DashboardDefinition{}
+	dash0.SetDashboardDataset(dashboard, "production")
+	fmt.Println(string(*dashboard.Metadata.Dash0Extensions.Dataset))
+	// Output: production
+}
+
 func ExampleSetDashboardID() {
 	dashboard := &dash0.DashboardDefinition{}
 	dash0.SetDashboardID(dashboard, "d-456")
@@ -180,6 +218,19 @@ func ExampleGetCheckRuleID() {
 	rule := &dash0.PrometheusAlertRule{Id: dash0.Ptr("cr-42")}
 	fmt.Println(dash0.GetCheckRuleID(rule))
 	// Output: cr-42
+}
+
+func ExampleGetCheckRuleDataset() {
+	rule := &dash0.PrometheusAlertRule{Dataset: dash0.Ptr("production")}
+	fmt.Println(dash0.GetCheckRuleDataset(rule))
+	// Output: production
+}
+
+func ExampleSetCheckRuleDataset() {
+	rule := &dash0.PrometheusAlertRule{Name: "HighErrorRate"}
+	dash0.SetCheckRuleDataset(rule, "production")
+	fmt.Println(dash0.StringValue(rule.Dataset))
+	// Output: production
 }
 
 func ExampleSetCheckRuleID() {
@@ -242,6 +293,23 @@ func ExampleGetViewID() {
 	// Output: v-99
 }
 
+func ExampleGetViewDataset() {
+	view := &dash0.ViewDefinition{
+		Metadata: dash0.ViewMetadata{
+			Labels: &dash0.ViewLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetViewDataset(view))
+	// Output: production
+}
+
+func ExampleSetViewDataset() {
+	view := &dash0.ViewDefinition{}
+	dash0.SetViewDataset(view, "production")
+	fmt.Println(*view.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
 func ExampleSetViewID() {
 	view := &dash0.ViewDefinition{}
 	dash0.SetViewID(view, "v-99")
@@ -271,6 +339,23 @@ func ExampleGetSyntheticCheckID() {
 	// Output: sc-7
 }
 
+func ExampleGetSyntheticCheckDataset() {
+	check := &dash0.SyntheticCheckDefinition{
+		Metadata: dash0.SyntheticCheckMetadata{
+			Labels: &dash0.SyntheticCheckLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetSyntheticCheckDataset(check))
+	// Output: production
+}
+
+func ExampleSetSyntheticCheckDataset() {
+	check := &dash0.SyntheticCheckDefinition{}
+	dash0.SetSyntheticCheckDataset(check, "production")
+	fmt.Println(*check.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
 func ExampleSetSyntheticCheckID() {
 	check := &dash0.SyntheticCheckDefinition{}
 	dash0.SetSyntheticCheckID(check, "sc-7")
@@ -288,6 +373,23 @@ func ExampleGetPrometheusRuleName() {
 	// Output: my-rules
 }
 
+func ExampleGetPrometheusRuleDataset() {
+	rule := &dash0.PrometheusRules{
+		Metadata: dash0.PrometheusRulesMetadata{
+			Labels: map[string]string{"dash0.com/dataset": "production"},
+		},
+	}
+	fmt.Println(dash0.GetPrometheusRuleDataset(rule))
+	// Output: production
+}
+
+func ExampleSetPrometheusRuleDataset() {
+	rule := &dash0.PrometheusRules{}
+	dash0.SetPrometheusRuleDataset(rule, "production")
+	fmt.Println(rule.Metadata.Labels["dash0.com/dataset"])
+	// Output: production
+}
+
 // Perses dashboard helpers
 
 func ExampleConvertPersesDashboardToDashboard() {
@@ -302,6 +404,40 @@ func ExampleConvertPersesDashboardToDashboard() {
 	dashboard := dash0.ConvertPersesDashboardToDashboard(perses)
 	fmt.Println(dashboard.Metadata.Name)
 	// Output: Perses Dashboard
+}
+
+func ExampleGetPersesDashboardFolderPath() {
+	perses := &dash0.PersesDashboard{
+		Metadata: dash0.PersesDashboardMetadata{
+			Annotations: map[string]string{dash0.AnnotationFolderPath: "/team/sre"},
+		},
+	}
+	fmt.Println(dash0.GetPersesDashboardFolderPath(perses))
+	// Output: /team/sre
+}
+
+func ExampleSetPersesDashboardFolderPath() {
+	perses := &dash0.PersesDashboard{}
+	dash0.SetPersesDashboardFolderPath(perses, "/team/sre")
+	fmt.Println(perses.Metadata.Annotations[dash0.AnnotationFolderPath])
+	// Output: /team/sre
+}
+
+func ExampleGetPersesDashboardDataset() {
+	perses := &dash0.PersesDashboard{
+		Metadata: dash0.PersesDashboardMetadata{
+			Labels: map[string]string{"dash0.com/dataset": "production"},
+		},
+	}
+	fmt.Println(dash0.GetPersesDashboardDataset(perses))
+	// Output: production
+}
+
+func ExampleSetPersesDashboardDataset() {
+	perses := &dash0.PersesDashboard{}
+	dash0.SetPersesDashboardDataset(perses, "production")
+	fmt.Println(perses.Metadata.Labels["dash0.com/dataset"])
+	// Output: production
 }
 
 // FormatDuration
