@@ -108,3 +108,95 @@ func (c *client) ListViewsIter(ctx context.Context, dataset *string) *Iter[ViewA
 	}
 	return newIter(items, false, nil, nil)
 }
+
+// StripViewServerFields removes server-generated fields from a view definition.
+func StripViewServerFields(view *ViewDefinition) {
+	if view == nil {
+		return
+	}
+	if view.Metadata.Annotations != nil {
+		view.Metadata.Annotations.Dash0ComdeletedAt = nil
+	}
+	if view.Metadata.Labels != nil {
+		view.Metadata.Labels.Dash0Comversion = nil
+		view.Metadata.Labels.Dash0Comsource = nil
+		view.Metadata.Labels.Dash0Comdataset = nil
+		view.Metadata.Labels.Dash0Comorigin = nil
+	}
+}
+
+// ClearViewID removes the ID from a view definition.
+func ClearViewID(view *ViewDefinition) {
+	if view == nil {
+		return
+	}
+	if view.Metadata.Labels != nil {
+		view.Metadata.Labels.Dash0Comid = nil
+	}
+}
+
+// GetViewDataset extracts the dataset from a view definition.
+func GetViewDataset(view *ViewDefinition) string {
+	if view == nil || view.Metadata.Labels == nil || view.Metadata.Labels.Dash0Comdataset == nil {
+		return ""
+	}
+	return *view.Metadata.Labels.Dash0Comdataset
+}
+
+// SetViewDataset sets the dataset on a view definition, initializing the
+// labels struct if needed.
+func SetViewDataset(view *ViewDefinition, dataset string) {
+	if view == nil {
+		return
+	}
+	if view.Metadata.Labels == nil {
+		view.Metadata.Labels = &ViewLabels{}
+	}
+	view.Metadata.Labels.Dash0Comdataset = &dataset
+}
+
+// GetViewID extracts the ID from a view definition.
+func GetViewID(view *ViewDefinition) string {
+	if view == nil || view.Metadata.Labels == nil || view.Metadata.Labels.Dash0Comid == nil {
+		return ""
+	}
+	return *view.Metadata.Labels.Dash0Comid
+}
+
+// GetViewName extracts the display name from a view definition, falling
+// back to metadata.name if the display name is empty.
+func GetViewName(view *ViewDefinition) string {
+	if view == nil {
+		return ""
+	}
+	if view.Spec.Display.Name != "" {
+		return view.Spec.Display.Name
+	}
+	return view.Metadata.Name
+}
+
+// SetViewID sets the dash0.com/id label on a view definition, initializing
+// the labels struct if needed.
+func SetViewID(view *ViewDefinition, id string) {
+	if view == nil {
+		return
+	}
+	if view.Metadata.Labels == nil {
+		view.Metadata.Labels = &ViewLabels{}
+	}
+	view.Metadata.Labels.Dash0Comid = &id
+}
+
+// SetViewIDIfAbsent sets the dash0.com/id label on a view definition only if
+// it is not already set, initializing the labels struct if needed.
+func SetViewIDIfAbsent(view *ViewDefinition, id string) {
+	if view == nil {
+		return
+	}
+	if view.Metadata.Labels == nil {
+		view.Metadata.Labels = &ViewLabels{}
+	}
+	if view.Metadata.Labels.Dash0Comid == nil {
+		view.Metadata.Labels.Dash0Comid = &id
+	}
+}

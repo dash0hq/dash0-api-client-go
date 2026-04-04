@@ -93,10 +93,10 @@ type Client interface {
 	GetLogRecordsIter(ctx context.Context, request *GetLogRecordsRequest) *Iter[ResourceLogs]
 
 	// Import
-	ImportCheckRule(ctx context.Context, rule *PostApiImportCheckRuleJSONRequestBody, dataset *string) (*PrometheusAlertRule, error)
-	ImportDashboard(ctx context.Context, dashboard *PostApiImportDashboardJSONRequestBody, dataset *string) (*DashboardDefinition, error)
-	ImportSyntheticCheck(ctx context.Context, check *PostApiImportSyntheticCheckJSONRequestBody, dataset *string) (*SyntheticCheckDefinition, error)
-	ImportView(ctx context.Context, view *PostApiImportViewJSONRequestBody, dataset *string) (*ViewDefinition, error)
+	ImportCheckRule(ctx context.Context, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error)
+	ImportDashboard(ctx context.Context, dashboard *DashboardDefinition, dataset *string) (*DashboardDefinition, error)
+	ImportSyntheticCheck(ctx context.Context, check *SyntheticCheckDefinition, dataset *string) (*SyntheticCheckDefinition, error)
+	ImportView(ctx context.Context, view *ViewDefinition, dataset *string) (*ViewDefinition, error)
 
 	// OTLP
 	SendLogs(ctx context.Context, logs plog.Logs, dataset *string) error

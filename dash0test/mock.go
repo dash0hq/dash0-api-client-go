@@ -94,10 +94,10 @@ type MockClient struct {
 	GetLogRecordsIterFunc func(ctx context.Context, request *dash0.GetLogRecordsRequest) *dash0.Iter[dash0.ResourceLogs]
 
 	// Import
-	ImportCheckRuleFunc      func(ctx context.Context, rule *dash0.PostApiImportCheckRuleJSONRequestBody, dataset *string) (*dash0.PrometheusAlertRule, error)
-	ImportDashboardFunc      func(ctx context.Context, dashboard *dash0.PostApiImportDashboardJSONRequestBody, dataset *string) (*dash0.DashboardDefinition, error)
-	ImportSyntheticCheckFunc func(ctx context.Context, check *dash0.PostApiImportSyntheticCheckJSONRequestBody, dataset *string) (*dash0.SyntheticCheckDefinition, error)
-	ImportViewFunc           func(ctx context.Context, view *dash0.PostApiImportViewJSONRequestBody, dataset *string) (*dash0.ViewDefinition, error)
+	ImportCheckRuleFunc      func(ctx context.Context, rule *dash0.PrometheusAlertRule, dataset *string) (*dash0.PrometheusAlertRule, error)
+	ImportDashboardFunc      func(ctx context.Context, dashboard *dash0.DashboardDefinition, dataset *string) (*dash0.DashboardDefinition, error)
+	ImportSyntheticCheckFunc func(ctx context.Context, check *dash0.SyntheticCheckDefinition, dataset *string) (*dash0.SyntheticCheckDefinition, error)
+	ImportViewFunc           func(ctx context.Context, view *dash0.ViewDefinition, dataset *string) (*dash0.ViewDefinition, error)
 
 	// OTLP
 	SendLogsFunc    func(ctx context.Context, logs plog.Logs, dataset *string) error
@@ -495,28 +495,28 @@ func (m *MockClient) GetLogRecordsIter(ctx context.Context, request *dash0.GetLo
 
 // Import
 
-func (m *MockClient) ImportCheckRule(ctx context.Context, rule *dash0.PostApiImportCheckRuleJSONRequestBody, dataset *string) (*dash0.PrometheusAlertRule, error) {
+func (m *MockClient) ImportCheckRule(ctx context.Context, rule *dash0.PrometheusAlertRule, dataset *string) (*dash0.PrometheusAlertRule, error) {
 	if m.ImportCheckRuleFunc != nil {
 		return m.ImportCheckRuleFunc(ctx, rule, dataset)
 	}
 	return nil, nil
 }
 
-func (m *MockClient) ImportDashboard(ctx context.Context, dashboard *dash0.PostApiImportDashboardJSONRequestBody, dataset *string) (*dash0.DashboardDefinition, error) {
+func (m *MockClient) ImportDashboard(ctx context.Context, dashboard *dash0.DashboardDefinition, dataset *string) (*dash0.DashboardDefinition, error) {
 	if m.ImportDashboardFunc != nil {
 		return m.ImportDashboardFunc(ctx, dashboard, dataset)
 	}
 	return nil, nil
 }
 
-func (m *MockClient) ImportSyntheticCheck(ctx context.Context, check *dash0.PostApiImportSyntheticCheckJSONRequestBody, dataset *string) (*dash0.SyntheticCheckDefinition, error) {
+func (m *MockClient) ImportSyntheticCheck(ctx context.Context, check *dash0.SyntheticCheckDefinition, dataset *string) (*dash0.SyntheticCheckDefinition, error) {
 	if m.ImportSyntheticCheckFunc != nil {
 		return m.ImportSyntheticCheckFunc(ctx, check, dataset)
 	}
 	return nil, nil
 }
 
-func (m *MockClient) ImportView(ctx context.Context, view *dash0.PostApiImportViewJSONRequestBody, dataset *string) (*dash0.ViewDefinition, error) {
+func (m *MockClient) ImportView(ctx context.Context, view *dash0.ViewDefinition, dataset *string) (*dash0.ViewDefinition, error) {
 	if m.ImportViewFunc != nil {
 		return m.ImportViewFunc(ctx, view, dataset)
 	}

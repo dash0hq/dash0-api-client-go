@@ -4,7 +4,7 @@
 OPENAPI_URL := https://api.eu-west-1.aws.dash0-dev.com/openapi.yaml
 OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@1401fbe26ce7e128e9963786742490ff444e3795
 
-.PHONY: all generate build test test-collector lint clean tidy help
+.PHONY: all generate build test test-collector lint clean tidy api-compat help
 
 # Default target
 all: clean generate tidy fmt lint build test
@@ -13,13 +13,8 @@ all: clean generate tidy fmt lint build test
 generate:
 	@echo "Generating code from OpenAPI spec..."
 	$(OAPI_CODEGEN) --config=oapi-codegen.yaml $(OPENAPI_URL)
-	@echo "Post-processing generated code to resolve naming conflicts..."
-	@sed -i.bak \
-		-e 's/ClientOption/generatedClientOption/g' \
-		-e 's/NewClient(/newGeneratedClient(/g' \
-		-e 's/WithHTTPClient/withGeneratedHTTPClient/g' \
-		-e 's/WithBaseURL/withGeneratedApiUrl/g' \
-		generated.go && rm generated.go.bak
+	@echo "Post-processing generated code..."
+	@go run ./tools/postprocess generated.go
 
 # Build the library
 build:
@@ -57,6 +52,40 @@ tidy:
 	@echo "Tidying dependencies..."
 	go mod tidy
 
+# Check API compatibility against latest release tag.
+# gorelease detects all incompatible changes; the script then filters out
+# changes listed in api_compatibility_exceptions.txt.
+# If unallowed incompatible changes remain, the target fails.
+api-compat:
+	@echo "Checking API compatibility..."
+	@go run golang.org/x/exp/cmd/gorelease@latest 2>&1 | tee /tmp/gorelease-output.txt; \
+	INCOMPAT=$$(sed -n '/^## incompatible changes/,/^## compatible changes/p' /tmp/gorelease-output.txt | grep -v '^##' | grep -v '^$$' | grep -v ': added$$'); \
+	if [ -z "$$INCOMPAT" ]; then \
+		echo "No incompatible changes detected."; \
+		exit 0; \
+	fi; \
+	if [ -f api_compatibility_exceptions.txt ]; then \
+		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$$$/$$$$/' | paste -sd'|' -); \
+		UNALLOWED=$$(echo "$$INCOMPAT" | while IFS= read -r line; do \
+			SYMBOL=$$(echo "$$line" | sed 's/:.*//' | tr -d ' '); \
+			if ! echo "$$SYMBOL" | grep -qE "$$PATTERNS"; then \
+				echo "  $$line"; \
+			fi; \
+		done); \
+	else \
+		UNALLOWED=$$(echo "$$INCOMPAT" | sed 's/^/  /'); \
+	fi; \
+	if [ -n "$$UNALLOWED" ]; then \
+		echo ""; \
+		echo "Unallowed incompatible changes:"; \
+		echo "$$UNALLOWED"; \
+		echo ""; \
+		echo "If intentional, add the symbol name to api_compatibility_exceptions.txt."; \
+		exit 1; \
+	else \
+		echo "All incompatible changes are allowed via api_compatibility_exceptions.txt."; \
+	fi
+
 # Download dependencies
 deps:
 	@echo "Downloading dependencies..."
@@ -85,6 +114,7 @@ help:
 	@echo "  lint           - Run linter"
 	@echo "  fmt            - Format code"
 	@echo "  tidy           - Tidy go.mod"
+	@echo "  api-compat     - Check API compatibility against latest tag"
 	@echo "  deps           - Download dependencies"
 	@echo "  clean          - Remove generated files"
 	@echo "  verify-spec    - Check if OpenAPI spec URL is accessible"

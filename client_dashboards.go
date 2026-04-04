@@ -108,3 +108,120 @@ func (c *client) ListDashboardsIter(ctx context.Context, dataset *string) *Iter[
 	}
 	return newIter(items, false, nil, nil)
 }
+
+// StripDashboardServerFields removes server-generated metadata fields from a dashboard definition.
+func StripDashboardServerFields(dashboard *DashboardDefinition) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Annotations != nil {
+		dashboard.Metadata.Annotations.Dash0ComdeletedAt = nil
+	}
+	dashboard.Metadata.CreatedAt = nil
+	dashboard.Metadata.UpdatedAt = nil
+	dashboard.Metadata.Version = nil
+	if dashboard.Metadata.Dash0Extensions != nil {
+		dashboard.Metadata.Dash0Extensions.Dataset = nil
+	}
+}
+
+// ClearDashboardID removes the ID from a dashboard definition.
+func ClearDashboardID(dashboard *DashboardDefinition) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Dash0Extensions != nil {
+		dashboard.Metadata.Dash0Extensions.Id = nil
+	}
+}
+
+// GetDashboardFolderPath extracts the folder path from a dashboard definition.
+func GetDashboardFolderPath(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Metadata.Annotations == nil || dashboard.Metadata.Annotations.Dash0ComfolderPath == nil {
+		return ""
+	}
+	return *dashboard.Metadata.Annotations.Dash0ComfolderPath
+}
+
+// SetDashboardFolderPath sets the folder path on a dashboard definition,
+// initializing the annotations struct if needed.
+func SetDashboardFolderPath(dashboard *DashboardDefinition, folderPath string) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Annotations == nil {
+		dashboard.Metadata.Annotations = &DashboardAnnotations{}
+	}
+	dashboard.Metadata.Annotations.Dash0ComfolderPath = &folderPath
+}
+
+// GetDashboardDataset extracts the dataset from a dashboard definition.
+func GetDashboardDataset(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Dataset == nil {
+		return ""
+	}
+	return *dashboard.Metadata.Dash0Extensions.Dataset
+}
+
+// SetDashboardDataset sets the dataset on a dashboard definition, initializing
+// the dash0Extensions struct if needed.
+func SetDashboardDataset(dashboard *DashboardDefinition, dataset string) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Dash0Extensions == nil {
+		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
+	}
+	ds := Dataset(dataset)
+	dashboard.Metadata.Dash0Extensions.Dataset = &ds
+}
+
+// GetDashboardID extracts the ID from a dashboard definition.
+func GetDashboardID(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id == "" {
+		return ""
+	}
+	return *dashboard.Metadata.Dash0Extensions.Id
+}
+
+// GetDashboardName extracts the display name from a dashboard definition.
+func GetDashboardName(dashboard *DashboardDefinition) string {
+	if dashboard == nil || dashboard.Spec == nil {
+		return ""
+	}
+	display, ok := dashboard.Spec["display"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	name, ok := display["name"].(string)
+	if !ok {
+		return ""
+	}
+	return name
+}
+
+// SetDashboardID sets the ID on a dashboard definition, initializing the
+// dash0Extensions struct if needed.
+func SetDashboardID(dashboard *DashboardDefinition, id string) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Dash0Extensions == nil {
+		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
+	}
+	dashboard.Metadata.Dash0Extensions.Id = &id
+}
+
+// SetDashboardIDIfAbsent sets the ID on a dashboard definition only if it is
+// not already set, initializing the dash0Extensions struct if needed.
+func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
+	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Dash0Extensions == nil {
+		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
+	}
+	if dashboard.Metadata.Dash0Extensions.Id == nil {
+		dashboard.Metadata.Dash0Extensions.Id = &id
+	}
+}
