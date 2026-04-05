@@ -6,6 +6,7 @@ import (
 	"log"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
+	"github.com/dash0hq/dash0-api-client-go/profiles"
 )
 
 // Client construction
@@ -38,6 +39,26 @@ func ExampleNewClient_apiAndOtlp() {
 	}
 	defer func() { _ = client.Close(context.Background()) }()
 	_ = client
+}
+
+func ExampleNewClient_fromProfile() {
+	cfg, err := profiles.ResolveConfiguration("", "")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	opts := append(cfg.ClientOptions(), dash0.WithUserAgent("my-tool/1.0"))
+	client, err := dash0.NewClient(opts...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	dashboards, err := client.ListDashboards(context.Background(), cfg.DatasetPtr())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Found %d dashboards\n", len(dashboards))
 }
 
 // DatasetPtr

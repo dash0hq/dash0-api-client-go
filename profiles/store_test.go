@@ -1,0 +1,643 @@
+package profiles
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+func createTestProfilesFile(t *testing.T, configDir string, profiles []Profile) {
+	t.Helper()
+	profilesFile := ProfilesFile{Profiles: profiles}
+	data, err := json.MarshalIndent(profilesFile, "", "  ")
+	if err != nil {
+		t.Fatalf("Failed to marshal profiles: %v", err)
+	}
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		t.Fatalf("Failed to create directory: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(configDir, ProfilesFileName), data, 0644); err != nil {
+		t.Fatalf("Failed to write profiles file: %v", err)
+	}
+}
+
+func setActiveProfile(t *testing.T, configDir, profileName string) {
+	t.Helper()
+	if err := os.WriteFile(filepath.Join(configDir, ActiveProfileFileName), []byte(profileName), 0644); err != nil {
+		t.Fatalf("Failed to write active profile: %v", err)
+	}
+}
+
+func newTestStore(t *testing.T) (*Store, string) {
+	t.Helper()
+	dir := t.TempDir()
+	svc, err := NewStore(WithConfigDir(dir))
+	if err != nil {
+		t.Fatalf("Failed to create store: %v", err)
+	}
+	return svc, dir
+}
+
+func TestNewStore(t *testing.T) {
+	t.Run("with WithConfigDir", func(t *testing.T) {
+		dir := t.TempDir()
+		svc, err := NewStore(WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if svc.configDir != dir {
+			t.Errorf("expected configDir %s, got %s", dir, svc.configDir)
+		}
+	})
+
+	t.Run("with DASH0_CONFIG_DIR env var", func(t *testing.T) {
+		dir := t.TempDir()
+		t.Setenv(EnvConfigDir, dir)
+		svc, err := NewStore()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if svc.configDir != dir {
+			t.Errorf("expected configDir %s, got %s", dir, svc.configDir)
+		}
+	})
+
+	t.Run("WithConfigDir takes precedence over env var", func(t *testing.T) {
+		envDir := t.TempDir()
+		optDir := t.TempDir()
+		t.Setenv(EnvConfigDir, envDir)
+		svc, err := NewStore(WithConfigDir(optDir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if svc.configDir != optDir {
+			t.Errorf("expected configDir %s, got %s", optDir, svc.configDir)
+		}
+	})
+
+	t.Run("defaults to home dir", func(t *testing.T) {
+		// Unset the env var so the default path is used.
+		t.Setenv(EnvConfigDir, "")
+		svc, err := NewStore()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		homeDir, _ := os.UserHomeDir()
+		expected := filepath.Join(homeDir, ConfigDirName)
+		if svc.configDir != expected {
+			t.Errorf("expected configDir %s, got %s", expected, svc.configDir)
+		}
+	})
+}
+
+func TestGetProfiles(t *testing.T) {
+	svc, dir := newTestStore(t)
+
+	testProfiles := []Profile{
+		{Name: "test1", Configuration: Configuration{ApiUrl: "https://test1.example.com", AuthToken: "token1"}},
+		{Name: "test2", Configuration: Configuration{ApiUrl: "https://test2.example.com", AuthToken: "token2"}},
+	}
+	createTestProfilesFile(t, dir, testProfiles)
+
+	profiles, err := svc.GetProfiles()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(profiles) != 2 {
+		t.Fatalf("expected 2 profiles, got %d", len(profiles))
+	}
+	for i, p := range profiles {
+		if p.Name != testProfiles[i].Name {
+			t.Errorf("profile %d: expected name %s, got %s", i, testProfiles[i].Name, p.Name)
+		}
+		if p.Configuration.ApiUrl != testProfiles[i].Configuration.ApiUrl {
+			t.Errorf("profile %d: expected API URL %s, got %s", i, testProfiles[i].Configuration.ApiUrl, p.Configuration.ApiUrl)
+		}
+	}
+}
+
+func TestGetProfiles_empty(t *testing.T) {
+	svc, _ := newTestStore(t)
+	profiles, err := svc.GetProfiles()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(profiles) != 0 {
+		t.Errorf("expected 0 profiles, got %d", len(profiles))
+	}
+}
+
+func TestGetProfiles_invalidJSON(t *testing.T) {
+	svc, dir := newTestStore(t)
+
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatalf("failed to create directory: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, ProfilesFileName), []byte(`{invalid`), 0644); err != nil {
+		t.Fatalf("failed to write file: %v", err)
+	}
+
+	_, err := svc.GetProfiles()
+	if err == nil {
+		t.Fatal("expected error for invalid JSON, got nil")
+	}
+	if !strings.Contains(err.Error(), "failed to parse profiles file") {
+		t.Errorf("expected parse error, got: %s", err.Error())
+	}
+	if !strings.Contains(err.Error(), "Hint:") {
+		t.Errorf("expected hint in error, got: %s", err.Error())
+	}
+}
+
+func TestGetActiveProfile(t *testing.T) {
+	svc, dir := newTestStore(t)
+
+	testProfiles := []Profile{
+		{Name: "test1", Configuration: Configuration{ApiUrl: "https://test1.example.com", AuthToken: "token1"}},
+		{Name: "test2", Configuration: Configuration{ApiUrl: "https://test2.example.com", AuthToken: "token2"}},
+	}
+	createTestProfilesFile(t, dir, testProfiles)
+	setActiveProfile(t, dir, "test2")
+
+	profile, err := svc.GetActiveProfile()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if profile.Name != "test2" {
+		t.Errorf("expected active profile test2, got %s", profile.Name)
+	}
+	if profile.Configuration.ApiUrl != "https://test2.example.com" {
+		t.Errorf("expected API URL https://test2.example.com, got %s", profile.Configuration.ApiUrl)
+	}
+}
+
+func TestGetActiveProfile_noActiveProfile(t *testing.T) {
+	svc, _ := newTestStore(t)
+	_, err := svc.GetActiveProfile()
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if err != ErrNoActiveProfile {
+		t.Errorf("expected ErrNoActiveProfile, got: %v", err)
+	}
+}
+
+func TestAddProfile(t *testing.T) {
+	t.Run("first profile becomes active", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+
+		err := svc.AddProfile(Profile{
+			Name:          "new-profile",
+			Configuration: Configuration{ApiUrl: "https://new.example.com", AuthToken: "new-token"},
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, err := svc.GetProfiles()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(profiles) != 1 {
+			t.Fatalf("expected 1 profile, got %d", len(profiles))
+		}
+		if profiles[0].Name != "new-profile" {
+			t.Errorf("expected name new-profile, got %s", profiles[0].Name)
+		}
+
+		active, err := svc.GetActiveProfile()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if active.Name != "new-profile" {
+			t.Errorf("expected active profile new-profile, got %s", active.Name)
+		}
+	})
+
+	t.Run("replaces existing profile with same name", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "dev", Configuration: Configuration{ApiUrl: "https://old.example.com", AuthToken: "old-token"}},
+		})
+		setActiveProfile(t, dir, "dev")
+
+		err := svc.AddProfile(Profile{
+			Name:          "dev",
+			Configuration: Configuration{ApiUrl: "https://new.example.com", AuthToken: "new-token"},
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, err := svc.GetProfiles()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(profiles) != 1 {
+			t.Fatalf("expected 1 profile, got %d", len(profiles))
+		}
+		if profiles[0].Configuration.ApiUrl != "https://new.example.com" {
+			t.Errorf("expected API URL https://new.example.com, got %s", profiles[0].Configuration.ApiUrl)
+		}
+	})
+}
+
+func TestUpdateProfile(t *testing.T) {
+	t.Run("update single field", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "dev", Configuration: Configuration{ApiUrl: "https://old.example.com", AuthToken: "token1"}},
+		})
+
+		err := svc.UpdateProfile("dev", func(cfg *Configuration) {
+			cfg.ApiUrl = "https://new.example.com"
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, _ := svc.GetProfiles()
+		if profiles[0].Configuration.ApiUrl != "https://new.example.com" {
+			t.Errorf("expected API URL https://new.example.com, got %s", profiles[0].Configuration.ApiUrl)
+		}
+		if profiles[0].Configuration.AuthToken != "token1" {
+			t.Errorf("expected auth token to remain token1, got %s", profiles[0].Configuration.AuthToken)
+		}
+	})
+
+	t.Run("update multiple fields", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "dev", Configuration: Configuration{ApiUrl: "https://old.example.com", AuthToken: "old-token"}},
+		})
+
+		err := svc.UpdateProfile("dev", func(cfg *Configuration) {
+			cfg.ApiUrl = "https://new.example.com"
+			cfg.AuthToken = "new-token"
+			cfg.OtlpUrl = "https://otlp.example.com"
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, _ := svc.GetProfiles()
+		if profiles[0].Configuration.ApiUrl != "https://new.example.com" {
+			t.Errorf("expected API URL https://new.example.com, got %s", profiles[0].Configuration.ApiUrl)
+		}
+		if profiles[0].Configuration.AuthToken != "new-token" {
+			t.Errorf("expected auth token new-token, got %s", profiles[0].Configuration.AuthToken)
+		}
+		if profiles[0].Configuration.OtlpUrl != "https://otlp.example.com" {
+			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", profiles[0].Configuration.OtlpUrl)
+		}
+	})
+
+	t.Run("clear field by setting to empty string", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "dev", Configuration: Configuration{
+				ApiUrl: "https://api.example.com", AuthToken: "token1", OtlpUrl: "https://otlp.example.com",
+			}},
+		})
+
+		err := svc.UpdateProfile("dev", func(cfg *Configuration) {
+			cfg.OtlpUrl = ""
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, _ := svc.GetProfiles()
+		if profiles[0].Configuration.OtlpUrl != "" {
+			t.Errorf("expected OTLP URL to be empty, got %s", profiles[0].Configuration.OtlpUrl)
+		}
+		if profiles[0].Configuration.ApiUrl != "https://api.example.com" {
+			t.Errorf("expected API URL to remain unchanged, got %s", profiles[0].Configuration.ApiUrl)
+		}
+	})
+
+	t.Run("does not affect other profiles", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "dev", Configuration: Configuration{ApiUrl: "https://dev.example.com", AuthToken: "dev-token"}},
+			{Name: "prod", Configuration: Configuration{ApiUrl: "https://prod.example.com", AuthToken: "prod-token"}},
+		})
+
+		err := svc.UpdateProfile("dev", func(cfg *Configuration) {
+			cfg.ApiUrl = "https://new-dev.example.com"
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, _ := svc.GetProfiles()
+		if profiles[1].Configuration.ApiUrl != "https://prod.example.com" {
+			t.Errorf("expected prod API URL to remain unchanged, got %s", profiles[1].Configuration.ApiUrl)
+		}
+	})
+
+	t.Run("profile not found", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "dev", Configuration: Configuration{ApiUrl: "https://dev.example.com", AuthToken: "token1"}},
+		})
+
+		err := svc.UpdateProfile("nonexistent", func(cfg *Configuration) {
+			cfg.ApiUrl = "https://new.example.com"
+		})
+		if err == nil {
+			t.Fatal("expected error for nonexistent profile, got nil")
+		}
+		if !strings.Contains(err.Error(), "nonexistent") {
+			t.Errorf("expected error to contain profile name, got: %s", err.Error())
+		}
+	})
+}
+
+func TestRemoveProfile(t *testing.T) {
+	t.Run("removes profile and updates active", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{ApiUrl: "https://test1.example.com", AuthToken: "token1"}},
+			{Name: "test2", Configuration: Configuration{ApiUrl: "https://test2.example.com", AuthToken: "token2"}},
+		})
+		setActiveProfile(t, dir, "test2")
+
+		err := svc.RemoveProfile("test2")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		profiles, err := svc.GetProfiles()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(profiles) != 1 {
+			t.Fatalf("expected 1 profile, got %d", len(profiles))
+		}
+		if profiles[0].Name != "test1" {
+			t.Errorf("expected remaining profile test1, got %s", profiles[0].Name)
+		}
+
+		active, err := svc.GetActiveProfile()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if active.Name != "test1" {
+			t.Errorf("expected active profile test1, got %s", active.Name)
+		}
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+		err := svc.RemoveProfile("nonexistent")
+		if err != ErrProfileNotFound {
+			t.Errorf("expected ErrProfileNotFound, got: %v", err)
+		}
+	})
+}
+
+func TestSetActiveProfile(t *testing.T) {
+	t.Run("sets active profile", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{ApiUrl: "https://test1.example.com", AuthToken: "token1"}},
+			{Name: "test2", Configuration: Configuration{ApiUrl: "https://test2.example.com", AuthToken: "token2"}},
+		})
+
+		err := svc.SetActiveProfile("test2")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		active, err := svc.GetActiveProfile()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if active.Name != "test2" {
+			t.Errorf("expected active profile test2, got %s", active.Name)
+		}
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+		err := svc.SetActiveProfile("nonexistent")
+		if err != ErrProfileNotFound {
+			t.Errorf("expected ErrProfileNotFound, got: %v", err)
+		}
+	})
+}
+
+func TestGetActiveConfiguration(t *testing.T) {
+	t.Run("from env vars only", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+		t.Setenv(EnvApiUrl, "https://env.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://env.example.com" {
+			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl)
+		}
+		if cfg.AuthToken != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		}
+	})
+
+	t.Run("from active profile", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{ApiUrl: "https://test1.example.com", AuthToken: "token1"}},
+		})
+		setActiveProfile(t, dir, "test1")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://test1.example.com" {
+			t.Errorf("expected API URL https://test1.example.com, got %s", cfg.ApiUrl)
+		}
+		if cfg.AuthToken != "token1" {
+			t.Errorf("expected auth token token1, got %s", cfg.AuthToken)
+		}
+	})
+
+	t.Run("env vars override profile", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl: "https://profile.example.com", AuthToken: "profile-token", Dataset: "profile-dataset",
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+		t.Setenv(EnvDataset, "env-dataset")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.Dataset != "env-dataset" {
+			t.Errorf("expected dataset env-dataset, got %s", cfg.Dataset)
+		}
+		// Non-overridden fields come from the profile.
+		if cfg.ApiUrl != "https://profile.example.com" {
+			t.Errorf("expected API URL from profile, got %s", cfg.ApiUrl)
+		}
+	})
+
+	t.Run("OTLP URL from env var", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+		t.Setenv(EnvAuthToken, "env-token")
+		t.Setenv(EnvOtlpUrl, "https://otlp.example.com")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OtlpUrl != "https://otlp.example.com" {
+			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", cfg.OtlpUrl)
+		}
+	})
+
+	t.Run("OTLP URL env var overrides profile", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl: "https://api.example.com", AuthToken: "token1", OtlpUrl: "https://otlp-profile.example.com",
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+		t.Setenv(EnvOtlpUrl, "https://otlp-env.example.com")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OtlpUrl != "https://otlp-env.example.com" {
+			t.Errorf("expected OTLP URL https://otlp-env.example.com, got %s", cfg.OtlpUrl)
+		}
+	})
+
+	t.Run("dataset from profile", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl: "https://api.example.com", AuthToken: "token1", Dataset: "profile-dataset",
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.Dataset != "profile-dataset" {
+			t.Errorf("expected dataset profile-dataset, got %s", cfg.Dataset)
+		}
+	})
+}
+
+func TestResolveConfiguration(t *testing.T) {
+	t.Run("from env vars", func(t *testing.T) {
+		t.Setenv(EnvApiUrl, "https://env.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := ResolveConfiguration("", "", WithConfigDir(t.TempDir()))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://env.example.com" {
+			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl)
+		}
+		if cfg.AuthToken != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		}
+	})
+
+	t.Run("parameter overrides profile", func(t *testing.T) {
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{ApiUrl: "https://original.example.com", AuthToken: "original-token"}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("https://override.example.com", "", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://override.example.com" {
+			t.Errorf("expected API URL https://override.example.com, got %s", cfg.ApiUrl)
+		}
+		if cfg.AuthToken != "original-token" {
+			t.Errorf("expected auth token original-token, got %s", cfg.AuthToken)
+		}
+	})
+
+	t.Run("no configuration available", func(t *testing.T) {
+		_, err := ResolveConfiguration("", "", WithConfigDir(t.TempDir()))
+		if err == nil {
+			t.Fatal("expected error for missing configuration, got nil")
+		}
+	})
+
+	t.Run("OTLP URL only via env vars", func(t *testing.T) {
+		t.Setenv(EnvOtlpUrl, "https://otlp.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := ResolveConfiguration("", "", WithConfigDir(t.TempDir()))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OtlpUrl != "https://otlp.example.com" {
+			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", cfg.OtlpUrl)
+		}
+		if cfg.ApiUrl != "" {
+			t.Errorf("expected empty API URL, got %s", cfg.ApiUrl)
+		}
+	})
+
+	t.Run("dataset from env var", func(t *testing.T) {
+		t.Setenv(EnvApiUrl, "https://api.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+		t.Setenv(EnvDataset, "env-dataset")
+
+		cfg, err := ResolveConfiguration("", "", WithConfigDir(t.TempDir()))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.Dataset != "env-dataset" {
+			t.Errorf("expected dataset env-dataset, got %s", cfg.Dataset)
+		}
+	})
+
+	t.Run("dataset from flag override", func(t *testing.T) {
+		t.Setenv(EnvApiUrl, "https://api.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+		t.Setenv(EnvDataset, "env-dataset")
+
+		cfg, err := ResolveConfigurationWithOtlp("", "", "", "flag-dataset", WithConfigDir(t.TempDir()))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.Dataset != "flag-dataset" {
+			t.Errorf("expected dataset flag-dataset, got %s", cfg.Dataset)
+		}
+	})
+
+	t.Run("OTLP URL flag override", func(t *testing.T) {
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := ResolveConfigurationWithOtlp("", "", "https://otlp-flag.example.com", "", WithConfigDir(t.TempDir()))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OtlpUrl != "https://otlp-flag.example.com" {
+			t.Errorf("expected OTLP URL https://otlp-flag.example.com, got %s", cfg.OtlpUrl)
+		}
+	})
+}
