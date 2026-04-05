@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.0
+
+
+### Features
+- introduce profile management
+
 ## v1.6.0
 
 
