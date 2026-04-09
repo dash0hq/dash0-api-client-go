@@ -92,6 +92,12 @@ type Client interface {
 	GetLogRecords(ctx context.Context, request *GetLogRecordsRequest) (*GetLogRecordsResponse, error)
 	GetLogRecordsIter(ctx context.Context, request *GetLogRecordsRequest) *Iter[ResourceLogs]
 
+	// Integrations
+	GetIntegration(ctx context.Context, originOrID string, dataset *string) (*IntegrationDefinition, error)
+	CreateIntegration(ctx context.Context, integration *IntegrationDefinition, dataset *string) (*IntegrationDefinition, error)
+	UpdateIntegration(ctx context.Context, originOrID string, integration *IntegrationDefinition, dataset *string) (*IntegrationDefinition, error)
+	DeleteIntegration(ctx context.Context, originOrID string, dataset *string) error
+
 	// Import
 	ImportCheckRule(ctx context.Context, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error)
 	ImportDashboard(ctx context.Context, dashboard *DashboardDefinition, dataset *string) (*DashboardDefinition, error)

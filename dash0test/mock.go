@@ -93,6 +93,12 @@ type MockClient struct {
 	GetLogRecordsFunc     func(ctx context.Context, request *dash0.GetLogRecordsRequest) (*dash0.GetLogRecordsResponse, error)
 	GetLogRecordsIterFunc func(ctx context.Context, request *dash0.GetLogRecordsRequest) *dash0.Iter[dash0.ResourceLogs]
 
+	// Integrations
+	GetIntegrationFunc    func(ctx context.Context, originOrID string, dataset *string) (*dash0.IntegrationDefinition, error)
+	CreateIntegrationFunc func(ctx context.Context, integration *dash0.IntegrationDefinition, dataset *string) (*dash0.IntegrationDefinition, error)
+	UpdateIntegrationFunc func(ctx context.Context, originOrID string, integration *dash0.IntegrationDefinition, dataset *string) (*dash0.IntegrationDefinition, error)
+	DeleteIntegrationFunc func(ctx context.Context, originOrID string, dataset *string) error
+
 	// Import
 	ImportCheckRuleFunc      func(ctx context.Context, rule *dash0.PrometheusAlertRule, dataset *string) (*dash0.PrometheusAlertRule, error)
 	ImportDashboardFunc      func(ctx context.Context, dashboard *dash0.DashboardDefinition, dataset *string) (*dash0.DashboardDefinition, error)
@@ -489,6 +495,36 @@ func (m *MockClient) GetLogRecords(ctx context.Context, request *dash0.GetLogRec
 func (m *MockClient) GetLogRecordsIter(ctx context.Context, request *dash0.GetLogRecordsRequest) *dash0.Iter[dash0.ResourceLogs] {
 	if m.GetLogRecordsIterFunc != nil {
 		return m.GetLogRecordsIterFunc(ctx, request)
+	}
+	return nil
+}
+
+// Integrations
+
+func (m *MockClient) GetIntegration(ctx context.Context, originOrID string, dataset *string) (*dash0.IntegrationDefinition, error) {
+	if m.GetIntegrationFunc != nil {
+		return m.GetIntegrationFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateIntegration(ctx context.Context, integration *dash0.IntegrationDefinition, dataset *string) (*dash0.IntegrationDefinition, error) {
+	if m.CreateIntegrationFunc != nil {
+		return m.CreateIntegrationFunc(ctx, integration, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateIntegration(ctx context.Context, originOrID string, integration *dash0.IntegrationDefinition, dataset *string) (*dash0.IntegrationDefinition, error) {
+	if m.UpdateIntegrationFunc != nil {
+		return m.UpdateIntegrationFunc(ctx, originOrID, integration, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteIntegration(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteIntegrationFunc != nil {
+		return m.DeleteIntegrationFunc(ctx, originOrID, dataset)
 	}
 	return nil
 }

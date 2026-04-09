@@ -227,6 +227,80 @@ func ExampleClearDashboardID() {
 	// Output: true
 }
 
+// Integration helpers
+
+func ExampleGetIntegrationName() {
+	def := &dash0.IntegrationDefinition{
+		Spec: dash0.IntegrationSpec{
+			Display: dash0.IntegrationDisplay{Name: "AWS 123456789012"},
+		},
+	}
+	fmt.Println(dash0.GetIntegrationName(def))
+	// Output: AWS 123456789012
+}
+
+func ExampleGetIntegrationID() {
+	def := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: map[string]string{"dash0.com/id": "int-123"},
+		},
+	}
+	fmt.Println(dash0.GetIntegrationID(def))
+	// Output: int-123
+}
+
+func ExampleGetIntegrationOrigin() {
+	def := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: map[string]string{"dash0.com/origin": "terraform:aws:123"},
+		},
+	}
+	fmt.Println(dash0.GetIntegrationOrigin(def))
+	// Output: terraform:aws:123
+}
+
+func ExampleSetIntegrationID() {
+	def := &dash0.IntegrationDefinition{}
+	dash0.SetIntegrationID(def, "int-456")
+	fmt.Println(def.Metadata.Labels["dash0.com/id"])
+	// Output: int-456
+}
+
+func ExampleSetIntegrationIDIfAbsent() {
+	def := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: map[string]string{"dash0.com/id": "existing"},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetIntegrationIDIfAbsent(def, "new-id")
+	fmt.Println(def.Metadata.Labels["dash0.com/id"])
+	// Output: existing
+}
+
+func ExampleStripIntegrationServerFields() {
+	def := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Version: dash0.Ptr(int64(3)),
+		},
+	}
+	dash0.StripIntegrationServerFields(def)
+	fmt.Println(def.Metadata.Version == nil)
+	// Output: true
+}
+
+func ExampleClearIntegrationID() {
+	def := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: map[string]string{"dash0.com/id": "int-123"},
+		},
+	}
+	dash0.ClearIntegrationID(def)
+	_, exists := def.Metadata.Labels["dash0.com/id"]
+	fmt.Println(exists)
+	// Output: false
+}
+
 // Check rule helpers
 
 func ExampleGetCheckRuleName() {
