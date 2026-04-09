@@ -26,3 +26,7 @@ PrometheusAlertRule.KeepFiringFor
 # Annotations.Description and Annotations.Summary fields.
 PrometheusAlertRule.Description
 PrometheusAlertRule.Summary
+
+# <NEXT_RELEASE>: Version and DefaultUserAgent change with every release.
+Version
+DefaultUserAgent
