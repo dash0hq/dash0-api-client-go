@@ -153,48 +153,66 @@ func NewClient(opts ...ClientOption) (Client, error) {
 		return nil, fmt.Errorf("dash0: auth token must start with 'auth_'")
 	}
 
-	// Clamp maxConcurrent to valid range
-	if cfg.maxConcurrent < 1 {
-		cfg.maxConcurrent = 1
-	}
-	if cfg.maxConcurrent > MaxConcurrentRequests {
-		cfg.maxConcurrent = MaxConcurrentRequests
-	}
-
-	// Clamp maxRetries to valid range
-	if cfg.maxRetries < 0 {
-		cfg.maxRetries = 0
-	}
-	if cfg.maxRetries > MaxRetries {
-		cfg.maxRetries = MaxRetries
+	// Validate that WithTransport does not conflict with transport-level options.
+	if cfg.transport != nil {
+		if err := validateTransportConflicts(cfg); err != nil {
+			return nil, err
+		}
 	}
 
-	// Get base transport from custom client or use default
-	var transport http.RoundTripper
-	if cfg.httpClient != nil {
-		transport = cfg.httpClient.Transport
-		if transport == nil {
-			transport = http.DefaultTransport
+	// Build HTTP client, either from a pre-built Transport or by assembling
+	// the transport stack from individual options.
+	var httpClient *http.Client
+	if cfg.transport != nil {
+		httpClient = cfg.transport.HTTPClient()
+		// Allow WithTimeout to override the transport's timeout.
+		if cfg.timeoutSet {
+			httpClient.Timeout = cfg.timeout
 		}
 	} else {
-		transport = http.DefaultTransport
-	}
+		// Clamp maxConcurrent to valid range
+		if cfg.maxConcurrent < 1 {
+			cfg.maxConcurrent = 1
+		}
+		if cfg.maxConcurrent > MaxConcurrentRequests {
+			cfg.maxConcurrent = MaxConcurrentRequests
+		}
 
-	// Stack transports: base -> rate limit -> retry
-	// Rate limiting is applied first, then retry wraps it
-	rateLimitedTransport := newRateLimitedTransport(transport, cfg.maxConcurrent)
-	retryingTransport := newRetryTransport(rateLimitedTransport, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax)
+		// Clamp maxRetries to valid range
+		if cfg.maxRetries < 0 {
+			cfg.maxRetries = 0
+		}
+		if cfg.maxRetries > MaxRetries {
+			cfg.maxRetries = MaxRetries
+		}
 
-	// Build HTTP client
-	httpClient := &http.Client{
-		Transport: retryingTransport,
-		Timeout:   cfg.timeout,
-	}
+		// Get base transport from custom client or use default
+		var transport http.RoundTripper
+		if cfg.httpClient != nil {
+			transport = cfg.httpClient.Transport
+			if transport == nil {
+				transport = http.DefaultTransport
+			}
+		} else {
+			transport = http.DefaultTransport
+		}
 
-	// Preserve other settings from custom client if provided
-	if cfg.httpClient != nil {
-		httpClient.CheckRedirect = cfg.httpClient.CheckRedirect
-		httpClient.Jar = cfg.httpClient.Jar
+		// Stack transports: base -> rate limit -> retry
+		// Rate limiting is applied first, then retry wraps it
+		rateLimited := newRateLimitedTransport(transport, cfg.maxConcurrent)
+		retrying := newRetryTransport(rateLimited, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax)
+
+		// Build HTTP client
+		httpClient = &http.Client{
+			Transport: retrying,
+			Timeout:   cfg.timeout,
+		}
+
+		// Preserve other settings from custom client if provided
+		if cfg.httpClient != nil {
+			httpClient.CheckRedirect = cfg.httpClient.CheckRedirect
+			httpClient.Jar = cfg.httpClient.Jar
+		}
 	}
 
 	// Create generated REST API client only when API URL is configured

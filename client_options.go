@@ -53,6 +53,16 @@ type clientConfig struct {
 	retryWaitMax  time.Duration
 	otlpEncoding  OtlpEncoding
 	otlpEndpoint  string
+	transport     *Transport
+
+	// Flags that track whether transport-level options were explicitly set.
+	// Used to detect conflicts with WithTransport.
+	httpClientSet    bool
+	maxConcurrentSet bool
+	maxRetriesSet    bool
+	retryWaitMinSet  bool
+	retryWaitMaxSet  bool
+	timeoutSet       bool
 }
 
 func defaultConfig() *clientConfig {
@@ -90,9 +100,12 @@ func WithAuthToken(authToken string) ClientOption {
 // WithHTTPClient sets a custom HTTP client.
 // The client's transport will be wrapped with rate limiting middleware.
 // Other settings like CheckRedirect and Jar will be preserved.
+//
+// This option conflicts with [WithTransport].
 func WithHTTPClient(client *http.Client) ClientOption {
 	return func(c *clientConfig) {
 		c.httpClient = client
+		c.httpClientSet = true
 	}
 }
 
@@ -100,17 +113,24 @@ func WithHTTPClient(client *http.Client) ClientOption {
 // The value must be between 1 and 10 (inclusive).
 // Values outside this range will be clamped.
 // Default is 3.
+//
+// This option conflicts with [WithTransport].
 func WithMaxConcurrentRequests(n int64) ClientOption {
 	return func(c *clientConfig) {
 		c.maxConcurrent = n
+		c.maxConcurrentSet = true
 	}
 }
 
 // WithTimeout sets the HTTP request timeout.
 // Default is 30 seconds.
+//
+// When used with [WithTransport], this overrides the timeout configured on the
+// [Transport].
 func WithTimeout(d time.Duration) ClientOption {
 	return func(c *clientConfig) {
 		c.timeout = d
+		c.timeoutSet = true
 	}
 }
 
@@ -127,6 +147,8 @@ func WithUserAgent(ua string) ClientOption {
 // withIdempotent context are retried.
 // Default is 1. Maximum is 5. Set to 0 to disable retries.
 //
+// This option conflicts with [WithTransport].
+//
 // Example:
 //
 //	client, _ := dash0.NewClient(
@@ -137,23 +159,57 @@ func WithUserAgent(ua string) ClientOption {
 func WithMaxRetries(n int) ClientOption {
 	return func(c *clientConfig) {
 		c.maxRetries = n
+		c.maxRetriesSet = true
 	}
 }
 
 // WithRetryWaitMin sets the minimum wait time between retries.
 // Default is 500ms. The actual wait time uses exponential backoff
 // starting from this value.
+//
+// This option conflicts with [WithTransport].
 func WithRetryWaitMin(d time.Duration) ClientOption {
 	return func(c *clientConfig) {
 		c.retryWaitMin = d
+		c.retryWaitMinSet = true
 	}
 }
 
 // WithRetryWaitMax sets the maximum wait time between retries.
 // Default is 30s. The backoff will not exceed this value.
+//
+// This option conflicts with [WithTransport].
 func WithRetryWaitMax(d time.Duration) ClientOption {
 	return func(c *clientConfig) {
 		c.retryWaitMax = d
+		c.retryWaitMaxSet = true
+	}
+}
+
+// WithTransport configures the client to use a pre-built [Transport] for rate
+// limiting and retry.
+// When set, transport-level [ClientOption] functions ([WithMaxRetries],
+// [WithRetryWaitMin], [WithRetryWaitMax], [WithMaxConcurrentRequests], and
+// [WithHTTPClient]) must not be used.
+// [NewClient] returns an error if both [WithTransport] and any of these
+// options are provided.
+//
+// [WithTimeout] remains compatible: when set alongside [WithTransport] it
+// overrides the timeout configured on the [Transport].
+//
+// Example:
+//
+//	t := dash0.NewTransport(
+//	    dash0.WithTransportMaxRetries(3),
+//	)
+//	client, err := dash0.NewClient(
+//	    dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+//	    dash0.WithAuthToken("auth_yourtoken"),
+//	    dash0.WithTransport(t),
+//	)
+func WithTransport(t *Transport) ClientOption {
+	return func(c *clientConfig) {
+		c.transport = t
 	}
 }
 
@@ -180,6 +236,34 @@ func WithOtlpEndpoint(encoding OtlpEncoding, url string) ClientOption {
 		c.otlpEncoding = encoding
 		c.otlpEndpoint = url
 	}
+}
+
+// validateTransportConflicts returns an error if any transport-level
+// ClientOption was set alongside WithTransport.
+func validateTransportConflicts(cfg *clientConfig) error {
+	var conflicts []string
+	if cfg.httpClientSet {
+		conflicts = append(conflicts, "WithHTTPClient")
+	}
+	if cfg.maxConcurrentSet {
+		conflicts = append(conflicts, "WithMaxConcurrentRequests")
+	}
+	if cfg.maxRetriesSet {
+		conflicts = append(conflicts, "WithMaxRetries")
+	}
+	if cfg.retryWaitMinSet {
+		conflicts = append(conflicts, "WithRetryWaitMin")
+	}
+	if cfg.retryWaitMaxSet {
+		conflicts = append(conflicts, "WithRetryWaitMax")
+	}
+	if len(conflicts) == 0 {
+		return nil
+	}
+	return fmt.Errorf(
+		"dash0: WithTransport conflicts with %s; configure these on the Transport instead",
+		strings.Join(conflicts, ", "),
+	)
 }
 
 // validateOtlpConfig validates the OTLP encoding and endpoint together.

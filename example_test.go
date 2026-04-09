@@ -4,10 +4,52 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
 	"github.com/dash0hq/dash0-api-client-go/profiles"
 )
+
+// Transport
+
+func ExampleNewTransport() {
+	t := dash0.NewTransport(
+		dash0.WithTransportMaxRetries(3),
+		dash0.WithTransportTimeout(10*time.Second),
+	)
+	fmt.Println(t.HTTPClient() != nil)
+	// Output: true
+}
+
+func ExampleTransport_HTTPClient() {
+	t := dash0.NewTransport()
+	httpClient := t.HTTPClient()
+	fmt.Println(httpClient != nil)
+	// Output: true
+}
+
+func ExampleWithTransport() {
+	t := dash0.NewTransport(
+		dash0.WithTransportMaxRetries(3),
+		dash0.WithTransportMaxConcurrentRequests(5),
+	)
+
+	// Use the same transport for both a raw HTTP client and a typed client.
+	httpClient := t.HTTPClient()
+	_ = httpClient
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+		dash0.WithAuthToken("auth_yourtoken"),
+		dash0.WithTransport(t),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+	fmt.Println(client != nil)
+	// Output: true
+}
 
 // Client construction
 
