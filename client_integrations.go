@@ -46,8 +46,16 @@ func (c *client) GetIntegration(ctx context.Context, originOrID string, dataset 
 }
 
 // CreateIntegration creates a new integration (upsert via PUT).
+// The integration must have a non-empty "dash0.com/origin" label set.
 func (c *client) CreateIntegration(ctx context.Context, integration *IntegrationDefinition, dataset *string) (*IntegrationDefinition, error) {
-	return c.upsertIntegration(ctx, GetIntegrationOrigin(integration), integration, dataset, "create")
+	if integration == nil {
+		return nil, fmt.Errorf("dash0: create integration failed: integration must not be nil")
+	}
+	origin := GetIntegrationOrigin(integration)
+	if origin == "" {
+		return nil, fmt.Errorf("dash0: create integration failed: integration must have a non-empty %q label", LabelOrigin)
+	}
+	return c.upsertIntegration(ctx, origin, integration, dataset, "create")
 }
 
 // UpdateIntegration updates an existing integration (upsert via PUT).
@@ -92,7 +100,7 @@ func (c *client) upsertIntegration(ctx context.Context, originOrID string, integ
 	return &def, nil
 }
 
-// DeleteIntegration deletes an integration by origin or ID.
+// DeleteIntegration soft-deletes an integration by origin or ID.
 func (c *client) DeleteIntegration(ctx context.Context, originOrID string, dataset *string) error {
 	if err := c.requireAPI(); err != nil {
 		return err
