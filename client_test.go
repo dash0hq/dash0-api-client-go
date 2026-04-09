@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestNewClient(t *testing.T) {
@@ -174,6 +175,193 @@ func TestNewClient(t *testing.T) {
 		httpClient := innerClient.Client.(*http.Client)
 		if httpClient.CheckRedirect == nil {
 			t.Error("expected CheckRedirect to be preserved")
+		}
+	})
+
+	t.Run("accepts WithTransport", func(t *testing.T) {
+		tr := NewTransport(
+			WithTransportMaxRetries(3),
+			WithTransportTimeout(10*time.Second),
+		)
+
+		c, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		impl := c.(*client)
+		innerClient := impl.inner.ClientInterface.(*generatedClient)
+		httpClient := innerClient.Client.(*http.Client)
+
+		// Verify the transport's RoundTripper is used
+		if httpClient.Transport != tr.RoundTripper() {
+			t.Error("expected client to use the Transport's RoundTripper")
+		}
+		// Verify the transport's timeout is used
+		if httpClient.Timeout != 10*time.Second {
+			t.Errorf("timeout = %v, want 10s", httpClient.Timeout)
+		}
+	})
+
+	t.Run("WithTransport with WithTimeout overrides transport timeout", func(t *testing.T) {
+		tr := NewTransport(WithTransportTimeout(10 * time.Second))
+
+		c, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithTimeout(20*time.Second),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		impl := c.(*client)
+		innerClient := impl.inner.ClientInterface.(*generatedClient)
+		httpClient := innerClient.Client.(*http.Client)
+		if httpClient.Timeout != 20*time.Second {
+			t.Errorf("timeout = %v, want 20s (overridden by WithTimeout)", httpClient.Timeout)
+		}
+	})
+
+	t.Run("WithTransport conflicts with WithMaxRetries", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithMaxRetries(2),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithMaxRetries") {
+			t.Errorf("error should mention WithMaxRetries: %v", err)
+		}
+	})
+
+	t.Run("WithTransport conflicts with WithRetryWaitMin", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithRetryWaitMin(time.Second),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithRetryWaitMin") {
+			t.Errorf("error should mention WithRetryWaitMin: %v", err)
+		}
+	})
+
+	t.Run("WithTransport conflicts with WithRetryWaitMax", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithRetryWaitMax(time.Second),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithRetryWaitMax") {
+			t.Errorf("error should mention WithRetryWaitMax: %v", err)
+		}
+	})
+
+	t.Run("WithTransport conflicts with WithMaxConcurrentRequests", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithMaxConcurrentRequests(5),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithMaxConcurrentRequests") {
+			t.Errorf("error should mention WithMaxConcurrentRequests: %v", err)
+		}
+	})
+
+	t.Run("WithTransport conflicts with WithHTTPClient", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithHTTPClient(&http.Client{}),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithHTTPClient") {
+			t.Errorf("error should mention WithHTTPClient: %v", err)
+		}
+	})
+
+	t.Run("WithTransport reports all conflicting options", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithMaxRetries(2),
+			WithMaxConcurrentRequests(5),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithMaxConcurrentRequests") {
+			t.Errorf("error should mention WithMaxConcurrentRequests: %v", err)
+		}
+		if !strings.Contains(err.Error(), "WithMaxRetries") {
+			t.Errorf("error should mention WithMaxRetries: %v", err)
+		}
+	})
+
+	t.Run("WithTransport works with OTLP-only client", func(t *testing.T) {
+		tr := NewTransport()
+		c, err := NewClient(
+			WithAuthToken("auth_test"),
+			WithOtlpEndpoint(OtlpEncodingJson, "https://otlp.example.com"),
+			WithTransport(tr),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if c == nil {
+			t.Fatal("expected client to be created")
+		}
+	})
+
+	t.Run("WithTransport shares rate-limit budget", func(t *testing.T) {
+		tr := NewTransport(WithTransportMaxConcurrentRequests(1))
+		c, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+		)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		// Both the raw HTTPClient and the typed client use the same transport.
+		rawClient := tr.HTTPClient()
+		impl := c.(*client)
+		innerClient := impl.inner.ClientInterface.(*generatedClient)
+		typedClient := innerClient.Client.(*http.Client)
+
+		if rawClient.Transport != typedClient.Transport {
+			t.Error("expected raw and typed clients to share the same RoundTripper")
 		}
 	})
 }

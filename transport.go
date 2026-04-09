@@ -10,6 +10,160 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
+// transportConfig holds configuration for building a [Transport].
+type transportConfig struct {
+	base          http.RoundTripper
+	maxConcurrent int64
+	maxRetries    int
+	retryWaitMin  time.Duration
+	retryWaitMax  time.Duration
+	timeout       time.Duration
+}
+
+func defaultTransportConfig() *transportConfig {
+	return &transportConfig{
+		maxConcurrent: DefaultMaxConcurrentRequests,
+		maxRetries:    1,
+		retryWaitMin:  DefaultRetryWaitMin,
+		retryWaitMax:  DefaultRetryWaitMax,
+		timeout:       DefaultTimeout,
+	}
+}
+
+// TransportOption configures a [Transport].
+type TransportOption func(*transportConfig)
+
+// WithBaseTransport sets the underlying [http.RoundTripper] that the transport
+// stack wraps.
+// If not set, [http.DefaultTransport] is used.
+func WithBaseTransport(rt http.RoundTripper) TransportOption {
+	return func(c *transportConfig) {
+		c.base = rt
+	}
+}
+
+// WithTransportMaxRetries sets the maximum number of retries for failed requests.
+// Only idempotent requests (GET, PUT, DELETE) and requests marked with
+// withIdempotent context are retried.
+// Default is 1. Maximum is 5. Set to 0 to disable retries.
+func WithTransportMaxRetries(n int) TransportOption {
+	return func(c *transportConfig) {
+		c.maxRetries = n
+	}
+}
+
+// WithTransportRetryWaitMin sets the minimum wait time between retries.
+// Default is 500ms.
+// The actual wait time uses exponential backoff starting from this value.
+func WithTransportRetryWaitMin(d time.Duration) TransportOption {
+	return func(c *transportConfig) {
+		c.retryWaitMin = d
+	}
+}
+
+// WithTransportRetryWaitMax sets the maximum wait time between retries.
+// Default is 30s.
+// The backoff will not exceed this value.
+func WithTransportRetryWaitMax(d time.Duration) TransportOption {
+	return func(c *transportConfig) {
+		c.retryWaitMax = d
+	}
+}
+
+// WithTransportMaxConcurrentRequests sets the maximum number of concurrent
+// API calls.
+// The value must be between 1 and 10 (inclusive).
+// Values outside this range will be clamped.
+// Default is 3.
+func WithTransportMaxConcurrentRequests(n int64) TransportOption {
+	return func(c *transportConfig) {
+		c.maxConcurrent = n
+	}
+}
+
+// WithTransportTimeout sets the HTTP request timeout applied to clients
+// returned by [Transport.HTTPClient].
+// Default is 30 seconds.
+func WithTransportTimeout(d time.Duration) TransportOption {
+	return func(c *transportConfig) {
+		c.timeout = d
+	}
+}
+
+// Transport is a reusable HTTP transport stack that provides rate limiting
+// and retry with exponential backoff.
+// Build one with [NewTransport] and share it between raw [http.Client] usage
+// and a typed [Client] via [WithTransport].
+//
+// A Transport is safe for concurrent use.
+type Transport struct {
+	roundTripper http.RoundTripper
+	timeout      time.Duration
+}
+
+// NewTransport creates a configured [Transport] with rate limiting and retry.
+// Values outside valid ranges are clamped silently.
+//
+// Example:
+//
+//	t := dash0.NewTransport(
+//	    dash0.WithTransportMaxRetries(3),
+//	    dash0.WithTransportTimeout(10 * time.Second),
+//	)
+//	httpClient := t.HTTPClient()
+func NewTransport(opts ...TransportOption) *Transport {
+	cfg := defaultTransportConfig()
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
+	if cfg.maxConcurrent < 1 {
+		cfg.maxConcurrent = 1
+	}
+	if cfg.maxConcurrent > MaxConcurrentRequests {
+		cfg.maxConcurrent = MaxConcurrentRequests
+	}
+	if cfg.maxRetries < 0 {
+		cfg.maxRetries = 0
+	}
+	if cfg.maxRetries > MaxRetries {
+		cfg.maxRetries = MaxRetries
+	}
+
+	base := cfg.base
+	if base == nil {
+		base = http.DefaultTransport
+	}
+
+	rl := newRateLimitedTransport(base, cfg.maxConcurrent)
+	rt := newRetryTransport(rl, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax)
+
+	return &Transport{
+		roundTripper: rt,
+		timeout:      cfg.timeout,
+	}
+}
+
+// HTTPClient returns a new [http.Client] that uses this transport's rate
+// limiting and retry stack.
+// Each call returns a new [http.Client], but all returned clients share the
+// same underlying transport so rate-limit budgets and concurrency limits
+// are shared.
+func (t *Transport) HTTPClient() *http.Client {
+	return &http.Client{
+		Transport: t.roundTripper,
+		Timeout:   t.timeout,
+	}
+}
+
+// RoundTripper returns the underlying [http.RoundTripper] with the full
+// transport stack (rate limiting and retry) applied.
+// Use this to plug the transport into an existing [http.Client] or other
+// HTTP infrastructure.
+func (t *Transport) RoundTripper() http.RoundTripper {
+	return t.roundTripper
+}
+
 // rateLimitedTransport wraps an http.RoundTripper and limits concurrent requests
 // using a semaphore.
 type rateLimitedTransport struct {
