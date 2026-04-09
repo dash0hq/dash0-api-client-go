@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.8.0
+
+
+### Features
+- expose transport stack for composable use with raw HTTP clients
+
 ## v1.7.0
 
 
