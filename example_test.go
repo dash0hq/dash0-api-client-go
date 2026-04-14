@@ -506,7 +506,7 @@ func ExampleSetPersesDashboardDataset() {
 // FormatDuration
 
 func ExampleFormatDuration() {
-	fmt.Println(dash0.FormatDuration(5 * 60e9))  // 5 minutes
+	fmt.Println(dash0.FormatDuration(5 * 60e9))   // 5 minutes
 	fmt.Println(dash0.FormatDuration(90e9))       // 1m30s
 	fmt.Println(dash0.FormatDuration(2 * 3600e9)) // 2 hours
 	// Output:

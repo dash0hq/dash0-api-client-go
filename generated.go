@@ -120,6 +120,33 @@ const (
 	Dash0Member MemberDefinitionKind = "Dash0Member"
 )
 
+// Defines values for NotificationChannelType.
+const (
+	AllQuiet                 NotificationChannelType = "all_quiet"
+	Betterstack              NotificationChannelType = "betterstack"
+	DiscordWebhook           NotificationChannelType = "discord_webhook"
+	Email                    NotificationChannelType = "email"
+	EmailV2                  NotificationChannelType = "email_v2"
+	GoogleChatWebhook        NotificationChannelType = "google_chat_webhook"
+	Ilert                    NotificationChannelType = "ilert"
+	Incidentio               NotificationChannelType = "incidentio"
+	JiraServiceManagementOps NotificationChannelType = "jira_service_management_ops"
+	Opsgenie                 NotificationChannelType = "opsgenie"
+	Pagerduty                NotificationChannelType = "pagerduty"
+	PrometheusAlertmanager   NotificationChannelType = "prometheus_alertmanager"
+	PrometheusWebhook        NotificationChannelType = "prometheus_webhook"
+	Slack                    NotificationChannelType = "slack"
+	SlackBot                 NotificationChannelType = "slack_bot"
+	TeamsWebhook             NotificationChannelType = "teams_webhook"
+	Webhook                  NotificationChannelType = "webhook"
+)
+
+// Defines values for NotificationChannelRoutingAssetKind.
+const (
+	CheckRule      NotificationChannelRoutingAssetKind = "check_rule"
+	SyntheticCheck NotificationChannelRoutingAssetKind = "synthetic_check"
+)
+
 // Defines values for NumericAssertionOperator.
 const (
 	NumericAssertionOperatorGt         NumericAssertionOperator = "gt"
@@ -157,6 +184,12 @@ const (
 const (
 	OAuthTokenTypeAccessToken  OAuthTokenType = "access_token"
 	OAuthTokenTypeRefreshToken OAuthTokenType = "refresh_token"
+)
+
+// Defines values for OpsgenieConfigInstance.
+const (
+	Eu OpsgenieConfigInstance = "eu"
+	Us OpsgenieConfigInstance = "us"
 )
 
 // Defines values for OrderingDirection.
@@ -442,6 +475,11 @@ type AddTeamMembersRequest struct {
 	MemberIds []string `json:"memberIds"`
 }
 
+// AllQuietConfig defines model for AllQuietConfig.
+type AllQuietConfig struct {
+	Url string `json:"url"`
+}
+
 // AnyValue AnyValue is used to represent any type of attribute value. AnyValue may contain a primitive value such as a string or integer or it may contain an arbitrary nested object containing arrays, key-value lists and primitives.
 type AnyValue struct {
 	BoolValue   *bool    `json:"boolValue,omitempty"`
@@ -661,8 +699,25 @@ type Dataset = string
 // DatasetRestriction defines model for DatasetRestriction.
 type DatasetRestriction string
 
+// DiscordWebhookConfig defines model for DiscordWebhookConfig.
+type DiscordWebhookConfig struct {
+	Url string `json:"url"`
+}
+
 // Duration defines model for Duration.
 type Duration = string
+
+// EmailConfig defines model for EmailConfig.
+type EmailConfig struct {
+	Plaintext *bool               `json:"plaintext,omitempty"`
+	Recipient openapi_types.Email `json:"recipient"`
+}
+
+// EmailV2Config defines model for EmailV2Config.
+type EmailV2Config struct {
+	Plaintext  *bool                 `json:"plaintext,omitempty"`
+	Recipients []openapi_types.Email `json:"recipients"`
+}
 
 // Error defines model for Error.
 type Error struct {
@@ -711,11 +766,14 @@ type ExecuteSqlResponse struct {
 	// **Examples**:
 	// - `2024-01-15T14:30:00Z`
 	// - `2024-01-15T14:30:00+08:00`
-	ExecutionTime FixedTime    `json:"executionTime"`
-	Progress      *Progress    `json:"progress,omitempty"`
-	ResultRows    *ResultRows  `json:"resultRows,omitempty"`
-	TimeRange     TimeRange    `json:"timeRange"`
-	Warnings      D0QLWarnings `json:"warnings"`
+	ExecutionTime FixedTime `json:"executionTime"`
+	Progress      *Progress `json:"progress,omitempty"`
+
+	// QueryError Structured error information for query errors. Present alongside the error string when the error is related to the user's query (syntax, semantic, or execution errors). Not present for system-level errors (unauthorized access, unexpected failures).
+	QueryError *QueryError  `json:"queryError,omitempty"`
+	ResultRows *ResultRows  `json:"resultRows,omitempty"`
+	TimeRange  TimeRange    `json:"timeRange"`
+	Warnings   D0QLWarnings `json:"warnings"`
 }
 
 // FailedHttpCheckAssertion Information about a failed HTTP check assertion
@@ -863,6 +921,11 @@ type GetTeamResponse struct {
 	Views           []AccessibleAsset  `json:"views"`
 }
 
+// GoogleChatWebhookConfig defines model for GoogleChatWebhookConfig.
+type GoogleChatWebhookConfig struct {
+	Url string `json:"url"`
+}
+
 // Gradient A color gradient from one color to another.
 type Gradient struct {
 	From string `json:"from"`
@@ -979,6 +1042,17 @@ type HttpResponseTextBodyAssertionKind string
 type HttpResponseTextBodyAssertionSpec struct {
 	Operator StringAssertionOperator `json:"operator"`
 	Value    string                  `json:"value"`
+}
+
+// IlertConfig defines model for IlertConfig.
+type IlertConfig struct {
+	Url string `json:"url"`
+}
+
+// IncidentIOConfig defines model for IncidentIOConfig.
+type IncidentIOConfig struct {
+	Headers string `json:"headers"`
+	Url     string `json:"url"`
 }
 
 // InstrumentationScope InstrumentationScope is a message representing the instrumentation scope information such as the fully qualified name and version.
@@ -1110,6 +1184,52 @@ type NextCursors struct {
 	// Cursors do not implement any ordering.
 	Before *Cursor `json:"before,omitempty"`
 }
+
+// NotificationChannel defines model for NotificationChannel.
+type NotificationChannel struct {
+	Config NotificationChannel_Config `json:"config"`
+
+	// Enabled A boolean flag to enable or disable the notification channel. This field is optional and defaults to true.
+	Enabled   *bool               `json:"enabled,omitempty"`
+	Frequency *Duration           `json:"frequency,omitempty"`
+	Id        *openapi_types.UUID `json:"id,omitempty"`
+	Name      string              `json:"name"`
+
+	// Origin An optional origin identifier for the notification channel. Can be used as an alternative to the UUID
+	// for lookups, updates, and deletions. Must be unique per organization.
+	Origin  *string                     `json:"origin,omitempty"`
+	Routing *NotificationChannelRouting `json:"routing,omitempty"`
+	Type    NotificationChannelType     `json:"type"`
+}
+
+// NotificationChannel_Config defines model for NotificationChannel.Config.
+type NotificationChannel_Config struct {
+	union json.RawMessage
+}
+
+// NotificationChannelType defines model for NotificationChannel.Type.
+type NotificationChannelType string
+
+// NotificationChannelRouting defines model for NotificationChannelRouting.
+type NotificationChannelRouting struct {
+	Assets  []NotificationChannelRoutingAsset `json:"assets"`
+	Filters []FilterCriteria                  `json:"filters"`
+}
+
+// NotificationChannelRoutingAsset defines model for NotificationChannelRoutingAsset.
+type NotificationChannelRoutingAsset struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset Dataset                             `json:"dataset"`
+	Id      string                              `json:"id"`
+	Kind    NotificationChannelRoutingAssetKind `json:"kind"`
+	Name    string                              `json:"name"`
+}
+
+// NotificationChannelRoutingAssetKind defines model for NotificationChannelRoutingAssetKind.
+type NotificationChannelRoutingAssetKind string
+
+// NotificationChannels defines model for NotificationChannels.
+type NotificationChannels = []NotificationChannel
 
 // NumericAssertionOperator defines model for NumericAssertionOperator.
 type NumericAssertionOperator string
@@ -1320,6 +1440,15 @@ type OAuthTokenResponse struct {
 // - `refresh_token`: An OAuth 2.0 refresh token.
 type OAuthTokenType string
 
+// OpsgenieConfig defines model for OpsgenieConfig.
+type OpsgenieConfig struct {
+	ApiKey   string                 `json:"apiKey"`
+	Instance OpsgenieConfigInstance `json:"instance"`
+}
+
+// OpsgenieConfigInstance defines model for OpsgenieConfig.Instance.
+type OpsgenieConfigInstance string
+
 // OrderingCriteria Any supported attribute keys to order by.
 type OrderingCriteria = []OrderingCriterion
 
@@ -1336,6 +1465,12 @@ type OrderingDirection string
 
 // OrderingKey Any attribute key to order by.
 type OrderingKey = string
+
+// PagerDutyConfig defines model for PagerDutyConfig.
+type PagerDutyConfig struct {
+	Key string `json:"key"`
+	Url string `json:"url"`
+}
 
 // Progress defines model for Progress.
 type Progress struct {
@@ -1431,6 +1566,18 @@ type PrometheusAlertRuleApiListItem struct {
 	Origin *string `json:"origin,omitempty"`
 }
 
+// QueryError Structured error information for query errors. Present alongside the error string when the error is related to the user's query (syntax, semantic, or execution errors). Not present for system-level errors (unauthorized access, unexpected failures).
+type QueryError struct {
+	// CorrectedQuery Validated and formatted corrected SQL query. Only present when an AI-suggested correction is available and passes validation.
+	CorrectedQuery *string `json:"correctedQuery,omitempty"`
+
+	// Description Human-readable explanation of what went wrong and how to fix it. May contain markdown (inline code, bold, lists).
+	Description string `json:"description"`
+
+	// Title Short error title in plain text (no markdown), e.g. Syntax error - Invalid LIMIT clause
+	Title string `json:"title"`
+}
+
 // RecordingRule An individual recording rule that pre-computes a PromQL expression and stores the result as a new metric. Follows the Prometheus recording rule format (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/).
 type RecordingRule struct {
 	// Expression PromQL expression to evaluate. The result is stored under the metric name defined by 'record'.
@@ -1453,6 +1600,9 @@ type RecordingRuleGroupAnnotations struct {
 
 	// Dash0ComdeletedAt Soft-delete timestamp. Present when the group has been deleted but not yet purged. Set by the server; read-only.
 	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfirstEvaluationAt Timestamp when this recording rule group will first be evaluated. Read-only; set by the server.
+	Dash0ComfirstEvaluationAt *time.Time `json:"dash0.com/first-evaluation-at,omitempty"`
 
 	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
@@ -1843,6 +1993,18 @@ type ScopeSpans struct {
 // SEVERITY_NUMBER_FATAL3 = 23;
 // SEVERITY_NUMBER_FATAL4 = 24;
 type SeverityNumber = int32
+
+// SlackBotConfig defines model for SlackBotConfig.
+type SlackBotConfig struct {
+	Channel string `json:"channel"`
+	TeamId  string `json:"teamId"`
+}
+
+// SlackConfig defines model for SlackConfig.
+type SlackConfig struct {
+	Channel    string `json:"channel"`
+	WebhookURL string `json:"webhookURL"`
+}
 
 // Span defines model for Span.
 type Span struct {
@@ -2354,6 +2516,11 @@ type TeamsListItem struct {
 	TotalMemberCount int                `json:"totalMemberCount"`
 }
 
+// TeamsWebhookConfig defines model for TeamsWebhookConfig.
+type TeamsWebhookConfig struct {
+	Url string `json:"url"`
+}
+
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
 	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
@@ -2586,6 +2753,14 @@ type ViewVisualizationMetric string
 // If there are multiple renderers, select buttons will be added to allow toggling between the renderers.
 type ViewVisualizationRenderer string
 
+// WebhookConfig defines model for WebhookConfig.
+type WebhookConfig struct {
+	AllowInsecure   *bool              `json:"allowInsecure,omitempty"`
+	FollowRedirects *bool              `json:"followRedirects,omitempty"`
+	Headers         *map[string]string `json:"headers,omitempty"`
+	Url             string             `json:"url"`
+}
+
 // GetApiAlertingCheckRulesParams defines parameters for GetApiAlertingCheckRules.
 type GetApiAlertingCheckRulesParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -2682,11 +2857,6 @@ type DeleteApiRecordingRuleGroupsOriginOrIdParams struct {
 
 // GetApiRecordingRuleGroupsOriginOrIdParams defines parameters for GetApiRecordingRuleGroupsOriginOrId.
 type GetApiRecordingRuleGroupsOriginOrIdParams struct {
-	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
-}
-
-// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams defines parameters for GetApiRecordingRuleGroupsOriginOrIdVersionsVersion.
-type GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
@@ -2821,6 +2991,12 @@ type PostApiLogsJSONRequestBody = GetLogRecordsRequest
 
 // PostApiMembersJSONRequestBody defines body for PostApiMembers for application/json ContentType.
 type PostApiMembersJSONRequestBody = InviteMemberRequest
+
+// PostApiNotificationChannelsJSONRequestBody defines body for PostApiNotificationChannels for application/json ContentType.
+type PostApiNotificationChannelsJSONRequestBody = NotificationChannel
+
+// PutApiNotificationChannelsOriginOrIdJSONRequestBody defines body for PutApiNotificationChannelsOriginOrId for application/json ContentType.
+type PutApiNotificationChannelsOriginOrIdJSONRequestBody = NotificationChannel
 
 // PostApiRecordingRuleGroupsJSONRequestBody defines body for PostApiRecordingRuleGroups for application/json ContentType.
 type PostApiRecordingRuleGroupsJSONRequestBody = RecordingRuleGroupCreateRequest
@@ -3272,6 +3448,354 @@ func (t *HttpCheckAssertion) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsSlackConfig returns the union data inside the NotificationChannel_Config as a SlackConfig
+func (t NotificationChannel_Config) AsSlackConfig() (SlackConfig, error) {
+	var body SlackConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSlackConfig overwrites any union data inside the NotificationChannel_Config as the provided SlackConfig
+func (t *NotificationChannel_Config) FromSlackConfig(v SlackConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSlackConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided SlackConfig
+func (t *NotificationChannel_Config) MergeSlackConfig(v SlackConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSlackBotConfig returns the union data inside the NotificationChannel_Config as a SlackBotConfig
+func (t NotificationChannel_Config) AsSlackBotConfig() (SlackBotConfig, error) {
+	var body SlackBotConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSlackBotConfig overwrites any union data inside the NotificationChannel_Config as the provided SlackBotConfig
+func (t *NotificationChannel_Config) FromSlackBotConfig(v SlackBotConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSlackBotConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided SlackBotConfig
+func (t *NotificationChannel_Config) MergeSlackBotConfig(v SlackBotConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEmailConfig returns the union data inside the NotificationChannel_Config as a EmailConfig
+func (t NotificationChannel_Config) AsEmailConfig() (EmailConfig, error) {
+	var body EmailConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEmailConfig overwrites any union data inside the NotificationChannel_Config as the provided EmailConfig
+func (t *NotificationChannel_Config) FromEmailConfig(v EmailConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEmailConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided EmailConfig
+func (t *NotificationChannel_Config) MergeEmailConfig(v EmailConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsEmailV2Config returns the union data inside the NotificationChannel_Config as a EmailV2Config
+func (t NotificationChannel_Config) AsEmailV2Config() (EmailV2Config, error) {
+	var body EmailV2Config
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromEmailV2Config overwrites any union data inside the NotificationChannel_Config as the provided EmailV2Config
+func (t *NotificationChannel_Config) FromEmailV2Config(v EmailV2Config) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeEmailV2Config performs a merge with any union data inside the NotificationChannel_Config, using the provided EmailV2Config
+func (t *NotificationChannel_Config) MergeEmailV2Config(v EmailV2Config) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsWebhookConfig returns the union data inside the NotificationChannel_Config as a WebhookConfig
+func (t NotificationChannel_Config) AsWebhookConfig() (WebhookConfig, error) {
+	var body WebhookConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided WebhookConfig
+func (t *NotificationChannel_Config) FromWebhookConfig(v WebhookConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided WebhookConfig
+func (t *NotificationChannel_Config) MergeWebhookConfig(v WebhookConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIncidentIOConfig returns the union data inside the NotificationChannel_Config as a IncidentIOConfig
+func (t NotificationChannel_Config) AsIncidentIOConfig() (IncidentIOConfig, error) {
+	var body IncidentIOConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIncidentIOConfig overwrites any union data inside the NotificationChannel_Config as the provided IncidentIOConfig
+func (t *NotificationChannel_Config) FromIncidentIOConfig(v IncidentIOConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIncidentIOConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided IncidentIOConfig
+func (t *NotificationChannel_Config) MergeIncidentIOConfig(v IncidentIOConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsOpsgenieConfig returns the union data inside the NotificationChannel_Config as a OpsgenieConfig
+func (t NotificationChannel_Config) AsOpsgenieConfig() (OpsgenieConfig, error) {
+	var body OpsgenieConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromOpsgenieConfig overwrites any union data inside the NotificationChannel_Config as the provided OpsgenieConfig
+func (t *NotificationChannel_Config) FromOpsgenieConfig(v OpsgenieConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeOpsgenieConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided OpsgenieConfig
+func (t *NotificationChannel_Config) MergeOpsgenieConfig(v OpsgenieConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPagerDutyConfig returns the union data inside the NotificationChannel_Config as a PagerDutyConfig
+func (t NotificationChannel_Config) AsPagerDutyConfig() (PagerDutyConfig, error) {
+	var body PagerDutyConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPagerDutyConfig overwrites any union data inside the NotificationChannel_Config as the provided PagerDutyConfig
+func (t *NotificationChannel_Config) FromPagerDutyConfig(v PagerDutyConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePagerDutyConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided PagerDutyConfig
+func (t *NotificationChannel_Config) MergePagerDutyConfig(v PagerDutyConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsTeamsWebhookConfig returns the union data inside the NotificationChannel_Config as a TeamsWebhookConfig
+func (t NotificationChannel_Config) AsTeamsWebhookConfig() (TeamsWebhookConfig, error) {
+	var body TeamsWebhookConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTeamsWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided TeamsWebhookConfig
+func (t *NotificationChannel_Config) FromTeamsWebhookConfig(v TeamsWebhookConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTeamsWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided TeamsWebhookConfig
+func (t *NotificationChannel_Config) MergeTeamsWebhookConfig(v TeamsWebhookConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDiscordWebhookConfig returns the union data inside the NotificationChannel_Config as a DiscordWebhookConfig
+func (t NotificationChannel_Config) AsDiscordWebhookConfig() (DiscordWebhookConfig, error) {
+	var body DiscordWebhookConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDiscordWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided DiscordWebhookConfig
+func (t *NotificationChannel_Config) FromDiscordWebhookConfig(v DiscordWebhookConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDiscordWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided DiscordWebhookConfig
+func (t *NotificationChannel_Config) MergeDiscordWebhookConfig(v DiscordWebhookConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGoogleChatWebhookConfig returns the union data inside the NotificationChannel_Config as a GoogleChatWebhookConfig
+func (t NotificationChannel_Config) AsGoogleChatWebhookConfig() (GoogleChatWebhookConfig, error) {
+	var body GoogleChatWebhookConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGoogleChatWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided GoogleChatWebhookConfig
+func (t *NotificationChannel_Config) FromGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGoogleChatWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided GoogleChatWebhookConfig
+func (t *NotificationChannel_Config) MergeGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsIlertConfig returns the union data inside the NotificationChannel_Config as a IlertConfig
+func (t NotificationChannel_Config) AsIlertConfig() (IlertConfig, error) {
+	var body IlertConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromIlertConfig overwrites any union data inside the NotificationChannel_Config as the provided IlertConfig
+func (t *NotificationChannel_Config) FromIlertConfig(v IlertConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeIlertConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided IlertConfig
+func (t *NotificationChannel_Config) MergeIlertConfig(v IlertConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAllQuietConfig returns the union data inside the NotificationChannel_Config as a AllQuietConfig
+func (t NotificationChannel_Config) AsAllQuietConfig() (AllQuietConfig, error) {
+	var body AllQuietConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAllQuietConfig overwrites any union data inside the NotificationChannel_Config as the provided AllQuietConfig
+func (t *NotificationChannel_Config) FromAllQuietConfig(v AllQuietConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAllQuietConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided AllQuietConfig
+func (t *NotificationChannel_Config) MergeAllQuietConfig(v AllQuietConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t NotificationChannel_Config) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *NotificationChannel_Config) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsSamplingConditionAnd returns the union data inside the SamplingCondition as a SamplingConditionAnd
 func (t SamplingCondition) AsSamplingConditionAnd() (SamplingConditionAnd, error) {
 	var body SamplingConditionAnd
@@ -3689,6 +4213,25 @@ type ClientInterface interface {
 	// DeleteApiMembersMemberID request
 	DeleteApiMembersMemberID(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiNotificationChannels request
+	GetApiNotificationChannels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiNotificationChannelsWithBody request with any body
+	PostApiNotificationChannelsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiNotificationChannels(ctx context.Context, body PostApiNotificationChannelsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiNotificationChannelsOriginOrId request
+	DeleteApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiNotificationChannelsOriginOrId request
+	GetApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiNotificationChannelsOriginOrIdWithBody request with any body
+	PutApiNotificationChannelsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiRecordingRuleGroups request
 	GetApiRecordingRuleGroups(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -3707,9 +4250,6 @@ type ClientInterface interface {
 	PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetApiRecordingRuleGroupsOriginOrIdVersionsVersion request
-	GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiSamplingRules request
 	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4192,6 +4732,90 @@ func (c *generatedClient) DeleteApiMembersMemberID(ctx context.Context, memberID
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) GetApiNotificationChannels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiNotificationChannelsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiNotificationChannelsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiNotificationChannelsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiNotificationChannels(ctx context.Context, body PostApiNotificationChannelsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiNotificationChannelsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiNotificationChannelsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiNotificationChannelsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiNotificationChannelsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiNotificationChannelsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiNotificationChannelsOriginOrIdRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) GetApiRecordingRuleGroups(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiRecordingRuleGroupsRequest(c.Server, params)
 	if err != nil {
@@ -4266,18 +4890,6 @@ func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx contex
 
 func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(c.Server, originOrId, version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -5887,6 +6499,188 @@ func NewDeleteApiMembersMemberIDRequest(server string, memberID string) (*http.R
 	return req, nil
 }
 
+// NewGetApiNotificationChannelsRequest generates requests for GetApiNotificationChannels
+func NewGetApiNotificationChannelsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/notification-channels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiNotificationChannelsRequest calls the generic PostApiNotificationChannels builder with application/json body
+func NewPostApiNotificationChannelsRequest(server string, body PostApiNotificationChannelsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiNotificationChannelsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiNotificationChannelsRequestWithBody generates requests for PostApiNotificationChannels with any type of body
+func NewPostApiNotificationChannelsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/notification-channels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiNotificationChannelsOriginOrIdRequest generates requests for DeleteApiNotificationChannelsOriginOrId
+func NewDeleteApiNotificationChannelsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/notification-channels/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiNotificationChannelsOriginOrIdRequest generates requests for GetApiNotificationChannelsOriginOrId
+func NewGetApiNotificationChannelsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/notification-channels/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiNotificationChannelsOriginOrIdRequest calls the generic PutApiNotificationChannelsOriginOrId builder with application/json body
+func NewPutApiNotificationChannelsOriginOrIdRequest(server string, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiNotificationChannelsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiNotificationChannelsOriginOrIdRequestWithBody generates requests for PutApiNotificationChannelsOriginOrId with any type of body
+func NewPutApiNotificationChannelsOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/notification-channels/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiRecordingRuleGroupsRequest generates requests for GetApiRecordingRuleGroups
 func NewGetApiRecordingRuleGroupsRequest(server string, params *GetApiRecordingRuleGroupsParams) (*http.Request, error) {
 	var err error
@@ -6147,69 +6941,6 @@ func NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server string, origin
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest generates requests for GetApiRecordingRuleGroupsOriginOrIdVersionsVersion
-func NewGetApiRecordingRuleGroupsOriginOrIdVersionsVersionRequest(server string, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s/versions/%s", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if params.Dataset != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -7891,6 +8622,25 @@ type ClientWithResponsesInterface interface {
 	// DeleteApiMembersMemberIDWithResponse request
 	DeleteApiMembersMemberIDWithResponse(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersMemberIDResponse, error)
 
+	// GetApiNotificationChannelsWithResponse request
+	GetApiNotificationChannelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiNotificationChannelsResponse, error)
+
+	// PostApiNotificationChannelsWithBodyWithResponse request with any body
+	PostApiNotificationChannelsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiNotificationChannelsResponse, error)
+
+	PostApiNotificationChannelsWithResponse(ctx context.Context, body PostApiNotificationChannelsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiNotificationChannelsResponse, error)
+
+	// DeleteApiNotificationChannelsOriginOrIdWithResponse request
+	DeleteApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiNotificationChannelsOriginOrIdResponse, error)
+
+	// GetApiNotificationChannelsOriginOrIdWithResponse request
+	GetApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiNotificationChannelsOriginOrIdResponse, error)
+
+	// PutApiNotificationChannelsOriginOrIdWithBodyWithResponse request with any body
+	PutApiNotificationChannelsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiNotificationChannelsOriginOrIdResponse, error)
+
+	PutApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiNotificationChannelsOriginOrIdResponse, error)
+
 	// GetApiRecordingRuleGroupsWithResponse request
 	GetApiRecordingRuleGroupsWithResponse(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsResponse, error)
 
@@ -7909,9 +8659,6 @@ type ClientWithResponsesInterface interface {
 	PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
 
 	PutApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
-
-	// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse request
-	GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error)
 
 	// GetApiSamplingRulesWithResponse request
 	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
@@ -8490,6 +9237,123 @@ func (r DeleteApiMembersMemberIDResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiNotificationChannelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *NotificationChannels
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiNotificationChannelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiNotificationChannelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiNotificationChannelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *NotificationChannel
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiNotificationChannelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiNotificationChannelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiNotificationChannelsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiNotificationChannelsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiNotificationChannelsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *NotificationChannel
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiNotificationChannelsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiNotificationChannelsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *NotificationChannel
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiNotificationChannelsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiRecordingRuleGroupsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -8598,29 +9462,6 @@ func (r PutApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9572,6 +10413,67 @@ func (c *ClientWithResponses) DeleteApiMembersMemberIDWithResponse(ctx context.C
 	return ParseDeleteApiMembersMemberIDResponse(rsp)
 }
 
+// GetApiNotificationChannelsWithResponse request returning *GetApiNotificationChannelsResponse
+func (c *ClientWithResponses) GetApiNotificationChannelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiNotificationChannelsResponse, error) {
+	rsp, err := c.GetApiNotificationChannels(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiNotificationChannelsResponse(rsp)
+}
+
+// PostApiNotificationChannelsWithBodyWithResponse request with arbitrary body returning *PostApiNotificationChannelsResponse
+func (c *ClientWithResponses) PostApiNotificationChannelsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiNotificationChannelsResponse, error) {
+	rsp, err := c.PostApiNotificationChannelsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiNotificationChannelsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiNotificationChannelsWithResponse(ctx context.Context, body PostApiNotificationChannelsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiNotificationChannelsResponse, error) {
+	rsp, err := c.PostApiNotificationChannels(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiNotificationChannelsResponse(rsp)
+}
+
+// DeleteApiNotificationChannelsOriginOrIdWithResponse request returning *DeleteApiNotificationChannelsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiNotificationChannelsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiNotificationChannelsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiNotificationChannelsOriginOrIdResponse(rsp)
+}
+
+// GetApiNotificationChannelsOriginOrIdWithResponse request returning *GetApiNotificationChannelsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiNotificationChannelsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiNotificationChannelsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiNotificationChannelsOriginOrIdResponse(rsp)
+}
+
+// PutApiNotificationChannelsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiNotificationChannelsOriginOrIdResponse
+func (c *ClientWithResponses) PutApiNotificationChannelsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiNotificationChannelsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiNotificationChannelsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiNotificationChannelsOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiNotificationChannelsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiNotificationChannelsOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiNotificationChannelsOriginOrIdResponse(rsp)
+}
+
 // GetApiRecordingRuleGroupsWithResponse request returning *GetApiRecordingRuleGroupsResponse
 func (c *ClientWithResponses) GetApiRecordingRuleGroupsWithResponse(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsResponse, error) {
 	rsp, err := c.GetApiRecordingRuleGroups(ctx, params, reqEditors...)
@@ -9631,15 +10533,6 @@ func (c *ClientWithResponses) PutApiRecordingRuleGroupsOriginOrIdWithResponse(ct
 		return nil, err
 	}
 	return ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp)
-}
-
-// GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse request returning *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse
-func (c *ClientWithResponses) GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse(ctx context.Context, originOrId string, version int64, params *GetApiRecordingRuleGroupsOriginOrIdVersionsVersionParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error) {
-	rsp, err := c.GetApiRecordingRuleGroupsOriginOrIdVersionsVersion(ctx, originOrId, version, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse(rsp)
 }
 
 // GetApiSamplingRulesWithResponse request returning *GetApiSamplingRulesResponse
@@ -10664,6 +11557,185 @@ func ParseDeleteApiMembersMemberIDResponse(rsp *http.Response) (*DeleteApiMember
 	return response, nil
 }
 
+// ParseGetApiNotificationChannelsResponse parses an HTTP response from a GetApiNotificationChannelsWithResponse call
+func ParseGetApiNotificationChannelsResponse(rsp *http.Response) (*GetApiNotificationChannelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiNotificationChannelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest NotificationChannels
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiNotificationChannelsResponse parses an HTTP response from a PostApiNotificationChannelsWithResponse call
+func ParsePostApiNotificationChannelsResponse(rsp *http.Response) (*PostApiNotificationChannelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiNotificationChannelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest NotificationChannel
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiNotificationChannelsOriginOrIdResponse parses an HTTP response from a DeleteApiNotificationChannelsOriginOrIdWithResponse call
+func ParseDeleteApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*DeleteApiNotificationChannelsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiNotificationChannelsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiNotificationChannelsOriginOrIdResponse parses an HTTP response from a GetApiNotificationChannelsOriginOrIdWithResponse call
+func ParseGetApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*GetApiNotificationChannelsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiNotificationChannelsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest NotificationChannel
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiNotificationChannelsOriginOrIdResponse parses an HTTP response from a PutApiNotificationChannelsOriginOrIdWithResponse call
+func ParsePutApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*PutApiNotificationChannelsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiNotificationChannelsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest NotificationChannel
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetApiRecordingRuleGroupsResponse parses an HTTP response from a GetApiRecordingRuleGroupsWithResponse call
 func ParseGetApiRecordingRuleGroupsResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -10798,39 +11870,6 @@ func ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*PutA
 	}
 
 	response := &PutApiRecordingRuleGroupsOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse parses an HTTP response from a GetApiRecordingRuleGroupsOriginOrIdVersionsVersionWithResponse call
-func ParseGetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiRecordingRuleGroupsOriginOrIdVersionsVersionResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

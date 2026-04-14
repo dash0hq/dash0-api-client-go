@@ -26,3 +26,11 @@ PrometheusAlertRule.KeepFiringFor
 # Annotations.Description and Annotations.Summary fields.
 PrometheusAlertRule.Description
 PrometheusAlertRule.Summary
+
+# <NEXT_RELEASE>: Recording rule group CRUD removed from Client interface.
+Client.ListRecordingRuleGroups
+Client.GetRecordingRuleGroup
+Client.CreateRecordingRuleGroup
+Client.UpdateRecordingRuleGroup
+Client.DeleteRecordingRuleGroup
+Client.ListRecordingRuleGroupsIter
