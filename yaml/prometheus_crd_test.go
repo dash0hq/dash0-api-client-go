@@ -200,6 +200,186 @@ func TestMarshalPrometheusRule(t *testing.T) {
 	assertEqual(t, "Expression", parsed.Expression, "sum(rate(errors[5m])) > 0.1")
 }
 
+func TestUnmarshalPrometheusRule_PreservesDoubleQuotesInExpression(t *testing.T) {
+	yamlDoc := `apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+spec:
+  groups:
+    - name: quoting
+      rules:
+        - alert: DoubleQuoted
+          expr: 'sum(rate(http_requests{service="my-api", status="500"}[5m]))'
+`
+	rule, err := UnmarshalPrometheusRule([]byte(yamlDoc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, "Expression", rule.Expression,
+		`sum(rate(http_requests{service="my-api", status="500"}[5m]))`)
+}
+
+func TestUnmarshalPrometheusRule_PreservesSingleQuotesInAnnotations(t *testing.T) {
+	yamlDoc := `apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+spec:
+  groups:
+    - name: quoting
+      rules:
+        - alert: QuotedAnnotation
+          expr: up == 0
+          annotations:
+            summary: "Service 'my-api' is down"
+            description: "Check the 'status' label for details"
+`
+	rule, err := UnmarshalPrometheusRule([]byte(yamlDoc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertPtrEqual(t, "Summary", rule.Annotations.Summary, "Service 'my-api' is down")
+	assertPtrEqual(t, "Description", rule.Annotations.Description, "Check the 'status' label for details")
+}
+
+func TestUnmarshalPrometheusRule_PreservesMixedQuotesInExpression(t *testing.T) {
+	yamlDoc := `apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+spec:
+  groups:
+    - name: quoting
+      rules:
+        - alert: MixedQuotes
+          expr: "sum(rate(http_requests{service='my-api', path=\"/health\"}[5m]))"
+`
+	rule, err := UnmarshalPrometheusRule([]byte(yamlDoc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, "Expression", rule.Expression,
+		`sum(rate(http_requests{service='my-api', path="/health"}[5m]))`)
+}
+
+func TestRoundTripPreservesDoubleQuotesInExpression(t *testing.T) {
+	expr := `sum(rate(http_requests{service="my-api", status="500"}[5m]))`
+	forDur := dash0.Duration("5m")
+	rule := &dash0.PrometheusAlertRule{
+		Name:       "quoting - DoubleQuoted",
+		Expression: expr,
+		For:        &forDur,
+	}
+
+	yamlBytes, err := MarshalPrometheusRule(rule)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	parsed, err := UnmarshalPrometheusRule(yamlBytes)
+	if err != nil {
+		t.Fatalf("round-trip failed: %v", err)
+	}
+	assertEqual(t, "Expression", parsed.Expression, expr)
+}
+
+func TestRoundTripPreservesSingleQuotesInAnnotations(t *testing.T) {
+	summary := "Service 'my-api' is down"
+	description := "Check the 'status' label for details"
+	rule := &dash0.PrometheusAlertRule{
+		Name:       "quoting - SingleQuotedAnnotations",
+		Expression: "up == 0",
+		Annotations: &dash0.PrometheusAlertRule_Annotations{
+			Summary:     &summary,
+			Description: &description,
+		},
+	}
+
+	yamlBytes, err := MarshalPrometheusRule(rule)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	parsed, err := UnmarshalPrometheusRule(yamlBytes)
+	if err != nil {
+		t.Fatalf("round-trip failed: %v", err)
+	}
+	assertPtrEqual(t, "Summary", parsed.Annotations.Summary, summary)
+	assertPtrEqual(t, "Description", parsed.Annotations.Description, description)
+}
+
+func TestRoundTripPreservesMixedQuotesInExpression(t *testing.T) {
+	expr := `sum(rate(http_requests{service='my-api', path="/health"}[5m]))`
+	rule := &dash0.PrometheusAlertRule{
+		Name:       "quoting - MixedQuotes",
+		Expression: expr,
+	}
+
+	yamlBytes, err := MarshalPrometheusRule(rule)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	parsed, err := UnmarshalPrometheusRule(yamlBytes)
+	if err != nil {
+		t.Fatalf("round-trip failed: %v", err)
+	}
+	assertEqual(t, "Expression", parsed.Expression, expr)
+}
+
+func TestRoundTripPreservesQuotesInLabels(t *testing.T) {
+	labels := map[string]string{
+		"team":     `platform "core"`,
+		"severity": "it's critical",
+	}
+	rule := &dash0.PrometheusAlertRule{
+		Name:       "quoting - LabelQuotes",
+		Expression: "up == 0",
+		Labels:     &labels,
+	}
+
+	yamlBytes, err := MarshalPrometheusRule(rule)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	parsed, err := UnmarshalPrometheusRule(yamlBytes)
+	if err != nil {
+		t.Fatalf("round-trip failed: %v", err)
+	}
+	if parsed.Labels == nil {
+		t.Fatal("Labels is nil")
+	}
+	if (*parsed.Labels)["team"] != `platform "core"` {
+		t.Errorf("team label = %q, want %q", (*parsed.Labels)["team"], `platform "core"`)
+	}
+	if (*parsed.Labels)["severity"] != "it's critical" {
+		t.Errorf("severity label = %q, want %q", (*parsed.Labels)["severity"], "it's critical")
+	}
+}
+
+func TestParseAsPrometheusAlertRules_PreservesQuotesInExpressions(t *testing.T) {
+	data := []byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: quoted-rules
+spec:
+  groups:
+    - name: quoting
+      rules:
+        - alert: DoubleQuoted
+          expr: 'sum(rate(http_requests{service="my-api"}[5m]))'
+        - alert: SingleQuoted
+          expr: "sum(rate(http_requests{service='my-api'}[5m]))"
+`)
+	rules, err := ParseAsPrometheusAlertRules(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rules) != 2 {
+		t.Fatalf("got %d rules, want 2", len(rules))
+	}
+	assertEqual(t, "rules[0].Expression", rules[0].Expression,
+		`sum(rate(http_requests{service="my-api"}[5m]))`)
+	assertEqual(t, "rules[1].Expression", rules[1].Expression,
+		`sum(rate(http_requests{service='my-api'}[5m]))`)
+}
+
 func TestMarshalPrometheusRule_InvalidForDuration(t *testing.T) {
 	badDur := dash0.Duration("not-a-duration")
 	rule := &dash0.PrometheusAlertRule{
