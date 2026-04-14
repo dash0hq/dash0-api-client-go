@@ -3,6 +3,7 @@ package aws
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -35,6 +36,29 @@ func InstrumentationPolicyName(prefix string) string {
 	return prefix + instrumentationPolicySuffix
 }
 
+// iamAPI is the subset of the AWS IAM client used by IAMClient.
+type iamAPI interface {
+	CreateRole(ctx context.Context, params *iam.CreateRoleInput, optFns ...func(*iam.Options)) (*iam.CreateRoleOutput, error)
+	GetRole(ctx context.Context, params *iam.GetRoleInput, optFns ...func(*iam.Options)) (*iam.GetRoleOutput, error)
+	DeleteRole(ctx context.Context, params *iam.DeleteRoleInput, optFns ...func(*iam.Options)) (*iam.DeleteRoleOutput, error)
+	AttachRolePolicy(ctx context.Context, params *iam.AttachRolePolicyInput, optFns ...func(*iam.Options)) (*iam.AttachRolePolicyOutput, error)
+	DetachRolePolicy(ctx context.Context, params *iam.DetachRolePolicyInput, optFns ...func(*iam.Options)) (*iam.DetachRolePolicyOutput, error)
+	PutRolePolicy(ctx context.Context, params *iam.PutRolePolicyInput, optFns ...func(*iam.Options)) (*iam.PutRolePolicyOutput, error)
+	DeleteRolePolicy(ctx context.Context, params *iam.DeleteRolePolicyInput, optFns ...func(*iam.Options)) (*iam.DeleteRolePolicyOutput, error)
+	CreatePolicy(ctx context.Context, params *iam.CreatePolicyInput, optFns ...func(*iam.Options)) (*iam.CreatePolicyOutput, error)
+	DeletePolicy(ctx context.Context, params *iam.DeletePolicyInput, optFns ...func(*iam.Options)) (*iam.DeletePolicyOutput, error)
+	ListAttachedRolePolicies(ctx context.Context, params *iam.ListAttachedRolePoliciesInput, optFns ...func(*iam.Options)) (*iam.ListAttachedRolePoliciesOutput, error)
+	ListRolePolicies(ctx context.Context, params *iam.ListRolePoliciesInput, optFns ...func(*iam.Options)) (*iam.ListRolePoliciesOutput, error)
+	ListRoleTags(ctx context.Context, params *iam.ListRoleTagsInput, optFns ...func(*iam.Options)) (*iam.ListRoleTagsOutput, error)
+	TagRole(ctx context.Context, params *iam.TagRoleInput, optFns ...func(*iam.Options)) (*iam.TagRoleOutput, error)
+	UntagRole(ctx context.Context, params *iam.UntagRoleInput, optFns ...func(*iam.Options)) (*iam.UntagRoleOutput, error)
+}
+
+// stsAPI is the subset of the AWS STS client used by IAMClient.
+type stsAPI interface {
+	GetCallerIdentity(ctx context.Context, params *sts.GetCallerIdentityInput, optFns ...func(*sts.Options)) (*sts.GetCallerIdentityOutput, error)
+}
+
 // IAMOperations defines the operations available for managing Dash0 IAM roles.
 type IAMOperations interface {
 	GetCallerAccountID(ctx context.Context) (string, error)
@@ -48,8 +72,8 @@ type IAMOperations interface {
 
 // IAMClient wraps the AWS IAM and STS clients for role management.
 type IAMClient struct {
-	iamClient *iam.Client
-	stsClient *sts.Client
+	iam iamAPI
+	sts stsAPI
 }
 
 // Verify that IAMClient implements IAMOperations.
@@ -92,14 +116,14 @@ func NewIAMClient(ctx context.Context, region, profile, accessKey, secretKey str
 	}
 
 	return &IAMClient{
-		iamClient: iam.NewFromConfig(cfg),
-		stsClient: sts.NewFromConfig(cfg),
+		iam: iam.NewFromConfig(cfg),
+		sts: sts.NewFromConfig(cfg),
 	}, nil
 }
 
 // GetCallerAccountID returns the AWS account ID of the caller.
 func (c *IAMClient) GetCallerAccountID(ctx context.Context) (string, error) {
-	output, err := c.stsClient.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
+	output, err := c.sts.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
 		return "", fmt.Errorf("failed to get caller identity: %w", err)
 	}
@@ -107,7 +131,8 @@ func (c *IAMClient) GetCallerAccountID(ctx context.Context) (string, error) {
 }
 
 // CreateReadOnlyRole creates the Dash0 read-only IAM role with all required policies.
-// On failure, it attempts best-effort cleanup of any partially created resources.
+// The AWS SDK returns [iamtypes.EntityAlreadyExistsException] if the role already exists.
+// On failure after partial creation, it attempts best-effort cleanup.
 func (c *IAMClient) CreateReadOnlyRole(ctx context.Context, params RoleParams) (*RoleInfo, error) {
 	roleName := ReadOnlyRoleName(params.RoleNamePrefix)
 
@@ -116,7 +141,7 @@ func (c *IAMClient) CreateReadOnlyRole(ctx context.Context, params RoleParams) (
 		return nil, err
 	}
 
-	createOutput, err := c.iamClient.CreateRole(ctx, &iam.CreateRoleInput{
+	createOutput, err := c.iam.CreateRole(ctx, &iam.CreateRoleInput{
 		RoleName:                 aws.String(roleName),
 		AssumeRolePolicyDocument: aws.String(trustPolicy),
 		Tags:                     convertTags(params.Tags),
@@ -128,7 +153,7 @@ func (c *IAMClient) CreateReadOnlyRole(ctx context.Context, params RoleParams) (
 	roleArn := *createOutput.Role.Arn
 
 	// Attach ViewOnlyAccess managed policy.
-	_, err = c.iamClient.AttachRolePolicy(ctx, &iam.AttachRolePolicyInput{
+	_, err = c.iam.AttachRolePolicy(ctx, &iam.AttachRolePolicyInput{
 		RoleName:  aws.String(roleName),
 		PolicyArn: aws.String(viewOnlyAccessPolicyArn),
 	})
@@ -138,7 +163,7 @@ func (c *IAMClient) CreateReadOnlyRole(ctx context.Context, params RoleParams) (
 	}
 
 	// Attach custom inline policy.
-	_, err = c.iamClient.PutRolePolicy(ctx, &iam.PutRolePolicyInput{
+	_, err = c.iam.PutRolePolicy(ctx, &iam.PutRolePolicyInput{
 		RoleName:       aws.String(roleName),
 		PolicyName:     aws.String(customPolicyName),
 		PolicyDocument: aws.String(readOnlyCustomPolicyJSON),
@@ -155,7 +180,8 @@ func (c *IAMClient) CreateReadOnlyRole(ctx context.Context, params RoleParams) (
 }
 
 // CreateInstrumentationRole creates the Dash0 instrumentation IAM role.
-// On failure, it attempts best-effort cleanup of any partially created resources.
+// The AWS SDK returns [iamtypes.EntityAlreadyExistsException] if the role already exists.
+// On failure after partial creation, it attempts best-effort cleanup.
 func (c *IAMClient) CreateInstrumentationRole(ctx context.Context, params RoleParams) (*RoleInfo, error) {
 	roleName := InstrumentationRoleName(params.RoleNamePrefix)
 
@@ -164,7 +190,7 @@ func (c *IAMClient) CreateInstrumentationRole(ctx context.Context, params RolePa
 		return nil, err
 	}
 
-	createOutput, err := c.iamClient.CreateRole(ctx, &iam.CreateRoleInput{
+	createOutput, err := c.iam.CreateRole(ctx, &iam.CreateRoleInput{
 		RoleName:                 aws.String(roleName),
 		AssumeRolePolicyDocument: aws.String(trustPolicy),
 		Tags:                     convertTags(params.Tags),
@@ -177,7 +203,7 @@ func (c *IAMClient) CreateInstrumentationRole(ctx context.Context, params RolePa
 
 	// Create the managed policy (name is prefix-scoped to avoid collisions).
 	policyName := InstrumentationPolicyName(params.RoleNamePrefix)
-	policyOutput, err := c.iamClient.CreatePolicy(ctx, &iam.CreatePolicyInput{
+	policyOutput, err := c.iam.CreatePolicy(ctx, &iam.CreatePolicyInput{
 		PolicyName:     aws.String(policyName),
 		PolicyDocument: aws.String(instrumentationPolicyJSON),
 		Tags:           convertTags(params.Tags),
@@ -190,7 +216,7 @@ func (c *IAMClient) CreateInstrumentationRole(ctx context.Context, params RolePa
 	policyArn := *policyOutput.Policy.Arn
 
 	// Attach the policy to the role.
-	_, err = c.iamClient.AttachRolePolicy(ctx, &iam.AttachRolePolicyInput{
+	_, err = c.iam.AttachRolePolicy(ctx, &iam.AttachRolePolicyInput{
 		RoleName:  aws.String(roleName),
 		PolicyArn: aws.String(policyArn),
 	})
@@ -208,7 +234,7 @@ func (c *IAMClient) CreateInstrumentationRole(ctx context.Context, params RolePa
 
 // ReadRole checks if a role exists and returns its info.
 func (c *IAMClient) ReadRole(ctx context.Context, roleName string) (*RoleInfo, error) {
-	output, err := c.iamClient.GetRole(ctx, &iam.GetRoleInput{
+	output, err := c.iam.GetRole(ctx, &iam.GetRoleInput{
 		RoleName: aws.String(roleName),
 	})
 	if err != nil {
@@ -222,23 +248,43 @@ func (c *IAMClient) ReadRole(ctx context.Context, roleName string) (*RoleInfo, e
 }
 
 // DeleteReadOnlyRole deletes the read-only role and its attached policies.
+// It is idempotent: if the role does not exist, it returns nil.
+// If a sub-resource was already removed by a previous partial run, it is skipped.
+// Any other error is returned immediately, allowing the caller to retry.
 func (c *IAMClient) DeleteReadOnlyRole(ctx context.Context, roleNamePrefix string) error {
 	roleName := ReadOnlyRoleName(roleNamePrefix)
 
-	// Delete inline policy (best-effort).
-	_, _ = c.iamClient.DeleteRolePolicy(ctx, &iam.DeleteRolePolicyInput{
+	// Verify the role exists before attempting cleanup.
+	_, err := c.iam.GetRole(ctx, &iam.GetRoleInput{
+		RoleName: aws.String(roleName),
+	})
+	if err != nil {
+		if isNotFound(err) {
+			return nil
+		}
+		return fmt.Errorf("failed to check if read-only role %q exists: %w", roleName, err)
+	}
+
+	// Delete inline policy; skip if already removed.
+	_, err = c.iam.DeleteRolePolicy(ctx, &iam.DeleteRolePolicyInput{
 		RoleName:   aws.String(roleName),
 		PolicyName: aws.String(customPolicyName),
 	})
+	if err != nil && !isNotFound(err) {
+		return fmt.Errorf("failed to delete inline policy from role %q: %w", roleName, err)
+	}
 
-	// Detach ViewOnlyAccess managed policy (best-effort).
-	_, _ = c.iamClient.DetachRolePolicy(ctx, &iam.DetachRolePolicyInput{
+	// Detach ViewOnlyAccess managed policy; skip if already detached.
+	_, err = c.iam.DetachRolePolicy(ctx, &iam.DetachRolePolicyInput{
 		RoleName:  aws.String(roleName),
 		PolicyArn: aws.String(viewOnlyAccessPolicyArn),
 	})
+	if err != nil && !isNotFound(err) {
+		return fmt.Errorf("failed to detach ViewOnlyAccess policy from role %q: %w", roleName, err)
+	}
 
 	// Delete the role.
-	_, err := c.iamClient.DeleteRole(ctx, &iam.DeleteRoleInput{
+	_, err = c.iam.DeleteRole(ctx, &iam.DeleteRoleInput{
 		RoleName: aws.String(roleName),
 	})
 	if err != nil {
@@ -249,23 +295,43 @@ func (c *IAMClient) DeleteReadOnlyRole(ctx context.Context, roleNamePrefix strin
 }
 
 // DeleteInstrumentationRole deletes the instrumentation role and its policy.
+// It is idempotent: if the role does not exist, it returns nil.
+// If a sub-resource was already removed by a previous partial run, it is skipped.
+// Any other error is returned immediately, allowing the caller to retry.
 func (c *IAMClient) DeleteInstrumentationRole(ctx context.Context, roleNamePrefix string, accountID string) error {
 	roleName := InstrumentationRoleName(roleNamePrefix)
 	policyArn := fmt.Sprintf("arn:aws:iam::%s:policy/%s", accountID, InstrumentationPolicyName(roleNamePrefix))
 
-	// Detach policy from role (best-effort).
-	_, _ = c.iamClient.DetachRolePolicy(ctx, &iam.DetachRolePolicyInput{
+	// Verify the role exists before attempting cleanup.
+	_, err := c.iam.GetRole(ctx, &iam.GetRoleInput{
+		RoleName: aws.String(roleName),
+	})
+	if err != nil {
+		if isNotFound(err) {
+			return nil
+		}
+		return fmt.Errorf("failed to check if instrumentation role %q exists: %w", roleName, err)
+	}
+
+	// Detach policy from role; skip if already detached.
+	_, err = c.iam.DetachRolePolicy(ctx, &iam.DetachRolePolicyInput{
 		RoleName:  aws.String(roleName),
 		PolicyArn: aws.String(policyArn),
 	})
+	if err != nil && !isNotFound(err) {
+		return fmt.Errorf("failed to detach instrumentation policy from role %q: %w", roleName, err)
+	}
 
-	// Delete the managed policy (best-effort).
-	_, _ = c.iamClient.DeletePolicy(ctx, &iam.DeletePolicyInput{
+	// Delete the managed policy; skip if already deleted.
+	_, err = c.iam.DeletePolicy(ctx, &iam.DeletePolicyInput{
 		PolicyArn: aws.String(policyArn),
 	})
+	if err != nil && !isNotFound(err) {
+		return fmt.Errorf("failed to delete instrumentation policy %q: %w", policyArn, err)
+	}
 
 	// Delete the role.
-	_, err := c.iamClient.DeleteRole(ctx, &iam.DeleteRoleInput{
+	_, err = c.iam.DeleteRole(ctx, &iam.DeleteRoleInput{
 		RoleName: aws.String(roleName),
 	})
 	if err != nil {
@@ -277,8 +343,7 @@ func (c *IAMClient) DeleteInstrumentationRole(ctx context.Context, roleNamePrefi
 
 // UpdateRoleTags replaces all tags on an IAM role.
 func (c *IAMClient) UpdateRoleTags(ctx context.Context, roleName string, tags map[string]string) error {
-	// First untag all existing tags.
-	existingTags, err := c.iamClient.ListRoleTags(ctx, &iam.ListRoleTagsInput{
+	existingTags, err := c.iam.ListRoleTags(ctx, &iam.ListRoleTagsInput{
 		RoleName: aws.String(roleName),
 	})
 	if err != nil {
@@ -290,7 +355,7 @@ func (c *IAMClient) UpdateRoleTags(ctx context.Context, roleName string, tags ma
 		for _, t := range existingTags.Tags {
 			tagKeys = append(tagKeys, *t.Key)
 		}
-		_, err = c.iamClient.UntagRole(ctx, &iam.UntagRoleInput{
+		_, err = c.iam.UntagRole(ctx, &iam.UntagRoleInput{
 			RoleName: aws.String(roleName),
 			TagKeys:  tagKeys,
 		})
@@ -299,9 +364,8 @@ func (c *IAMClient) UpdateRoleTags(ctx context.Context, roleName string, tags ma
 		}
 	}
 
-	// Apply new tags.
 	if len(tags) > 0 {
-		_, err = c.iamClient.TagRole(ctx, &iam.TagRoleInput{
+		_, err = c.iam.TagRole(ctx, &iam.TagRoleInput{
 			RoleName: aws.String(roleName),
 			Tags:     convertTags(tags),
 		})
@@ -320,6 +384,12 @@ func WaitForRolePropagation(ctx context.Context) {
 	case <-time.After(10 * time.Second):
 	case <-ctx.Done():
 	}
+}
+
+// isNotFound returns true if the error is an AWS NoSuchEntityException.
+func isNotFound(err error) bool {
+	var nse *iamtypes.NoSuchEntityException
+	return errors.As(err, &nse)
 }
 
 // buildTrustPolicy constructs the IAM trust policy JSON for a Dash0 assume-role.
@@ -369,41 +439,41 @@ func convertTags(tags map[string]string) []iamtypes.Tag {
 }
 
 // deleteRoleBestEffort attempts to detach all policies and delete a role.
+// Used only during create rollback, where we want to clean up as much as possible.
 func (c *IAMClient) deleteRoleBestEffort(ctx context.Context, roleName string) {
-	// List and detach managed policies.
-	attached, err := c.iamClient.ListAttachedRolePolicies(ctx, &iam.ListAttachedRolePoliciesInput{
+	attached, err := c.iam.ListAttachedRolePolicies(ctx, &iam.ListAttachedRolePoliciesInput{
 		RoleName: aws.String(roleName),
 	})
 	if err == nil {
 		for _, p := range attached.AttachedPolicies {
-			_, _ = c.iamClient.DetachRolePolicy(ctx, &iam.DetachRolePolicyInput{
+			_, _ = c.iam.DetachRolePolicy(ctx, &iam.DetachRolePolicyInput{
 				RoleName:  aws.String(roleName),
 				PolicyArn: p.PolicyArn,
 			})
 		}
 	}
 
-	// List and delete inline policies.
-	inline, err := c.iamClient.ListRolePolicies(ctx, &iam.ListRolePoliciesInput{
+	inline, err := c.iam.ListRolePolicies(ctx, &iam.ListRolePoliciesInput{
 		RoleName: aws.String(roleName),
 	})
 	if err == nil {
 		for _, pName := range inline.PolicyNames {
-			_, _ = c.iamClient.DeleteRolePolicy(ctx, &iam.DeleteRolePolicyInput{
+			_, _ = c.iam.DeleteRolePolicy(ctx, &iam.DeleteRolePolicyInput{
 				RoleName:   aws.String(roleName),
 				PolicyName: aws.String(pName),
 			})
 		}
 	}
 
-	_, _ = c.iamClient.DeleteRole(ctx, &iam.DeleteRoleInput{
+	_, _ = c.iam.DeleteRole(ctx, &iam.DeleteRoleInput{
 		RoleName: aws.String(roleName),
 	})
 }
 
 // deletePolicyBestEffort attempts to delete a policy.
+// Used only during create rollback.
 func (c *IAMClient) deletePolicyBestEffort(ctx context.Context, policyArn string) {
-	_, _ = c.iamClient.DeletePolicy(ctx, &iam.DeletePolicyInput{
+	_, _ = c.iam.DeletePolicy(ctx, &iam.DeletePolicyInput{
 		PolicyArn: aws.String(policyArn),
 	})
 }
