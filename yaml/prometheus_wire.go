@@ -43,10 +43,10 @@ func (d *prometheusDuration) UnmarshalJSON(b []byte) error {
 // prometheusRulesWire mirrors [dash0.PrometheusRules] with
 // [prometheusDuration] fields for YAML serialization.
 type prometheusRulesWire struct {
-	APIVersion string                      `json:"apiVersion"`
-	Kind       string                      `json:"kind"`
+	APIVersion string                        `json:"apiVersion"`
+	Kind       string                        `json:"kind"`
 	Metadata   dash0.PrometheusRulesMetadata `json:"metadata"`
-	Spec       prometheusRulesSpecWire     `json:"spec"`
+	Spec       prometheusRulesSpecWire       `json:"spec"`
 }
 
 type prometheusRulesSpecWire struct {
@@ -60,12 +60,12 @@ type prometheusRulesGroupWire struct {
 }
 
 type prometheusRuleWire struct {
-	Alert         string            `json:"alert"`
-	Expr          string            `json:"expr"`
+	Alert         string             `json:"alert"`
+	Expr          string             `json:"expr"`
 	For           prometheusDuration `json:"for,omitempty"`
 	KeepFiringFor prometheusDuration `json:"keep_firing_for,omitempty"`
-	Annotations   map[string]string `json:"annotations"`
-	Labels        map[string]string `json:"labels"`
+	Annotations   map[string]string  `json:"annotations"`
+	Labels        map[string]string  `json:"labels"`
 }
 
 // toPrometheusRules converts the wire type to the domain type.

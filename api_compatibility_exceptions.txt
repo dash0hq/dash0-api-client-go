@@ -27,6 +27,10 @@ PrometheusAlertRule.KeepFiringFor
 PrometheusAlertRule.Description
 PrometheusAlertRule.Summary
 
-# <NEXT_RELEASE>: Version and DefaultUserAgent change with every release.
-Version
-DefaultUserAgent
+# <NEXT_RELEASE>: Recording rule group CRUD removed from Client interface.
+Client.ListRecordingRuleGroups
+Client.GetRecordingRuleGroup
+Client.CreateRecordingRuleGroup
+Client.UpdateRecordingRuleGroup
+Client.DeleteRecordingRuleGroup
+Client.ListRecordingRuleGroupsIter

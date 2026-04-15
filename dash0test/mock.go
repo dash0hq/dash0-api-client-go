@@ -61,14 +61,6 @@ type MockClient struct {
 	DeleteSamplingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
 
-	// Recording Rule Groups
-	ListRecordingRuleGroupsFunc     func(ctx context.Context, dataset *string) ([]*dash0.RecordingRuleGroupDefinition, error)
-	GetRecordingRuleGroupFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRuleGroupDefinition, error)
-	CreateRecordingRuleGroupFunc    func(ctx context.Context, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error)
-	UpdateRecordingRuleGroupFunc    func(ctx context.Context, originOrID string, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error)
-	DeleteRecordingRuleGroupFunc    func(ctx context.Context, originOrID string, dataset *string) error
-	ListRecordingRuleGroupsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRuleGroupDefinition]
-
 	// Members
 	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
 	InviteMemberFunc    func(ctx context.Context, request *dash0.InviteMemberRequest) error
@@ -331,50 +323,6 @@ func (m *MockClient) DeleteSamplingRule(ctx context.Context, originOrID string, 
 func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition] {
 	if m.ListSamplingRulesIterFunc != nil {
 		return m.ListSamplingRulesIterFunc(ctx, dataset)
-	}
-	return nil
-}
-
-// Recording Rule Groups
-
-func (m *MockClient) ListRecordingRuleGroups(ctx context.Context, dataset *string) ([]*dash0.RecordingRuleGroupDefinition, error) {
-	if m.ListRecordingRuleGroupsFunc != nil {
-		return m.ListRecordingRuleGroupsFunc(ctx, dataset)
-	}
-	return nil, nil
-}
-
-func (m *MockClient) GetRecordingRuleGroup(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRuleGroupDefinition, error) {
-	if m.GetRecordingRuleGroupFunc != nil {
-		return m.GetRecordingRuleGroupFunc(ctx, originOrID, dataset)
-	}
-	return nil, nil
-}
-
-func (m *MockClient) CreateRecordingRuleGroup(ctx context.Context, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error) {
-	if m.CreateRecordingRuleGroupFunc != nil {
-		return m.CreateRecordingRuleGroupFunc(ctx, group)
-	}
-	return nil, nil
-}
-
-func (m *MockClient) UpdateRecordingRuleGroup(ctx context.Context, originOrID string, group *dash0.RecordingRuleGroupDefinition) (*dash0.RecordingRuleGroupDefinition, error) {
-	if m.UpdateRecordingRuleGroupFunc != nil {
-		return m.UpdateRecordingRuleGroupFunc(ctx, originOrID, group)
-	}
-	return nil, nil
-}
-
-func (m *MockClient) DeleteRecordingRuleGroup(ctx context.Context, originOrID string, dataset *string) error {
-	if m.DeleteRecordingRuleGroupFunc != nil {
-		return m.DeleteRecordingRuleGroupFunc(ctx, originOrID, dataset)
-	}
-	return nil
-}
-
-func (m *MockClient) ListRecordingRuleGroupsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRuleGroupDefinition] {
-	if m.ListRecordingRuleGroupsIterFunc != nil {
-		return m.ListRecordingRuleGroupsIterFunc(ctx, dataset)
 	}
 	return nil
 }
