@@ -3,9 +3,12 @@ package dash0
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -502,4 +505,123 @@ func TestIntegrationURL(t *testing.T) {
 			t.Errorf("query = %q, want empty for empty dataset", parsed.RawQuery)
 		}
 	})
+}
+
+// Idempotency tests: helpers must produce the same end state when called
+// repeatedly with the same input.
+
+func TestStripIntegrationServerFields_Idempotent(t *testing.T) {
+	def := &IntegrationDefinition{
+		Metadata: IntegrationMetadata{
+			Version:     Ptr(int64(3)),
+			Annotations: &IntegrationAnnotations{CreatedAt: Ptr("2024-01-01T00:00:00Z")},
+			Labels:      map[string]string{LabelID: "keep"},
+		},
+	}
+	StripIntegrationServerFields(def)
+	first := *def
+	StripIntegrationServerFields(def)
+	if !reflect.DeepEqual(first, *def) {
+		t.Error("StripIntegrationServerFields is not idempotent")
+	}
+}
+
+func TestSetIntegrationID_Idempotent(t *testing.T) {
+	def := &IntegrationDefinition{}
+	SetIntegrationID(def, "int-1")
+	first := def.Metadata.Labels[LabelID]
+	SetIntegrationID(def, "int-1")
+	if def.Metadata.Labels[LabelID] != first {
+		t.Errorf("SetIntegrationID not idempotent: %q != %q", def.Metadata.Labels[LabelID], first)
+	}
+}
+
+func TestSetIntegrationIDIfAbsent_Idempotent(t *testing.T) {
+	def := &IntegrationDefinition{}
+	SetIntegrationIDIfAbsent(def, "int-1")
+	SetIntegrationIDIfAbsent(def, "int-2") // must not overwrite
+	if def.Metadata.Labels[LabelID] != "int-1" {
+		t.Errorf("ID = %q, want %q (second call must be no-op)", def.Metadata.Labels[LabelID], "int-1")
+	}
+}
+
+func TestClearIntegrationID_Idempotent(t *testing.T) {
+	def := &IntegrationDefinition{
+		Metadata: IntegrationMetadata{Labels: map[string]string{LabelID: "int-1"}},
+	}
+	ClearIntegrationID(def)
+	ClearIntegrationID(def) // second call must be a no-op
+	if _, ok := def.Metadata.Labels[LabelID]; ok {
+		t.Error("ID label still present after second ClearIntegrationID")
+	}
+}
+
+// JSON round-trip stability: marshal then unmarshal must produce a value
+// equal to the original after server-field stripping.
+func TestIntegrationDefinition_JSONRoundTrip(t *testing.T) {
+	original := newTestIntegration()
+	bytes1, err := json.Marshal(original)
+	if err != nil {
+		t.Fatalf("first marshal: %v", err)
+	}
+	var decoded IntegrationDefinition
+	if err := json.Unmarshal(bytes1, &decoded); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	bytes2, err := json.Marshal(&decoded)
+	if err != nil {
+		t.Fatalf("second marshal: %v", err)
+	}
+	if string(bytes1) != string(bytes2) {
+		t.Errorf("JSON round-trip not stable:\nfirst:  %s\nsecond: %s", bytes1, bytes2)
+	}
+}
+
+// PUT body must be replayable on retry. Simulates a 503 → 200 sequence and
+// asserts the second attempt receives the same body bytes as the first.
+func TestUpdateIntegration_RetriesReplayBody(t *testing.T) {
+	var attempts atomic.Int32
+	var bodies [][]byte
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		bodies = append(bodies, body)
+		n := attempts.Add(1)
+		if n == 1 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(newTestIntegration())
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+		WithMaxRetries(2),
+		WithRetryWaitMin(1*time.Millisecond),
+		WithRetryWaitMax(2*time.Millisecond),
+	)
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+
+	integration := newTestIntegration()
+	_, err = client.UpdateIntegration(context.Background(), "int-1", integration, nil)
+	if err != nil {
+		t.Fatalf("UpdateIntegration: %v", err)
+	}
+	if attempts.Load() != 2 {
+		t.Fatalf("attempts = %d, want 2", attempts.Load())
+	}
+	if len(bodies) != 2 {
+		t.Fatalf("captured bodies = %d, want 2", len(bodies))
+	}
+	if string(bodies[0]) != string(bodies[1]) {
+		t.Errorf("retry sent different body:\nfirst:  %s\nsecond: %s", bodies[0], bodies[1])
+	}
+	if len(bodies[1]) == 0 {
+		t.Error("second attempt sent empty body — GetBody not set on bytes.NewReader")
+	}
 }
