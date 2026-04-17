@@ -26,7 +26,7 @@ package dash0
 // DashboardSourceTerraform, DashboardSourceUi). The old names still work but
 // are deprecated.
 //
-// # Migration guide (v1.8.x to <NEXT_RELEASE>)
+// # Migration guide (v1.8.x to v1.9.0)
 //
 // [ViewType] constants were renamed from short names ([FailedChecks], [Logs],
 // [Metrics], [Resources], [Services], [Spans], [Sql], [WebEvents]) to prefixed
@@ -47,26 +47,26 @@ const Terraform = DashboardSourceTerraform
 // Deprecated: since v1.6.0. Use [DashboardSourceUi] instead.
 const Ui = DashboardSourceUi
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeFailedChecks] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeFailedChecks] instead.
 const FailedChecks = ViewTypeFailedChecks
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeLogs] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeLogs] instead.
 const Logs = ViewTypeLogs
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeMetrics] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeMetrics] instead.
 const Metrics = ViewTypeMetrics
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeResources] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeResources] instead.
 const Resources = ViewTypeResources
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeServices] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeServices] instead.
 const Services = ViewTypeServices
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSpans] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeSpans] instead.
 const Spans = ViewTypeSpans
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSql] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeSql] instead.
 const Sql = ViewTypeSql
 
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeWebEvents] instead.
+// Deprecated: since v1.9.0. Use [ViewTypeWebEvents] instead.
 const WebEvents = ViewTypeWebEvents

@@ -27,7 +27,7 @@ PrometheusAlertRule.KeepFiringFor
 PrometheusAlertRule.Description
 PrometheusAlertRule.Summary
 
-# <NEXT_RELEASE>: Recording rule group API removed (proprietary endpoint
+# v1.9.0: Recording rule group API removed (proprietary endpoint
 # replaced by the standard PrometheusRule-based recording rules endpoint).
 Client.*RecordingRuleGroup*
 (*MockClient).*RecordingRuleGroup*

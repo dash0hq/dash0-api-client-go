@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.9.0
+
+
+### Features
+- add support for notification channels
+
+### Breaking
+- remove the proprietary RecordingRuleGroup API
+
 ## v1.8.0
 
 
