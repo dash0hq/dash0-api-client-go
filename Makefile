@@ -4,10 +4,10 @@
 OPENAPI_URL := https://api.eu-west-1.aws.dash0-dev.com/openapi.yaml
 OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@1401fbe26ce7e128e9963786742490ff444e3795
 
-.PHONY: all generate build test test-collector lint clean tidy api-compat help
+.PHONY: all generate build test test-unit test-collector lint clean tidy api-compat help
 
 # Default target
-all: clean generate tidy fmt lint build test
+all: clean generate tidy fmt lint build test-unit api-compat
 
 # Generate code from OpenAPI spec
 generate:
@@ -21,9 +21,12 @@ build:
 	@echo "Building..."
 	go build ./...
 
-# Run tests (excludes collector integration test)
-test:
-	@echo "Running tests..."
+# Run all tests
+test: test-unit test-collector
+
+# Run unit tests (excludes collector integration test)
+test-unit:
+	@echo "Running unit tests..."
 	go test -v -race -cover -skip TestOTLPCollector ./...
 
 # Run OTel Collector integration test
@@ -108,7 +111,8 @@ help:
 	@echo "  all            - Generate, build, and test (default)"
 	@echo "  generate       - Generate code from OpenAPI spec"
 	@echo "  build          - Build the library"
-	@echo "  test           - Run tests (excludes collector integration test)"
+	@echo "  test           - Run all tests (unit + collector)"
+	@echo "  test-unit      - Run unit tests (excludes collector integration test)"
 	@echo "  test-collector - Run OTel Collector integration test"
 	@echo "  test-coverage  - Run tests with coverage report"
 	@echo "  lint           - Run linter"

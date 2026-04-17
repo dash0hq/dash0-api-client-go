@@ -514,3 +514,52 @@ func ExampleFormatDuration() {
 	// 1m30s
 	// 2h
 }
+
+// Notification channel helpers
+
+func ExampleGetNotificationChannelName() {
+	channel := &dash0.NotificationChannelDefinition{
+		Metadata: dash0.NotificationChannelMetadata{Name: "Slack Alerts"},
+	}
+	fmt.Println(dash0.GetNotificationChannelName(channel))
+	// Output: Slack Alerts
+}
+
+func ExampleGetNotificationChannelOrigin() {
+	channel := &dash0.NotificationChannelDefinition{
+		Metadata: dash0.NotificationChannelMetadata{
+			Labels: &dash0.NotificationChannelLabels{Dash0Comorigin: dash0.Ptr("terraform")},
+		},
+	}
+	fmt.Println(dash0.GetNotificationChannelOrigin(channel))
+	// Output: terraform
+}
+
+func ExampleSetNotificationChannelOrigin() {
+	channel := &dash0.NotificationChannelDefinition{
+		Metadata: dash0.NotificationChannelMetadata{Name: "Slack Alerts"},
+	}
+	dash0.SetNotificationChannelOrigin(channel, "terraform")
+	fmt.Println(*channel.Metadata.Labels.Dash0Comorigin)
+	// Output: terraform
+}
+
+func ExampleStripNotificationChannelServerFields() {
+	channel := &dash0.NotificationChannelDefinition{
+		Metadata: dash0.NotificationChannelMetadata{Name: "Slack Alerts"},
+	}
+	dash0.SetNotificationChannelID(channel, "nc-123")
+	dash0.StripNotificationChannelServerFields(channel)
+	fmt.Println(channel.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleClearNotificationChannelID() {
+	channel := &dash0.NotificationChannelDefinition{
+		Metadata: dash0.NotificationChannelMetadata{Name: "Slack Alerts"},
+	}
+	dash0.SetNotificationChannelID(channel, "nc-123")
+	dash0.ClearNotificationChannelID(channel)
+	fmt.Println(channel.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}

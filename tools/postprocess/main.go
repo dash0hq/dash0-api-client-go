@@ -30,6 +30,7 @@ var symbolRenames = map[string]string{
 	"NewClient":      "newGeneratedClient",
 	"WithHTTPClient": "withGeneratedHTTPClient",
 	"WithBaseURL":    "withGeneratedApiUrl",
+	"PrometheusRule": "generatedPrometheusRule",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

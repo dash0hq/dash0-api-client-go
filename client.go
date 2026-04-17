@@ -76,6 +76,14 @@ type Client interface {
 	RemoveTeamMember(ctx context.Context, originOrID string, memberID string) error
 	ListTeamsIter(ctx context.Context) *Iter[TeamsListItem]
 
+	// Notification Channels
+	ListNotificationChannels(ctx context.Context) ([]*NotificationChannelDefinition, error)
+	GetNotificationChannel(ctx context.Context, originOrID string) (*NotificationChannelDefinition, error)
+	CreateNotificationChannel(ctx context.Context, channel *NotificationChannelDefinition) (*NotificationChannelDefinition, error)
+	UpdateNotificationChannel(ctx context.Context, originOrID string, channel *NotificationChannelDefinition) (*NotificationChannelDefinition, error)
+	DeleteNotificationChannel(ctx context.Context, originOrID string) error
+	ListNotificationChannelsIter(ctx context.Context) *Iter[NotificationChannelDefinition]
+
 	// Spans
 	GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSpansResponse, error)
 	GetSpansIter(ctx context.Context, request *GetSpansRequest) *Iter[ResourceSpans]

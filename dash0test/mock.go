@@ -77,6 +77,14 @@ type MockClient struct {
 	RemoveTeamMemberFunc  func(ctx context.Context, originOrID string, memberID string) error
 	ListTeamsIterFunc     func(ctx context.Context) *dash0.Iter[dash0.TeamsListItem]
 
+	// Notification Channels
+	ListNotificationChannelsFunc     func(ctx context.Context) ([]*dash0.NotificationChannelDefinition, error)
+	GetNotificationChannelFunc       func(ctx context.Context, originOrID string) (*dash0.NotificationChannelDefinition, error)
+	CreateNotificationChannelFunc    func(ctx context.Context, channel *dash0.NotificationChannelDefinition) (*dash0.NotificationChannelDefinition, error)
+	UpdateNotificationChannelFunc    func(ctx context.Context, originOrID string, channel *dash0.NotificationChannelDefinition) (*dash0.NotificationChannelDefinition, error)
+	DeleteNotificationChannelFunc    func(ctx context.Context, originOrID string) error
+	ListNotificationChannelsIterFunc func(ctx context.Context) *dash0.Iter[dash0.NotificationChannelDefinition]
+
 	// Spans
 	GetSpansFunc     func(ctx context.Context, request *dash0.GetSpansRequest) (*dash0.GetSpansResponse, error)
 	GetSpansIterFunc func(ctx context.Context, request *dash0.GetSpansRequest) *dash0.Iter[dash0.ResourceSpans]
@@ -405,6 +413,50 @@ func (m *MockClient) RemoveTeamMember(ctx context.Context, originOrID string, me
 func (m *MockClient) ListTeamsIter(ctx context.Context) *dash0.Iter[dash0.TeamsListItem] {
 	if m.ListTeamsIterFunc != nil {
 		return m.ListTeamsIterFunc(ctx)
+	}
+	return nil
+}
+
+// Notification Channels
+
+func (m *MockClient) ListNotificationChannels(ctx context.Context) ([]*dash0.NotificationChannelDefinition, error) {
+	if m.ListNotificationChannelsFunc != nil {
+		return m.ListNotificationChannelsFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetNotificationChannel(ctx context.Context, originOrID string) (*dash0.NotificationChannelDefinition, error) {
+	if m.GetNotificationChannelFunc != nil {
+		return m.GetNotificationChannelFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateNotificationChannel(ctx context.Context, channel *dash0.NotificationChannelDefinition) (*dash0.NotificationChannelDefinition, error) {
+	if m.CreateNotificationChannelFunc != nil {
+		return m.CreateNotificationChannelFunc(ctx, channel)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateNotificationChannel(ctx context.Context, originOrID string, channel *dash0.NotificationChannelDefinition) (*dash0.NotificationChannelDefinition, error) {
+	if m.UpdateNotificationChannelFunc != nil {
+		return m.UpdateNotificationChannelFunc(ctx, originOrID, channel)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteNotificationChannel(ctx context.Context, originOrID string) error {
+	if m.DeleteNotificationChannelFunc != nil {
+		return m.DeleteNotificationChannelFunc(ctx, originOrID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListNotificationChannelsIter(ctx context.Context) *dash0.Iter[dash0.NotificationChannelDefinition] {
+	if m.ListNotificationChannelsIterFunc != nil {
+		return m.ListNotificationChannelsIterFunc(ctx)
 	}
 	return nil
 }

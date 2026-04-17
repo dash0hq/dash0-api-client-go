@@ -5,8 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build commands
 
 ```bash
-make              # Clean, generate, tidy, fmt, lint, build, test (full cycle)
-make test         # Run tests with race detection and coverage
+make              # Clean, generate, tidy, fmt, lint, build, test-unit, api-compat (full cycle)
+make test         # Run all tests (unit + collector)
+make test-unit    # Run unit tests with race detection and coverage
 make lint         # Run golangci-lint
 make generate     # Regenerate generated.go from OpenAPI spec
 make test-coverage # Generate HTML coverage report

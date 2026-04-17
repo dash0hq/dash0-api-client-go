@@ -120,6 +120,17 @@ const (
 	Dash0Member MemberDefinitionKind = "Dash0Member"
 )
 
+// Defines values for NotificationChannelDefinitionKind.
+const (
+	Dash0NotificationChannel NotificationChannelDefinitionKind = "Dash0NotificationChannel"
+)
+
+// Defines values for NotificationChannelRoutingAssetKind.
+const (
+	CheckRule      NotificationChannelRoutingAssetKind = "check_rule"
+	SyntheticCheck NotificationChannelRoutingAssetKind = "synthetic_check"
+)
+
 // Defines values for NotificationChannelType.
 const (
 	AllQuiet                 NotificationChannelType = "all_quiet"
@@ -139,12 +150,6 @@ const (
 	SlackBot                 NotificationChannelType = "slack_bot"
 	TeamsWebhook             NotificationChannelType = "teams_webhook"
 	Webhook                  NotificationChannelType = "webhook"
-)
-
-// Defines values for NotificationChannelRoutingAssetKind.
-const (
-	CheckRule      NotificationChannelRoutingAssetKind = "check_rule"
-	SyntheticCheck NotificationChannelRoutingAssetKind = "synthetic_check"
 )
 
 // Defines values for NumericAssertionOperator.
@@ -198,24 +203,14 @@ const (
 	Descending OrderingDirection = "descending"
 )
 
-// Defines values for RecordingRuleGroupAction.
+// Defines values for PrometheusRuleApiVersion.
 const (
-	RecordingRuleGroupDelete RecordingRuleGroupAction = "recording_rule_group:delete"
-	RecordingRuleGroupRead   RecordingRuleGroupAction = "recording_rule_group:read"
-	RecordingRuleGroupWrite  RecordingRuleGroupAction = "recording_rule_group:write"
+	MonitoringCoreosComv1 PrometheusRuleApiVersion = "monitoring.coreos.com/v1"
 )
 
-// Defines values for RecordingRuleGroupDefinitionKind.
+// Defines values for PrometheusRuleKind.
 const (
-	Dash0RecordingRuleGroup RecordingRuleGroupDefinitionKind = "Dash0RecordingRuleGroup"
-)
-
-// Defines values for RecordingRuleSource.
-const (
-	RecordingRuleSourceApi       RecordingRuleSource = "api"
-	RecordingRuleSourceOperator  RecordingRuleSource = "operator"
-	RecordingRuleSourceTerraform RecordingRuleSource = "terraform"
-	RecordingRuleSourceUi        RecordingRuleSource = "ui"
+	PrometheusRuleKindPrometheusRule PrometheusRuleKind = "PrometheusRule"
 )
 
 // Defines values for ResourceOrchestration.
@@ -252,6 +247,25 @@ const (
 const (
 	SamplingModeAdaptive SamplingMode = "adaptive"
 	SamplingModeDisabled SamplingMode = "disabled"
+)
+
+// Defines values for SignalToMetricsDefinitionKind.
+const (
+	Dash0SignalToMetrics SignalToMetricsDefinitionKind = "Dash0SignalToMetrics"
+)
+
+// Defines values for SignalToMetricsSignalType.
+const (
+	SignalToMetricsSignalTypeLogs  SignalToMetricsSignalType = "logs"
+	SignalToMetricsSignalTypeSpans SignalToMetricsSignalType = "spans"
+)
+
+// Defines values for SignalToMetricsSource.
+const (
+	SignalToMetricsSourceApi       SignalToMetricsSource = "api"
+	SignalToMetricsSourceOperator  SignalToMetricsSource = "operator"
+	SignalToMetricsSourceTerraform SignalToMetricsSource = "terraform"
+	SignalToMetricsSourceUi        SignalToMetricsSource = "ui"
 )
 
 // Defines values for SslCertificateAssertionKind.
@@ -383,14 +397,14 @@ const (
 
 // Defines values for ViewType.
 const (
-	FailedChecks ViewType = "failed_checks"
-	Logs         ViewType = "logs"
-	Metrics      ViewType = "metrics"
-	Resources    ViewType = "resources"
-	Services     ViewType = "services"
-	Spans        ViewType = "spans"
-	Sql          ViewType = "sql"
-	WebEvents    ViewType = "web_events"
+	ViewTypeFailedChecks ViewType = "failed_checks"
+	ViewTypeLogs         ViewType = "logs"
+	ViewTypeMetrics      ViewType = "metrics"
+	ViewTypeResources    ViewType = "resources"
+	ViewTypeServices     ViewType = "services"
+	ViewTypeSpans        ViewType = "spans"
+	ViewTypeSql          ViewType = "sql"
+	ViewTypeWebEvents    ViewType = "web_events"
 )
 
 // Defines values for ViewVisualizationMetric.
@@ -632,9 +646,13 @@ type D0QLWarnings = []string
 
 // DashboardAnnotations defines model for DashboardAnnotations.
 type DashboardAnnotations struct {
-	Dash0ComdeletedAt  *time.Time `json:"dash0.com/deleted-at,omitempty"`
-	Dash0ComfolderPath *string    `json:"dash0.com/folder-path,omitempty"`
-	Dash0Comsharing    *string    `json:"dash0.com/sharing,omitempty"`
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 
 	// Dash0Comsource The source that created the dashboard.
 	Dash0Comsource *DashboardSource `json:"dash0.com/source,omitempty"`
@@ -858,6 +876,13 @@ type GetLogRecordsResponse struct {
 // GetSamplingRulesResponse defines model for GetSamplingRulesResponse.
 type GetSamplingRulesResponse struct {
 	SamplingRules []SamplingDefinition `json:"samplingRules"`
+}
+
+// GetSignalToMetricsResponse defines model for GetSignalToMetricsResponse.
+type GetSignalToMetricsResponse struct {
+	// HasMore Whether there are more results beyond the current page. Only present when pagination is used.
+	HasMore         *bool                       `json:"hasMore,omitempty"`
+	SignalToMetrics []SignalToMetricsDefinition `json:"signalToMetrics"`
 }
 
 // GetSpansRequest defines model for GetSpansRequest.
@@ -1131,6 +1156,59 @@ type LogRecord struct {
 	TraceId        *[]byte         `json:"traceId,omitempty"`
 }
 
+// Matcher defines model for Matcher.
+type Matcher struct {
+	// Operator The match operation for filtering attributes.
+	//
+	// #### Equality Operators
+	// - `is` - equals (attribute exists and has a matching value)
+	// - `is_not` - not equals (attribute exists and has a different value)
+	//
+	// #### Existence Operators
+	// - `is_set` - is set (attribute exists)
+	// - `is_not_set` - is not set (attribute does not exist)
+	//
+	// #### Multiple Value Operators
+	// - `is_one_of` - is any of (attribute exists and has a value that is in the specified values)
+	// - `is_not_one_of` - is not any of (attribute exists and has a value that is not in the specified values)
+	//
+	// #### Comparison Operators
+	// - `gt` - greater than
+	// - `lt` - less than
+	// - `gte` - greater than or equal
+	// - `lte` - less than or equal
+	//
+	// #### Pattern Matching Operators
+	// - `matches` - match regex expression (attribute exists and matches the regular expression)
+	// - `does_not_match` - does not match regex expression (attribute exists and does not match the regular expression)
+	//
+	// #### String Operators
+	// - `contains` - contains (attribute exists and contains the specified value)
+	// - `does_not_contain` - does not contain (attribute exists and does not contain the specified value)
+	// - `starts_with` - starts with (attribute exists and starts with the specified value)
+	// - `does_not_start_with` - does not start with (attribute exists and does not start with the specified value)
+	// - `ends_with` - ends with (attribute exists and ends with the specified value)
+	// - `does_not_end_with` - does not end with (attribute exists and does not end with the specified value)
+	//
+	// #### Special Operators
+	// - `is_any` - matches any value, ignoring whether the key exists or not
+	Operator AttributeFilterOperator `json:"operator"`
+	Value    *Matcher_Value          `json:"value,omitempty"`
+
+	// Values List of values to match against. This parameter is mandatory for the is_one_of and is_not_one_of operators.
+	Values *[]Matcher_Values_Item `json:"values,omitempty"`
+}
+
+// Matcher_Value defines model for Matcher.Value.
+type Matcher_Value struct {
+	union json.RawMessage
+}
+
+// Matcher_Values_Item defines model for Matcher.values.Item.
+type Matcher_Values_Item struct {
+	union json.RawMessage
+}
+
 // MemberDefinition defines model for MemberDefinition.
 type MemberDefinition struct {
 	Kind     MemberDefinitionKind `json:"kind"`
@@ -1185,30 +1263,45 @@ type NextCursors struct {
 	Before *Cursor `json:"before,omitempty"`
 }
 
-// NotificationChannel defines model for NotificationChannel.
-type NotificationChannel struct {
-	Config NotificationChannel_Config `json:"config"`
+// NotificationChannelAnnotations defines model for NotificationChannelAnnotations.
+type NotificationChannelAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the notification channel was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
 
-	// Enabled A boolean flag to enable or disable the notification channel. This field is optional and defaults to true.
-	Enabled   *bool               `json:"enabled,omitempty"`
-	Frequency *Duration           `json:"frequency,omitempty"`
-	Id        *openapi_types.UUID `json:"id,omitempty"`
-	Name      string              `json:"name"`
-
-	// Origin An optional origin identifier for the notification channel. Can be used as an alternative to the UUID
-	// for lookups, updates, and deletions. Must be unique per organization.
-	Origin  *string                     `json:"origin,omitempty"`
-	Routing *NotificationChannelRouting `json:"routing,omitempty"`
-	Type    NotificationChannelType     `json:"type"`
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
 }
 
-// NotificationChannel_Config defines model for NotificationChannel.Config.
-type NotificationChannel_Config struct {
-	union json.RawMessage
+// NotificationChannelDefinition A notification channel configuration wrapped in a CRD-like envelope. Follows the Dash0 resource convention with kind/metadata/spec structure.
+type NotificationChannelDefinition struct {
+	Kind     NotificationChannelDefinitionKind `json:"kind"`
+	Metadata NotificationChannelMetadata       `json:"metadata"`
+	Spec     NotificationChannelSpec           `json:"spec"`
 }
 
-// NotificationChannelType defines model for NotificationChannel.Type.
-type NotificationChannelType string
+// NotificationChannelDefinitionKind defines model for NotificationChannelDefinition.Kind.
+type NotificationChannelDefinitionKind string
+
+// NotificationChannelDefinitions defines model for NotificationChannelDefinitions.
+type NotificationChannelDefinitions = []NotificationChannelDefinition
+
+// NotificationChannelLabels defines model for NotificationChannelLabels.
+type NotificationChannelLabels struct {
+	// Dash0Comid Unique internal ID of the notification channel. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created channels; non-empty for channels created via the internal API.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+}
+
+// NotificationChannelMetadata defines model for NotificationChannelMetadata.
+type NotificationChannelMetadata struct {
+	Annotations *NotificationChannelAnnotations `json:"annotations,omitempty"`
+	Labels      *NotificationChannelLabels      `json:"labels,omitempty"`
+
+	// Name Display name of the notification channel.
+	Name string `json:"name"`
+}
 
 // NotificationChannelRouting defines model for NotificationChannelRouting.
 type NotificationChannelRouting struct {
@@ -1228,8 +1321,23 @@ type NotificationChannelRoutingAsset struct {
 // NotificationChannelRoutingAssetKind defines model for NotificationChannelRoutingAssetKind.
 type NotificationChannelRoutingAssetKind string
 
-// NotificationChannels defines model for NotificationChannels.
-type NotificationChannels = []NotificationChannel
+// NotificationChannelSpec defines model for NotificationChannelSpec.
+type NotificationChannelSpec struct {
+	Config    NotificationChannelSpec_Config `json:"config"`
+	Frequency *Duration                      `json:"frequency,omitempty"`
+	Routing   *NotificationChannelRouting    `json:"routing,omitempty"`
+
+	// Type The type of notification channel integration.
+	Type NotificationChannelType `json:"type"`
+}
+
+// NotificationChannelSpec_Config defines model for NotificationChannelSpec.Config.
+type NotificationChannelSpec_Config struct {
+	union json.RawMessage
+}
+
+// NotificationChannelType The type of notification channel integration.
+type NotificationChannelType string
 
 // NumericAssertionOperator defines model for NumericAssertionOperator.
 type NumericAssertionOperator string
@@ -1542,6 +1650,12 @@ type PrometheusAlertRule_Annotations struct {
 	// be optimized in the design for long form viewing.
 	Description *string `json:"description,omitempty"`
 
+	// FolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	FolderPath *string `json:"folderPath,omitempty"`
+
+	// Sharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Sharing *string `json:"sharing,omitempty"`
+
 	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
 	// is textually described in short form in the Dash0 UI, in notifications, etc.
 	Summary              *string           `json:"summary,omitempty"`
@@ -1566,6 +1680,117 @@ type PrometheusAlertRuleApiListItem struct {
 	Origin *string `json:"origin,omitempty"`
 }
 
+// PrometheusRule A resource following the monitoring.coreos.com/v1 PrometheusRule CRD format.
+// A PrometheusRule contains one or more rule groups, each evaluated at a common interval.
+// Groups may contain recording rules, alerting rules, or both.
+type generatedPrometheusRule struct {
+	// ApiVersion API version of the PrometheusRule CRD.
+	ApiVersion PrometheusRuleApiVersion `json:"apiVersion"`
+
+	// Kind Kind of the PrometheusRule CRD.
+	Kind PrometheusRuleKind `json:"kind"`
+
+	// Metadata Metadata for the PrometheusRule resource, following Kubernetes metadata conventions.
+	Metadata PrometheusRuleMetadata `json:"metadata"`
+
+	// Spec Spec of the PrometheusRule resource containing rule groups.
+	Spec PrometheusRuleSpec `json:"spec"`
+}
+
+// PrometheusRuleApiVersion API version of the PrometheusRule CRD.
+type PrometheusRuleApiVersion string
+
+// PrometheusRuleDefinition An individual rule within a group. A rule is either a recording rule (has `record`) or
+// an alerting rule (has `alert`). Exactly one of `record` or `alert` must be set.
+//
+// Recording rules pre-compute a PromQL expression and store the result as a new metric.
+// Alerting rules evaluate a PromQL expression and fire alerts when the result is non-empty.
+type PrometheusRuleDefinition struct {
+	// Alert Name of the alert for an alerting rule.
+	// Mutually exclusive with `record`.
+	Alert *string `json:"alert,omitempty"`
+
+	// Annotations Annotations to attach to alerts. Only applicable to alerting rules.
+	// Commonly used keys include `summary` and `description`.
+	Annotations *map[string]string `json:"annotations,omitempty"`
+
+	// Expr PromQL expression to evaluate.
+	Expr string `json:"expr"`
+
+	// For Duration for which the expression must be continuously satisfied before an alert fires.
+	// Only applicable to alerting rules (e.g., "5m", "10m").
+	For *string `json:"for,omitempty"`
+
+	// KeepFiringFor Duration for which an alert continues firing after the expression is no longer satisfied.
+	// Only applicable to alerting rules (e.g., "5m").
+	KeepFiringFor *string `json:"keep_firing_for,omitempty"`
+
+	// Labels Additional labels to attach to the resulting metrics or alerts.
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Record Name of the output metric for a recording rule. Must be a valid Prometheus metric name.
+	// Mutually exclusive with `alert`.
+	Record *string `json:"record,omitempty"`
+}
+
+// PrometheusRuleGroup A group of rules evaluated together at a common interval. Follows the Prometheus
+// rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/).
+//
+// Note: The upstream RuleGroup fields `query_offset`, `partial_response_strategy`, and `limit`
+// are intentionally omitted as they are not supported by the Dash0 evaluation engine.
+type PrometheusRuleGroup struct {
+	// Interval Evaluation interval for all rules in the group (e.g., "1m", "5m").
+	// Applies to every rule in the group; individual rules cannot override it.
+	// Defaults to "1m" if not specified.
+	Interval *string `json:"interval,omitempty"`
+
+	// Labels Labels to apply to all rules in the group. These are merged with rule-level labels;
+	// rule-level labels take precedence in case of conflict.
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Name Display name for the rule group.
+	Name string `json:"name"`
+
+	// Rules List of rules in this group.
+	Rules []PrometheusRuleDefinition `json:"rules"`
+}
+
+// PrometheusRuleKind Kind of the PrometheusRule CRD.
+type PrometheusRuleKind string
+
+// PrometheusRuleMetadata Metadata for the PrometheusRule resource, following Kubernetes metadata conventions.
+type PrometheusRuleMetadata struct {
+	// Annotations Key-value annotations for the resource. Dash0 recognizes the following annotations:
+	//
+	// - `dash0.com/enabled`: Set to "false" to disable evaluation. Defaults to "true" when absent.
+	// - `dash0.com/folder-path`: UI folder path for organising resources (e.g., "/infrastructure/hosts"). Nesting is expressed with "/" separators.
+	// - `dash0.com/sharing`: Comma-separated list of principals to grant read access to. Supported formats: "team:<team_id>" and "user:<email>".
+	// - `dash0.com/created-at`: Creation timestamp (read-only, server-set).
+	// - `dash0.com/updated-at`: Last update timestamp (read-only, server-set).
+	// - `dash0.com/deleted-at`: Soft-delete timestamp (read-only, server-set).
+	// - `dash0.com/first-evaluation-at`: First evaluation timestamp (read-only, server-set).
+	Annotations *map[string]string `json:"annotations,omitempty"`
+
+	// Labels Key-value labels for the resource. Dash0 recognizes the following labels:
+	//
+	// - `dash0.com/id`: Internal ID (read-only, server-set).
+	// - `dash0.com/origin`: External identifier for API-managed resources.
+	// - `dash0.com/version`: Version for optimistic concurrency (required on update, server-set on create).
+	// - `dash0.com/dataset`: Dataset this resource belongs to (defaults to the default dataset).
+	// - `dash0.com/source`: Origin source — "ui", "terraform", "operator", or "api" (read-only, derived from origin).
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Name Resource name.
+	Name string `json:"name"`
+}
+
+// PrometheusRuleSpec Spec of the PrometheusRule resource containing rule groups.
+type PrometheusRuleSpec struct {
+	// Groups Rule groups. Each group is evaluated independently at its own interval.
+	// Unlike the upstream PrometheusRule CRD, this field is required and must contain exactly one group.
+	Groups []PrometheusRuleGroup `json:"groups"`
+}
+
 // QueryError Structured error information for query errors. Present alongside the error string when the error is related to the user's query (syntax, semantic, or execution errors). Not present for system-level errors (unauthorized access, unexpected failures).
 type QueryError struct {
 	// CorrectedQuery Validated and formatted corrected SQL query. Only present when an AI-suggested correction is available and passes validation.
@@ -1577,135 +1802,6 @@ type QueryError struct {
 	// Title Short error title in plain text (no markdown), e.g. Syntax error - Invalid LIMIT clause
 	Title string `json:"title"`
 }
-
-// RecordingRule An individual recording rule that pre-computes a PromQL expression and stores the result as a new metric. Follows the Prometheus recording rule format (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/).
-type RecordingRule struct {
-	// Expression PromQL expression to evaluate. The result is stored under the metric name defined by 'record'.
-	Expression string `json:"expression"`
-
-	// Labels Additional labels to add to recorded metrics
-	Labels *map[string]string `json:"labels,omitempty"`
-
-	// Record Name of the output metric. Must be a valid Prometheus metric name.
-	Record string `json:"record"`
-}
-
-// RecordingRuleGroupAction defines model for RecordingRuleGroupAction.
-type RecordingRuleGroupAction string
-
-// RecordingRuleGroupAnnotations defines model for RecordingRuleGroupAnnotations.
-type RecordingRuleGroupAnnotations struct {
-	// Dash0ComcreatedAt Timestamp when the group was created. Set by the server; read-only.
-	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
-
-	// Dash0ComdeletedAt Soft-delete timestamp. Present when the group has been deleted but not yet purged. Set by the server; read-only.
-	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
-
-	// Dash0ComfirstEvaluationAt Timestamp when this recording rule group will first be evaluated. Read-only; set by the server.
-	Dash0ComfirstEvaluationAt *time.Time `json:"dash0.com/first-evaluation-at,omitempty"`
-
-	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
-	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
-
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
-	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
-
-	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
-	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
-}
-
-// RecordingRuleGroupCreateRequest A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
-type RecordingRuleGroupCreateRequest = RecordingRuleGroupDefinition
-
-// RecordingRuleGroupDefinition A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
-type RecordingRuleGroupDefinition struct {
-	Kind     RecordingRuleGroupDefinitionKind `json:"kind"`
-	Metadata RecordingRuleGroupMetadata       `json:"metadata"`
-	Spec     RecordingRuleGroupSpec           `json:"spec"`
-}
-
-// RecordingRuleGroupDefinitionKind defines model for RecordingRuleGroupDefinition.Kind.
-type RecordingRuleGroupDefinitionKind string
-
-// RecordingRuleGroupDisplay defines model for RecordingRuleGroupDisplay.
-type RecordingRuleGroupDisplay struct {
-	// Name Short-form name for UI display
-	Name string `json:"name"`
-}
-
-// RecordingRuleGroupLabels defines model for RecordingRuleGroupLabels.
-type RecordingRuleGroupLabels struct {
-	// Dash0Comdataset Dataset this group belongs to. Defaults to the default dataset when absent.
-	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
-
-	// Dash0Comid Unique internal ID of the recording rule group. Set by the server on creation; do not set manually.
-	Dash0Comid *string `json:"dash0.com/id,omitempty"`
-
-	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created groups; non-empty for groups created via the internal API. Groups with a non-empty origin have write access controlled exclusively through explicit permission entries rather than by the admin role.
-	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
-
-	// Dash0Comsource Origin of the recording rule group. 'ui' — created interactively in the Dash0 UI. 'terraform' — managed via the Dash0 Terraform provider. 'operator' — managed via the Dash0 Kubernetes operator. 'api' — created directly through the internal API.
-	Dash0Comsource *RecordingRuleSource `json:"dash0.com/source,omitempty"`
-
-	// Dash0Comversion Current version of the group. Needs to be set when updating a group to prevent conflicting writes.
-	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
-}
-
-// RecordingRuleGroupListResponse defines model for RecordingRuleGroupListResponse.
-type RecordingRuleGroupListResponse struct {
-	RecordingRuleGroups []RecordingRuleGroupResponse `json:"recordingRuleGroups"`
-}
-
-// RecordingRuleGroupMetadata defines model for RecordingRuleGroupMetadata.
-type RecordingRuleGroupMetadata struct {
-	Annotations *RecordingRuleGroupAnnotations `json:"annotations,omitempty"`
-	Labels      *RecordingRuleGroupLabels      `json:"labels,omitempty"`
-
-	// Name Group name (e.g., "http_metrics")
-	Name string `json:"name"`
-}
-
-// RecordingRuleGroupPermission An access control entry granting a set of actions to a single principal. Exactly one of teamId, userId, or role should be set.
-type RecordingRuleGroupPermission struct {
-	// Actions Actions granted to this principal on the recording rule group.
-	Actions []RecordingRuleGroupAction `json:"actions"`
-
-	// Role organization role (e.g. 'admin'). Role-based entries are managed implicitly by the server and are not included in write requests.
-	Role *string `json:"role,omitempty"`
-
-	// TeamId Internal team ID. The granted actions apply to all members of this team.
-	TeamId *string `json:"teamId,omitempty"`
-
-	// UserId Internal user ID (UUID). The granted actions apply to this specific user.
-	UserId *string `json:"userId,omitempty"`
-}
-
-// RecordingRuleGroupResponse A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
-type RecordingRuleGroupResponse = RecordingRuleGroupDefinition
-
-// RecordingRuleGroupSpec defines model for RecordingRuleGroupSpec.
-type RecordingRuleGroupSpec struct {
-	Display RecordingRuleGroupDisplay `json:"display"`
-
-	// Enabled Whether the group's rules are actively evaluated.
-	Enabled  bool     `json:"enabled"`
-	Interval Duration `json:"interval"`
-
-	// Permissions Access control entries for this group. Each entry grants a set of actions to a specific user, team, or role. Returned with every group response. Include in PUT requests to replace the permission set; absent or empty leaves existing permissions unchanged.
-	Permissions *[]RecordingRuleGroupPermission `json:"permissions,omitempty"`
-
-	// PermittedActions Computed, read-only. The set of actions the requesting user is permitted to perform on this group, derived from their role, team memberships, and explicit permission entries.
-	PermittedActions *[]RecordingRuleGroupAction `json:"permittedActions,omitempty"`
-
-	// Rules List of recording rules in this group.
-	Rules []RecordingRule `json:"rules"`
-}
-
-// RecordingRuleGroupUpdateRequest A group of recording rules evaluated together at a common interval. Follows the Prometheus recording rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/) with Dash0-specific extensions for access control, dataset scoping, and UI organization.
-type RecordingRuleGroupUpdateRequest = RecordingRuleGroupDefinition
-
-// RecordingRuleSource Origin of the recording rule group. 'ui' — created interactively in the Dash0 UI. 'terraform' — managed via the Dash0 Terraform provider. 'operator' — managed via the Dash0 Kubernetes operator. 'api' — created directly through the internal API.
-type RecordingRuleSource string
 
 // RelativeTime A relative time reference based on the current time ("now").
 //
@@ -1994,6 +2090,86 @@ type ScopeSpans struct {
 // SEVERITY_NUMBER_FATAL4 = 24;
 type SeverityNumber = int32
 
+// SignalToMetricsCreateRequest defines model for SignalToMetricsCreateRequest.
+type SignalToMetricsCreateRequest = SignalToMetricsDefinition
+
+// SignalToMetricsDefinition defines model for SignalToMetricsDefinition.
+type SignalToMetricsDefinition struct {
+	Kind     SignalToMetricsDefinitionKind `json:"kind"`
+	Metadata SignalToMetricsMetadata       `json:"metadata"`
+	Spec     SignalToMetricsSpec           `json:"spec"`
+}
+
+// SignalToMetricsDefinitionKind defines model for SignalToMetricsDefinition.Kind.
+type SignalToMetricsDefinitionKind string
+
+// SignalToMetricsDisplay defines model for SignalToMetricsDisplay.
+type SignalToMetricsDisplay struct {
+	Name string `json:"name"`
+}
+
+// SignalToMetricsLabels defines model for SignalToMetricsLabels.
+type SignalToMetricsLabels struct {
+	Dash0Comdataset *string                `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string                `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string                `json:"dash0.com/origin,omitempty"`
+	Dash0Comsource  *SignalToMetricsSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string                `json:"dash0.com/version,omitempty"`
+}
+
+// SignalToMetricsMatch defines model for SignalToMetricsMatch.
+type SignalToMetricsMatch struct {
+	Filters FilterCriteria            `json:"filters"`
+	Signal  SignalToMetricsSignalType `json:"signal"`
+}
+
+// SignalToMetricsMetadata defines model for SignalToMetricsMetadata.
+type SignalToMetricsMetadata struct {
+	Labels *SignalToMetricsLabels `json:"labels,omitempty"`
+	Name   string                 `json:"name"`
+}
+
+// SignalToMetricsOutput defines model for SignalToMetricsOutput.
+type SignalToMetricsOutput struct {
+	// Description Will be used as metadata on the generated metric.
+	Description *string  `json:"description,omitempty"`
+	Interval    Duration `json:"interval"`
+
+	// KeepResourceAttributes Key matchers that select which resource attributes from the incoming signal
+	// are kept as resource attributes on the output metric. An attribute is kept
+	// if its key matches any matcher in this list. By default, no additional
+	// resource attributes are kept.
+	KeepResourceAttributes *[]Matcher `json:"keepResourceAttributes,omitempty"`
+
+	// KeepSignalAttributes Key matchers that select which signal attributes (span attributes for traces,
+	// log record attributes for logs) from the incoming signal are kept as metric
+	// attributes (dimensions) on the output metric. An attribute is kept if its
+	// key matches any matcher in this list. By default, no additional signal
+	// attributes are kept, except for otel.span.status.code which is always set
+	// when the signal type is spans.
+	KeepSignalAttributes *[]Matcher `json:"keepSignalAttributes,omitempty"`
+
+	// Name The name of the resulting metric
+	Name string `json:"name"`
+}
+
+// SignalToMetricsResponse defines model for SignalToMetricsResponse.
+type SignalToMetricsResponse = SignalToMetricsDefinition
+
+// SignalToMetricsSignalType defines model for SignalToMetricsSignalType.
+type SignalToMetricsSignalType string
+
+// SignalToMetricsSource defines model for SignalToMetricsSource.
+type SignalToMetricsSource string
+
+// SignalToMetricsSpec defines model for SignalToMetricsSpec.
+type SignalToMetricsSpec struct {
+	Display SignalToMetricsDisplay `json:"display"`
+	Enabled bool                   `json:"enabled"`
+	Match   SignalToMetricsMatch   `json:"match"`
+	Output  SignalToMetricsOutput  `json:"output"`
+}
+
 // SlackBotConfig defines model for SlackBotConfig.
 type SlackBotConfig struct {
 	Channel string `json:"channel"`
@@ -2159,9 +2335,13 @@ type SyntheticCheckAction string
 
 // SyntheticCheckAnnotations defines model for SyntheticCheckAnnotations.
 type SyntheticCheckAnnotations struct {
-	Dash0ComdeletedAt  *time.Time `json:"dash0.com/deleted-at,omitempty"`
-	Dash0ComfolderPath *string    `json:"dash0.com/folder-path,omitempty"`
-	Dash0Comsharing    *string    `json:"dash0.com/sharing,omitempty"`
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 }
 
 // SyntheticCheckAttempt defines model for SyntheticCheckAttempt.
@@ -2597,9 +2777,13 @@ type ViewAction string
 
 // ViewAnnotations defines model for ViewAnnotations.
 type ViewAnnotations struct {
-	Dash0ComdeletedAt  *time.Time `json:"dash0.com/deleted-at,omitempty"`
-	Dash0ComfolderPath *string    `json:"dash0.com/folder-path,omitempty"`
-	Dash0Comsharing    *string    `json:"dash0.com/sharing,omitempty"`
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 }
 
 // ViewApiListItem defines model for ViewApiListItem.
@@ -2841,8 +3025,8 @@ type PostApiImportViewParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
-// GetApiRecordingRuleGroupsParams defines parameters for GetApiRecordingRuleGroups.
-type GetApiRecordingRuleGroupsParams struct {
+// GetApiRecordingRulesParams defines parameters for GetApiRecordingRules.
+type GetApiRecordingRulesParams struct {
 	// Dataset Filter by dataset.
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 
@@ -2850,13 +3034,13 @@ type GetApiRecordingRuleGroupsParams struct {
 	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
 }
 
-// DeleteApiRecordingRuleGroupsOriginOrIdParams defines parameters for DeleteApiRecordingRuleGroupsOriginOrId.
-type DeleteApiRecordingRuleGroupsOriginOrIdParams struct {
+// DeleteApiRecordingRulesOriginOrIdParams defines parameters for DeleteApiRecordingRulesOriginOrId.
+type DeleteApiRecordingRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
-// GetApiRecordingRuleGroupsOriginOrIdParams defines parameters for GetApiRecordingRuleGroupsOriginOrId.
-type GetApiRecordingRuleGroupsOriginOrIdParams struct {
+// GetApiRecordingRulesOriginOrIdParams defines parameters for GetApiRecordingRulesOriginOrId.
+type GetApiRecordingRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
@@ -2882,6 +3066,49 @@ type GetApiSamplingRulesOriginOrIdParams struct {
 
 // PutApiSamplingRulesOriginOrIdParams defines parameters for PutApiSamplingRulesOriginOrId.
 type PutApiSamplingRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiSignalToMetricsParams defines parameters for GetApiSignalToMetrics.
+type GetApiSignalToMetricsParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// Limit Maximum number of items to return.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of items to skip.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+
+	// Name Case-insensitive substring search on the rule name.
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// Signal Filter by signal type.
+	Signal *SignalToMetricsSignalType `form:"signal,omitempty" json:"signal,omitempty"`
+
+	// Enabled Filter by enabled state.
+	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
+}
+
+// PostApiSignalToMetricsParams defines parameters for PostApiSignalToMetrics.
+type PostApiSignalToMetricsParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiSignalToMetricsOriginOrIdParams defines parameters for DeleteApiSignalToMetricsOriginOrId.
+type DeleteApiSignalToMetricsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiSignalToMetricsOriginOrIdParams defines parameters for GetApiSignalToMetricsOriginOrId.
+type GetApiSignalToMetricsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiSignalToMetricsOriginOrIdParams defines parameters for PutApiSignalToMetricsOriginOrId.
+type PutApiSignalToMetricsOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
@@ -2993,22 +3220,28 @@ type PostApiLogsJSONRequestBody = GetLogRecordsRequest
 type PostApiMembersJSONRequestBody = InviteMemberRequest
 
 // PostApiNotificationChannelsJSONRequestBody defines body for PostApiNotificationChannels for application/json ContentType.
-type PostApiNotificationChannelsJSONRequestBody = NotificationChannel
+type PostApiNotificationChannelsJSONRequestBody = NotificationChannelDefinition
 
 // PutApiNotificationChannelsOriginOrIdJSONRequestBody defines body for PutApiNotificationChannelsOriginOrId for application/json ContentType.
-type PutApiNotificationChannelsOriginOrIdJSONRequestBody = NotificationChannel
+type PutApiNotificationChannelsOriginOrIdJSONRequestBody = NotificationChannelDefinition
 
-// PostApiRecordingRuleGroupsJSONRequestBody defines body for PostApiRecordingRuleGroups for application/json ContentType.
-type PostApiRecordingRuleGroupsJSONRequestBody = RecordingRuleGroupCreateRequest
+// PostApiRecordingRulesJSONRequestBody defines body for PostApiRecordingRules for application/json ContentType.
+type PostApiRecordingRulesJSONRequestBody = generatedPrometheusRule
 
-// PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody defines body for PutApiRecordingRuleGroupsOriginOrId for application/json ContentType.
-type PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody = RecordingRuleGroupUpdateRequest
+// PutApiRecordingRulesOriginOrIdJSONRequestBody defines body for PutApiRecordingRulesOriginOrId for application/json ContentType.
+type PutApiRecordingRulesOriginOrIdJSONRequestBody = generatedPrometheusRule
 
 // PostApiSamplingRulesJSONRequestBody defines body for PostApiSamplingRules for application/json ContentType.
 type PostApiSamplingRulesJSONRequestBody = SamplingRuleCreateRequest
 
 // PutApiSamplingRulesOriginOrIdJSONRequestBody defines body for PutApiSamplingRulesOriginOrId for application/json ContentType.
 type PutApiSamplingRulesOriginOrIdJSONRequestBody = SamplingRuleResponse
+
+// PostApiSignalToMetricsJSONRequestBody defines body for PostApiSignalToMetrics for application/json ContentType.
+type PostApiSignalToMetricsJSONRequestBody = SignalToMetricsCreateRequest
+
+// PutApiSignalToMetricsOriginOrIdJSONRequestBody defines body for PutApiSignalToMetricsOriginOrId for application/json ContentType.
+type PutApiSignalToMetricsOriginOrIdJSONRequestBody = SignalToMetricsResponse
 
 // PostApiSpansJSONRequestBody defines body for PostApiSpans for application/json ContentType.
 type PostApiSpansJSONRequestBody = GetSpansRequest
@@ -3082,6 +3315,22 @@ func (a *PrometheusAlertRule_Annotations) UnmarshalJSON(b []byte) error {
 		delete(object, "description")
 	}
 
+	if raw, found := object["folderPath"]; found {
+		err = json.Unmarshal(raw, &a.FolderPath)
+		if err != nil {
+			return fmt.Errorf("error reading 'folderPath': %w", err)
+		}
+		delete(object, "folderPath")
+	}
+
+	if raw, found := object["sharing"]; found {
+		err = json.Unmarshal(raw, &a.Sharing)
+		if err != nil {
+			return fmt.Errorf("error reading 'sharing': %w", err)
+		}
+		delete(object, "sharing")
+	}
+
 	if raw, found := object["summary"]; found {
 		err = json.Unmarshal(raw, &a.Summary)
 		if err != nil {
@@ -3113,6 +3362,20 @@ func (a PrometheusAlertRule_Annotations) MarshalJSON() ([]byte, error) {
 		object["description"], err = json.Marshal(a.Description)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	if a.FolderPath != nil {
+		object["folderPath"], err = json.Marshal(a.FolderPath)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'folderPath': %w", err)
+		}
+	}
+
+	if a.Sharing != nil {
+		object["sharing"], err = json.Marshal(a.Sharing)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'sharing': %w", err)
 		}
 	}
 
@@ -3448,22 +3711,146 @@ func (t *HttpCheckAssertion) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-// AsSlackConfig returns the union data inside the NotificationChannel_Config as a SlackConfig
-func (t NotificationChannel_Config) AsSlackConfig() (SlackConfig, error) {
+// AsAttributeFilterStringValue returns the union data inside the Matcher_Value as a AttributeFilterStringValue
+func (t Matcher_Value) AsAttributeFilterStringValue() (AttributeFilterStringValue, error) {
+	var body AttributeFilterStringValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAttributeFilterStringValue overwrites any union data inside the Matcher_Value as the provided AttributeFilterStringValue
+func (t *Matcher_Value) FromAttributeFilterStringValue(v AttributeFilterStringValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAttributeFilterStringValue performs a merge with any union data inside the Matcher_Value, using the provided AttributeFilterStringValue
+func (t *Matcher_Value) MergeAttributeFilterStringValue(v AttributeFilterStringValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAttributeFilterAnyValue returns the union data inside the Matcher_Value as a AttributeFilterAnyValue
+func (t Matcher_Value) AsAttributeFilterAnyValue() (AttributeFilterAnyValue, error) {
+	var body AttributeFilterAnyValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAttributeFilterAnyValue overwrites any union data inside the Matcher_Value as the provided AttributeFilterAnyValue
+func (t *Matcher_Value) FromAttributeFilterAnyValue(v AttributeFilterAnyValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAttributeFilterAnyValue performs a merge with any union data inside the Matcher_Value, using the provided AttributeFilterAnyValue
+func (t *Matcher_Value) MergeAttributeFilterAnyValue(v AttributeFilterAnyValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t Matcher_Value) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *Matcher_Value) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsAttributeFilterStringValue returns the union data inside the Matcher_Values_Item as a AttributeFilterStringValue
+func (t Matcher_Values_Item) AsAttributeFilterStringValue() (AttributeFilterStringValue, error) {
+	var body AttributeFilterStringValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAttributeFilterStringValue overwrites any union data inside the Matcher_Values_Item as the provided AttributeFilterStringValue
+func (t *Matcher_Values_Item) FromAttributeFilterStringValue(v AttributeFilterStringValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAttributeFilterStringValue performs a merge with any union data inside the Matcher_Values_Item, using the provided AttributeFilterStringValue
+func (t *Matcher_Values_Item) MergeAttributeFilterStringValue(v AttributeFilterStringValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsAttributeFilterAnyValue returns the union data inside the Matcher_Values_Item as a AttributeFilterAnyValue
+func (t Matcher_Values_Item) AsAttributeFilterAnyValue() (AttributeFilterAnyValue, error) {
+	var body AttributeFilterAnyValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAttributeFilterAnyValue overwrites any union data inside the Matcher_Values_Item as the provided AttributeFilterAnyValue
+func (t *Matcher_Values_Item) FromAttributeFilterAnyValue(v AttributeFilterAnyValue) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAttributeFilterAnyValue performs a merge with any union data inside the Matcher_Values_Item, using the provided AttributeFilterAnyValue
+func (t *Matcher_Values_Item) MergeAttributeFilterAnyValue(v AttributeFilterAnyValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t Matcher_Values_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *Matcher_Values_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSlackConfig returns the union data inside the NotificationChannelSpec_Config as a SlackConfig
+func (t NotificationChannelSpec_Config) AsSlackConfig() (SlackConfig, error) {
 	var body SlackConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromSlackConfig overwrites any union data inside the NotificationChannel_Config as the provided SlackConfig
-func (t *NotificationChannel_Config) FromSlackConfig(v SlackConfig) error {
+// FromSlackConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided SlackConfig
+func (t *NotificationChannelSpec_Config) FromSlackConfig(v SlackConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeSlackConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided SlackConfig
-func (t *NotificationChannel_Config) MergeSlackConfig(v SlackConfig) error {
+// MergeSlackConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided SlackConfig
+func (t *NotificationChannelSpec_Config) MergeSlackConfig(v SlackConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3474,22 +3861,22 @@ func (t *NotificationChannel_Config) MergeSlackConfig(v SlackConfig) error {
 	return err
 }
 
-// AsSlackBotConfig returns the union data inside the NotificationChannel_Config as a SlackBotConfig
-func (t NotificationChannel_Config) AsSlackBotConfig() (SlackBotConfig, error) {
+// AsSlackBotConfig returns the union data inside the NotificationChannelSpec_Config as a SlackBotConfig
+func (t NotificationChannelSpec_Config) AsSlackBotConfig() (SlackBotConfig, error) {
 	var body SlackBotConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromSlackBotConfig overwrites any union data inside the NotificationChannel_Config as the provided SlackBotConfig
-func (t *NotificationChannel_Config) FromSlackBotConfig(v SlackBotConfig) error {
+// FromSlackBotConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided SlackBotConfig
+func (t *NotificationChannelSpec_Config) FromSlackBotConfig(v SlackBotConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeSlackBotConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided SlackBotConfig
-func (t *NotificationChannel_Config) MergeSlackBotConfig(v SlackBotConfig) error {
+// MergeSlackBotConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided SlackBotConfig
+func (t *NotificationChannelSpec_Config) MergeSlackBotConfig(v SlackBotConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3500,22 +3887,22 @@ func (t *NotificationChannel_Config) MergeSlackBotConfig(v SlackBotConfig) error
 	return err
 }
 
-// AsEmailConfig returns the union data inside the NotificationChannel_Config as a EmailConfig
-func (t NotificationChannel_Config) AsEmailConfig() (EmailConfig, error) {
+// AsEmailConfig returns the union data inside the NotificationChannelSpec_Config as a EmailConfig
+func (t NotificationChannelSpec_Config) AsEmailConfig() (EmailConfig, error) {
 	var body EmailConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromEmailConfig overwrites any union data inside the NotificationChannel_Config as the provided EmailConfig
-func (t *NotificationChannel_Config) FromEmailConfig(v EmailConfig) error {
+// FromEmailConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided EmailConfig
+func (t *NotificationChannelSpec_Config) FromEmailConfig(v EmailConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeEmailConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided EmailConfig
-func (t *NotificationChannel_Config) MergeEmailConfig(v EmailConfig) error {
+// MergeEmailConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided EmailConfig
+func (t *NotificationChannelSpec_Config) MergeEmailConfig(v EmailConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3526,22 +3913,22 @@ func (t *NotificationChannel_Config) MergeEmailConfig(v EmailConfig) error {
 	return err
 }
 
-// AsEmailV2Config returns the union data inside the NotificationChannel_Config as a EmailV2Config
-func (t NotificationChannel_Config) AsEmailV2Config() (EmailV2Config, error) {
+// AsEmailV2Config returns the union data inside the NotificationChannelSpec_Config as a EmailV2Config
+func (t NotificationChannelSpec_Config) AsEmailV2Config() (EmailV2Config, error) {
 	var body EmailV2Config
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromEmailV2Config overwrites any union data inside the NotificationChannel_Config as the provided EmailV2Config
-func (t *NotificationChannel_Config) FromEmailV2Config(v EmailV2Config) error {
+// FromEmailV2Config overwrites any union data inside the NotificationChannelSpec_Config as the provided EmailV2Config
+func (t *NotificationChannelSpec_Config) FromEmailV2Config(v EmailV2Config) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeEmailV2Config performs a merge with any union data inside the NotificationChannel_Config, using the provided EmailV2Config
-func (t *NotificationChannel_Config) MergeEmailV2Config(v EmailV2Config) error {
+// MergeEmailV2Config performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided EmailV2Config
+func (t *NotificationChannelSpec_Config) MergeEmailV2Config(v EmailV2Config) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3552,22 +3939,22 @@ func (t *NotificationChannel_Config) MergeEmailV2Config(v EmailV2Config) error {
 	return err
 }
 
-// AsWebhookConfig returns the union data inside the NotificationChannel_Config as a WebhookConfig
-func (t NotificationChannel_Config) AsWebhookConfig() (WebhookConfig, error) {
+// AsWebhookConfig returns the union data inside the NotificationChannelSpec_Config as a WebhookConfig
+func (t NotificationChannelSpec_Config) AsWebhookConfig() (WebhookConfig, error) {
 	var body WebhookConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided WebhookConfig
-func (t *NotificationChannel_Config) FromWebhookConfig(v WebhookConfig) error {
+// FromWebhookConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided WebhookConfig
+func (t *NotificationChannelSpec_Config) FromWebhookConfig(v WebhookConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided WebhookConfig
-func (t *NotificationChannel_Config) MergeWebhookConfig(v WebhookConfig) error {
+// MergeWebhookConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided WebhookConfig
+func (t *NotificationChannelSpec_Config) MergeWebhookConfig(v WebhookConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3578,22 +3965,22 @@ func (t *NotificationChannel_Config) MergeWebhookConfig(v WebhookConfig) error {
 	return err
 }
 
-// AsIncidentIOConfig returns the union data inside the NotificationChannel_Config as a IncidentIOConfig
-func (t NotificationChannel_Config) AsIncidentIOConfig() (IncidentIOConfig, error) {
+// AsIncidentIOConfig returns the union data inside the NotificationChannelSpec_Config as a IncidentIOConfig
+func (t NotificationChannelSpec_Config) AsIncidentIOConfig() (IncidentIOConfig, error) {
 	var body IncidentIOConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromIncidentIOConfig overwrites any union data inside the NotificationChannel_Config as the provided IncidentIOConfig
-func (t *NotificationChannel_Config) FromIncidentIOConfig(v IncidentIOConfig) error {
+// FromIncidentIOConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided IncidentIOConfig
+func (t *NotificationChannelSpec_Config) FromIncidentIOConfig(v IncidentIOConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeIncidentIOConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided IncidentIOConfig
-func (t *NotificationChannel_Config) MergeIncidentIOConfig(v IncidentIOConfig) error {
+// MergeIncidentIOConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided IncidentIOConfig
+func (t *NotificationChannelSpec_Config) MergeIncidentIOConfig(v IncidentIOConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3604,22 +3991,22 @@ func (t *NotificationChannel_Config) MergeIncidentIOConfig(v IncidentIOConfig) e
 	return err
 }
 
-// AsOpsgenieConfig returns the union data inside the NotificationChannel_Config as a OpsgenieConfig
-func (t NotificationChannel_Config) AsOpsgenieConfig() (OpsgenieConfig, error) {
+// AsOpsgenieConfig returns the union data inside the NotificationChannelSpec_Config as a OpsgenieConfig
+func (t NotificationChannelSpec_Config) AsOpsgenieConfig() (OpsgenieConfig, error) {
 	var body OpsgenieConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromOpsgenieConfig overwrites any union data inside the NotificationChannel_Config as the provided OpsgenieConfig
-func (t *NotificationChannel_Config) FromOpsgenieConfig(v OpsgenieConfig) error {
+// FromOpsgenieConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided OpsgenieConfig
+func (t *NotificationChannelSpec_Config) FromOpsgenieConfig(v OpsgenieConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeOpsgenieConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided OpsgenieConfig
-func (t *NotificationChannel_Config) MergeOpsgenieConfig(v OpsgenieConfig) error {
+// MergeOpsgenieConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided OpsgenieConfig
+func (t *NotificationChannelSpec_Config) MergeOpsgenieConfig(v OpsgenieConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3630,22 +4017,22 @@ func (t *NotificationChannel_Config) MergeOpsgenieConfig(v OpsgenieConfig) error
 	return err
 }
 
-// AsPagerDutyConfig returns the union data inside the NotificationChannel_Config as a PagerDutyConfig
-func (t NotificationChannel_Config) AsPagerDutyConfig() (PagerDutyConfig, error) {
+// AsPagerDutyConfig returns the union data inside the NotificationChannelSpec_Config as a PagerDutyConfig
+func (t NotificationChannelSpec_Config) AsPagerDutyConfig() (PagerDutyConfig, error) {
 	var body PagerDutyConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromPagerDutyConfig overwrites any union data inside the NotificationChannel_Config as the provided PagerDutyConfig
-func (t *NotificationChannel_Config) FromPagerDutyConfig(v PagerDutyConfig) error {
+// FromPagerDutyConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided PagerDutyConfig
+func (t *NotificationChannelSpec_Config) FromPagerDutyConfig(v PagerDutyConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergePagerDutyConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided PagerDutyConfig
-func (t *NotificationChannel_Config) MergePagerDutyConfig(v PagerDutyConfig) error {
+// MergePagerDutyConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided PagerDutyConfig
+func (t *NotificationChannelSpec_Config) MergePagerDutyConfig(v PagerDutyConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3656,22 +4043,22 @@ func (t *NotificationChannel_Config) MergePagerDutyConfig(v PagerDutyConfig) err
 	return err
 }
 
-// AsTeamsWebhookConfig returns the union data inside the NotificationChannel_Config as a TeamsWebhookConfig
-func (t NotificationChannel_Config) AsTeamsWebhookConfig() (TeamsWebhookConfig, error) {
+// AsTeamsWebhookConfig returns the union data inside the NotificationChannelSpec_Config as a TeamsWebhookConfig
+func (t NotificationChannelSpec_Config) AsTeamsWebhookConfig() (TeamsWebhookConfig, error) {
 	var body TeamsWebhookConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromTeamsWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided TeamsWebhookConfig
-func (t *NotificationChannel_Config) FromTeamsWebhookConfig(v TeamsWebhookConfig) error {
+// FromTeamsWebhookConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided TeamsWebhookConfig
+func (t *NotificationChannelSpec_Config) FromTeamsWebhookConfig(v TeamsWebhookConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeTeamsWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided TeamsWebhookConfig
-func (t *NotificationChannel_Config) MergeTeamsWebhookConfig(v TeamsWebhookConfig) error {
+// MergeTeamsWebhookConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided TeamsWebhookConfig
+func (t *NotificationChannelSpec_Config) MergeTeamsWebhookConfig(v TeamsWebhookConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3682,22 +4069,22 @@ func (t *NotificationChannel_Config) MergeTeamsWebhookConfig(v TeamsWebhookConfi
 	return err
 }
 
-// AsDiscordWebhookConfig returns the union data inside the NotificationChannel_Config as a DiscordWebhookConfig
-func (t NotificationChannel_Config) AsDiscordWebhookConfig() (DiscordWebhookConfig, error) {
+// AsDiscordWebhookConfig returns the union data inside the NotificationChannelSpec_Config as a DiscordWebhookConfig
+func (t NotificationChannelSpec_Config) AsDiscordWebhookConfig() (DiscordWebhookConfig, error) {
 	var body DiscordWebhookConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromDiscordWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided DiscordWebhookConfig
-func (t *NotificationChannel_Config) FromDiscordWebhookConfig(v DiscordWebhookConfig) error {
+// FromDiscordWebhookConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided DiscordWebhookConfig
+func (t *NotificationChannelSpec_Config) FromDiscordWebhookConfig(v DiscordWebhookConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeDiscordWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided DiscordWebhookConfig
-func (t *NotificationChannel_Config) MergeDiscordWebhookConfig(v DiscordWebhookConfig) error {
+// MergeDiscordWebhookConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided DiscordWebhookConfig
+func (t *NotificationChannelSpec_Config) MergeDiscordWebhookConfig(v DiscordWebhookConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3708,22 +4095,22 @@ func (t *NotificationChannel_Config) MergeDiscordWebhookConfig(v DiscordWebhookC
 	return err
 }
 
-// AsGoogleChatWebhookConfig returns the union data inside the NotificationChannel_Config as a GoogleChatWebhookConfig
-func (t NotificationChannel_Config) AsGoogleChatWebhookConfig() (GoogleChatWebhookConfig, error) {
+// AsGoogleChatWebhookConfig returns the union data inside the NotificationChannelSpec_Config as a GoogleChatWebhookConfig
+func (t NotificationChannelSpec_Config) AsGoogleChatWebhookConfig() (GoogleChatWebhookConfig, error) {
 	var body GoogleChatWebhookConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromGoogleChatWebhookConfig overwrites any union data inside the NotificationChannel_Config as the provided GoogleChatWebhookConfig
-func (t *NotificationChannel_Config) FromGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
+// FromGoogleChatWebhookConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided GoogleChatWebhookConfig
+func (t *NotificationChannelSpec_Config) FromGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeGoogleChatWebhookConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided GoogleChatWebhookConfig
-func (t *NotificationChannel_Config) MergeGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
+// MergeGoogleChatWebhookConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided GoogleChatWebhookConfig
+func (t *NotificationChannelSpec_Config) MergeGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3734,22 +4121,22 @@ func (t *NotificationChannel_Config) MergeGoogleChatWebhookConfig(v GoogleChatWe
 	return err
 }
 
-// AsIlertConfig returns the union data inside the NotificationChannel_Config as a IlertConfig
-func (t NotificationChannel_Config) AsIlertConfig() (IlertConfig, error) {
+// AsIlertConfig returns the union data inside the NotificationChannelSpec_Config as a IlertConfig
+func (t NotificationChannelSpec_Config) AsIlertConfig() (IlertConfig, error) {
 	var body IlertConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromIlertConfig overwrites any union data inside the NotificationChannel_Config as the provided IlertConfig
-func (t *NotificationChannel_Config) FromIlertConfig(v IlertConfig) error {
+// FromIlertConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided IlertConfig
+func (t *NotificationChannelSpec_Config) FromIlertConfig(v IlertConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeIlertConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided IlertConfig
-func (t *NotificationChannel_Config) MergeIlertConfig(v IlertConfig) error {
+// MergeIlertConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided IlertConfig
+func (t *NotificationChannelSpec_Config) MergeIlertConfig(v IlertConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3760,22 +4147,22 @@ func (t *NotificationChannel_Config) MergeIlertConfig(v IlertConfig) error {
 	return err
 }
 
-// AsAllQuietConfig returns the union data inside the NotificationChannel_Config as a AllQuietConfig
-func (t NotificationChannel_Config) AsAllQuietConfig() (AllQuietConfig, error) {
+// AsAllQuietConfig returns the union data inside the NotificationChannelSpec_Config as a AllQuietConfig
+func (t NotificationChannelSpec_Config) AsAllQuietConfig() (AllQuietConfig, error) {
 	var body AllQuietConfig
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromAllQuietConfig overwrites any union data inside the NotificationChannel_Config as the provided AllQuietConfig
-func (t *NotificationChannel_Config) FromAllQuietConfig(v AllQuietConfig) error {
+// FromAllQuietConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided AllQuietConfig
+func (t *NotificationChannelSpec_Config) FromAllQuietConfig(v AllQuietConfig) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeAllQuietConfig performs a merge with any union data inside the NotificationChannel_Config, using the provided AllQuietConfig
-func (t *NotificationChannel_Config) MergeAllQuietConfig(v AllQuietConfig) error {
+// MergeAllQuietConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided AllQuietConfig
+func (t *NotificationChannelSpec_Config) MergeAllQuietConfig(v AllQuietConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -3786,12 +4173,12 @@ func (t *NotificationChannel_Config) MergeAllQuietConfig(v AllQuietConfig) error
 	return err
 }
 
-func (t NotificationChannel_Config) MarshalJSON() ([]byte, error) {
+func (t NotificationChannelSpec_Config) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
 
-func (t *NotificationChannel_Config) UnmarshalJSON(b []byte) error {
+func (t *NotificationChannelSpec_Config) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -4232,24 +4619,24 @@ type ClientInterface interface {
 
 	PutApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiRecordingRuleGroups request
-	GetApiRecordingRuleGroups(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiRecordingRules request
+	GetApiRecordingRules(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostApiRecordingRuleGroupsWithBody request with any body
-	PostApiRecordingRuleGroupsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiRecordingRulesWithBody request with any body
+	PostApiRecordingRulesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostApiRecordingRuleGroups(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiRecordingRules(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteApiRecordingRuleGroupsOriginOrId request
-	DeleteApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteApiRecordingRulesOriginOrId request
+	DeleteApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiRecordingRuleGroupsOriginOrId request
-	GetApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiRecordingRulesOriginOrId request
+	GetApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PutApiRecordingRuleGroupsOriginOrIdWithBody request with any body
-	PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutApiRecordingRulesOriginOrIdWithBody request with any body
+	PutApiRecordingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiSamplingRules request
 	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4269,6 +4656,25 @@ type ClientInterface interface {
 	PutApiSamplingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSignalToMetrics request
+	GetApiSignalToMetrics(ctx context.Context, params *GetApiSignalToMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiSignalToMetricsWithBody request with any body
+	PostApiSignalToMetricsWithBody(ctx context.Context, params *PostApiSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSignalToMetrics(ctx context.Context, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiSignalToMetricsOriginOrId request
+	DeleteApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSignalToMetricsOriginOrId request
+	GetApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *GetApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiSignalToMetricsOriginOrIdWithBody request with any body
+	PutApiSignalToMetricsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiSpansWithBody request with any body
 	PostApiSpansWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4816,8 +5222,8 @@ func (c *generatedClient) PutApiNotificationChannelsOriginOrId(ctx context.Conte
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) GetApiRecordingRuleGroups(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiRecordingRuleGroupsRequest(c.Server, params)
+func (c *generatedClient) GetApiRecordingRules(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiRecordingRulesRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -4828,8 +5234,8 @@ func (c *generatedClient) GetApiRecordingRuleGroups(ctx context.Context, params 
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PostApiRecordingRuleGroupsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiRecordingRuleGroupsRequestWithBody(c.Server, contentType, body)
+func (c *generatedClient) PostApiRecordingRulesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiRecordingRulesRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4840,8 +5246,8 @@ func (c *generatedClient) PostApiRecordingRuleGroupsWithBody(ctx context.Context
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PostApiRecordingRuleGroups(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiRecordingRuleGroupsRequest(c.Server, body)
+func (c *generatedClient) PostApiRecordingRules(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiRecordingRulesRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4852,8 +5258,8 @@ func (c *generatedClient) PostApiRecordingRuleGroups(ctx context.Context, body P
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) DeleteApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, params)
+func (c *generatedClient) DeleteApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiRecordingRulesOriginOrIdRequest(c.Server, originOrId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -4864,8 +5270,8 @@ func (c *generatedClient) DeleteApiRecordingRuleGroupsOriginOrId(ctx context.Con
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, params)
+func (c *generatedClient) GetApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiRecordingRulesOriginOrIdRequest(c.Server, originOrId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -4876,8 +5282,8 @@ func (c *generatedClient) GetApiRecordingRuleGroupsOriginOrId(ctx context.Contex
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+func (c *generatedClient) PutApiRecordingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiRecordingRulesOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4888,8 +5294,8 @@ func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx contex
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PutApiRecordingRuleGroupsOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiRecordingRuleGroupsOriginOrIdRequest(c.Server, originOrId, body)
+func (c *generatedClient) PutApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiRecordingRulesOriginOrIdRequest(c.Server, originOrId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -4974,6 +5380,90 @@ func (c *generatedClient) PutApiSamplingRulesOriginOrIdWithBody(ctx context.Cont
 
 func (c *generatedClient) PutApiSamplingRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiSamplingRulesOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSignalToMetrics(ctx context.Context, params *GetApiSignalToMetricsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSignalToMetricsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSignalToMetricsWithBody(ctx context.Context, params *PostApiSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSignalToMetricsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSignalToMetrics(ctx context.Context, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSignalToMetricsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiSignalToMetricsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *GetApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSignalToMetricsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSignalToMetricsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSignalToMetricsOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSignalToMetricsOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6681,8 +7171,8 @@ func NewPutApiNotificationChannelsOriginOrIdRequestWithBody(server string, origi
 	return req, nil
 }
 
-// NewGetApiRecordingRuleGroupsRequest generates requests for GetApiRecordingRuleGroups
-func NewGetApiRecordingRuleGroupsRequest(server string, params *GetApiRecordingRuleGroupsParams) (*http.Request, error) {
+// NewGetApiRecordingRulesRequest generates requests for GetApiRecordingRules
+func NewGetApiRecordingRulesRequest(server string, params *GetApiRecordingRulesParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -6690,7 +7180,7 @@ func NewGetApiRecordingRuleGroupsRequest(server string, params *GetApiRecordingR
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/recording-rule-groups")
+	operationPath := fmt.Sprintf("/api/recording-rules")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -6746,19 +7236,19 @@ func NewGetApiRecordingRuleGroupsRequest(server string, params *GetApiRecordingR
 	return req, nil
 }
 
-// NewPostApiRecordingRuleGroupsRequest calls the generic PostApiRecordingRuleGroups builder with application/json body
-func NewPostApiRecordingRuleGroupsRequest(server string, body PostApiRecordingRuleGroupsJSONRequestBody) (*http.Request, error) {
+// NewPostApiRecordingRulesRequest calls the generic PostApiRecordingRules builder with application/json body
+func NewPostApiRecordingRulesRequest(server string, body PostApiRecordingRulesJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostApiRecordingRuleGroupsRequestWithBody(server, "application/json", bodyReader)
+	return NewPostApiRecordingRulesRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewPostApiRecordingRuleGroupsRequestWithBody generates requests for PostApiRecordingRuleGroups with any type of body
-func NewPostApiRecordingRuleGroupsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostApiRecordingRulesRequestWithBody generates requests for PostApiRecordingRules with any type of body
+func NewPostApiRecordingRulesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -6766,7 +7256,7 @@ func NewPostApiRecordingRuleGroupsRequestWithBody(server string, contentType str
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/recording-rule-groups")
+	operationPath := fmt.Sprintf("/api/recording-rules")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -6786,8 +7276,8 @@ func NewPostApiRecordingRuleGroupsRequestWithBody(server string, contentType str
 	return req, nil
 }
 
-// NewDeleteApiRecordingRuleGroupsOriginOrIdRequest generates requests for DeleteApiRecordingRuleGroupsOriginOrId
-func NewDeleteApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams) (*http.Request, error) {
+// NewDeleteApiRecordingRulesOriginOrIdRequest generates requests for DeleteApiRecordingRulesOriginOrId
+func NewDeleteApiRecordingRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6802,7 +7292,7 @@ func NewDeleteApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/recording-rules/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -6842,8 +7332,8 @@ func NewDeleteApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId 
 	return req, nil
 }
 
-// NewGetApiRecordingRuleGroupsOriginOrIdRequest generates requests for GetApiRecordingRuleGroupsOriginOrId
-func NewGetApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams) (*http.Request, error) {
+// NewGetApiRecordingRulesOriginOrIdRequest generates requests for GetApiRecordingRulesOriginOrId
+func NewGetApiRecordingRulesOriginOrIdRequest(server string, originOrId string, params *GetApiRecordingRulesOriginOrIdParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6858,7 +7348,7 @@ func NewGetApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId str
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/recording-rules/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -6898,19 +7388,19 @@ func NewGetApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId str
 	return req, nil
 }
 
-// NewPutApiRecordingRuleGroupsOriginOrIdRequest calls the generic PutApiRecordingRuleGroupsOriginOrId builder with application/json body
-func NewPutApiRecordingRuleGroupsOriginOrIdRequest(server string, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody) (*http.Request, error) {
+// NewPutApiRecordingRulesOriginOrIdRequest calls the generic PutApiRecordingRulesOriginOrId builder with application/json body
+func NewPutApiRecordingRulesOriginOrIdRequest(server string, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+	return NewPutApiRecordingRulesOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
 }
 
-// NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody generates requests for PutApiRecordingRuleGroupsOriginOrId with any type of body
-func NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutApiRecordingRulesOriginOrIdRequestWithBody generates requests for PutApiRecordingRulesOriginOrId with any type of body
+func NewPutApiRecordingRulesOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -6925,7 +7415,7 @@ func NewPutApiRecordingRuleGroupsOriginOrIdRequestWithBody(server string, origin
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/recording-rule-groups/%s", pathParam0)
+	operationPath := fmt.Sprintf("/api/recording-rules/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -7196,6 +7686,394 @@ func NewPutApiSamplingRulesOriginOrIdRequestWithBody(server string, originOrId s
 	}
 
 	operationPath := fmt.Sprintf("/api/sampling-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiSignalToMetricsRequest generates requests for GetApiSignalToMetrics
+func NewGetApiSignalToMetricsRequest(server string, params *GetApiSignalToMetricsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/signal-to-metrics")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "originPrefix", runtime.ParamLocationQuery, *params.OriginPrefix); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "name", runtime.ParamLocationQuery, *params.Name); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Signal != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "signal", runtime.ParamLocationQuery, *params.Signal); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Enabled != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "enabled", runtime.ParamLocationQuery, *params.Enabled); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiSignalToMetricsRequest calls the generic PostApiSignalToMetrics builder with application/json body
+func NewPostApiSignalToMetricsRequest(server string, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSignalToMetricsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiSignalToMetricsRequestWithBody generates requests for PostApiSignalToMetrics with any type of body
+func NewPostApiSignalToMetricsRequestWithBody(server string, params *PostApiSignalToMetricsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/signal-to-metrics")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiSignalToMetricsOriginOrIdRequest generates requests for DeleteApiSignalToMetricsOriginOrId
+func NewDeleteApiSignalToMetricsOriginOrIdRequest(server string, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/signal-to-metrics/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiSignalToMetricsOriginOrIdRequest generates requests for GetApiSignalToMetricsOriginOrId
+func NewGetApiSignalToMetricsOriginOrIdRequest(server string, originOrId string, params *GetApiSignalToMetricsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/signal-to-metrics/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiSignalToMetricsOriginOrIdRequest calls the generic PutApiSignalToMetricsOriginOrId builder with application/json body
+func NewPutApiSignalToMetricsOriginOrIdRequest(server string, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiSignalToMetricsOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiSignalToMetricsOriginOrIdRequestWithBody generates requests for PutApiSignalToMetricsOriginOrId with any type of body
+func NewPutApiSignalToMetricsOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/signal-to-metrics/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -8641,24 +9519,24 @@ type ClientWithResponsesInterface interface {
 
 	PutApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiNotificationChannelsOriginOrIdResponse, error)
 
-	// GetApiRecordingRuleGroupsWithResponse request
-	GetApiRecordingRuleGroupsWithResponse(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsResponse, error)
+	// GetApiRecordingRulesWithResponse request
+	GetApiRecordingRulesWithResponse(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesResponse, error)
 
-	// PostApiRecordingRuleGroupsWithBodyWithResponse request with any body
-	PostApiRecordingRuleGroupsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error)
+	// PostApiRecordingRulesWithBodyWithResponse request with any body
+	PostApiRecordingRulesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error)
 
-	PostApiRecordingRuleGroupsWithResponse(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error)
+	PostApiRecordingRulesWithResponse(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error)
 
-	// DeleteApiRecordingRuleGroupsOriginOrIdWithResponse request
-	DeleteApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRuleGroupsOriginOrIdResponse, error)
+	// DeleteApiRecordingRulesOriginOrIdWithResponse request
+	DeleteApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRulesOriginOrIdResponse, error)
 
-	// GetApiRecordingRuleGroupsOriginOrIdWithResponse request
-	GetApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdResponse, error)
+	// GetApiRecordingRulesOriginOrIdWithResponse request
+	GetApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesOriginOrIdResponse, error)
 
-	// PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse request with any body
-	PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
+	// PutApiRecordingRulesOriginOrIdWithBodyWithResponse request with any body
+	PutApiRecordingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error)
 
-	PutApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error)
+	PutApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error)
 
 	// GetApiSamplingRulesWithResponse request
 	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
@@ -8678,6 +9556,25 @@ type ClientWithResponsesInterface interface {
 	PutApiSamplingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSamplingRulesOriginOrIdResponse, error)
 
 	PutApiSamplingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSamplingRulesOriginOrIdParams, body PutApiSamplingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSamplingRulesOriginOrIdResponse, error)
+
+	// GetApiSignalToMetricsWithResponse request
+	GetApiSignalToMetricsWithResponse(ctx context.Context, params *GetApiSignalToMetricsParams, reqEditors ...RequestEditorFn) (*GetApiSignalToMetricsResponse, error)
+
+	// PostApiSignalToMetricsWithBodyWithResponse request with any body
+	PostApiSignalToMetricsWithBodyWithResponse(ctx context.Context, params *PostApiSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsResponse, error)
+
+	PostApiSignalToMetricsWithResponse(ctx context.Context, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsResponse, error)
+
+	// DeleteApiSignalToMetricsOriginOrIdWithResponse request
+	DeleteApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSignalToMetricsOriginOrIdResponse, error)
+
+	// GetApiSignalToMetricsOriginOrIdWithResponse request
+	GetApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSignalToMetricsOriginOrIdResponse, error)
+
+	// PutApiSignalToMetricsOriginOrIdWithBodyWithResponse request with any body
+	PutApiSignalToMetricsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error)
+
+	PutApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error)
 
 	// PostApiSpansWithBodyWithResponse request with any body
 	PostApiSpansWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpansResponse, error)
@@ -9240,7 +10137,7 @@ func (r DeleteApiMembersMemberIDResponse) StatusCode() int {
 type GetApiNotificationChannelsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *NotificationChannels
+	JSON200      *NotificationChannelDefinitions
 	JSONDefault  *ErrorResponse
 }
 
@@ -9263,7 +10160,7 @@ func (r GetApiNotificationChannelsResponse) StatusCode() int {
 type PostApiNotificationChannelsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *NotificationChannel
+	JSON200      *NotificationChannelDefinition
 	JSON403      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
@@ -9310,7 +10207,7 @@ func (r DeleteApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
 type GetApiNotificationChannelsOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *NotificationChannel
+	JSON200      *NotificationChannelDefinition
 	JSONDefault  *ErrorResponse
 }
 
@@ -9333,7 +10230,7 @@ func (r GetApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
 type PutApiNotificationChannelsOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *NotificationChannel
+	JSON200      *NotificationChannelDefinition
 	JSON403      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
@@ -9354,15 +10251,15 @@ func (r PutApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
-type GetApiRecordingRuleGroupsResponse struct {
+type GetApiRecordingRulesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupListResponse
+	JSON200      *[]generatedPrometheusRule
 	JSONDefault  *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiRecordingRuleGroupsResponse) Status() string {
+func (r GetApiRecordingRulesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9370,22 +10267,22 @@ func (r GetApiRecordingRuleGroupsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiRecordingRuleGroupsResponse) StatusCode() int {
+func (r GetApiRecordingRulesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PostApiRecordingRuleGroupsResponse struct {
+type PostApiRecordingRulesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *RecordingRuleGroupResponse
+	JSON201      *generatedPrometheusRule
 	JSONDefault  *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r PostApiRecordingRuleGroupsResponse) Status() string {
+func (r PostApiRecordingRulesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9393,21 +10290,21 @@ func (r PostApiRecordingRuleGroupsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostApiRecordingRuleGroupsResponse) StatusCode() int {
+func (r PostApiRecordingRulesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type DeleteApiRecordingRuleGroupsOriginOrIdResponse struct {
+type DeleteApiRecordingRulesOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSONDefault  *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
+func (r DeleteApiRecordingRulesOriginOrIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9415,22 +10312,22 @@ func (r DeleteApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
+func (r DeleteApiRecordingRulesOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type GetApiRecordingRuleGroupsOriginOrIdResponse struct {
+type GetApiRecordingRulesOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupResponse
+	JSON200      *generatedPrometheusRule
 	JSONDefault  *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
+func (r GetApiRecordingRulesOriginOrIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9438,22 +10335,22 @@ func (r GetApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
+func (r GetApiRecordingRulesOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-type PutApiRecordingRuleGroupsOriginOrIdResponse struct {
+type PutApiRecordingRulesOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *RecordingRuleGroupResponse
+	JSON200      *generatedPrometheusRule
 	JSONDefault  *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
-func (r PutApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
+func (r PutApiRecordingRulesOriginOrIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -9461,7 +10358,7 @@ func (r PutApiRecordingRuleGroupsOriginOrIdResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PutApiRecordingRuleGroupsOriginOrIdResponse) StatusCode() int {
+func (r PutApiRecordingRulesOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -9579,6 +10476,123 @@ func (r PutApiSamplingRulesOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiSamplingRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSignalToMetricsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetSignalToMetricsResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSignalToMetricsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSignalToMetricsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiSignalToMetricsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SignalToMetricsResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSignalToMetricsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSignalToMetricsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiSignalToMetricsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiSignalToMetricsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiSignalToMetricsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSignalToMetricsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SignalToMetricsResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSignalToMetricsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSignalToMetricsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiSignalToMetricsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SignalToMetricsResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiSignalToMetricsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiSignalToMetricsOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10474,65 +11488,65 @@ func (c *ClientWithResponses) PutApiNotificationChannelsOriginOrIdWithResponse(c
 	return ParsePutApiNotificationChannelsOriginOrIdResponse(rsp)
 }
 
-// GetApiRecordingRuleGroupsWithResponse request returning *GetApiRecordingRuleGroupsResponse
-func (c *ClientWithResponses) GetApiRecordingRuleGroupsWithResponse(ctx context.Context, params *GetApiRecordingRuleGroupsParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsResponse, error) {
-	rsp, err := c.GetApiRecordingRuleGroups(ctx, params, reqEditors...)
+// GetApiRecordingRulesWithResponse request returning *GetApiRecordingRulesResponse
+func (c *ClientWithResponses) GetApiRecordingRulesWithResponse(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesResponse, error) {
+	rsp, err := c.GetApiRecordingRules(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiRecordingRuleGroupsResponse(rsp)
+	return ParseGetApiRecordingRulesResponse(rsp)
 }
 
-// PostApiRecordingRuleGroupsWithBodyWithResponse request with arbitrary body returning *PostApiRecordingRuleGroupsResponse
-func (c *ClientWithResponses) PostApiRecordingRuleGroupsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error) {
-	rsp, err := c.PostApiRecordingRuleGroupsWithBody(ctx, contentType, body, reqEditors...)
+// PostApiRecordingRulesWithBodyWithResponse request with arbitrary body returning *PostApiRecordingRulesResponse
+func (c *ClientWithResponses) PostApiRecordingRulesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error) {
+	rsp, err := c.PostApiRecordingRulesWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiRecordingRuleGroupsResponse(rsp)
+	return ParsePostApiRecordingRulesResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostApiRecordingRuleGroupsWithResponse(ctx context.Context, body PostApiRecordingRuleGroupsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRuleGroupsResponse, error) {
-	rsp, err := c.PostApiRecordingRuleGroups(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostApiRecordingRulesWithResponse(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error) {
+	rsp, err := c.PostApiRecordingRules(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiRecordingRuleGroupsResponse(rsp)
+	return ParsePostApiRecordingRulesResponse(rsp)
 }
 
-// DeleteApiRecordingRuleGroupsOriginOrIdWithResponse request returning *DeleteApiRecordingRuleGroupsOriginOrIdResponse
-func (c *ClientWithResponses) DeleteApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRuleGroupsOriginOrIdResponse, error) {
-	rsp, err := c.DeleteApiRecordingRuleGroupsOriginOrId(ctx, originOrId, params, reqEditors...)
+// DeleteApiRecordingRulesOriginOrIdWithResponse request returning *DeleteApiRecordingRulesOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRulesOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiRecordingRulesOriginOrId(ctx, originOrId, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+	return ParseDeleteApiRecordingRulesOriginOrIdResponse(rsp)
 }
 
-// GetApiRecordingRuleGroupsOriginOrIdWithResponse request returning *GetApiRecordingRuleGroupsOriginOrIdResponse
-func (c *ClientWithResponses) GetApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRuleGroupsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRuleGroupsOriginOrIdResponse, error) {
-	rsp, err := c.GetApiRecordingRuleGroupsOriginOrId(ctx, originOrId, params, reqEditors...)
+// GetApiRecordingRulesOriginOrIdWithResponse request returning *GetApiRecordingRulesOriginOrIdResponse
+func (c *ClientWithResponses) GetApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesOriginOrIdResponse, error) {
+	rsp, err := c.GetApiRecordingRulesOriginOrId(ctx, originOrId, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+	return ParseGetApiRecordingRulesOriginOrIdResponse(rsp)
 }
 
-// PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiRecordingRuleGroupsOriginOrIdResponse
-func (c *ClientWithResponses) PutApiRecordingRuleGroupsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error) {
-	rsp, err := c.PutApiRecordingRuleGroupsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+// PutApiRecordingRulesOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiRecordingRulesOriginOrIdResponse
+func (c *ClientWithResponses) PutApiRecordingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiRecordingRulesOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+	return ParsePutApiRecordingRulesOriginOrIdResponse(rsp)
 }
 
-func (c *ClientWithResponses) PutApiRecordingRuleGroupsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRuleGroupsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error) {
-	rsp, err := c.PutApiRecordingRuleGroupsOriginOrId(ctx, originOrId, body, reqEditors...)
+func (c *ClientWithResponses) PutApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiRecordingRulesOriginOrId(ctx, originOrId, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp)
+	return ParsePutApiRecordingRulesOriginOrIdResponse(rsp)
 }
 
 // GetApiSamplingRulesWithResponse request returning *GetApiSamplingRulesResponse
@@ -10594,6 +11608,67 @@ func (c *ClientWithResponses) PutApiSamplingRulesOriginOrIdWithResponse(ctx cont
 		return nil, err
 	}
 	return ParsePutApiSamplingRulesOriginOrIdResponse(rsp)
+}
+
+// GetApiSignalToMetricsWithResponse request returning *GetApiSignalToMetricsResponse
+func (c *ClientWithResponses) GetApiSignalToMetricsWithResponse(ctx context.Context, params *GetApiSignalToMetricsParams, reqEditors ...RequestEditorFn) (*GetApiSignalToMetricsResponse, error) {
+	rsp, err := c.GetApiSignalToMetrics(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSignalToMetricsResponse(rsp)
+}
+
+// PostApiSignalToMetricsWithBodyWithResponse request with arbitrary body returning *PostApiSignalToMetricsResponse
+func (c *ClientWithResponses) PostApiSignalToMetricsWithBodyWithResponse(ctx context.Context, params *PostApiSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsResponse, error) {
+	rsp, err := c.PostApiSignalToMetricsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSignalToMetricsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSignalToMetricsWithResponse(ctx context.Context, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsResponse, error) {
+	rsp, err := c.PostApiSignalToMetrics(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSignalToMetricsResponse(rsp)
+}
+
+// DeleteApiSignalToMetricsOriginOrIdWithResponse request returning *DeleteApiSignalToMetricsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSignalToMetricsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiSignalToMetricsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiSignalToMetricsOriginOrIdResponse(rsp)
+}
+
+// GetApiSignalToMetricsOriginOrIdWithResponse request returning *GetApiSignalToMetricsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSignalToMetricsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiSignalToMetricsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSignalToMetricsOriginOrIdResponse(rsp)
+}
+
+// PutApiSignalToMetricsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiSignalToMetricsOriginOrIdResponse
+func (c *ClientWithResponses) PutApiSignalToMetricsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSignalToMetricsOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSignalToMetricsOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSignalToMetricsOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSignalToMetricsOriginOrIdResponse(rsp)
 }
 
 // PostApiSpansWithBodyWithResponse request with arbitrary body returning *PostApiSpansResponse
@@ -11572,7 +12647,7 @@ func ParseGetApiNotificationChannelsResponse(rsp *http.Response) (*GetApiNotific
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest NotificationChannels
+		var dest NotificationChannelDefinitions
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11605,7 +12680,7 @@ func ParsePostApiNotificationChannelsResponse(rsp *http.Response) (*PostApiNotif
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest NotificationChannel
+		var dest NotificationChannelDefinition
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11678,7 +12753,7 @@ func ParseGetApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*Get
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest NotificationChannel
+		var dest NotificationChannelDefinition
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11711,7 +12786,7 @@ func ParsePutApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*Put
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest NotificationChannel
+		var dest NotificationChannelDefinition
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11736,22 +12811,22 @@ func ParsePutApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*Put
 	return response, nil
 }
 
-// ParseGetApiRecordingRuleGroupsResponse parses an HTTP response from a GetApiRecordingRuleGroupsWithResponse call
-func ParseGetApiRecordingRuleGroupsResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsResponse, error) {
+// ParseGetApiRecordingRulesResponse parses an HTTP response from a GetApiRecordingRulesWithResponse call
+func ParseGetApiRecordingRulesResponse(rsp *http.Response) (*GetApiRecordingRulesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiRecordingRuleGroupsResponse{
+	response := &GetApiRecordingRulesResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupListResponse
+		var dest []generatedPrometheusRule
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11769,22 +12844,22 @@ func ParseGetApiRecordingRuleGroupsResponse(rsp *http.Response) (*GetApiRecordin
 	return response, nil
 }
 
-// ParsePostApiRecordingRuleGroupsResponse parses an HTTP response from a PostApiRecordingRuleGroupsWithResponse call
-func ParsePostApiRecordingRuleGroupsResponse(rsp *http.Response) (*PostApiRecordingRuleGroupsResponse, error) {
+// ParsePostApiRecordingRulesResponse parses an HTTP response from a PostApiRecordingRulesWithResponse call
+func ParsePostApiRecordingRulesResponse(rsp *http.Response) (*PostApiRecordingRulesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostApiRecordingRuleGroupsResponse{
+	response := &PostApiRecordingRulesResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest RecordingRuleGroupResponse
+		var dest generatedPrometheusRule
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11802,15 +12877,15 @@ func ParsePostApiRecordingRuleGroupsResponse(rsp *http.Response) (*PostApiRecord
 	return response, nil
 }
 
-// ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse parses an HTTP response from a DeleteApiRecordingRuleGroupsOriginOrIdWithResponse call
-func ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*DeleteApiRecordingRuleGroupsOriginOrIdResponse, error) {
+// ParseDeleteApiRecordingRulesOriginOrIdResponse parses an HTTP response from a DeleteApiRecordingRulesOriginOrIdWithResponse call
+func ParseDeleteApiRecordingRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiRecordingRulesOriginOrIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteApiRecordingRuleGroupsOriginOrIdResponse{
+	response := &DeleteApiRecordingRulesOriginOrIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -11828,22 +12903,22 @@ func ParseDeleteApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*D
 	return response, nil
 }
 
-// ParseGetApiRecordingRuleGroupsOriginOrIdResponse parses an HTTP response from a GetApiRecordingRuleGroupsOriginOrIdWithResponse call
-func ParseGetApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*GetApiRecordingRuleGroupsOriginOrIdResponse, error) {
+// ParseGetApiRecordingRulesOriginOrIdResponse parses an HTTP response from a GetApiRecordingRulesOriginOrIdWithResponse call
+func ParseGetApiRecordingRulesOriginOrIdResponse(rsp *http.Response) (*GetApiRecordingRulesOriginOrIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiRecordingRuleGroupsOriginOrIdResponse{
+	response := &GetApiRecordingRulesOriginOrIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupResponse
+		var dest generatedPrometheusRule
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -11861,22 +12936,22 @@ func ParseGetApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*GetA
 	return response, nil
 }
 
-// ParsePutApiRecordingRuleGroupsOriginOrIdResponse parses an HTTP response from a PutApiRecordingRuleGroupsOriginOrIdWithResponse call
-func ParsePutApiRecordingRuleGroupsOriginOrIdResponse(rsp *http.Response) (*PutApiRecordingRuleGroupsOriginOrIdResponse, error) {
+// ParsePutApiRecordingRulesOriginOrIdResponse parses an HTTP response from a PutApiRecordingRulesOriginOrIdWithResponse call
+func ParsePutApiRecordingRulesOriginOrIdResponse(rsp *http.Response) (*PutApiRecordingRulesOriginOrIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PutApiRecordingRuleGroupsOriginOrIdResponse{
+	response := &PutApiRecordingRulesOriginOrIdResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest RecordingRuleGroupResponse
+		var dest generatedPrometheusRule
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -12049,6 +13124,185 @@ func ParsePutApiSamplingRulesOriginOrIdResponse(rsp *http.Response) (*PutApiSamp
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest SamplingRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSignalToMetricsResponse parses an HTTP response from a GetApiSignalToMetricsWithResponse call
+func ParseGetApiSignalToMetricsResponse(rsp *http.Response) (*GetApiSignalToMetricsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSignalToMetricsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetSignalToMetricsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiSignalToMetricsResponse parses an HTTP response from a PostApiSignalToMetricsWithResponse call
+func ParsePostApiSignalToMetricsResponse(rsp *http.Response) (*PostApiSignalToMetricsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSignalToMetricsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignalToMetricsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiSignalToMetricsOriginOrIdResponse parses an HTTP response from a DeleteApiSignalToMetricsOriginOrIdWithResponse call
+func ParseDeleteApiSignalToMetricsOriginOrIdResponse(rsp *http.Response) (*DeleteApiSignalToMetricsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiSignalToMetricsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSignalToMetricsOriginOrIdResponse parses an HTTP response from a GetApiSignalToMetricsOriginOrIdWithResponse call
+func ParseGetApiSignalToMetricsOriginOrIdResponse(rsp *http.Response) (*GetApiSignalToMetricsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSignalToMetricsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignalToMetricsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiSignalToMetricsOriginOrIdResponse parses an HTTP response from a PutApiSignalToMetricsOriginOrIdWithResponse call
+func ParsePutApiSignalToMetricsOriginOrIdResponse(rsp *http.Response) (*PutApiSignalToMetricsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiSignalToMetricsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignalToMetricsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
