@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.9.1
+
+
+### Bug Fixes
+- accept both 200 and 201 for notification channel creation
+
 ## v1.9.0
 
 
