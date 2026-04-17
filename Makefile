@@ -62,13 +62,13 @@ tidy:
 api-compat:
 	@echo "Checking API compatibility..."
 	@go run golang.org/x/exp/cmd/gorelease@latest 2>&1 | tee /tmp/gorelease-output.txt; \
-	INCOMPAT=$$(sed -n '/^## incompatible changes/,/^## compatible changes/p' /tmp/gorelease-output.txt | grep -v '^##' | grep -v '^$$' | grep -v ': added$$'); \
+	INCOMPAT=$$(awk '/^## incompatible changes/{found=1;next} /^## compatible changes/{found=0} found' /tmp/gorelease-output.txt | grep -v '^$$' | grep -v ': added$$'); \
 	if [ -z "$$INCOMPAT" ]; then \
 		echo "No incompatible changes detected."; \
 		exit 0; \
 	fi; \
 	if [ -f api_compatibility_exceptions.txt ]; then \
-		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$$$/$$$$/' | paste -sd'|' -); \
+		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/(/\\(/g; s/)/\\)/g; s/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$$$/$$$$/' | paste -sd'|' -); \
 		UNALLOWED=$$(echo "$$INCOMPAT" | while IFS= read -r line; do \
 			SYMBOL=$$(echo "$$line" | sed 's/:.*//' | tr -d ' '); \
 			if ! echo "$$SYMBOL" | grep -qE "$$PATTERNS"; then \

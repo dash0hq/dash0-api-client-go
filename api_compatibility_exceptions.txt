@@ -27,10 +27,17 @@ PrometheusAlertRule.KeepFiringFor
 PrometheusAlertRule.Description
 PrometheusAlertRule.Summary
 
-# <NEXT_RELEASE>: Recording rule group CRUD removed from Client interface.
-Client.ListRecordingRuleGroups
-Client.GetRecordingRuleGroup
-Client.CreateRecordingRuleGroup
-Client.UpdateRecordingRuleGroup
-Client.DeleteRecordingRuleGroup
-Client.ListRecordingRuleGroupsIter
+# <NEXT_RELEASE>: Recording rule group API removed (proprietary endpoint
+# replaced by the standard PrometheusRule-based recording rules endpoint).
+Client.*RecordingRuleGroup*
+(*MockClient).*RecordingRuleGroup*
+MockClient.*RecordingRuleGroup*
+(*ClientWithResponses).*RecordingRuleGroup*
+(*generatedClient).*RecordingRuleGroup*
+ClientInterface.*RecordingRuleGroup*
+ClientWithResponsesInterface.*RecordingRuleGroup*
+Dash0RecordingRuleGroup
+RecordingRuleGroup*
+RecordingRule
+RecordingRuleSource*
+*ApiRecordingRuleGroups*
