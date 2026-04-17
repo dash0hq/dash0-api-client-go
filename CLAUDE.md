@@ -246,6 +246,10 @@ mock := &dash0test.MockClient{
 }
 ```
 
+**Integration tests**: Every `client_*.go` file that contains CRUD methods must have integration tests in its corresponding `client_*_test.go` file.
+Integration tests use `net/http/httptest.NewServer` to spin up a mock HTTP server, verify request path, method, headers, and body, then assert on the parsed response.
+Cover all CRUD operations (List, Get, Create, Update, Delete) plus error paths (404, 400, 403) and alternative success status codes (201 for Create, 204 for Delete).
+
 **Example tests**: Each package has a single `example_test.go` file containing `Example*` functions.
 When adding a new public function or method, add a corresponding `Example` function in `example_test.go`.
 Examples must include an `// Output:` comment so `go test` verifies them.
