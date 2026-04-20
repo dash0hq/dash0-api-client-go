@@ -2,6 +2,7 @@ package dash0
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -57,10 +58,17 @@ func (c *client) CreateDashboard(ctx context.Context, dashboard *DashboardDefini
 	if err != nil {
 		return nil, fmt.Errorf("dash0: create dashboard failed: %w", err)
 	}
-	if resp.StatusCode() != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusCreated {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
-	return resp.JSON200, nil
+	if resp.JSON200 != nil {
+		return resp.JSON200, nil
+	}
+	var created DashboardDefinition
+	if err := json.Unmarshal(resp.Body, &created); err != nil {
+		return nil, fmt.Errorf("dash0: failed to parse dashboard response: %w", err)
+	}
+	return &created, nil
 }
 
 // UpdateDashboard updates an existing dashboard.

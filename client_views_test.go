@@ -1,6 +1,10 @@
 package dash0
 
 import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -193,5 +197,48 @@ func TestGetViewName(t *testing.T) {
 				t.Errorf("GetViewName() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestCreateView_201(t *testing.T) {
+	view := ViewDefinition{
+		Metadata: ViewMetadata{
+			Labels: &ViewLabels{
+				Dash0Comid: Ptr("vw-123"),
+			},
+		},
+		Spec: ViewSpec{
+			Display: ViewDisplay{Name: "Test View"},
+		},
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("unexpected method: %s", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(view)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	got, err := client.CreateView(context.Background(), &view, nil)
+	if err != nil {
+		t.Fatalf("CreateView failed: %v", err)
+	}
+
+	if GetViewName(got) != "Test View" {
+		t.Errorf("expected name %q, got %q", "Test View", GetViewName(got))
+	}
+	if GetViewID(got) != "vw-123" {
+		t.Errorf("expected ID %q, got %q", "vw-123", GetViewID(got))
 	}
 }

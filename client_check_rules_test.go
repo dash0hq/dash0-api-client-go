@@ -1,6 +1,12 @@
 package dash0
 
-import "testing"
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
 
 func TestStripCheckRuleServerFields(t *testing.T) {
 	dataset := "ds"
@@ -136,5 +142,42 @@ func TestGetCheckRuleName(t *testing.T) {
 	}
 	if got := GetCheckRuleName(nil); got != "" {
 		t.Errorf("got %q, want empty for nil", got)
+	}
+}
+
+func TestCreateCheckRule_201(t *testing.T) {
+	rule := PrometheusAlertRule{
+		Name: "test-rule",
+		Id:   Ptr("cr-123"),
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("unexpected method: %s", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	got, err := client.CreateCheckRule(context.Background(), &rule, nil)
+	if err != nil {
+		t.Fatalf("CreateCheckRule failed: %v", err)
+	}
+
+	if got.Name != "test-rule" {
+		t.Errorf("expected name %q, got %q", "test-rule", got.Name)
+	}
+	if GetCheckRuleID(got) != "cr-123" {
+		t.Errorf("expected ID %q, got %q", "cr-123", GetCheckRuleID(got))
 	}
 }

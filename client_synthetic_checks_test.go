@@ -1,6 +1,10 @@
 package dash0
 
 import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -193,5 +197,48 @@ func TestGetSyntheticCheckName(t *testing.T) {
 				t.Errorf("GetSyntheticCheckName() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestCreateSyntheticCheck_201(t *testing.T) {
+	check := SyntheticCheckDefinition{
+		Metadata: SyntheticCheckMetadata{
+			Labels: &SyntheticCheckLabels{
+				Dash0Comid: Ptr("sc-123"),
+			},
+		},
+		Spec: SyntheticCheckSpec{
+			Display: &SyntheticCheckDisplay{Name: "Test Check"},
+		},
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("unexpected method: %s", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(check)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	got, err := client.CreateSyntheticCheck(context.Background(), &check, nil)
+	if err != nil {
+		t.Fatalf("CreateSyntheticCheck failed: %v", err)
+	}
+
+	if GetSyntheticCheckName(got) != "Test Check" {
+		t.Errorf("expected name %q, got %q", "Test Check", GetSyntheticCheckName(got))
+	}
+	if GetSyntheticCheckID(got) != "sc-123" {
+		t.Errorf("expected ID %q, got %q", "sc-123", GetSyntheticCheckID(got))
 	}
 }

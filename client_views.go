@@ -2,6 +2,7 @@ package dash0
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -57,10 +58,17 @@ func (c *client) CreateView(ctx context.Context, view *ViewDefinition, dataset *
 	if err != nil {
 		return nil, fmt.Errorf("dash0: create view failed: %w", err)
 	}
-	if resp.StatusCode() != http.StatusOK {
+	if resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusCreated {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
-	return resp.JSON200, nil
+	if resp.JSON200 != nil {
+		return resp.JSON200, nil
+	}
+	var created ViewDefinition
+	if err := json.Unmarshal(resp.Body, &created); err != nil {
+		return nil, fmt.Errorf("dash0: failed to parse view response: %w", err)
+	}
+	return &created, nil
 }
 
 // UpdateView updates an existing view.

@@ -1,6 +1,10 @@
 package dash0
 
 import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -250,5 +254,48 @@ func TestGetDashboardName(t *testing.T) {
 				t.Errorf("GetDashboardName() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestCreateDashboard_201(t *testing.T) {
+	dashboard := DashboardDefinition{
+		Metadata: DashboardMetadata{
+			Dash0Extensions: &DashboardMetadataExtensions{
+				Id: Ptr("db-123"),
+			},
+		},
+		Spec: map[string]any{
+			"display": map[string]any{"name": "Test Dashboard"},
+		},
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("unexpected method: %s", r.Method)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(dashboard)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	got, err := client.CreateDashboard(context.Background(), &dashboard, nil)
+	if err != nil {
+		t.Fatalf("CreateDashboard failed: %v", err)
+	}
+
+	if GetDashboardName(got) != "Test Dashboard" {
+		t.Errorf("expected name %q, got %q", "Test Dashboard", GetDashboardName(got))
+	}
+	if GetDashboardID(got) != "db-123" {
+		t.Errorf("expected ID %q, got %q", "db-123", GetDashboardID(got))
 	}
 }
