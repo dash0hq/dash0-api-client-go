@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.10.0
+
+
+### Features
+- add support for recording rules
+
 ## v1.9.1
 
 
