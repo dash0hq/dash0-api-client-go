@@ -76,6 +76,14 @@ type Client interface {
 	RemoveTeamMember(ctx context.Context, originOrID string, memberID string) error
 	ListTeamsIter(ctx context.Context) *Iter[TeamsListItem]
 
+	// Recording Rules
+	ListRecordingRules(ctx context.Context, dataset *string) ([]*RecordingRule, error)
+	GetRecordingRule(ctx context.Context, originOrID string, dataset *string) (*RecordingRule, error)
+	CreateRecordingRule(ctx context.Context, rule *RecordingRule, dataset *string) (*RecordingRule, error)
+	UpdateRecordingRule(ctx context.Context, originOrID string, rule *RecordingRule, dataset *string) (*RecordingRule, error)
+	DeleteRecordingRule(ctx context.Context, originOrID string, dataset *string) error
+	ListRecordingRulesIter(ctx context.Context, dataset *string) *Iter[RecordingRule]
+
 	// Notification Channels
 	ListNotificationChannels(ctx context.Context) ([]*NotificationChannelDefinition, error)
 	GetNotificationChannel(ctx context.Context, originOrID string) (*NotificationChannelDefinition, error)

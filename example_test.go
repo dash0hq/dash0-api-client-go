@@ -503,6 +503,86 @@ func ExampleSetPersesDashboardDataset() {
 	// Output: production
 }
 
+// Recording rule helpers
+
+func ExampleGetRecordingRuleName() {
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Name: "cpu-usage-rules"},
+	}
+	fmt.Println(dash0.GetRecordingRuleName(rule))
+	// Output: cpu-usage-rules
+}
+
+func ExampleGetRecordingRuleID() {
+	labels := map[string]string{"dash0.com/id": "rr-42"}
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Labels: &labels},
+	}
+	fmt.Println(dash0.GetRecordingRuleID(rule))
+	// Output: rr-42
+}
+
+func ExampleGetRecordingRuleDataset() {
+	labels := map[string]string{"dash0.com/dataset": "production"}
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Labels: &labels},
+	}
+	fmt.Println(dash0.GetRecordingRuleDataset(rule))
+	// Output: production
+}
+
+func ExampleSetRecordingRuleDataset() {
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Name: "cpu-usage-rules"},
+	}
+	dash0.SetRecordingRuleDataset(rule, "production")
+	fmt.Println((*rule.Metadata.Labels)["dash0.com/dataset"])
+	// Output: production
+}
+
+func ExampleSetRecordingRuleID() {
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Name: "cpu-usage-rules"},
+	}
+	dash0.SetRecordingRuleID(rule, "rr-42")
+	fmt.Println((*rule.Metadata.Labels)["dash0.com/id"])
+	// Output: rr-42
+}
+
+func ExampleSetRecordingRuleIDIfAbsent() {
+	labels := map[string]string{"dash0.com/id": "existing"}
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Labels: &labels},
+	}
+	dash0.SetRecordingRuleIDIfAbsent(rule, "new-id")
+	fmt.Println((*rule.Metadata.Labels)["dash0.com/id"])
+	// Output: existing
+}
+
+func ExampleStripRecordingRuleServerFields() {
+	labels := map[string]string{
+		"dash0.com/id":     "rr-42",
+		"dash0.com/origin": "terraform",
+	}
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Labels: &labels},
+	}
+	dash0.StripRecordingRuleServerFields(rule)
+	_, hasID := (*rule.Metadata.Labels)["dash0.com/id"]
+	fmt.Println(hasID)
+	// Output: false
+}
+
+func ExampleClearRecordingRuleID() {
+	labels := map[string]string{"dash0.com/id": "rr-42"}
+	rule := &dash0.RecordingRule{
+		Metadata: dash0.PrometheusRuleMetadata{Labels: &labels},
+	}
+	dash0.ClearRecordingRuleID(rule)
+	fmt.Println(dash0.GetRecordingRuleID(rule) == "")
+	// Output: true
+}
+
 // FormatDuration
 
 func ExampleFormatDuration() {

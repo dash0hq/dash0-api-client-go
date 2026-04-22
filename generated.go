@@ -400,6 +400,7 @@ const (
 	ViewTypeFailedChecks ViewType = "failed_checks"
 	ViewTypeLogs         ViewType = "logs"
 	ViewTypeMetrics      ViewType = "metrics"
+	ViewTypeProfiles     ViewType = "profiles"
 	ViewTypeResources    ViewType = "resources"
 	ViewTypeServices     ViewType = "services"
 	ViewTypeSpans        ViewType = "spans"
@@ -1768,7 +1769,7 @@ type PrometheusRuleMetadata struct {
 	// - `dash0.com/created-at`: Creation timestamp (read-only, server-set).
 	// - `dash0.com/updated-at`: Last update timestamp (read-only, server-set).
 	// - `dash0.com/deleted-at`: Soft-delete timestamp (read-only, server-set).
-	// - `dash0.com/first-evaluation-at`: First evaluation timestamp (read-only, server-set).
+	// - `dash0.com/first-evaluation-at`: First evaluation timestamp (recording rules only, read-only, server-set).
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
 	// Labels Key-value labels for the resource. Dash0 recognizes the following labels:
@@ -2864,7 +2865,11 @@ type ViewSpec struct {
 	// When the view is loaded, this query is used to populate the editor and auto-executed.
 	Query                *string                       `json:"query,omitempty"`
 	ServiceMapProperties *ViewSpecServiceMapProperties `json:"serviceMapProperties,omitempty"`
-	Table                *ViewTable                    `json:"table,omitempty"`
+
+	// ServiceName The selected service name for this view. Only applicable when type is "profiles".
+	// When the view is loaded, this service is pre-selected in the filter bar.
+	ServiceName *string    `json:"serviceName,omitempty"`
+	Table       *ViewTable `json:"table,omitempty"`
 
 	// Type The view type describes where this view configuration is intended to be applied in the UI.
 	Type ViewType `json:"type"`
@@ -10277,7 +10282,7 @@ func (r GetApiRecordingRulesResponse) StatusCode() int {
 type PostApiRecordingRulesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *generatedPrometheusRule
+	JSON200      *generatedPrometheusRule
 	JSONDefault  *ErrorResponse
 }
 
@@ -12858,12 +12863,12 @@ func ParsePostApiRecordingRulesResponse(rsp *http.Response) (*PostApiRecordingRu
 	}
 
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest generatedPrometheusRule
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON201 = &dest
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

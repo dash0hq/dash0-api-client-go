@@ -77,6 +77,14 @@ type MockClient struct {
 	RemoveTeamMemberFunc  func(ctx context.Context, originOrID string, memberID string) error
 	ListTeamsIterFunc     func(ctx context.Context) *dash0.Iter[dash0.TeamsListItem]
 
+	// Recording Rules
+	ListRecordingRulesFunc     func(ctx context.Context, dataset *string) ([]*dash0.RecordingRule, error)
+	GetRecordingRuleFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRule, error)
+	CreateRecordingRuleFunc    func(ctx context.Context, rule *dash0.RecordingRule, dataset *string) (*dash0.RecordingRule, error)
+	UpdateRecordingRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.RecordingRule, dataset *string) (*dash0.RecordingRule, error)
+	DeleteRecordingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListRecordingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRule]
+
 	// Notification Channels
 	ListNotificationChannelsFunc     func(ctx context.Context) ([]*dash0.NotificationChannelDefinition, error)
 	GetNotificationChannelFunc       func(ctx context.Context, originOrID string) (*dash0.NotificationChannelDefinition, error)
@@ -413,6 +421,50 @@ func (m *MockClient) RemoveTeamMember(ctx context.Context, originOrID string, me
 func (m *MockClient) ListTeamsIter(ctx context.Context) *dash0.Iter[dash0.TeamsListItem] {
 	if m.ListTeamsIterFunc != nil {
 		return m.ListTeamsIterFunc(ctx)
+	}
+	return nil
+}
+
+// Recording Rules
+
+func (m *MockClient) ListRecordingRules(ctx context.Context, dataset *string) ([]*dash0.RecordingRule, error) {
+	if m.ListRecordingRulesFunc != nil {
+		return m.ListRecordingRulesFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetRecordingRule(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRule, error) {
+	if m.GetRecordingRuleFunc != nil {
+		return m.GetRecordingRuleFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateRecordingRule(ctx context.Context, rule *dash0.RecordingRule, dataset *string) (*dash0.RecordingRule, error) {
+	if m.CreateRecordingRuleFunc != nil {
+		return m.CreateRecordingRuleFunc(ctx, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateRecordingRule(ctx context.Context, originOrID string, rule *dash0.RecordingRule, dataset *string) (*dash0.RecordingRule, error) {
+	if m.UpdateRecordingRuleFunc != nil {
+		return m.UpdateRecordingRuleFunc(ctx, originOrID, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteRecordingRule(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteRecordingRuleFunc != nil {
+		return m.DeleteRecordingRuleFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListRecordingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRule] {
+	if m.ListRecordingRulesIterFunc != nil {
+		return m.ListRecordingRulesIterFunc(ctx, dataset)
 	}
 	return nil
 }
