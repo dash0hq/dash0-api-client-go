@@ -54,8 +54,10 @@ func (c *client) CreateRecordingRule(ctx context.Context, rule *RecordingRule, d
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
-	_ = dataset // dataset is part of the rule body metadata, not a query param
-	resp, err := c.inner.PostApiRecordingRulesWithResponse(ctx, *rule)
+	params := &PostApiRecordingRulesParams{
+		Dataset: dataset,
+	}
+	resp, err := c.inner.PostApiRecordingRulesWithResponse(ctx, params, *rule)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: create recording rule failed: %w", err)
 	}
@@ -77,8 +79,10 @@ func (c *client) UpdateRecordingRule(ctx context.Context, originOrID string, rul
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
-	_ = dataset // dataset is part of the rule body metadata, not a query param
-	resp, err := c.inner.PutApiRecordingRulesOriginOrIdWithResponse(ctx, originOrID, *rule)
+	params := &PutApiRecordingRulesOriginOrIdParams{
+		Dataset: dataset,
+	}
+	resp, err := c.inner.PutApiRecordingRulesOriginOrIdWithResponse(ctx, originOrID, params, *rule)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: update recording rule failed: %w", err)
 	}

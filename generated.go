@@ -3039,6 +3039,12 @@ type GetApiRecordingRulesParams struct {
 	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
 }
 
+// PostApiRecordingRulesParams defines parameters for PostApiRecordingRules.
+type PostApiRecordingRulesParams struct {
+	// Dataset Target dataset. Overrides dash0.com/dataset in metadata.labels if both are provided.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // DeleteApiRecordingRulesOriginOrIdParams defines parameters for DeleteApiRecordingRulesOriginOrId.
 type DeleteApiRecordingRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -3046,6 +3052,12 @@ type DeleteApiRecordingRulesOriginOrIdParams struct {
 
 // GetApiRecordingRulesOriginOrIdParams defines parameters for GetApiRecordingRulesOriginOrId.
 type GetApiRecordingRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiRecordingRulesOriginOrIdParams defines parameters for PutApiRecordingRulesOriginOrId.
+type PutApiRecordingRulesOriginOrIdParams struct {
+	// Dataset Target dataset. Overrides dash0.com/dataset in metadata.labels if both are provided.
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
@@ -4628,9 +4640,9 @@ type ClientInterface interface {
 	GetApiRecordingRules(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiRecordingRulesWithBody request with any body
-	PostApiRecordingRulesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiRecordingRulesWithBody(ctx context.Context, params *PostApiRecordingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostApiRecordingRules(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostApiRecordingRules(ctx context.Context, params *PostApiRecordingRulesParams, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteApiRecordingRulesOriginOrId request
 	DeleteApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4639,9 +4651,9 @@ type ClientInterface interface {
 	GetApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutApiRecordingRulesOriginOrIdWithBody request with any body
-	PutApiRecordingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutApiRecordingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PutApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PutApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiSamplingRules request
 	GetApiSamplingRules(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5239,8 +5251,8 @@ func (c *generatedClient) GetApiRecordingRules(ctx context.Context, params *GetA
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PostApiRecordingRulesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiRecordingRulesRequestWithBody(c.Server, contentType, body)
+func (c *generatedClient) PostApiRecordingRulesWithBody(ctx context.Context, params *PostApiRecordingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiRecordingRulesRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5251,8 +5263,8 @@ func (c *generatedClient) PostApiRecordingRulesWithBody(ctx context.Context, con
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PostApiRecordingRules(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiRecordingRulesRequest(c.Server, body)
+func (c *generatedClient) PostApiRecordingRules(ctx context.Context, params *PostApiRecordingRulesParams, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiRecordingRulesRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5287,8 +5299,8 @@ func (c *generatedClient) GetApiRecordingRulesOriginOrId(ctx context.Context, or
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PutApiRecordingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiRecordingRulesOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+func (c *generatedClient) PutApiRecordingRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiRecordingRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5299,8 +5311,8 @@ func (c *generatedClient) PutApiRecordingRulesOriginOrIdWithBody(ctx context.Con
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) PutApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiRecordingRulesOriginOrIdRequest(c.Server, originOrId, body)
+func (c *generatedClient) PutApiRecordingRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiRecordingRulesOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -7242,18 +7254,18 @@ func NewGetApiRecordingRulesRequest(server string, params *GetApiRecordingRulesP
 }
 
 // NewPostApiRecordingRulesRequest calls the generic PostApiRecordingRules builder with application/json body
-func NewPostApiRecordingRulesRequest(server string, body PostApiRecordingRulesJSONRequestBody) (*http.Request, error) {
+func NewPostApiRecordingRulesRequest(server string, params *PostApiRecordingRulesParams, body PostApiRecordingRulesJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostApiRecordingRulesRequestWithBody(server, "application/json", bodyReader)
+	return NewPostApiRecordingRulesRequestWithBody(server, params, "application/json", bodyReader)
 }
 
 // NewPostApiRecordingRulesRequestWithBody generates requests for PostApiRecordingRules with any type of body
-func NewPostApiRecordingRulesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewPostApiRecordingRulesRequestWithBody(server string, params *PostApiRecordingRulesParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -7269,6 +7281,28 @@ func NewPostApiRecordingRulesRequestWithBody(server string, contentType string, 
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
@@ -7394,18 +7428,18 @@ func NewGetApiRecordingRulesOriginOrIdRequest(server string, originOrId string, 
 }
 
 // NewPutApiRecordingRulesOriginOrIdRequest calls the generic PutApiRecordingRulesOriginOrId builder with application/json body
-func NewPutApiRecordingRulesOriginOrIdRequest(server string, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
+func NewPutApiRecordingRulesOriginOrIdRequest(server string, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, body PutApiRecordingRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPutApiRecordingRulesOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+	return NewPutApiRecordingRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
 }
 
 // NewPutApiRecordingRulesOriginOrIdRequestWithBody generates requests for PutApiRecordingRulesOriginOrId with any type of body
-func NewPutApiRecordingRulesOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+func NewPutApiRecordingRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -7428,6 +7462,28 @@ func NewPutApiRecordingRulesOriginOrIdRequestWithBody(server string, originOrId 
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
 	}
 
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
@@ -9528,9 +9584,9 @@ type ClientWithResponsesInterface interface {
 	GetApiRecordingRulesWithResponse(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesResponse, error)
 
 	// PostApiRecordingRulesWithBodyWithResponse request with any body
-	PostApiRecordingRulesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error)
+	PostApiRecordingRulesWithBodyWithResponse(ctx context.Context, params *PostApiRecordingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error)
 
-	PostApiRecordingRulesWithResponse(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error)
+	PostApiRecordingRulesWithResponse(ctx context.Context, params *PostApiRecordingRulesParams, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error)
 
 	// DeleteApiRecordingRulesOriginOrIdWithResponse request
 	DeleteApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiRecordingRulesOriginOrIdResponse, error)
@@ -9539,9 +9595,9 @@ type ClientWithResponsesInterface interface {
 	GetApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiRecordingRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesOriginOrIdResponse, error)
 
 	// PutApiRecordingRulesOriginOrIdWithBodyWithResponse request with any body
-	PutApiRecordingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error)
+	PutApiRecordingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error)
 
-	PutApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error)
+	PutApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error)
 
 	// GetApiSamplingRulesWithResponse request
 	GetApiSamplingRulesWithResponse(ctx context.Context, params *GetApiSamplingRulesParams, reqEditors ...RequestEditorFn) (*GetApiSamplingRulesResponse, error)
@@ -11503,16 +11559,16 @@ func (c *ClientWithResponses) GetApiRecordingRulesWithResponse(ctx context.Conte
 }
 
 // PostApiRecordingRulesWithBodyWithResponse request with arbitrary body returning *PostApiRecordingRulesResponse
-func (c *ClientWithResponses) PostApiRecordingRulesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error) {
-	rsp, err := c.PostApiRecordingRulesWithBody(ctx, contentType, body, reqEditors...)
+func (c *ClientWithResponses) PostApiRecordingRulesWithBodyWithResponse(ctx context.Context, params *PostApiRecordingRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error) {
+	rsp, err := c.PostApiRecordingRulesWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParsePostApiRecordingRulesResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostApiRecordingRulesWithResponse(ctx context.Context, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error) {
-	rsp, err := c.PostApiRecordingRules(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostApiRecordingRulesWithResponse(ctx context.Context, params *PostApiRecordingRulesParams, body PostApiRecordingRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiRecordingRulesResponse, error) {
+	rsp, err := c.PostApiRecordingRules(ctx, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -11538,16 +11594,16 @@ func (c *ClientWithResponses) GetApiRecordingRulesOriginOrIdWithResponse(ctx con
 }
 
 // PutApiRecordingRulesOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiRecordingRulesOriginOrIdResponse
-func (c *ClientWithResponses) PutApiRecordingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error) {
-	rsp, err := c.PutApiRecordingRulesOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+func (c *ClientWithResponses) PutApiRecordingRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiRecordingRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParsePutApiRecordingRulesOriginOrIdResponse(rsp)
 }
 
-func (c *ClientWithResponses) PutApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error) {
-	rsp, err := c.PutApiRecordingRulesOriginOrId(ctx, originOrId, body, reqEditors...)
+func (c *ClientWithResponses) PutApiRecordingRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiRecordingRulesOriginOrIdParams, body PutApiRecordingRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiRecordingRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiRecordingRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}

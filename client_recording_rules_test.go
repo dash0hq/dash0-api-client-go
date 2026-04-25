@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
@@ -408,6 +409,154 @@ func TestUpdateRecordingRule_201(t *testing.T) {
 
 	if got.Metadata.Name != "updated-rule" {
 		t.Errorf("expected name %q, got %q", "updated-rule", got.Metadata.Name)
+	}
+}
+
+func TestCreateRecordingRule_Dataset(t *testing.T) {
+	rule := RecordingRule{
+		ApiVersion: "monitoring.coreos.com/v1",
+		Kind:       "PrometheusRule",
+		Metadata:   PrometheusRuleMetadata{Name: "test-recording-rule"},
+		Spec:       PrometheusRuleSpec{Groups: []PrometheusRuleGroup{{Name: "test-group"}}},
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parsedURL, err := url.Parse(r.RequestURI)
+		if err != nil {
+			t.Fatalf("failed to parse request URI: %v", err)
+		}
+		if got := parsedURL.Query().Get("dataset"); got != "iac-tests" {
+			t.Errorf("expected dataset query param %q, got %q", "iac-tests", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ds := "iac-tests"
+	_, err = client.CreateRecordingRule(context.Background(), &rule, &ds)
+	if err != nil {
+		t.Fatalf("CreateRecordingRule failed: %v", err)
+	}
+}
+
+func TestUpdateRecordingRule_Dataset(t *testing.T) {
+	rule := RecordingRule{
+		ApiVersion: "monitoring.coreos.com/v1",
+		Kind:       "PrometheusRule",
+		Metadata:   PrometheusRuleMetadata{Name: "updated-rule"},
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parsedURL, err := url.Parse(r.RequestURI)
+		if err != nil {
+			t.Fatalf("failed to parse request URI: %v", err)
+		}
+		if got := parsedURL.Query().Get("dataset"); got != "iac-tests" {
+			t.Errorf("expected dataset query param %q, got %q", "iac-tests", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ds := "iac-tests"
+	_, err = client.UpdateRecordingRule(context.Background(), "rr-123", &rule, &ds)
+	if err != nil {
+		t.Fatalf("UpdateRecordingRule failed: %v", err)
+	}
+}
+
+func TestListRecordingRules_Dataset(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parsedURL, err := url.Parse(r.RequestURI)
+		if err != nil {
+			t.Fatalf("failed to parse request URI: %v", err)
+		}
+		if got := parsedURL.Query().Get("dataset"); got != "iac-tests" {
+			t.Errorf("expected dataset query param %q, got %q", "iac-tests", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode([]RecordingRule{})
+	}))
+	defer server.Close()
+
+	client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ds := "iac-tests"
+	_, err = client.ListRecordingRules(context.Background(), &ds)
+	if err != nil {
+		t.Fatalf("ListRecordingRules failed: %v", err)
+	}
+}
+
+func TestGetRecordingRule_Dataset(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parsedURL, err := url.Parse(r.RequestURI)
+		if err != nil {
+			t.Fatalf("failed to parse request URI: %v", err)
+		}
+		if got := parsedURL.Query().Get("dataset"); got != "iac-tests" {
+			t.Errorf("expected dataset query param %q, got %q", "iac-tests", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(RecordingRule{
+			ApiVersion: "monitoring.coreos.com/v1",
+			Kind:       "PrometheusRule",
+			Metadata:   PrometheusRuleMetadata{Name: "rule-1"},
+		})
+	}))
+	defer server.Close()
+
+	client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ds := "iac-tests"
+	_, err = client.GetRecordingRule(context.Background(), "rr-123", &ds)
+	if err != nil {
+		t.Fatalf("GetRecordingRule failed: %v", err)
+	}
+}
+
+func TestDeleteRecordingRule_Dataset(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parsedURL, err := url.Parse(r.RequestURI)
+		if err != nil {
+			t.Fatalf("failed to parse request URI: %v", err)
+		}
+		if got := parsedURL.Query().Get("dataset"); got != "iac-tests" {
+			t.Errorf("expected dataset query param %q, got %q", "iac-tests", got)
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ds := "iac-tests"
+	err = client.DeleteRecordingRule(context.Background(), "rr-123", &ds)
+	if err != nil {
+		t.Fatalf("DeleteRecordingRule failed: %v", err)
 	}
 }
 
