@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.11.1
+
+
+### Bug Fixes
+- use the dataset parameter for /api/recording-rules
+
 ## v1.11.0
 
 
