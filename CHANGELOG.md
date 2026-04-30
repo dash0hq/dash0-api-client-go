@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.12.0
+
+
+### Features
+- spam filter support
+
 ## v1.11.1
 
 
