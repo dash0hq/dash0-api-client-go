@@ -92,6 +92,14 @@ type Client interface {
 	DeleteNotificationChannel(ctx context.Context, originOrID string) error
 	ListNotificationChannelsIter(ctx context.Context) *Iter[NotificationChannelDefinition]
 
+	// Spam Filters
+	ListSpamFilters(ctx context.Context, dataset *string) ([]*SpamFilter, error)
+	GetSpamFilter(ctx context.Context, originOrID string, dataset *string) (*SpamFilter, error)
+	CreateSpamFilter(ctx context.Context, filter *SpamFilter, dataset *string) (*SpamFilter, error)
+	UpdateSpamFilter(ctx context.Context, originOrID string, filter *SpamFilter, dataset *string) (*SpamFilter, error)
+	DeleteSpamFilter(ctx context.Context, originOrID string, dataset *string) error
+	ListSpamFiltersIter(ctx context.Context, dataset *string) *Iter[SpamFilter]
+
 	// Spans
 	GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSpansResponse, error)
 	GetSpansIter(ctx context.Context, request *GetSpansRequest) *Iter[ResourceSpans]

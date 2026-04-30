@@ -93,6 +93,14 @@ type MockClient struct {
 	DeleteNotificationChannelFunc    func(ctx context.Context, originOrID string) error
 	ListNotificationChannelsIterFunc func(ctx context.Context) *dash0.Iter[dash0.NotificationChannelDefinition]
 
+	// Spam Filters
+	ListSpamFiltersFunc     func(ctx context.Context, dataset *string) ([]*dash0.SpamFilter, error)
+	GetSpamFilterFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.SpamFilter, error)
+	CreateSpamFilterFunc    func(ctx context.Context, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error)
+	UpdateSpamFilterFunc    func(ctx context.Context, originOrID string, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error)
+	DeleteSpamFilterFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListSpamFiltersIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilter]
+
 	// Spans
 	GetSpansFunc     func(ctx context.Context, request *dash0.GetSpansRequest) (*dash0.GetSpansResponse, error)
 	GetSpansIterFunc func(ctx context.Context, request *dash0.GetSpansRequest) *dash0.Iter[dash0.ResourceSpans]
@@ -509,6 +517,50 @@ func (m *MockClient) DeleteNotificationChannel(ctx context.Context, originOrID s
 func (m *MockClient) ListNotificationChannelsIter(ctx context.Context) *dash0.Iter[dash0.NotificationChannelDefinition] {
 	if m.ListNotificationChannelsIterFunc != nil {
 		return m.ListNotificationChannelsIterFunc(ctx)
+	}
+	return nil
+}
+
+// Spam Filters
+
+func (m *MockClient) ListSpamFilters(ctx context.Context, dataset *string) ([]*dash0.SpamFilter, error) {
+	if m.ListSpamFiltersFunc != nil {
+		return m.ListSpamFiltersFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetSpamFilter(ctx context.Context, originOrID string, dataset *string) (*dash0.SpamFilter, error) {
+	if m.GetSpamFilterFunc != nil {
+		return m.GetSpamFilterFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateSpamFilter(ctx context.Context, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error) {
+	if m.CreateSpamFilterFunc != nil {
+		return m.CreateSpamFilterFunc(ctx, filter, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateSpamFilter(ctx context.Context, originOrID string, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error) {
+	if m.UpdateSpamFilterFunc != nil {
+		return m.UpdateSpamFilterFunc(ctx, originOrID, filter, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteSpamFilter(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteSpamFilterFunc != nil {
+		return m.DeleteSpamFilterFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListSpamFiltersIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilter] {
+	if m.ListSpamFiltersIterFunc != nil {
+		return m.ListSpamFiltersIterFunc(ctx, dataset)
 	}
 	return nil
 }

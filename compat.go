@@ -34,18 +34,63 @@ package dash0
 // [ViewTypeResources], [ViewTypeServices], [ViewTypeSpans], [ViewTypeSql],
 // [ViewTypeWebEvents]).
 // The old names still work but are deprecated.
+//
+// # Migration guide (v1.9.x to <NEXT_RELEASE>)
+//
+// [SignalToMetricsSource] was replaced by the shared [CrdSource] type.
+// The old type and constants ([SignalToMetricsSourceApi],
+// [SignalToMetricsSourceOperator], [SignalToMetricsSourceTerraform],
+// [SignalToMetricsSourceUi]) still work as deprecated aliases.
 
-// Deprecated: since v1.6.0. Use [DashboardSourceApi] instead.
-const Api = DashboardSourceApi
+// DashboardSource is a deprecated alias for [CrdSource].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [CrdSource] instead.
+type DashboardSource = CrdSource
 
-// Deprecated: since v1.6.0. Use [DashboardSourceOperator] instead.
-const Operator = DashboardSourceOperator
+// DashboardSourceApi is a deprecated alias for [Api].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Api] instead.
+const DashboardSourceApi = Api
 
-// Deprecated: since v1.6.0. Use [DashboardSourceTerraform] instead.
-const Terraform = DashboardSourceTerraform
+// DashboardSourceOperator is a deprecated alias for [Operator].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Operator] instead.
+const DashboardSourceOperator = Operator
 
-// Deprecated: since v1.6.0. Use [DashboardSourceUi] instead.
-const Ui = DashboardSourceUi
+// DashboardSourceTerraform is a deprecated alias for [Terraform].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Terraform] instead.
+const DashboardSourceTerraform = Terraform
+
+// DashboardSourceUi is a deprecated alias for [Ui].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Ui] instead.
+const DashboardSourceUi = Ui
+
+// SignalToMetricsSource is a deprecated alias for [CrdSource].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [CrdSource] instead.
+type SignalToMetricsSource = CrdSource
+
+// SignalToMetricsSourceApi is a deprecated alias for [Api].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Api] instead.
+const SignalToMetricsSourceApi = Api
+
+// SignalToMetricsSourceOperator is a deprecated alias for [Operator].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Operator] instead.
+const SignalToMetricsSourceOperator = Operator
+
+// SignalToMetricsSourceTerraform is a deprecated alias for [Terraform].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Terraform] instead.
+const SignalToMetricsSourceTerraform = Terraform
+
+// SignalToMetricsSourceUi is a deprecated alias for [Ui].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Ui] instead.
+const SignalToMetricsSourceUi = Ui
 
 // Deprecated: since v1.9.0. Use [ViewTypeFailedChecks] instead.
 const FailedChecks = ViewTypeFailedChecks

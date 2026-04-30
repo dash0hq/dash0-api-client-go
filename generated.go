@@ -47,17 +47,17 @@ const (
 	AxisScaleLog10  AxisScale = "log10"
 )
 
+// Defines values for CrdSource.
+const (
+	Api       CrdSource = "api"
+	Operator  CrdSource = "operator"
+	Terraform CrdSource = "terraform"
+	Ui        CrdSource = "ui"
+)
+
 // Defines values for DashboardDefinitionKind.
 const (
 	Dashboard DashboardDefinitionKind = "Dashboard"
-)
-
-// Defines values for DashboardSource.
-const (
-	DashboardSourceApi       DashboardSource = "api"
-	DashboardSourceOperator  DashboardSource = "operator"
-	DashboardSourceTerraform DashboardSource = "terraform"
-	DashboardSourceUi        DashboardSource = "ui"
 )
 
 // Defines values for DatasetRestriction.
@@ -260,12 +260,15 @@ const (
 	SignalToMetricsSignalTypeSpans SignalToMetricsSignalType = "spans"
 )
 
-// Defines values for SignalToMetricsSource.
+// Defines values for SpamFilterAnnotationsDash0Comenabled.
 const (
-	SignalToMetricsSourceApi       SignalToMetricsSource = "api"
-	SignalToMetricsSourceOperator  SignalToMetricsSource = "operator"
-	SignalToMetricsSourceTerraform SignalToMetricsSource = "terraform"
-	SignalToMetricsSourceUi        SignalToMetricsSource = "ui"
+	False SpamFilterAnnotationsDash0Comenabled = "false"
+	True  SpamFilterAnnotationsDash0Comenabled = "true"
+)
+
+// Defines values for SpamFilterDefinitionKind.
+const (
+	Dash0SpamFilter SpamFilterDefinitionKind = "Dash0SpamFilter"
 )
 
 // Defines values for SslCertificateAssertionKind.
@@ -348,6 +351,16 @@ const (
 	Dash0Team TeamDefinitionKind = "Dash0Team"
 )
 
+// Defines values for TelemetryFilterContext.
+const (
+	TelemetryFilterContextDatapoint TelemetryFilterContext = "datapoint"
+	TelemetryFilterContextLog       TelemetryFilterContext = "log"
+	TelemetryFilterContextMetric    TelemetryFilterContext = "metric"
+	TelemetryFilterContextSpan      TelemetryFilterContext = "span"
+	TelemetryFilterContextSpanEvent TelemetryFilterContext = "span_event"
+	TelemetryFilterContextWebEvent  TelemetryFilterContext = "web_event"
+)
+
 // Defines values for TimingAssertionKind.
 const (
 	Timing TimingAssertionKind = "timing"
@@ -397,15 +410,19 @@ const (
 
 // Defines values for ViewType.
 const (
-	ViewTypeFailedChecks ViewType = "failed_checks"
-	ViewTypeLogs         ViewType = "logs"
-	ViewTypeMetrics      ViewType = "metrics"
-	ViewTypeProfiles     ViewType = "profiles"
-	ViewTypeResources    ViewType = "resources"
-	ViewTypeServices     ViewType = "services"
-	ViewTypeSpans        ViewType = "spans"
-	ViewTypeSql          ViewType = "sql"
-	ViewTypeWebEvents    ViewType = "web_events"
+	ViewTypeFailedChecks        ViewType = "failed_checks"
+	ViewTypeGcpCloudRunJobs     ViewType = "gcp_cloud_run_jobs"
+	ViewTypeGcpCloudRunServices ViewType = "gcp_cloud_run_services"
+	ViewTypeGcpCloudStorage     ViewType = "gcp_cloud_storage"
+	ViewTypeGcpPubsub           ViewType = "gcp_pubsub"
+	ViewTypeLogs                ViewType = "logs"
+	ViewTypeMetrics             ViewType = "metrics"
+	ViewTypeProfiles            ViewType = "profiles"
+	ViewTypeResources           ViewType = "resources"
+	ViewTypeServices            ViewType = "services"
+	ViewTypeSpans               ViewType = "spans"
+	ViewTypeSql                 ViewType = "sql"
+	ViewTypeWebEvents           ViewType = "web_events"
 )
 
 // Defines values for ViewVisualizationMetric.
@@ -619,6 +636,13 @@ type CheckThresholds struct {
 	Failed *float64 `json:"failed,omitempty"`
 }
 
+// CrdSource Origin of a Dash0 resource.
+// - `ui`: created interactively in the Dash0 UI.
+// - `terraform`: managed via the Dash0 Terraform provider.
+// - `operator`: managed via the Dash0 Kubernetes operator.
+// - `api`: created directly through the internal API.
+type CrdSource string
+
 // Cursor The cursor to another set of results. The value of this field is opaque to the
 // client and may be used as a parameter to the next request to get the another set of results.
 // Cursors do not implement any ordering.
@@ -655,8 +679,12 @@ type DashboardAnnotations struct {
 	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 
-	// Dash0Comsource The source that created the dashboard.
-	Dash0Comsource *DashboardSource `json:"dash0.com/source,omitempty"`
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
 // DashboardApiListItem defines model for DashboardApiListItem.
@@ -708,9 +736,6 @@ type DashboardMetadataExtensions struct {
 	Origin *string   `json:"origin,omitempty"`
 	Tags   *[]string `json:"tags,omitempty"`
 }
-
-// DashboardSource The source that created the dashboard.
-type DashboardSource string
 
 // Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
 type Dataset = string
@@ -886,6 +911,11 @@ type GetSignalToMetricsResponse struct {
 	SignalToMetrics []SignalToMetricsDefinition `json:"signalToMetrics"`
 }
 
+// GetSpamFiltersResponse defines model for GetSpamFiltersResponse.
+type GetSpamFiltersResponse struct {
+	SpamFilters []SpamFilterDefinition `json:"spamFilters"`
+}
+
 // GetSpansRequest defines model for GetSpansRequest.
 type GetSpansRequest struct {
 	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
@@ -945,6 +975,33 @@ type GetTeamResponse struct {
 	SyntheticChecks []AccessibleAsset  `json:"syntheticChecks"`
 	Team            TeamDefinition     `json:"team"`
 	Views           []AccessibleAsset  `json:"views"`
+}
+
+// GetTraceRequest defines model for GetTraceRequest.
+type GetTraceRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset `json:"dataset,omitempty"`
+
+	// IncludeLinkedTraces If true, recursively fetches all traces referenced via forward links (dash0ForwardLinks)
+	// and returns them in `additionalResourceSpans`. Implies includeOTLPSchemaExtensions=true.
+	IncludeLinkedTraces *bool `json:"includeLinkedTraces,omitempty"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange *TimeReferenceRange `json:"timeRange,omitempty"`
+	TraceId   string              `json:"traceId"`
+}
+
+// GetTraceResponse Response for the `GetTrace` API. The response contains the spans and logs that match the request.
+//
+// This API deliberately reuses the full OTLP JSON format for spans and logs. This is done to aid compatibility
+// with existing OTLP consumers.
+type GetTraceResponse struct {
+	// AdditionalResourceSpans Resource spans from linked traces. Only populated when includeLinkedTraces=true.
+	AdditionalResourceSpans      *[]ResourceSpans              `json:"additionalResourceSpans,omitempty"`
+	ResourceLogs                 []ResourceLogs                `json:"resourceLogs"`
+	ResourceSpans                []ResourceSpans               `json:"resourceSpans"`
+	SyntheticCheckAttemptDetails *SyntheticCheckAttemptDetails `json:"syntheticCheckAttemptDetails,omitempty"`
+	WebEvents                    []ResourceLogs                `json:"webEvents"`
 }
 
 // GoogleChatWebhookConfig defines model for GoogleChatWebhookConfig.
@@ -1293,6 +1350,13 @@ type NotificationChannelLabels struct {
 
 	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created channels; non-empty for channels created via the internal API.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
 // NotificationChannelMetadata defines model for NotificationChannelMetadata.
@@ -1633,6 +1697,9 @@ type PrometheusAlertRule struct {
 	// to Prometheus alerting rules' "labels" field.
 	Labels *map[string]string `json:"labels,omitempty"`
 
+	// Metadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
+	Metadata *PrometheusAlertRuleMetadata `json:"metadata,omitempty"`
+
 	// Name Human-readable and templatable name for the check. In Prometheus alerting rules this is called "alert".
 	Name string `json:"name"`
 
@@ -1679,6 +1746,33 @@ type PrometheusAlertRuleApiListItem struct {
 
 	// Origin User defined origin for getting/updating/deleting the alert rule through the API.
 	Origin *string `json:"origin,omitempty"`
+
+	// Source Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Source *CrdSource `json:"source,omitempty"`
+}
+
+// PrometheusAlertRuleMetadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
+type PrometheusAlertRuleMetadata struct {
+	// Labels Server-derived labels that apply to the alert-rule resource itself, not to the
+	// emitted alert. Currently includes `dash0.com/source`
+	// (`ui` / `terraform` / `operator` / `api`) when the origin is known.
+	Labels *PrometheusAlertRuleMetadataLabels `json:"labels,omitempty"`
+}
+
+// PrometheusAlertRuleMetadataLabels Server-derived labels that apply to the alert-rule resource itself, not to the
+// emitted alert. Currently includes `dash0.com/source`
+// (`ui` / `terraform` / `operator` / `api`) when the origin is known.
+type PrometheusAlertRuleMetadataLabels struct {
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
 // PrometheusRule A resource following the monitoring.coreos.com/v1 PrometheusRule CRD format.
@@ -1713,6 +1807,9 @@ type PrometheusRuleDefinition struct {
 
 	// Annotations Annotations to attach to alerts. Only applicable to alerting rules.
 	// Commonly used keys include `summary` and `description`.
+	//
+	// Dash0 also recognizes:
+	// - `dash0.com/notification-channel-ids`: Comma-separated list of notification channel UUIDs to notify when the alert fires.
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
 	// Expr PromQL expression to evaluate.
@@ -2000,7 +2097,14 @@ type SamplingLabels struct {
 	Dash0Comdataset *string            `json:"dash0.com/dataset,omitempty"`
 	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
-	Dash0Comversion *string            `json:"dash0.com/version,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
 
 // SamplingMetadata defines model for SamplingMetadata.
@@ -2111,11 +2215,17 @@ type SignalToMetricsDisplay struct {
 
 // SignalToMetricsLabels defines model for SignalToMetricsLabels.
 type SignalToMetricsLabels struct {
-	Dash0Comdataset *string                `json:"dash0.com/dataset,omitempty"`
-	Dash0Comid      *string                `json:"dash0.com/id,omitempty"`
-	Dash0Comorigin  *string                `json:"dash0.com/origin,omitempty"`
-	Dash0Comsource  *SignalToMetricsSource `json:"dash0.com/source,omitempty"`
-	Dash0Comversion *string                `json:"dash0.com/version,omitempty"`
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
 
 // SignalToMetricsMatch defines model for SignalToMetricsMatch.
@@ -2160,15 +2270,37 @@ type SignalToMetricsResponse = SignalToMetricsDefinition
 // SignalToMetricsSignalType defines model for SignalToMetricsSignalType.
 type SignalToMetricsSignalType string
 
-// SignalToMetricsSource defines model for SignalToMetricsSource.
-type SignalToMetricsSource string
-
 // SignalToMetricsSpec defines model for SignalToMetricsSpec.
 type SignalToMetricsSpec struct {
 	Display SignalToMetricsDisplay `json:"display"`
 	Enabled bool                   `json:"enabled"`
 	Match   SignalToMetricsMatch   `json:"match"`
 	Output  SignalToMetricsOutput  `json:"output"`
+}
+
+// SignalToMetricsTestRequest defines model for SignalToMetricsTestRequest.
+type SignalToMetricsTestRequest struct {
+	Definition SignalToMetricsDefinition `json:"definition"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange *TimeReferenceRange `json:"timeRange,omitempty"`
+}
+
+// SignalToMetricsTestResponse defines model for SignalToMetricsTestResponse.
+type SignalToMetricsTestResponse struct {
+	// ExecutionTime A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	ExecutionTime FixedTime `json:"executionTime"`
+
+	// MatchedCount Number of signals (spans or logs) matching `spec.match.filters` over the
+	// evaluated time window.
+	MatchedCount int64     `json:"matchedCount"`
+	TimeRange    TimeRange `json:"timeRange"`
 }
 
 // SlackBotConfig defines model for SlackBotConfig.
@@ -2181,6 +2313,82 @@ type SlackBotConfig struct {
 type SlackConfig struct {
 	Channel    string `json:"channel"`
 	WebhookURL string `json:"webhookURL"`
+}
+
+// SpamFilterAnnotations Spam filters use hard delete (removed from the dataset settings array),
+// so there is no `dash0.com/deleted-at` annotation. Timestamps
+// (`created-at`, `updated-at`) are not tracked because filters are stored
+// as elements of a JSONB array inside the dataset settings, which has no
+// per-element timestamp support.
+type SpamFilterAnnotations struct {
+	// Dash0Comenabled Whether this spam filter is active. Defaults to `"true"`.
+	// When set to `"false"`, the filter is skipped.
+	Dash0Comenabled *SpamFilterAnnotationsDash0Comenabled `json:"dash0.com/enabled,omitempty"`
+}
+
+// SpamFilterAnnotationsDash0Comenabled Whether this spam filter is active. Defaults to `"true"`.
+// When set to `"false"`, the filter is skipped.
+type SpamFilterAnnotationsDash0Comenabled string
+
+// SpamFilterCreateRequest defines model for SpamFilterCreateRequest.
+type SpamFilterCreateRequest = SpamFilterDefinition
+
+// SpamFilterDefinition defines model for SpamFilterDefinition.
+type SpamFilterDefinition struct {
+	Kind     SpamFilterDefinitionKind `json:"kind"`
+	Metadata SpamFilterMetadata       `json:"metadata"`
+
+	// Spec The spam filter specification. The `filter` field defines structured criteria
+	// that the server compiles into an OTTL condition for evaluation.
+	Spec SpamFilterSpec `json:"spec"`
+}
+
+// SpamFilterDefinitionKind defines model for SpamFilterDefinition.Kind.
+type SpamFilterDefinitionKind string
+
+// SpamFilterLabels defines model for SpamFilterLabels.
+type SpamFilterLabels struct {
+	Custom          *map[string]string `json:"custom,omitempty"`
+	Dash0Comdataset *string            `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for this spam filter. Must be unique per
+	// organization and dataset when set. Used by Infrastructure-as-Code
+	// tools (Terraform, Kubernetes operator). Auto-generated as
+	// `api-<uuid>` on POST if not provided.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// SpamFilterMetadata defines model for SpamFilterMetadata.
+type SpamFilterMetadata struct {
+	// Annotations Spam filters use hard delete (removed from the dataset settings array),
+	// so there is no `dash0.com/deleted-at` annotation. Timestamps
+	// (`created-at`, `updated-at`) are not tracked because filters are stored
+	// as elements of a JSONB array inside the dataset settings, which has no
+	// per-element timestamp support.
+	Annotations *SpamFilterAnnotations `json:"annotations,omitempty"`
+	Labels      *SpamFilterLabels      `json:"labels,omitempty"`
+
+	// Name Human-readable name for the spam filter.
+	Name string `json:"name"`
+}
+
+// SpamFilterResponse defines model for SpamFilterResponse.
+type SpamFilterResponse = SpamFilterDefinition
+
+// SpamFilterSpec The spam filter specification. The `filter` field defines structured criteria
+// that the server compiles into an OTTL condition for evaluation.
+type SpamFilterSpec struct {
+	// Contexts The signal types this spam filter applies to.
+	Contexts []TelemetryFilterContext `json:"contexts"`
+	Filter   FilterCriteria           `json:"filter"`
 }
 
 // Span defines model for Span.
@@ -2491,7 +2699,14 @@ type SyntheticCheckLabels struct {
 	Dash0Comdataset *string            `json:"dash0.com/dataset,omitempty"`
 	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
-	Dash0Comversion *string            `json:"dash0.com/version,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
 
 // SyntheticCheckLocation A geographic location identifier from which synthetic checks can be executed.
@@ -2622,6 +2837,13 @@ type SyntheticChecksApiListItem struct {
 	Id      string  `json:"id"`
 	Name    *string `json:"name,omitempty"`
 	Origin  *string `json:"origin,omitempty"`
+
+	// Source Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Source *CrdSource `json:"source,omitempty"`
 }
 
 // SyntheticHttpCheckAssertions defines model for SyntheticHttpCheckAssertions.
@@ -2669,6 +2891,13 @@ type TeamDisplay struct {
 type TeamLabels struct {
 	Dash0Comid     *string `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
 // TeamMetadata defines model for TeamMetadata.
@@ -2691,16 +2920,26 @@ type TeamsListItem struct {
 
 	// Members A sample of five members. You can inspect the total member count via `totalMemberCount`. This array
 	// is restricted to at most five members, because this could otherwise be too much data.
-	Members          []MemberDefinition `json:"members"`
-	Name             string             `json:"name"`
-	Origin           *string            `json:"origin,omitempty"`
-	TotalMemberCount int                `json:"totalMemberCount"`
+	Members []MemberDefinition `json:"members"`
+	Name    string             `json:"name"`
+	Origin  *string            `json:"origin,omitempty"`
+
+	// Source Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Source           *CrdSource `json:"source,omitempty"`
+	TotalMemberCount int        `json:"totalMemberCount"`
 }
 
 // TeamsWebhookConfig defines model for TeamsWebhookConfig.
 type TeamsWebhookConfig struct {
 	Url string `json:"url"`
 }
+
+// TelemetryFilterContext defines model for TelemetryFilterContext.
+type TelemetryFilterContext string
 
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
@@ -3114,6 +3353,11 @@ type PostApiSignalToMetricsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// PostApiSignalToMetricsTestParams defines parameters for PostApiSignalToMetricsTest.
+type PostApiSignalToMetricsTestParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // DeleteApiSignalToMetricsOriginOrIdParams defines parameters for DeleteApiSignalToMetricsOriginOrId.
 type DeleteApiSignalToMetricsOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -3126,6 +3370,31 @@ type GetApiSignalToMetricsOriginOrIdParams struct {
 
 // PutApiSignalToMetricsOriginOrIdParams defines parameters for PutApiSignalToMetricsOriginOrId.
 type PutApiSignalToMetricsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiSpamFiltersParams defines parameters for GetApiSpamFilters.
+type GetApiSpamFiltersParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PostApiSpamFiltersParams defines parameters for PostApiSpamFilters.
+type PostApiSpamFiltersParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiSpamFiltersOriginOrIdParams defines parameters for DeleteApiSpamFiltersOriginOrId.
+type DeleteApiSpamFiltersOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiSpamFiltersOriginOrIdParams defines parameters for GetApiSpamFiltersOriginOrId.
+type GetApiSpamFiltersOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiSpamFiltersOriginOrIdParams defines parameters for PutApiSpamFiltersOriginOrId.
+type PutApiSpamFiltersOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
@@ -3257,8 +3526,17 @@ type PutApiSamplingRulesOriginOrIdJSONRequestBody = SamplingRuleResponse
 // PostApiSignalToMetricsJSONRequestBody defines body for PostApiSignalToMetrics for application/json ContentType.
 type PostApiSignalToMetricsJSONRequestBody = SignalToMetricsCreateRequest
 
+// PostApiSignalToMetricsTestJSONRequestBody defines body for PostApiSignalToMetricsTest for application/json ContentType.
+type PostApiSignalToMetricsTestJSONRequestBody = SignalToMetricsTestRequest
+
 // PutApiSignalToMetricsOriginOrIdJSONRequestBody defines body for PutApiSignalToMetricsOriginOrId for application/json ContentType.
 type PutApiSignalToMetricsOriginOrIdJSONRequestBody = SignalToMetricsResponse
+
+// PostApiSpamFiltersJSONRequestBody defines body for PostApiSpamFilters for application/json ContentType.
+type PostApiSpamFiltersJSONRequestBody = SpamFilterCreateRequest
+
+// PutApiSpamFiltersOriginOrIdJSONRequestBody defines body for PutApiSpamFiltersOriginOrId for application/json ContentType.
+type PutApiSpamFiltersOriginOrIdJSONRequestBody = SpamFilterResponse
 
 // PostApiSpansJSONRequestBody defines body for PostApiSpans for application/json ContentType.
 type PostApiSpansJSONRequestBody = GetSpansRequest
@@ -3283,6 +3561,9 @@ type PutApiTeamsOriginOrIdDisplayJSONRequestBody = TeamDisplay
 
 // PostApiTeamsOriginOrIdMembersJSONRequestBody defines body for PostApiTeamsOriginOrIdMembers for application/json ContentType.
 type PostApiTeamsOriginOrIdMembersJSONRequestBody = AddTeamMembersRequest
+
+// PostApiTraceDetailsJSONRequestBody defines body for PostApiTraceDetails for application/json ContentType.
+type PostApiTraceDetailsJSONRequestBody = GetTraceRequest
 
 // PostApiViewsJSONRequestBody defines body for PostApiViews for application/json ContentType.
 type PostApiViewsJSONRequestBody = ViewDefinition
@@ -4682,6 +4963,11 @@ type ClientInterface interface {
 
 	PostApiSignalToMetrics(ctx context.Context, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiSignalToMetricsTestWithBody request with any body
+	PostApiSignalToMetricsTestWithBody(ctx context.Context, params *PostApiSignalToMetricsTestParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSignalToMetricsTest(ctx context.Context, params *PostApiSignalToMetricsTestParams, body PostApiSignalToMetricsTestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiSignalToMetricsOriginOrId request
 	DeleteApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4692,6 +4978,25 @@ type ClientInterface interface {
 	PutApiSignalToMetricsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSpamFilters request
+	GetApiSpamFilters(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiSpamFiltersWithBody request with any body
+	PostApiSpamFiltersWithBody(ctx context.Context, params *PostApiSpamFiltersParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSpamFilters(ctx context.Context, params *PostApiSpamFiltersParams, body PostApiSpamFiltersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiSpamFiltersOriginOrId request
+	DeleteApiSpamFiltersOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSpamFiltersOriginOrId request
+	GetApiSpamFiltersOriginOrId(ctx context.Context, originOrId string, params *GetApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiSpamFiltersOriginOrIdWithBody request with any body
+	PutApiSpamFiltersOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiSpamFiltersOriginOrId(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, body PutApiSpamFiltersOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiSpansWithBody request with any body
 	PostApiSpansWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -4756,6 +5061,11 @@ type ClientInterface interface {
 
 	// DeleteApiTeamsOriginOrIdMembersMemberID request
 	DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTraceDetailsWithBody request with any body
+	PostApiTraceDetailsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiTraceDetails(ctx context.Context, body PostApiTraceDetailsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiViews request
 	GetApiViews(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5443,6 +5753,30 @@ func (c *generatedClient) PostApiSignalToMetrics(ctx context.Context, params *Po
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) PostApiSignalToMetricsTestWithBody(ctx context.Context, params *PostApiSignalToMetricsTestParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSignalToMetricsTestRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSignalToMetricsTest(ctx context.Context, params *PostApiSignalToMetricsTestParams, body PostApiSignalToMetricsTestJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSignalToMetricsTestRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) DeleteApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteApiSignalToMetricsOriginOrIdRequest(c.Server, originOrId, params)
 	if err != nil {
@@ -5481,6 +5815,90 @@ func (c *generatedClient) PutApiSignalToMetricsOriginOrIdWithBody(ctx context.Co
 
 func (c *generatedClient) PutApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiSignalToMetricsOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSpamFilters(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSpamFiltersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSpamFiltersWithBody(ctx context.Context, params *PostApiSpamFiltersParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSpamFiltersRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSpamFilters(ctx context.Context, params *PostApiSpamFiltersParams, body PostApiSpamFiltersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSpamFiltersRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiSpamFiltersOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiSpamFiltersOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSpamFiltersOriginOrId(ctx context.Context, originOrId string, params *GetApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSpamFiltersOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSpamFiltersOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSpamFiltersOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSpamFiltersOriginOrId(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, body PutApiSpamFiltersOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSpamFiltersOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5769,6 +6187,30 @@ func (c *generatedClient) PostApiTeamsOriginOrIdMembers(ctx context.Context, ori
 
 func (c *generatedClient) DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(c.Server, originOrId, memberID)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTraceDetailsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTraceDetailsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTraceDetails(ctx context.Context, body PostApiTraceDetailsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTraceDetailsRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -7995,6 +8437,68 @@ func NewPostApiSignalToMetricsRequestWithBody(server string, params *PostApiSign
 	return req, nil
 }
 
+// NewPostApiSignalToMetricsTestRequest calls the generic PostApiSignalToMetricsTest builder with application/json body
+func NewPostApiSignalToMetricsTestRequest(server string, params *PostApiSignalToMetricsTestParams, body PostApiSignalToMetricsTestJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSignalToMetricsTestRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiSignalToMetricsTestRequestWithBody generates requests for PostApiSignalToMetricsTest with any type of body
+func NewPostApiSignalToMetricsTestRequestWithBody(server string, params *PostApiSignalToMetricsTestParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/signal-to-metrics/test")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteApiSignalToMetricsOriginOrIdRequest generates requests for DeleteApiSignalToMetricsOriginOrId
 func NewDeleteApiSignalToMetricsOriginOrIdRequest(server string, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams) (*http.Request, error) {
 	var err error
@@ -8135,6 +8639,298 @@ func NewPutApiSignalToMetricsOriginOrIdRequestWithBody(server string, originOrId
 	}
 
 	operationPath := fmt.Sprintf("/api/signal-to-metrics/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiSpamFiltersRequest generates requests for GetApiSpamFilters
+func NewGetApiSpamFiltersRequest(server string, params *GetApiSpamFiltersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/spam-filters")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiSpamFiltersRequest calls the generic PostApiSpamFilters builder with application/json body
+func NewPostApiSpamFiltersRequest(server string, params *PostApiSpamFiltersParams, body PostApiSpamFiltersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSpamFiltersRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiSpamFiltersRequestWithBody generates requests for PostApiSpamFilters with any type of body
+func NewPostApiSpamFiltersRequestWithBody(server string, params *PostApiSpamFiltersParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/spam-filters")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiSpamFiltersOriginOrIdRequest generates requests for DeleteApiSpamFiltersOriginOrId
+func NewDeleteApiSpamFiltersOriginOrIdRequest(server string, originOrId string, params *DeleteApiSpamFiltersOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/spam-filters/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiSpamFiltersOriginOrIdRequest generates requests for GetApiSpamFiltersOriginOrId
+func NewGetApiSpamFiltersOriginOrIdRequest(server string, originOrId string, params *GetApiSpamFiltersOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/spam-filters/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiSpamFiltersOriginOrIdRequest calls the generic PutApiSpamFiltersOriginOrId builder with application/json body
+func NewPutApiSpamFiltersOriginOrIdRequest(server string, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, body PutApiSpamFiltersOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiSpamFiltersOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiSpamFiltersOriginOrIdRequestWithBody generates requests for PutApiSpamFiltersOriginOrId with any type of body
+func NewPutApiSpamFiltersOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/spam-filters/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -8885,6 +9681,46 @@ func NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(server string, originOrId
 	return req, nil
 }
 
+// NewPostApiTraceDetailsRequest calls the generic PostApiTraceDetails builder with application/json body
+func NewPostApiTraceDetailsRequest(server string, body PostApiTraceDetailsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTraceDetailsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiTraceDetailsRequestWithBody generates requests for PostApiTraceDetails with any type of body
+func NewPostApiTraceDetailsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/trace/details")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiViewsRequest generates requests for GetApiViews
 func NewGetApiViewsRequest(server string, params *GetApiViewsParams) (*http.Request, error) {
 	var err error
@@ -9626,6 +10462,11 @@ type ClientWithResponsesInterface interface {
 
 	PostApiSignalToMetricsWithResponse(ctx context.Context, params *PostApiSignalToMetricsParams, body PostApiSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsResponse, error)
 
+	// PostApiSignalToMetricsTestWithBodyWithResponse request with any body
+	PostApiSignalToMetricsTestWithBodyWithResponse(ctx context.Context, params *PostApiSignalToMetricsTestParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsTestResponse, error)
+
+	PostApiSignalToMetricsTestWithResponse(ctx context.Context, params *PostApiSignalToMetricsTestParams, body PostApiSignalToMetricsTestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsTestResponse, error)
+
 	// DeleteApiSignalToMetricsOriginOrIdWithResponse request
 	DeleteApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSignalToMetricsOriginOrIdResponse, error)
 
@@ -9636,6 +10477,25 @@ type ClientWithResponsesInterface interface {
 	PutApiSignalToMetricsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error)
 
 	PutApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error)
+
+	// GetApiSpamFiltersWithResponse request
+	GetApiSpamFiltersWithResponse(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*GetApiSpamFiltersResponse, error)
+
+	// PostApiSpamFiltersWithBodyWithResponse request with any body
+	PostApiSpamFiltersWithBodyWithResponse(ctx context.Context, params *PostApiSpamFiltersParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpamFiltersResponse, error)
+
+	PostApiSpamFiltersWithResponse(ctx context.Context, params *PostApiSpamFiltersParams, body PostApiSpamFiltersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSpamFiltersResponse, error)
+
+	// DeleteApiSpamFiltersOriginOrIdWithResponse request
+	DeleteApiSpamFiltersOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSpamFiltersOriginOrIdResponse, error)
+
+	// GetApiSpamFiltersOriginOrIdWithResponse request
+	GetApiSpamFiltersOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSpamFiltersOriginOrIdResponse, error)
+
+	// PutApiSpamFiltersOriginOrIdWithBodyWithResponse request with any body
+	PutApiSpamFiltersOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSpamFiltersOriginOrIdResponse, error)
+
+	PutApiSpamFiltersOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, body PutApiSpamFiltersOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSpamFiltersOriginOrIdResponse, error)
 
 	// PostApiSpansWithBodyWithResponse request with any body
 	PostApiSpansWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpansResponse, error)
@@ -9700,6 +10560,11 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse request
 	DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error)
+
+	// PostApiTraceDetailsWithBodyWithResponse request with any body
+	PostApiTraceDetailsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error)
+
+	PostApiTraceDetailsWithResponse(ctx context.Context, body PostApiTraceDetailsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error)
 
 	// GetApiViewsWithResponse request
 	GetApiViewsWithResponse(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*GetApiViewsResponse, error)
@@ -10590,6 +11455,30 @@ func (r PostApiSignalToMetricsResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiSignalToMetricsTestResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SignalToMetricsTestResponse
+	JSON400      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSignalToMetricsTestResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSignalToMetricsTestResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteApiSignalToMetricsOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -10654,6 +11543,124 @@ func (r PutApiSignalToMetricsOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiSignalToMetricsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSpamFiltersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetSpamFiltersResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSpamFiltersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSpamFiltersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiSpamFiltersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SpamFilterResponse
+	JSON400      *ErrorResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSpamFiltersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSpamFiltersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiSpamFiltersOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiSpamFiltersOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiSpamFiltersOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSpamFiltersOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SpamFilterResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSpamFiltersOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSpamFiltersOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiSpamFiltersOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SpamFilterResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiSpamFiltersOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiSpamFiltersOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11017,6 +12024,29 @@ func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiTraceDetailsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetTraceResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTraceDetailsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTraceDetailsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -11697,6 +12727,23 @@ func (c *ClientWithResponses) PostApiSignalToMetricsWithResponse(ctx context.Con
 	return ParsePostApiSignalToMetricsResponse(rsp)
 }
 
+// PostApiSignalToMetricsTestWithBodyWithResponse request with arbitrary body returning *PostApiSignalToMetricsTestResponse
+func (c *ClientWithResponses) PostApiSignalToMetricsTestWithBodyWithResponse(ctx context.Context, params *PostApiSignalToMetricsTestParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsTestResponse, error) {
+	rsp, err := c.PostApiSignalToMetricsTestWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSignalToMetricsTestResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSignalToMetricsTestWithResponse(ctx context.Context, params *PostApiSignalToMetricsTestParams, body PostApiSignalToMetricsTestJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSignalToMetricsTestResponse, error) {
+	rsp, err := c.PostApiSignalToMetricsTest(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSignalToMetricsTestResponse(rsp)
+}
+
 // DeleteApiSignalToMetricsOriginOrIdWithResponse request returning *DeleteApiSignalToMetricsOriginOrIdResponse
 func (c *ClientWithResponses) DeleteApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSignalToMetricsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSignalToMetricsOriginOrIdResponse, error) {
 	rsp, err := c.DeleteApiSignalToMetricsOriginOrId(ctx, originOrId, params, reqEditors...)
@@ -11730,6 +12777,67 @@ func (c *ClientWithResponses) PutApiSignalToMetricsOriginOrIdWithResponse(ctx co
 		return nil, err
 	}
 	return ParsePutApiSignalToMetricsOriginOrIdResponse(rsp)
+}
+
+// GetApiSpamFiltersWithResponse request returning *GetApiSpamFiltersResponse
+func (c *ClientWithResponses) GetApiSpamFiltersWithResponse(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*GetApiSpamFiltersResponse, error) {
+	rsp, err := c.GetApiSpamFilters(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSpamFiltersResponse(rsp)
+}
+
+// PostApiSpamFiltersWithBodyWithResponse request with arbitrary body returning *PostApiSpamFiltersResponse
+func (c *ClientWithResponses) PostApiSpamFiltersWithBodyWithResponse(ctx context.Context, params *PostApiSpamFiltersParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpamFiltersResponse, error) {
+	rsp, err := c.PostApiSpamFiltersWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSpamFiltersResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSpamFiltersWithResponse(ctx context.Context, params *PostApiSpamFiltersParams, body PostApiSpamFiltersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSpamFiltersResponse, error) {
+	rsp, err := c.PostApiSpamFilters(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSpamFiltersResponse(rsp)
+}
+
+// DeleteApiSpamFiltersOriginOrIdWithResponse request returning *DeleteApiSpamFiltersOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiSpamFiltersOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSpamFiltersOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiSpamFiltersOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiSpamFiltersOriginOrIdResponse(rsp)
+}
+
+// GetApiSpamFiltersOriginOrIdWithResponse request returning *GetApiSpamFiltersOriginOrIdResponse
+func (c *ClientWithResponses) GetApiSpamFiltersOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSpamFiltersOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSpamFiltersOriginOrIdResponse, error) {
+	rsp, err := c.GetApiSpamFiltersOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSpamFiltersOriginOrIdResponse(rsp)
+}
+
+// PutApiSpamFiltersOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiSpamFiltersOriginOrIdResponse
+func (c *ClientWithResponses) PutApiSpamFiltersOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSpamFiltersOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSpamFiltersOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSpamFiltersOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiSpamFiltersOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSpamFiltersOriginOrIdParams, body PutApiSpamFiltersOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSpamFiltersOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSpamFiltersOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSpamFiltersOriginOrIdResponse(rsp)
 }
 
 // PostApiSpansWithBodyWithResponse request with arbitrary body returning *PostApiSpansResponse
@@ -11938,6 +13046,23 @@ func (c *ClientWithResponses) DeleteApiTeamsOriginOrIdMembersMemberIDWithRespons
 		return nil, err
 	}
 	return ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp)
+}
+
+// PostApiTraceDetailsWithBodyWithResponse request with arbitrary body returning *PostApiTraceDetailsResponse
+func (c *ClientWithResponses) PostApiTraceDetailsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error) {
+	rsp, err := c.PostApiTraceDetailsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTraceDetailsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiTraceDetailsWithResponse(ctx context.Context, body PostApiTraceDetailsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error) {
+	rsp, err := c.PostApiTraceDetails(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTraceDetailsResponse(rsp)
 }
 
 // GetApiViewsWithResponse request returning *GetApiViewsResponse
@@ -13282,6 +14407,46 @@ func ParsePostApiSignalToMetricsResponse(rsp *http.Response) (*PostApiSignalToMe
 	return response, nil
 }
 
+// ParsePostApiSignalToMetricsTestResponse parses an HTTP response from a PostApiSignalToMetricsTestWithResponse call
+func ParsePostApiSignalToMetricsTestResponse(rsp *http.Response) (*PostApiSignalToMetricsTestResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSignalToMetricsTestResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignalToMetricsTestResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteApiSignalToMetricsOriginOrIdResponse parses an HTTP response from a DeleteApiSignalToMetricsOriginOrIdWithResponse call
 func ParseDeleteApiSignalToMetricsOriginOrIdResponse(rsp *http.Response) (*DeleteApiSignalToMetricsOriginOrIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -13364,6 +14529,192 @@ func ParsePutApiSignalToMetricsOriginOrIdResponse(rsp *http.Response) (*PutApiSi
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest SignalToMetricsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSpamFiltersResponse parses an HTTP response from a GetApiSpamFiltersWithResponse call
+func ParseGetApiSpamFiltersResponse(rsp *http.Response) (*GetApiSpamFiltersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSpamFiltersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetSpamFiltersResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiSpamFiltersResponse parses an HTTP response from a PostApiSpamFiltersWithResponse call
+func ParsePostApiSpamFiltersResponse(rsp *http.Response) (*PostApiSpamFiltersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSpamFiltersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SpamFilterResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiSpamFiltersOriginOrIdResponse parses an HTTP response from a DeleteApiSpamFiltersOriginOrIdWithResponse call
+func ParseDeleteApiSpamFiltersOriginOrIdResponse(rsp *http.Response) (*DeleteApiSpamFiltersOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiSpamFiltersOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSpamFiltersOriginOrIdResponse parses an HTTP response from a GetApiSpamFiltersOriginOrIdWithResponse call
+func ParseGetApiSpamFiltersOriginOrIdResponse(rsp *http.Response) (*GetApiSpamFiltersOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSpamFiltersOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SpamFilterResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiSpamFiltersOriginOrIdResponse parses an HTTP response from a PutApiSpamFiltersOriginOrIdWithResponse call
+func ParsePutApiSpamFiltersOriginOrIdResponse(rsp *http.Response) (*PutApiSpamFiltersOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiSpamFiltersOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SpamFilterResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -13869,6 +15220,39 @@ func ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp *http.Response) (*
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTraceDetailsResponse parses an HTTP response from a PostApiTraceDetailsWithResponse call
+func ParsePostApiTraceDetailsResponse(rsp *http.Response) (*PostApiTraceDetailsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTraceDetailsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetTraceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {

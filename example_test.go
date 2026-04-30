@@ -595,6 +595,83 @@ func ExampleFormatDuration() {
 	// 2h
 }
 
+// Spam filter helpers
+
+func ExampleGetSpamFilterName() {
+	filter := &dash0.SpamFilter{
+		Metadata: dash0.SpamFilterMetadata{Name: "Drop noisy health checks"},
+	}
+	fmt.Println(dash0.GetSpamFilterName(filter))
+	// Output: Drop noisy health checks
+}
+
+func ExampleGetSpamFilterID() {
+	filter := &dash0.SpamFilter{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comid: dash0.Ptr("sf-123")},
+		},
+	}
+	fmt.Println(dash0.GetSpamFilterID(filter))
+	// Output: sf-123
+}
+
+func ExampleGetSpamFilterDataset() {
+	filter := &dash0.SpamFilter{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetSpamFilterDataset(filter))
+	// Output: production
+}
+
+func ExampleSetSpamFilterDataset() {
+	filter := &dash0.SpamFilter{}
+	dash0.SetSpamFilterDataset(filter, "production")
+	fmt.Println(*filter.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
+func ExampleSetSpamFilterID() {
+	filter := &dash0.SpamFilter{}
+	dash0.SetSpamFilterID(filter, "sf-456")
+	fmt.Println(*filter.Metadata.Labels.Dash0Comid)
+	// Output: sf-456
+}
+
+func ExampleSetSpamFilterIDIfAbsent() {
+	filter := &dash0.SpamFilter{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetSpamFilterIDIfAbsent(filter, "new-id")
+	fmt.Println(*filter.Metadata.Labels.Dash0Comid)
+	// Output: existing
+}
+
+func ExampleStripSpamFilterServerFields() {
+	filter := &dash0.SpamFilter{
+		Metadata: dash0.SpamFilterMetadata{Name: "Drop noisy health checks"},
+	}
+	dash0.SetSpamFilterID(filter, "sf-123")
+	dash0.StripSpamFilterServerFields(filter)
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleClearSpamFilterID() {
+	filter := &dash0.SpamFilter{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comid: dash0.Ptr("sf-123")},
+		},
+	}
+	dash0.ClearSpamFilterID(filter)
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
 // Notification channel helpers
 
 func ExampleGetNotificationChannelName() {
