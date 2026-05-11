@@ -115,3 +115,8 @@ const Sql = ViewTypeSql
 
 // Deprecated: since v1.9.0. Use [ViewTypeWebEvents] instead.
 const WebEvents = ViewTypeWebEvents
+
+// Dash0SpamFilter is a deprecated alias for [SpamFilterDefinitionKindDash0SpamFilter].
+//
+// Deprecated: since v1.12.1. Use [SpamFilterDefinitionKindDash0SpamFilter] instead.
+const Dash0SpamFilter = SpamFilterDefinitionKindDash0SpamFilter

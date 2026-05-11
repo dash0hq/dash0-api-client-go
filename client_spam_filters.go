@@ -46,7 +46,7 @@ func (c *client) GetSpamFilter(ctx context.Context, originOrID string, dataset *
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
-	return resp.JSON200, nil
+	return unwrapSpamFilterResponse(resp.JSON200, "get")
 }
 
 // CreateSpamFilter creates a new spam filter.
@@ -57,7 +57,11 @@ func (c *client) CreateSpamFilter(ctx context.Context, filter *SpamFilter, datas
 	params := &PostApiSpamFiltersParams{
 		Dataset: dataset,
 	}
-	resp, err := c.inner.PostApiSpamFiltersWithResponse(ctx, params, *filter)
+	var reqBody SpamFilterCreateRequest
+	if err := reqBody.FromSpamFilterDefinition(*filter); err != nil {
+		return nil, fmt.Errorf("dash0: failed to encode spam filter request: %w", err)
+	}
+	resp, err := c.inner.PostApiSpamFiltersWithResponse(ctx, params, reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: create spam filter failed: %w", err)
 	}
@@ -65,7 +69,7 @@ func (c *client) CreateSpamFilter(ctx context.Context, filter *SpamFilter, datas
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
 	if resp.JSON200 != nil {
-		return resp.JSON200, nil
+		return unwrapSpamFilterResponse(resp.JSON200, "create")
 	}
 	var created SpamFilter
 	if err := json.Unmarshal(resp.Body, &created); err != nil {
@@ -82,14 +86,32 @@ func (c *client) UpdateSpamFilter(ctx context.Context, originOrID string, filter
 	params := &PutApiSpamFiltersOriginOrIdParams{
 		Dataset: dataset,
 	}
-	resp, err := c.inner.PutApiSpamFiltersOriginOrIdWithResponse(ctx, originOrID, params, *filter)
+	var reqBody SpamFilterResponse
+	if err := reqBody.FromSpamFilterDefinition(*filter); err != nil {
+		return nil, fmt.Errorf("dash0: failed to encode spam filter request: %w", err)
+	}
+	resp, err := c.inner.PutApiSpamFiltersOriginOrIdWithResponse(ctx, originOrID, params, reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: update spam filter failed: %w", err)
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
-	return resp.JSON200, nil
+	return unwrapSpamFilterResponse(resp.JSON200, "update")
+}
+
+// unwrapSpamFilterResponse extracts the v1alpha1 SpamFilterDefinition shape from
+// the generated union response. The upstream spec models the response as a union
+// over v1alpha1 and v1alpha2 definitions; this SDK exposes the v1alpha1 shape.
+func unwrapSpamFilterResponse(resp *SpamFilterResponse, op string) (*SpamFilter, error) {
+	if resp == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
+	def, err := resp.AsSpamFilterDefinition()
+	if err != nil {
+		return nil, fmt.Errorf("dash0: failed to decode %s spam filter response: %w", op, err)
+	}
+	return &def, nil
 }
 
 // DeleteSpamFilter deletes a spam filter by origin or ID.

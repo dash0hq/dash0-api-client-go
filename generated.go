@@ -266,9 +266,24 @@ const (
 	True  SpamFilterAnnotationsDash0Comenabled = "true"
 )
 
+// Defines values for SpamFilterApiVersionV1Alpha1.
+const (
+	V1alpha1 SpamFilterApiVersionV1Alpha1 = "v1alpha1"
+)
+
+// Defines values for SpamFilterApiVersionV1Alpha2.
+const (
+	V1alpha2 SpamFilterApiVersionV1Alpha2 = "v1alpha2"
+)
+
 // Defines values for SpamFilterDefinitionKind.
 const (
-	Dash0SpamFilter SpamFilterDefinitionKind = "Dash0SpamFilter"
+	SpamFilterDefinitionKindDash0SpamFilter SpamFilterDefinitionKind = "Dash0SpamFilter"
+)
+
+// Defines values for SpamFilterDefinitionV1Alpha2Kind.
+const (
+	SpamFilterDefinitionV1Alpha2KindDash0SpamFilter SpamFilterDefinitionV1Alpha2Kind = "Dash0SpamFilter"
 )
 
 // Defines values for SslCertificateAssertionKind.
@@ -355,9 +370,7 @@ const (
 const (
 	TelemetryFilterContextDatapoint TelemetryFilterContext = "datapoint"
 	TelemetryFilterContextLog       TelemetryFilterContext = "log"
-	TelemetryFilterContextMetric    TelemetryFilterContext = "metric"
 	TelemetryFilterContextSpan      TelemetryFilterContext = "span"
-	TelemetryFilterContextSpanEvent TelemetryFilterContext = "span_event"
 	TelemetryFilterContextWebEvent  TelemetryFilterContext = "web_event"
 )
 
@@ -410,6 +423,7 @@ const (
 
 // Defines values for ViewType.
 const (
+	ViewTypeAwsLambda           ViewType = "aws_lambda"
 	ViewTypeFailedChecks        ViewType = "failed_checks"
 	ViewTypeGcpCloudRunJobs     ViewType = "gcp_cloud_run_jobs"
 	ViewTypeGcpCloudRunServices ViewType = "gcp_cloud_run_services"
@@ -975,6 +989,43 @@ type GetTeamResponse struct {
 	SyntheticChecks []AccessibleAsset  `json:"syntheticChecks"`
 	Team            TeamDefinition     `json:"team"`
 	Views           []AccessibleAsset  `json:"views"`
+}
+
+// GetTraceIdsRequest Request to retrieve unique trace IDs of traces that contain at least one span matching the
+// given filters. This is a lightweight alternative to `GetSpans` for two-step workflows where
+// only trace IDs are needed first, and full trace details are subsequently retrieved via
+// `GetTrace` (`POST /api/trace/details`).
+type GetTraceIdsRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset        `json:"dataset,omitempty"`
+	Filter  *FilterCriteria `json:"filter,omitempty"`
+
+	// Ordering Any supported attribute keys to order by.
+	Ordering *OrderingCriteria `json:"ordering,omitempty"`
+
+	// Pagination Cursor pagination is a technique for paging through a result set using a cursor. It is
+	// similar to offset pagination except that the cursor is an opaque value that encodes the
+	// position within the result set. This allows for fetching the next page of results from
+	// the current position without having to skip over a potentially large number of rows.
+	//
+	// It is also more resilient against late-arriving data which otherwise would cause issues
+	// with offset pagination. For example, if a row is inserted between two pages of results
+	// then the second page would contain a duplicate row and the third page would be missing.
+	Pagination *CursorPagination `json:"pagination,omitempty"`
+	Sampling   *Sampling         `json:"sampling,omitempty"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange TimeReferenceRange `json:"timeRange"`
+}
+
+// GetTraceIdsResponse Response for the `GetTraceIds` API. Contains an array of unique trace IDs that match the
+// request filters, ordered by the timestamp of their earliest matching span (descending).
+type GetTraceIdsResponse struct {
+	Cursors *NextCursors `json:"cursors,omitempty"`
+
+	// TraceIds Array of unique trace IDs as hex-encoded strings, ordered by the timestamp of each
+	// trace's earliest matching span (descending).
+	TraceIds []string `json:"traceIds"`
 }
 
 // GetTraceRequest defines model for GetTraceRequest.
@@ -1755,6 +1806,17 @@ type PrometheusAlertRuleApiListItem struct {
 	Source *CrdSource `json:"source,omitempty"`
 }
 
+// PrometheusAlertRuleBulkCreateRequest defines model for PrometheusAlertRuleBulkCreateRequest.
+type PrometheusAlertRuleBulkCreateRequest struct {
+	Items []PrometheusAlertRule `json:"items"`
+}
+
+// PrometheusAlertRuleBulkCreateResponse defines model for PrometheusAlertRuleBulkCreateResponse.
+type PrometheusAlertRuleBulkCreateResponse struct {
+	// Created Number of check rules that were newly created.
+	Created int `json:"created"`
+}
+
 // PrometheusAlertRuleMetadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
 type PrometheusAlertRuleMetadata struct {
 	// Labels Server-derived labels that apply to the alert-rule resource itself, not to the
@@ -1834,8 +1896,17 @@ type PrometheusRuleDefinition struct {
 // PrometheusRuleGroup A group of rules evaluated together at a common interval. Follows the Prometheus
 // rule group concept (https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/).
 //
-// Note: The upstream RuleGroup fields `query_offset`, `partial_response_strategy`, and `limit`
-// are intentionally omitted as they are not supported by the Dash0 evaluation engine.
+// Note: The upstream RuleGroup fields `partial_response_strategy` and `limit` are
+// intentionally omitted as they are not supported by the Dash0 evaluation engine.
+//
+// Caveat for synthetic metrics: when a rule reads from a synthetic metric (one
+// computed on demand from underlying signals at query time, rather than pre-computed
+// during ingestion), evaluation near the leading edge of available data may
+// under-count, since late-arriving signals may not yet have been processed. Two
+// rules within the same group can therefore disagree even when their queries share
+// a strict subset/superset relationship — a ratio of the two values may briefly
+// exceed 1.0 at some timestamps. Use `query_offset` to delay evaluation enough for
+// the underlying data to settle.
 type PrometheusRuleGroup struct {
 	// Interval Evaluation interval for all rules in the group (e.g., "1m", "5m").
 	// Applies to every rule in the group; individual rules cannot override it.
@@ -1848,6 +1919,12 @@ type PrometheusRuleGroup struct {
 
 	// Name Display name for the rule group.
 	Name string `json:"name"`
+
+	// QueryOffset Shifts the timestamp at which rules in the group query their data backwards
+	// by this duration (e.g. "5m"). Output series points are stamped at the shifted
+	// moment, allowing late-arriving data to settle before being counted.
+	// Maximum 1h. Defaults to 0 if omitted (no shift).
+	QueryOffset *string `json:"query_offset,omitempty"`
 
 	// Rules List of rules in this group.
 	Rules []PrometheusRuleDefinition `json:"rules"`
@@ -2213,19 +2290,44 @@ type SignalToMetricsDisplay struct {
 	Name string `json:"name"`
 }
 
+// SignalToMetricsGroupAnnotations defines model for SignalToMetricsGroupAnnotations.
+type SignalToMetricsGroupAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the rule has been deleted but not yet purged. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
 // SignalToMetricsLabels defines model for SignalToMetricsLabels.
 type SignalToMetricsLabels struct {
+	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
 	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
-	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
-	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comid Unique internal ID of the signal-to-metrics rule. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
 	// Dash0Comsource Origin of a Dash0 resource.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
 	// - `api`: created directly through the internal API.
-	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
-	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
 }
 
 // SignalToMetricsMatch defines model for SignalToMetricsMatch.
@@ -2236,8 +2338,9 @@ type SignalToMetricsMatch struct {
 
 // SignalToMetricsMetadata defines model for SignalToMetricsMetadata.
 type SignalToMetricsMetadata struct {
-	Labels *SignalToMetricsLabels `json:"labels,omitempty"`
-	Name   string                 `json:"name"`
+	Annotations *SignalToMetricsGroupAnnotations `json:"annotations,omitempty"`
+	Labels      *SignalToMetricsLabels           `json:"labels,omitempty"`
+	Name        string                           `json:"name"`
 }
 
 // SignalToMetricsOutput defines model for SignalToMetricsOutput.
@@ -2330,21 +2433,44 @@ type SpamFilterAnnotations struct {
 // When set to `"false"`, the filter is skipped.
 type SpamFilterAnnotationsDash0Comenabled string
 
+// SpamFilterApiVersionV1Alpha1 defines model for SpamFilterApiVersionV1Alpha1.
+type SpamFilterApiVersionV1Alpha1 string
+
+// SpamFilterApiVersionV1Alpha2 defines model for SpamFilterApiVersionV1Alpha2.
+type SpamFilterApiVersionV1Alpha2 string
+
 // SpamFilterCreateRequest defines model for SpamFilterCreateRequest.
-type SpamFilterCreateRequest = SpamFilterDefinition
+type SpamFilterCreateRequest struct {
+	union json.RawMessage
+}
 
-// SpamFilterDefinition defines model for SpamFilterDefinition.
+// SpamFilterDefinition v1alpha1 spam filter definition. Uses `contexts` (array) in the spec.
 type SpamFilterDefinition struct {
-	Kind     SpamFilterDefinitionKind `json:"kind"`
-	Metadata SpamFilterMetadata       `json:"metadata"`
+	ApiVersion *SpamFilterApiVersionV1Alpha1 `json:"apiVersion,omitempty"`
+	Kind       SpamFilterDefinitionKind      `json:"kind"`
+	Metadata   SpamFilterMetadata            `json:"metadata"`
 
-	// Spec The spam filter specification. The `filter` field defines structured criteria
-	// that the server compiles into an OTTL condition for evaluation.
+	// Spec v1alpha1 spam filter specification. The `filter` field defines structured
+	// criteria that the server compiles into an OTTL condition for evaluation.
 	Spec SpamFilterSpec `json:"spec"`
 }
 
 // SpamFilterDefinitionKind defines model for SpamFilterDefinition.Kind.
 type SpamFilterDefinitionKind string
+
+// SpamFilterDefinitionV1Alpha2 v1alpha2 spam filter definition. Uses `context` (scalar) in the spec.
+type SpamFilterDefinitionV1Alpha2 struct {
+	ApiVersion SpamFilterApiVersionV1Alpha2     `json:"apiVersion"`
+	Kind       SpamFilterDefinitionV1Alpha2Kind `json:"kind"`
+	Metadata   SpamFilterMetadata               `json:"metadata"`
+
+	// Spec v1alpha2 spam filter specification. The `filter` field defines structured
+	// criteria that the server compiles into an OTTL condition for evaluation.
+	Spec SpamFilterSpecV1Alpha2 `json:"spec"`
+}
+
+// SpamFilterDefinitionV1Alpha2Kind defines model for SpamFilterDefinitionV1Alpha2.Kind.
+type SpamFilterDefinitionV1Alpha2Kind string
 
 // SpamFilterLabels defines model for SpamFilterLabels.
 type SpamFilterLabels struct {
@@ -2381,14 +2507,23 @@ type SpamFilterMetadata struct {
 }
 
 // SpamFilterResponse defines model for SpamFilterResponse.
-type SpamFilterResponse = SpamFilterDefinition
+type SpamFilterResponse struct {
+	union json.RawMessage
+}
 
-// SpamFilterSpec The spam filter specification. The `filter` field defines structured criteria
-// that the server compiles into an OTTL condition for evaluation.
+// SpamFilterSpec v1alpha1 spam filter specification. The `filter` field defines structured
+// criteria that the server compiles into an OTTL condition for evaluation.
 type SpamFilterSpec struct {
 	// Contexts The signal types this spam filter applies to.
 	Contexts []TelemetryFilterContext `json:"contexts"`
 	Filter   FilterCriteria           `json:"filter"`
+}
+
+// SpamFilterSpecV1Alpha2 v1alpha2 spam filter specification. The `filter` field defines structured
+// criteria that the server compiles into an OTTL condition for evaluation.
+type SpamFilterSpecV1Alpha2 struct {
+	Context TelemetryFilterContext `json:"context"`
+	Filter  FilterCriteria         `json:"filter"`
 }
 
 // Span defines model for Span.
@@ -3208,6 +3343,12 @@ type PostApiAlertingCheckRulesParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// PostApiAlertingCheckRulesBulkParams defines parameters for PostApiAlertingCheckRulesBulk.
+type PostApiAlertingCheckRulesBulkParams struct {
+	// Dataset The dataset to deploy rules into. Required to prevent accidental deployment to the wrong dataset.
+	Dataset Dataset `form:"dataset" json:"dataset"`
+}
+
 // DeleteApiAlertingCheckRulesOriginOrIdParams defines parameters for DeleteApiAlertingCheckRulesOriginOrId.
 type DeleteApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -3250,6 +3391,12 @@ type PutApiDashboardsOriginOrIdParams struct {
 
 // PostApiImportCheckRuleParams defines parameters for PostApiImportCheckRule.
 type PostApiImportCheckRuleParams struct {
+	// Dataset The associated dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PostApiImportCheckRulesParams defines parameters for PostApiImportCheckRules.
+type PostApiImportCheckRulesParams struct {
 	// Dataset The associated dataset.
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
@@ -3478,6 +3625,9 @@ type GetOauthAuthorizeParams struct {
 // PostApiAlertingCheckRulesJSONRequestBody defines body for PostApiAlertingCheckRules for application/json ContentType.
 type PostApiAlertingCheckRulesJSONRequestBody = PrometheusAlertRule
 
+// PostApiAlertingCheckRulesBulkJSONRequestBody defines body for PostApiAlertingCheckRulesBulk for application/json ContentType.
+type PostApiAlertingCheckRulesBulkJSONRequestBody = PrometheusAlertRuleBulkCreateRequest
+
 // PutApiAlertingCheckRulesOriginOrIdJSONRequestBody defines body for PutApiAlertingCheckRulesOriginOrId for application/json ContentType.
 type PutApiAlertingCheckRulesOriginOrIdJSONRequestBody = PrometheusAlertRule
 
@@ -3489,6 +3639,9 @@ type PutApiDashboardsOriginOrIdJSONRequestBody = DashboardDefinition
 
 // PostApiImportCheckRuleJSONRequestBody defines body for PostApiImportCheckRule for application/json ContentType.
 type PostApiImportCheckRuleJSONRequestBody = PrometheusAlertRule
+
+// PostApiImportCheckRulesJSONRequestBody defines body for PostApiImportCheckRules for application/json ContentType.
+type PostApiImportCheckRulesJSONRequestBody = PrometheusAlertRuleBulkCreateRequest
 
 // PostApiImportDashboardJSONRequestBody defines body for PostApiImportDashboard for application/json ContentType.
 type PostApiImportDashboardJSONRequestBody = DashboardDefinition
@@ -3564,6 +3717,9 @@ type PostApiTeamsOriginOrIdMembersJSONRequestBody = AddTeamMembersRequest
 
 // PostApiTraceDetailsJSONRequestBody defines body for PostApiTraceDetails for application/json ContentType.
 type PostApiTraceDetailsJSONRequestBody = GetTraceRequest
+
+// PostApiTraceIdsJSONRequestBody defines body for PostApiTraceIds for application/json ContentType.
+type PostApiTraceIdsJSONRequestBody = GetTraceIdsRequest
 
 // PostApiViewsJSONRequestBody defines body for PostApiViews for application/json ContentType.
 type PostApiViewsJSONRequestBody = ViewDefinition
@@ -4595,6 +4751,130 @@ func (t *SamplingCondition) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsSpamFilterDefinition returns the union data inside the SpamFilterCreateRequest as a SpamFilterDefinition
+func (t SpamFilterCreateRequest) AsSpamFilterDefinition() (SpamFilterDefinition, error) {
+	var body SpamFilterDefinition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSpamFilterDefinition overwrites any union data inside the SpamFilterCreateRequest as the provided SpamFilterDefinition
+func (t *SpamFilterCreateRequest) FromSpamFilterDefinition(v SpamFilterDefinition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSpamFilterDefinition performs a merge with any union data inside the SpamFilterCreateRequest, using the provided SpamFilterDefinition
+func (t *SpamFilterCreateRequest) MergeSpamFilterDefinition(v SpamFilterDefinition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSpamFilterDefinitionV1Alpha2 returns the union data inside the SpamFilterCreateRequest as a SpamFilterDefinitionV1Alpha2
+func (t SpamFilterCreateRequest) AsSpamFilterDefinitionV1Alpha2() (SpamFilterDefinitionV1Alpha2, error) {
+	var body SpamFilterDefinitionV1Alpha2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSpamFilterDefinitionV1Alpha2 overwrites any union data inside the SpamFilterCreateRequest as the provided SpamFilterDefinitionV1Alpha2
+func (t *SpamFilterCreateRequest) FromSpamFilterDefinitionV1Alpha2(v SpamFilterDefinitionV1Alpha2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSpamFilterDefinitionV1Alpha2 performs a merge with any union data inside the SpamFilterCreateRequest, using the provided SpamFilterDefinitionV1Alpha2
+func (t *SpamFilterCreateRequest) MergeSpamFilterDefinitionV1Alpha2(v SpamFilterDefinitionV1Alpha2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SpamFilterCreateRequest) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SpamFilterCreateRequest) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSpamFilterDefinition returns the union data inside the SpamFilterResponse as a SpamFilterDefinition
+func (t SpamFilterResponse) AsSpamFilterDefinition() (SpamFilterDefinition, error) {
+	var body SpamFilterDefinition
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSpamFilterDefinition overwrites any union data inside the SpamFilterResponse as the provided SpamFilterDefinition
+func (t *SpamFilterResponse) FromSpamFilterDefinition(v SpamFilterDefinition) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSpamFilterDefinition performs a merge with any union data inside the SpamFilterResponse, using the provided SpamFilterDefinition
+func (t *SpamFilterResponse) MergeSpamFilterDefinition(v SpamFilterDefinition) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsSpamFilterDefinitionV1Alpha2 returns the union data inside the SpamFilterResponse as a SpamFilterDefinitionV1Alpha2
+func (t SpamFilterResponse) AsSpamFilterDefinitionV1Alpha2() (SpamFilterDefinitionV1Alpha2, error) {
+	var body SpamFilterDefinitionV1Alpha2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSpamFilterDefinitionV1Alpha2 overwrites any union data inside the SpamFilterResponse as the provided SpamFilterDefinitionV1Alpha2
+func (t *SpamFilterResponse) FromSpamFilterDefinitionV1Alpha2(v SpamFilterDefinitionV1Alpha2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSpamFilterDefinitionV1Alpha2 performs a merge with any union data inside the SpamFilterResponse, using the provided SpamFilterDefinitionV1Alpha2
+func (t *SpamFilterResponse) MergeSpamFilterDefinitionV1Alpha2(v SpamFilterDefinitionV1Alpha2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SpamFilterResponse) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SpamFilterResponse) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsSyntheticHttpCheckPlugin returns the union data inside the SyntheticCheckPlugin as a SyntheticHttpCheckPlugin
 func (t SyntheticCheckPlugin) AsSyntheticHttpCheckPlugin() (SyntheticHttpCheckPlugin, error) {
 	var body SyntheticHttpCheckPlugin
@@ -4832,6 +5112,11 @@ type ClientInterface interface {
 
 	PostApiAlertingCheckRules(ctx context.Context, params *PostApiAlertingCheckRulesParams, body PostApiAlertingCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiAlertingCheckRulesBulkWithBody request with any body
+	PostApiAlertingCheckRulesBulkWithBody(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiAlertingCheckRulesBulk(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, body PostApiAlertingCheckRulesBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiAlertingCheckRulesOriginOrId request
 	DeleteApiAlertingCheckRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAlertingCheckRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -4866,6 +5151,11 @@ type ClientInterface interface {
 	PostApiImportCheckRuleWithBody(ctx context.Context, params *PostApiImportCheckRuleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiImportCheckRule(ctx context.Context, params *PostApiImportCheckRuleParams, body PostApiImportCheckRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiImportCheckRulesWithBody request with any body
+	PostApiImportCheckRulesWithBody(ctx context.Context, params *PostApiImportCheckRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiImportCheckRules(ctx context.Context, params *PostApiImportCheckRulesParams, body PostApiImportCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiImportDashboardWithBody request with any body
 	PostApiImportDashboardWithBody(ctx context.Context, params *PostApiImportDashboardParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5067,6 +5357,11 @@ type ClientInterface interface {
 
 	PostApiTraceDetails(ctx context.Context, body PostApiTraceDetailsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiTraceIdsWithBody request with any body
+	PostApiTraceIdsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiTraceIds(ctx context.Context, body PostApiTraceIdsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiViews request
 	GetApiViews(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -5155,6 +5450,30 @@ func (c *generatedClient) PostApiAlertingCheckRulesWithBody(ctx context.Context,
 
 func (c *generatedClient) PostApiAlertingCheckRules(ctx context.Context, params *PostApiAlertingCheckRulesParams, body PostApiAlertingCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiAlertingCheckRulesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAlertingCheckRulesBulkWithBody(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAlertingCheckRulesBulkRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAlertingCheckRulesBulk(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, body PostApiAlertingCheckRulesBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAlertingCheckRulesBulkRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -5311,6 +5630,30 @@ func (c *generatedClient) PostApiImportCheckRuleWithBody(ctx context.Context, pa
 
 func (c *generatedClient) PostApiImportCheckRule(ctx context.Context, params *PostApiImportCheckRuleParams, body PostApiImportCheckRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiImportCheckRuleRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiImportCheckRulesWithBody(ctx context.Context, params *PostApiImportCheckRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiImportCheckRulesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiImportCheckRules(ctx context.Context, params *PostApiImportCheckRulesParams, body PostApiImportCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiImportCheckRulesRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6221,6 +6564,30 @@ func (c *generatedClient) PostApiTraceDetails(ctx context.Context, body PostApiT
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) PostApiTraceIdsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTraceIdsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTraceIds(ctx context.Context, body PostApiTraceIdsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTraceIdsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) GetApiViews(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiViewsRequest(c.Server, params)
 	if err != nil {
@@ -6571,6 +6938,64 @@ func NewPostApiAlertingCheckRulesRequestWithBody(server string, params *PostApiA
 				}
 			}
 
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostApiAlertingCheckRulesBulkRequest calls the generic PostApiAlertingCheckRulesBulk builder with application/json body
+func NewPostApiAlertingCheckRulesBulkRequest(server string, params *PostApiAlertingCheckRulesBulkParams, body PostApiAlertingCheckRulesBulkJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiAlertingCheckRulesBulkRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiAlertingCheckRulesBulkRequestWithBody generates requests for PostApiAlertingCheckRulesBulk with any type of body
+func NewPostApiAlertingCheckRulesBulkRequestWithBody(server string, params *PostApiAlertingCheckRulesBulkParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/alerting/check-rules/bulk")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
@@ -7080,6 +7505,68 @@ func NewPostApiImportCheckRuleRequestWithBody(server string, params *PostApiImpo
 	}
 
 	operationPath := fmt.Sprintf("/api/import/check-rule")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostApiImportCheckRulesRequest calls the generic PostApiImportCheckRules builder with application/json body
+func NewPostApiImportCheckRulesRequest(server string, params *PostApiImportCheckRulesParams, body PostApiImportCheckRulesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiImportCheckRulesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiImportCheckRulesRequestWithBody generates requests for PostApiImportCheckRules with any type of body
+func NewPostApiImportCheckRulesRequestWithBody(server string, params *PostApiImportCheckRulesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/import/check-rules")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -9721,6 +10208,46 @@ func NewPostApiTraceDetailsRequestWithBody(server string, contentType string, bo
 	return req, nil
 }
 
+// NewPostApiTraceIdsRequest calls the generic PostApiTraceIds builder with application/json body
+func NewPostApiTraceIdsRequest(server string, body PostApiTraceIdsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTraceIdsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiTraceIdsRequestWithBody generates requests for PostApiTraceIds with any type of body
+func NewPostApiTraceIdsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/trace/ids")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiViewsRequest generates requests for GetApiViews
 func NewGetApiViewsRequest(server string, params *GetApiViewsParams) (*http.Request, error) {
 	var err error
@@ -10331,6 +10858,11 @@ type ClientWithResponsesInterface interface {
 
 	PostApiAlertingCheckRulesWithResponse(ctx context.Context, params *PostApiAlertingCheckRulesParams, body PostApiAlertingCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAlertingCheckRulesResponse, error)
 
+	// PostApiAlertingCheckRulesBulkWithBodyWithResponse request with any body
+	PostApiAlertingCheckRulesBulkWithBodyWithResponse(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAlertingCheckRulesBulkResponse, error)
+
+	PostApiAlertingCheckRulesBulkWithResponse(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, body PostApiAlertingCheckRulesBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAlertingCheckRulesBulkResponse, error)
+
 	// DeleteApiAlertingCheckRulesOriginOrIdWithResponse request
 	DeleteApiAlertingCheckRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAlertingCheckRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAlertingCheckRulesOriginOrIdResponse, error)
 
@@ -10365,6 +10897,11 @@ type ClientWithResponsesInterface interface {
 	PostApiImportCheckRuleWithBodyWithResponse(ctx context.Context, params *PostApiImportCheckRuleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportCheckRuleResponse, error)
 
 	PostApiImportCheckRuleWithResponse(ctx context.Context, params *PostApiImportCheckRuleParams, body PostApiImportCheckRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiImportCheckRuleResponse, error)
+
+	// PostApiImportCheckRulesWithBodyWithResponse request with any body
+	PostApiImportCheckRulesWithBodyWithResponse(ctx context.Context, params *PostApiImportCheckRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportCheckRulesResponse, error)
+
+	PostApiImportCheckRulesWithResponse(ctx context.Context, params *PostApiImportCheckRulesParams, body PostApiImportCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiImportCheckRulesResponse, error)
 
 	// PostApiImportDashboardWithBodyWithResponse request with any body
 	PostApiImportDashboardWithBodyWithResponse(ctx context.Context, params *PostApiImportDashboardParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportDashboardResponse, error)
@@ -10566,6 +11103,11 @@ type ClientWithResponsesInterface interface {
 
 	PostApiTraceDetailsWithResponse(ctx context.Context, body PostApiTraceDetailsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error)
 
+	// PostApiTraceIdsWithBodyWithResponse request with any body
+	PostApiTraceIdsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTraceIdsResponse, error)
+
+	PostApiTraceIdsWithResponse(ctx context.Context, body PostApiTraceIdsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTraceIdsResponse, error)
+
 	// GetApiViewsWithResponse request
 	GetApiViewsWithResponse(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*GetApiViewsResponse, error)
 
@@ -10690,6 +11232,29 @@ func (r PostApiAlertingCheckRulesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiAlertingCheckRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiAlertingCheckRulesBulkResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusAlertRuleBulkCreateResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiAlertingCheckRulesBulkResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiAlertingCheckRulesBulkResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -10895,6 +11460,29 @@ func (r PostApiImportCheckRuleResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiImportCheckRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiImportCheckRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusAlertRuleBulkCreateResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiImportCheckRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiImportCheckRulesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -12053,6 +12641,29 @@ func (r PostApiTraceDetailsResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiTraceIdsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetTraceIdsResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTraceIdsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTraceIdsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiViewsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -12302,6 +12913,23 @@ func (c *ClientWithResponses) PostApiAlertingCheckRulesWithResponse(ctx context.
 	return ParsePostApiAlertingCheckRulesResponse(rsp)
 }
 
+// PostApiAlertingCheckRulesBulkWithBodyWithResponse request with arbitrary body returning *PostApiAlertingCheckRulesBulkResponse
+func (c *ClientWithResponses) PostApiAlertingCheckRulesBulkWithBodyWithResponse(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAlertingCheckRulesBulkResponse, error) {
+	rsp, err := c.PostApiAlertingCheckRulesBulkWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAlertingCheckRulesBulkResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiAlertingCheckRulesBulkWithResponse(ctx context.Context, params *PostApiAlertingCheckRulesBulkParams, body PostApiAlertingCheckRulesBulkJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAlertingCheckRulesBulkResponse, error) {
+	rsp, err := c.PostApiAlertingCheckRulesBulk(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAlertingCheckRulesBulkResponse(rsp)
+}
+
 // DeleteApiAlertingCheckRulesOriginOrIdWithResponse request returning *DeleteApiAlertingCheckRulesOriginOrIdResponse
 func (c *ClientWithResponses) DeleteApiAlertingCheckRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAlertingCheckRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAlertingCheckRulesOriginOrIdResponse, error) {
 	rsp, err := c.DeleteApiAlertingCheckRulesOriginOrId(ctx, originOrId, params, reqEditors...)
@@ -12413,6 +13041,23 @@ func (c *ClientWithResponses) PostApiImportCheckRuleWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParsePostApiImportCheckRuleResponse(rsp)
+}
+
+// PostApiImportCheckRulesWithBodyWithResponse request with arbitrary body returning *PostApiImportCheckRulesResponse
+func (c *ClientWithResponses) PostApiImportCheckRulesWithBodyWithResponse(ctx context.Context, params *PostApiImportCheckRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportCheckRulesResponse, error) {
+	rsp, err := c.PostApiImportCheckRulesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiImportCheckRulesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiImportCheckRulesWithResponse(ctx context.Context, params *PostApiImportCheckRulesParams, body PostApiImportCheckRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiImportCheckRulesResponse, error) {
+	rsp, err := c.PostApiImportCheckRules(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiImportCheckRulesResponse(rsp)
 }
 
 // PostApiImportDashboardWithBodyWithResponse request with arbitrary body returning *PostApiImportDashboardResponse
@@ -13065,6 +13710,23 @@ func (c *ClientWithResponses) PostApiTraceDetailsWithResponse(ctx context.Contex
 	return ParsePostApiTraceDetailsResponse(rsp)
 }
 
+// PostApiTraceIdsWithBodyWithResponse request with arbitrary body returning *PostApiTraceIdsResponse
+func (c *ClientWithResponses) PostApiTraceIdsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTraceIdsResponse, error) {
+	rsp, err := c.PostApiTraceIdsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTraceIdsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiTraceIdsWithResponse(ctx context.Context, body PostApiTraceIdsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTraceIdsResponse, error) {
+	rsp, err := c.PostApiTraceIds(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTraceIdsResponse(rsp)
+}
+
 // GetApiViewsWithResponse request returning *GetApiViewsResponse
 func (c *ClientWithResponses) GetApiViewsWithResponse(ctx context.Context, params *GetApiViewsParams, reqEditors ...RequestEditorFn) (*GetApiViewsResponse, error) {
 	rsp, err := c.GetApiViews(ctx, params, reqEditors...)
@@ -13301,6 +13963,39 @@ func ParsePostApiAlertingCheckRulesResponse(rsp *http.Response) (*PostApiAlertin
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PrometheusAlertRule
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiAlertingCheckRulesBulkResponse parses an HTTP response from a PostApiAlertingCheckRulesBulkWithResponse call
+func ParsePostApiAlertingCheckRulesBulkResponse(rsp *http.Response) (*PostApiAlertingCheckRulesBulkResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiAlertingCheckRulesBulkResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusAlertRuleBulkCreateResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -13584,6 +14279,39 @@ func ParsePostApiImportCheckRuleResponse(rsp *http.Response) (*PostApiImportChec
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest PrometheusAlertRule
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiImportCheckRulesResponse parses an HTTP response from a PostApiImportCheckRulesWithResponse call
+func ParsePostApiImportCheckRulesResponse(rsp *http.Response) (*PostApiImportCheckRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiImportCheckRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusAlertRuleBulkCreateResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -15248,6 +15976,39 @@ func ParsePostApiTraceDetailsResponse(rsp *http.Response) (*PostApiTraceDetailsR
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest GetTraceResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTraceIdsResponse parses an HTTP response from a PostApiTraceIdsWithResponse call
+func ParsePostApiTraceIdsResponse(rsp *http.Response) (*PostApiTraceIdsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTraceIdsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetTraceIdsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

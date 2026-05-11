@@ -17,9 +17,9 @@ func TestStripSpamFilterServerFields(t *testing.T) {
 				Dash0Comenabled: Ptr(True),
 			},
 			Labels: &SpamFilterLabels{
-				Dash0Comid:     Ptr("sf-1"),
-				Dash0Comsource: &source,
-				Dash0Comorigin: Ptr("terraform"),
+				Dash0Comid:      Ptr("sf-1"),
+				Dash0Comsource:  &source,
+				Dash0Comorigin:  Ptr("terraform"),
 				Dash0Comdataset: Ptr("default"),
 			},
 		},
