@@ -145,6 +145,112 @@ func TestGetCheckRuleName(t *testing.T) {
 	}
 }
 
+func TestGetCheckRule_NestedAPIError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-Trace-Id", "header-trace-id")
+		w.WriteHeader(http.StatusNotFound)
+		_, _ = w.Write([]byte(`{"error": {"code": 404, "message": "Check rule not found", "traceId": "body-trace-id"}}`))
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	_, err = client.GetCheckRule(context.Background(), "nonexistent", nil)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	apiErr, ok := err.(*APIError)
+	if !ok {
+		t.Fatalf("expected *APIError, got %T", err)
+	}
+	if apiErr.Message != "Check rule not found" {
+		t.Errorf("Message = %q, want %q", apiErr.Message, "Check rule not found")
+	}
+	if apiErr.TraceID != "header-trace-id" {
+		t.Errorf("TraceID = %q, want %q (header should take precedence)", apiErr.TraceID, "header-trace-id")
+	}
+	if apiErr.StatusCode != 404 {
+		t.Errorf("StatusCode = %d, want 404", apiErr.StatusCode)
+	}
+}
+
+func TestGetCheckRule_NestedAPIErrorBodyTraceID(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"error": {"code": 500, "message": "internal error", "traceId": "body-only-trace"}}`))
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	_, err = client.GetCheckRule(context.Background(), "some-id", nil)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	apiErr, ok := err.(*APIError)
+	if !ok {
+		t.Fatalf("expected *APIError, got %T", err)
+	}
+	if apiErr.Message != "internal error" {
+		t.Errorf("Message = %q, want %q", apiErr.Message, "internal error")
+	}
+	if apiErr.TraceID != "body-only-trace" {
+		t.Errorf("TraceID = %q, want %q (should fall back to body traceId when header absent)", apiErr.TraceID, "body-only-trace")
+	}
+}
+
+func TestDeleteCheckRule_NestedAPIError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusForbidden)
+		_, _ = w.Write([]byte(`{"error": {"code": 403, "message": "insufficient permissions", "traceId": "trace-403"}}`))
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	err = client.DeleteCheckRule(context.Background(), "some-id", nil)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+
+	apiErr, ok := err.(*APIError)
+	if !ok {
+		t.Fatalf("expected *APIError, got %T", err)
+	}
+	if apiErr.Message != "insufficient permissions" {
+		t.Errorf("Message = %q, want %q", apiErr.Message, "insufficient permissions")
+	}
+	if apiErr.TraceID != "trace-403" {
+		t.Errorf("TraceID = %q, want %q", apiErr.TraceID, "trace-403")
+	}
+	if !IsForbidden(apiErr) {
+		t.Error("expected IsForbidden to return true")
+	}
+}
+
 func TestCreateCheckRule_201(t *testing.T) {
 	rule := PrometheusAlertRule{
 		Name: "test-rule",
