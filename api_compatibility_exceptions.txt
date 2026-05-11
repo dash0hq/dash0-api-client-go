@@ -41,3 +41,39 @@ RecordingRuleGroup*
 RecordingRule
 RecordingRuleSource*
 *ApiRecordingRuleGroups*
+
+# v1.12.1: Upstream OpenAPI spec wrapped spam-filter request/response
+# bodies in union types (SpamFilterCreateRequest, SpamFilterResponse) that
+# carry v1alpha1 and v1alpha2 alternates. The Go signatures printed by
+# gorelease look identical but the underlying type alias targets changed,
+# so every spam-filter symbol is flagged. The SDK preserves the v1alpha1
+# shape externally (see client_spam_filters.go).
+SpamFilter
+SpamFilter*
+*SpamFilter*
+Client.*SpamFilter*
+(*ClientWithResponses).*SpamFilter*
+(*generatedClient).*SpamFilter*
+ClientInterface.*SpamFilter*
+ClientWithResponsesInterface.*SpamFilter*
+NewPostApiSpamFiltersRequest
+NewPutApiSpamFiltersOriginOrIdRequest
+GetApiSpamFiltersOriginOrIdResponse.JSON200
+PostApiSpamFiltersResponse.JSON200
+PutApiSpamFiltersOriginOrIdResponse.JSON200
+GetSpamFiltersResponse.SpamFilters
+GetSpamFilterDataset
+GetSpamFilterID
+GetSpamFilterName
+SetSpamFilterDataset
+SetSpamFilterID
+SetSpamFilterIDIfAbsent
+ClearSpamFilterID
+StripSpamFilterServerFields
+
+# v1.12.1: TelemetryFilterContextMetric and TelemetryFilterContextSpanEvent
+# constants were removed upstream (no longer valid spam-filter contexts in
+# the latest spec). Consumers cannot reference them anyway because they
+# never matched a server-accepted value.
+TelemetryFilterContextMetric
+TelemetryFilterContextSpanEvent
