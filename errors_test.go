@@ -111,6 +111,82 @@ func TestNewAPIError(t *testing.T) {
 		}
 	})
 
+	t.Run("extracts nested message and traceId from real Dash0 API error shape", func(t *testing.T) {
+		// Matches the wire format produced by control-plane-api's utils.NewErrorResponse
+		// (see common.ErrorResponse in dash0hq/openapi-types):
+		//   {"error": {"code": 404, "message": "Check rule not found", "traceId": "abc123"}}
+		resp := &http.Response{
+			StatusCode: 404,
+			Status:     "404 Not Found",
+			Header:     http.Header{},
+			Body: io.NopCloser(strings.NewReader(
+				`{"error": {"code": 404, "message": "Check rule not found", "traceId": "abc123"}}`,
+			)),
+		}
+
+		apiErr := NewAPIError(resp)
+
+		if apiErr.Message != "Check rule not found" {
+			t.Errorf("Message = %q, want %q", apiErr.Message, "Check rule not found")
+		}
+		if apiErr.TraceID != "abc123" {
+			t.Errorf("TraceID = %q, want %q", apiErr.TraceID, "abc123")
+		}
+	})
+
+	t.Run("header trace ID takes precedence over body traceId", func(t *testing.T) {
+		resp := &http.Response{
+			StatusCode: 404,
+			Status:     "404 Not Found",
+			Header:     http.Header{"X-Trace-Id": []string{"header-trace"}},
+			Body: io.NopCloser(strings.NewReader(
+				`{"error": {"code": 404, "message": "not found", "traceId": "body-trace"}}`,
+			)),
+		}
+
+		apiErr := NewAPIError(resp)
+
+		if apiErr.TraceID != "header-trace" {
+			t.Errorf("TraceID = %q, want %q", apiErr.TraceID, "header-trace")
+		}
+	})
+
+	t.Run("body traceId is preserved when nested message is empty", func(t *testing.T) {
+		// A 5xx response may carry a trace ID without a human-readable message;
+		// the trace ID is still the most useful debugging signal we can surface.
+		resp := &http.Response{
+			StatusCode: 500,
+			Status:     "500 Internal Server Error",
+			Header:     http.Header{},
+			Body: io.NopCloser(strings.NewReader(
+				`{"error": {"code": 500, "message": "", "traceId": "trace-xyz"}}`,
+			)),
+		}
+
+		apiErr := NewAPIError(resp)
+
+		if apiErr.TraceID != "trace-xyz" {
+			t.Errorf("TraceID = %q, want %q", apiErr.TraceID, "trace-xyz")
+		}
+	})
+
+	t.Run("malformed nested error field falls through to flat parser", func(t *testing.T) {
+		// {"error": "string"} is the legacy flat shape — the nested unmarshal fails
+		// (cannot decode string into struct) and the flat parser must still pick it up.
+		resp := &http.Response{
+			StatusCode: 400,
+			Status:     "400 Bad Request",
+			Header:     http.Header{},
+			Body:       io.NopCloser(strings.NewReader(`{"error": "legacy flat"}`)),
+		}
+
+		apiErr := NewAPIError(resp)
+
+		if apiErr.Message != "legacy flat" {
+			t.Errorf("Message = %q, want %q", apiErr.Message, "legacy flat")
+		}
+	})
+
 	t.Run("extracts error from JSON body", func(t *testing.T) {
 		resp := &http.Response{
 			StatusCode: 400,

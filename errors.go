@@ -65,17 +65,39 @@ func newAPIErrorWithBody(resp *http.Response, body []byte) *APIError {
 		Body:       string(body),
 	}
 
-	// Try to extract message from JSON error response
 	if len(body) > 0 {
-		var errResp struct {
+		// The Dash0 API returns errors as { "error": { "code": int, "message": string, "traceId": string } }
+		// (see common.ErrorResponse in dash0hq/openapi-types). Parse that shape first.
+		// "code" is intentionally omitted: StatusCode already carries the HTTP status.
+		var nested struct {
+			Error struct {
+				Message string `json:"message"`
+				TraceID string `json:"traceId"`
+			} `json:"error"`
+		}
+		if json.Unmarshal(body, &nested) == nil {
+			// Always backfill the trace ID from the body when the header didn't provide one,
+			// even if the message is empty — a trace ID is more valuable than nothing for
+			// the support-debugging case that motivated this code path.
+			if apiErr.TraceID == "" {
+				apiErr.TraceID = nested.Error.TraceID
+			}
+			if nested.Error.Message != "" {
+				apiErr.Message = nested.Error.Message
+				return apiErr
+			}
+		}
+
+		// Fallback for non-standard shapes: top-level "message" or "error" string.
+		var flat struct {
 			Message string `json:"message"`
 			Error   string `json:"error"`
 		}
-		if json.Unmarshal(body, &errResp) == nil {
-			if errResp.Message != "" {
-				apiErr.Message = errResp.Message
-			} else if errResp.Error != "" {
-				apiErr.Message = errResp.Error
+		if json.Unmarshal(body, &flat) == nil {
+			if flat.Message != "" {
+				apiErr.Message = flat.Message
+			} else if flat.Error != "" {
+				apiErr.Message = flat.Error
 			}
 		}
 	}
