@@ -92,11 +92,21 @@ type Client interface {
 	DeleteNotificationChannel(ctx context.Context, originOrID string) error
 	ListNotificationChannelsIter(ctx context.Context) *Iter[NotificationChannelDefinition]
 
-	// Spam Filters
+	// Spam Filters. The read endpoint returns whichever version is stored, so
+	// GetSpamFilter exposes the result through the SpamFilterObject marker for
+	// the caller to type-switch on. The list endpoint returns items in the
+	// same native shape; ListSpamFilters keeps the v1alpha1 shape for backward
+	// compatibility (v1alpha2 entries lose their spec.context scalar), while
+	// ListSpamFilterObjects exposes the union. The version sent on
+	// Create/Update is a caller choice, so v1alpha1 and v1alpha2 are exposed
+	// as typed sibling methods. Delete is version-agnostic.
 	ListSpamFilters(ctx context.Context, dataset *string) ([]*SpamFilter, error)
-	GetSpamFilter(ctx context.Context, originOrID string, dataset *string) (*SpamFilter, error)
+	ListSpamFilterObjects(ctx context.Context, dataset *string) ([]SpamFilterObject, error)
+	GetSpamFilter(ctx context.Context, originOrID string, dataset *string) (SpamFilterObject, error)
 	CreateSpamFilter(ctx context.Context, filter *SpamFilter, dataset *string) (*SpamFilter, error)
 	UpdateSpamFilter(ctx context.Context, originOrID string, filter *SpamFilter, dataset *string) (*SpamFilter, error)
+	CreateSpamFilterV1Alpha2(ctx context.Context, filter *SpamFilterV1Alpha2, dataset *string) (*SpamFilterV1Alpha2, error)
+	UpdateSpamFilterV1Alpha2(ctx context.Context, originOrID string, filter *SpamFilterV1Alpha2, dataset *string) (*SpamFilterV1Alpha2, error)
 	DeleteSpamFilter(ctx context.Context, originOrID string, dataset *string) error
 	ListSpamFiltersIter(ctx context.Context, dataset *string) *Iter[SpamFilter]
 

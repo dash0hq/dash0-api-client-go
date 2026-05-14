@@ -315,8 +315,12 @@ func TestSpamFilters_Integration(t *testing.T) {
 			t.Fatalf("GetSpamFilter failed: %v", err)
 		}
 
-		if got.Metadata.Name != "Drop noisy health checks" {
-			t.Errorf("expected name %q, got %q", "Drop noisy health checks", got.Metadata.Name)
+		v1, ok := got.(*SpamFilter)
+		if !ok {
+			t.Fatalf("expected *SpamFilter, got %T", got)
+		}
+		if v1.Metadata.Name != "Drop noisy health checks" {
+			t.Errorf("expected name %q, got %q", "Drop noisy health checks", v1.Metadata.Name)
 		}
 	})
 
@@ -682,6 +686,152 @@ func TestSpamFilters_Integration(t *testing.T) {
 		_, err = client.ListSpamFilters(context.Background(), nil)
 		if err != nil {
 			t.Fatalf("ListSpamFilters failed: %v", err)
+		}
+	})
+
+	t.Run("GetSpamFilter returns v1alpha2 typed value when server sends v1alpha2", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{
+				"apiVersion": "v1alpha2",
+				"kind": "Dash0SpamFilter",
+				"metadata": {"name": "v2 filter"},
+				"spec": {
+					"context": "log",
+					"filter": [{"key": "k8s.namespace.name", "operator": "is"}]
+				}
+			}`))
+		}))
+		defer server.Close()
+
+		client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		got, err := client.GetSpamFilter(context.Background(), "sf-v2", nil)
+		if err != nil {
+			t.Fatalf("GetSpamFilter failed: %v", err)
+		}
+		v2, ok := got.(*SpamFilterV1Alpha2)
+		if !ok {
+			t.Fatalf("expected *SpamFilterV1Alpha2, got %T", got)
+		}
+		if v2.Spec.Context != "log" {
+			t.Errorf("expected spec.context %q, got %q", "log", v2.Spec.Context)
+		}
+		if v2.Metadata.Name != "v2 filter" {
+			t.Errorf("expected name %q, got %q", "v2 filter", v2.Metadata.Name)
+		}
+	})
+
+	t.Run("GetSpamFilter rejects unknown apiVersion", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"apiVersion": "v9alpha9", "kind": "Dash0SpamFilter"}`))
+		}))
+		defer server.Close()
+
+		client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		_, err = client.GetSpamFilter(context.Background(), "sf-bogus", nil)
+		if err == nil {
+			t.Fatal("expected error for unknown apiVersion")
+		}
+	})
+
+	t.Run("CreateSpamFilterV1Alpha2 sends v1alpha2 body", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				t.Fatalf("failed to read request body: %v", err)
+			}
+			var req SpamFilterV1Alpha2
+			if err := json.Unmarshal(body, &req); err != nil {
+				t.Fatalf("failed to unmarshal request body: %v", err)
+			}
+			if req.ApiVersion != V1alpha2 {
+				t.Errorf("expected request apiVersion v1alpha2, got %q", req.ApiVersion)
+			}
+			if req.Spec.Context != "log" {
+				t.Errorf("expected request spec.context %q, got %q", "log", req.Spec.Context)
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write(body)
+		}))
+		defer server.Close()
+
+		client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		got, err := client.CreateSpamFilterV1Alpha2(context.Background(), &SpamFilterV1Alpha2{
+			ApiVersion: V1alpha2,
+			Kind:       SpamFilterDefinitionV1Alpha2KindDash0SpamFilter,
+			Metadata:   SpamFilterMetadata{Name: "v2 filter"},
+			Spec: SpamFilterSpecV1Alpha2{
+				Context: "log",
+				Filter:  FilterCriteria{{Key: "k8s.namespace.name", Operator: "is"}},
+			},
+		}, nil)
+		if err != nil {
+			t.Fatalf("CreateSpamFilterV1Alpha2 failed: %v", err)
+		}
+		if got.Spec.Context != "log" {
+			t.Errorf("expected returned spec.context %q, got %q", "log", got.Spec.Context)
+		}
+	})
+
+	t.Run("UpdateSpamFilterV1Alpha2 sends v1alpha2 body", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodPut {
+				t.Errorf("unexpected method: %s", r.Method)
+			}
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				t.Fatalf("failed to read request body: %v", err)
+			}
+			var req SpamFilterV1Alpha2
+			if err := json.Unmarshal(body, &req); err != nil {
+				t.Fatalf("failed to unmarshal request body: %v", err)
+			}
+			if req.ApiVersion != V1alpha2 {
+				t.Errorf("expected request apiVersion v1alpha2, got %q", req.ApiVersion)
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(body)
+		}))
+		defer server.Close()
+
+		client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		got, err := client.UpdateSpamFilterV1Alpha2(context.Background(), "sf-v2", &SpamFilterV1Alpha2{
+			ApiVersion: V1alpha2,
+			Kind:       SpamFilterDefinitionV1Alpha2KindDash0SpamFilter,
+			Metadata:   SpamFilterMetadata{Name: "v2 filter"},
+			Spec: SpamFilterSpecV1Alpha2{
+				Context: "span",
+				Filter:  FilterCriteria{{Key: "service.name", Operator: "is"}},
+			},
+		}, nil)
+		if err != nil {
+			t.Fatalf("UpdateSpamFilterV1Alpha2 failed: %v", err)
+		}
+		if got.Spec.Context != "span" {
+			t.Errorf("expected returned spec.context %q, got %q", "span", got.Spec.Context)
 		}
 	})
 }
