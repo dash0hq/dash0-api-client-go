@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.12.1
+
+
+### Bug Fixes
+- parse nested API error shape and preserve trace IDs
+
+### Testing
+- add integration tests for nested API error parsing
+
 ## v1.12.0
 
 
