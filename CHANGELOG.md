@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.12.2
+
+
+### Bug Fixes
+- cope with errors that are represented as strings
+
 ## v1.12.1
 
 
