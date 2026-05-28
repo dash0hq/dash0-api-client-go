@@ -164,6 +164,10 @@ func (c *client) UpdateSpamFilter(ctx context.Context, originOrID string, filter
 // decodeSpamFilterObject inspects the apiVersion on the response body and
 // decodes the payload into the matching typed struct. The result is returned
 // through the [SpamFilterObject] marker so callers can type-switch.
+//
+// Group-prefixed apiVersions emitted by the Dash0 Kubernetes operator (e.g.
+// "operator.dash0.com/v1alpha1") are normalised via [NormalizeDash0ApiVersion]
+// before the version is matched; foreign apiGroups are rejected.
 func decodeSpamFilterObject(body []byte) (SpamFilterObject, error) {
 	var disc struct {
 		ApiVersion string `json:"apiVersion"`
@@ -171,7 +175,11 @@ func decodeSpamFilterObject(body []byte) (SpamFilterObject, error) {
 	if err := json.Unmarshal(body, &disc); err != nil {
 		return nil, fmt.Errorf("dash0: failed to decode spam filter response: %w", err)
 	}
-	switch disc.ApiVersion {
+	version, ok := NormalizeDash0ApiVersion(disc.ApiVersion)
+	if !ok {
+		return nil, fmt.Errorf("dash0: unsupported spam filter apiVersion %q", disc.ApiVersion)
+	}
+	switch version {
 	case "", string(V1alpha1):
 		var def SpamFilter
 		if err := json.Unmarshal(body, &def); err != nil {

@@ -835,3 +835,120 @@ func TestSpamFilters_Integration(t *testing.T) {
 		}
 	})
 }
+
+func TestSpamFilters_Integration_OperatorApiVersion(t *testing.T) {
+	t.Run("ListSpamFilterObjects accepts operator.dash0.com group", func(t *testing.T) {
+		// Mimic the wire shape the Dash0 Kubernetes operator emits: TypeMeta
+		// from operator.dash0.com/v1alpha1 plus the standard v1alpha1 spec.
+		operatorBody := `{
+			"spamFilters": [
+				{
+					"apiVersion": "operator.dash0.com/v1alpha1",
+					"kind": "Dash0SpamFilter",
+					"metadata": {"name": "from-operator"},
+					"spec": {
+						"contexts": ["log"],
+						"filter": [{"key": "http.target", "operator": "ends_with", "value": "/healthz"}]
+					}
+				},
+				{
+					"apiVersion": "v1alpha2",
+					"kind": "Dash0SpamFilter",
+					"metadata": {"name": "from-cli"},
+					"spec": {
+						"context": "log",
+						"filter": [{"key": "service.name", "operator": "is", "value": "noisy"}]
+					}
+				}
+			]
+		}`
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(operatorBody))
+		}))
+		defer server.Close()
+
+		c, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		got, err := c.ListSpamFilterObjects(context.Background(), nil)
+		if err != nil {
+			t.Fatalf("ListSpamFilterObjects failed: %v", err)
+		}
+		if len(got) != 2 {
+			t.Fatalf("expected 2 filters, got %d", len(got))
+		}
+		v1, ok := got[0].(*SpamFilter)
+		if !ok {
+			t.Fatalf("expected *SpamFilter for operator item, got %T", got[0])
+		}
+		if v1.Metadata.Name != "from-operator" {
+			t.Errorf("expected name %q, got %q", "from-operator", v1.Metadata.Name)
+		}
+		v2, ok := got[1].(*SpamFilterV1Alpha2)
+		if !ok {
+			t.Fatalf("expected *SpamFilterV1Alpha2 for CLI item, got %T", got[1])
+		}
+		if v2.Spec.Context != "log" {
+			t.Errorf("expected spec.context %q, got %q", "log", v2.Spec.Context)
+		}
+	})
+
+	t.Run("GetSpamFilter accepts operator.dash0.com group", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{
+				"apiVersion": "operator.dash0.com/v1alpha1",
+				"kind": "Dash0SpamFilter",
+				"metadata": {"name": "from-operator"},
+				"spec": {
+					"contexts": ["log"],
+					"filter": [{"key": "http.target", "operator": "ends_with", "value": "/healthz"}]
+				}
+			}`))
+		}))
+		defer server.Close()
+
+		c, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		got, err := c.GetSpamFilter(context.Background(), "from-operator", nil)
+		if err != nil {
+			t.Fatalf("GetSpamFilter failed: %v", err)
+		}
+		v1, ok := got.(*SpamFilter)
+		if !ok {
+			t.Fatalf("expected *SpamFilter, got %T", got)
+		}
+		if v1.Metadata.Name != "from-operator" {
+			t.Errorf("expected name %q, got %q", "from-operator", v1.Metadata.Name)
+		}
+	})
+
+	t.Run("ListSpamFilterObjects rejects foreign apiGroup", func(t *testing.T) {
+		body := `{"spamFilters":[{"apiVersion":"monitoring.coreos.com/v1","kind":"PrometheusRule","metadata":{"name":"x"},"spec":{"contexts":["log"],"filter":[]}}]}`
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(body))
+		}))
+		defer server.Close()
+
+		c, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		_, err = c.ListSpamFilterObjects(context.Background(), nil)
+		if err == nil {
+			t.Fatal("expected error for foreign apiGroup, got nil")
+		}
+	})
+}
