@@ -60,6 +60,17 @@ const (
 	Dashboard DashboardDefinitionKind = "Dashboard"
 )
 
+// Defines values for DatasetAction.
+const (
+	DatasetCreateCheckRule          DatasetAction = "dataset:createCheckRule"
+	DatasetCreateRecordingRuleGroup DatasetAction = "dataset:createRecordingRuleGroup"
+	DatasetCreateSLO                DatasetAction = "dataset:createSLO"
+	DatasetCreateSyntheticCheck     DatasetAction = "dataset:createSyntheticCheck"
+	DatasetDelete                   DatasetAction = "dataset:delete"
+	DatasetRead                     DatasetAction = "dataset:read"
+	DatasetWrite                    DatasetAction = "dataset:write"
+)
+
 // Defines values for DatasetRestriction.
 const (
 	Restricted   DatasetRestriction = "restricted"
@@ -69,6 +80,13 @@ const (
 // Defines values for ErrorAssertionKind.
 const (
 	ErrorAssertionKindError ErrorAssertionKind = "error"
+)
+
+// Defines values for GeoLocationStorageStrategy.
+const (
+	GeoLocationStorageStrategyDoNotStore  GeoLocationStorageStrategy = "do_not_store"
+	GeoLocationStorageStrategyUpToCity    GeoLocationStorageStrategy = "up_to_city"
+	GeoLocationStorageStrategyUpToCountry GeoLocationStorageStrategy = "up_to_country"
 )
 
 // Defines values for HttpRedirects.
@@ -113,6 +131,12 @@ const (
 // Defines values for HttpResponseTextBodyAssertionKind.
 const (
 	TextBody HttpResponseTextBodyAssertionKind = "text_body"
+)
+
+// Defines values for IpAddressStorageStrategy.
+const (
+	IpAddressStorageStrategyAnonymize  IpAddressStorageStrategy = "anonymize"
+	IpAddressStorageStrategyDoNotStore IpAddressStorageStrategy = "do_not_store"
 )
 
 // Defines values for MemberDefinitionKind.
@@ -218,6 +242,19 @@ const (
 	Kubernetes ResourceOrchestration = "kubernetes"
 )
 
+// Defines values for RetentionClass.
+const (
+	Default RetentionClass = "default"
+	Forever RetentionClass = "forever"
+	N13M    RetentionClass = "13M"
+	N1d     RetentionClass = "1d"
+	N1w     RetentionClass = "1w"
+	N2w     RetentionClass = "2w"
+	N3M     RetentionClass = "3M"
+	N4w     RetentionClass = "4w"
+	N6M     RetentionClass = "6M"
+)
+
 // Defines values for SamplingConditionAndKind.
 const (
 	And SamplingConditionAndKind = "and"
@@ -260,15 +297,26 @@ const (
 	SignalToMetricsSignalTypeSpans SignalToMetricsSignalType = "spans"
 )
 
+// Defines values for SourceMapIntegrationKind.
+const (
+	SourceMap SourceMapIntegrationKind = "source_map"
+)
+
 // Defines values for SpamFilterAnnotationsDash0Comenabled.
 const (
 	False SpamFilterAnnotationsDash0Comenabled = "false"
 	True  SpamFilterAnnotationsDash0Comenabled = "true"
 )
 
+// Defines values for SpamFilterApiVersion.
+const (
+	SpamFilterApiVersionV1alpha1 SpamFilterApiVersion = "v1alpha1"
+	SpamFilterApiVersionV1alpha2 SpamFilterApiVersion = "v1alpha2"
+)
+
 // Defines values for SpamFilterApiVersionV1Alpha1.
 const (
-	V1alpha1 SpamFilterApiVersionV1Alpha1 = "v1alpha1"
+	SpamFilterApiVersionV1Alpha1V1alpha1 SpamFilterApiVersionV1Alpha1 = "v1alpha1"
 )
 
 // Defines values for SpamFilterApiVersionV1Alpha2.
@@ -374,6 +422,49 @@ const (
 	TelemetryFilterContextWebEvent  TelemetryFilterContext = "web_event"
 )
 
+// Defines values for TelemetryTransformationRuleContext.
+const (
+	TelemetryTransformationRuleContextDatapoint TelemetryTransformationRuleContext = "datapoint"
+	TelemetryTransformationRuleContextLog       TelemetryTransformationRuleContext = "log"
+	TelemetryTransformationRuleContextMetric    TelemetryTransformationRuleContext = "metric"
+	TelemetryTransformationRuleContextProfile   TelemetryTransformationRuleContext = "profile"
+	TelemetryTransformationRuleContextResource  TelemetryTransformationRuleContext = "resource"
+	TelemetryTransformationRuleContextScope     TelemetryTransformationRuleContext = "scope"
+	TelemetryTransformationRuleContextSpan      TelemetryTransformationRuleContext = "span"
+	TelemetryTransformationRuleContextSpanevent TelemetryTransformationRuleContext = "spanevent"
+)
+
+// Defines values for TelemetryTransformationRuleDefinitionKind.
+const (
+	Dash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
+)
+
+// Defines values for TelemetryTransformationRuleSignalType.
+const (
+	TelemetryTransformationRuleSignalTypeLogs     TelemetryTransformationRuleSignalType = "logs"
+	TelemetryTransformationRuleSignalTypeMetrics  TelemetryTransformationRuleSignalType = "metrics"
+	TelemetryTransformationRuleSignalTypeProfiles TelemetryTransformationRuleSignalType = "profiles"
+	TelemetryTransformationRuleSignalTypeTraces   TelemetryTransformationRuleSignalType = "traces"
+)
+
+// Defines values for TimeSeriesAggregationAttributeModificationKind.
+const (
+	DropAttributes TimeSeriesAggregationAttributeModificationKind = "drop_attributes"
+	KeepAttributes TimeSeriesAggregationAttributeModificationKind = "keep_attributes"
+)
+
+// Defines values for TimeSeriesAggregationAttributeModificationContext.
+const (
+	TimeSeriesAggregationAttributeModificationContextDatapoint TimeSeriesAggregationAttributeModificationContext = "datapoint"
+	TimeSeriesAggregationAttributeModificationContextResource  TimeSeriesAggregationAttributeModificationContext = "resource"
+	TimeSeriesAggregationAttributeModificationContextScope     TimeSeriesAggregationAttributeModificationContext = "scope"
+)
+
+// Defines values for TimeSeriesAggregationDefinitionKind.
+const (
+	Dash0TimeSeriesAggregation TimeSeriesAggregationDefinitionKind = "Dash0TimeSeriesAggregation"
+)
+
 // Defines values for TimingAssertionKind.
 const (
 	Timing TimingAssertionKind = "timing"
@@ -423,20 +514,20 @@ const (
 
 // Defines values for ViewType.
 const (
-	ViewTypeAwsLambda           ViewType = "aws_lambda"
-	ViewTypeFailedChecks        ViewType = "failed_checks"
-	ViewTypeGcpCloudRunJobs     ViewType = "gcp_cloud_run_jobs"
-	ViewTypeGcpCloudRunServices ViewType = "gcp_cloud_run_services"
-	ViewTypeGcpCloudStorage     ViewType = "gcp_cloud_storage"
-	ViewTypeGcpPubsub           ViewType = "gcp_pubsub"
-	ViewTypeLogs                ViewType = "logs"
-	ViewTypeMetrics             ViewType = "metrics"
-	ViewTypeProfiles            ViewType = "profiles"
-	ViewTypeResources           ViewType = "resources"
-	ViewTypeServices            ViewType = "services"
-	ViewTypeSpans               ViewType = "spans"
-	ViewTypeSql                 ViewType = "sql"
-	ViewTypeWebEvents           ViewType = "web_events"
+	AwsLambda           ViewType = "aws_lambda"
+	FailedChecks        ViewType = "failed_checks"
+	GcpCloudRunJobs     ViewType = "gcp_cloud_run_jobs"
+	GcpCloudRunServices ViewType = "gcp_cloud_run_services"
+	GcpCloudStorage     ViewType = "gcp_cloud_storage"
+	GcpPubsub           ViewType = "gcp_pubsub"
+	Logs                ViewType = "logs"
+	Metrics             ViewType = "metrics"
+	Profiles            ViewType = "profiles"
+	Resources           ViewType = "resources"
+	Services            ViewType = "services"
+	Spans               ViewType = "spans"
+	Sql                 ViewType = "sql"
+	WebEvents           ViewType = "web_events"
 )
 
 // Defines values for ViewVisualizationMetric.
@@ -692,13 +783,6 @@ type DashboardAnnotations struct {
 
 	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
-
-	// Dash0Comsource Origin of a Dash0 resource.
-	// - `ui`: created interactively in the Dash0 UI.
-	// - `terraform`: managed via the Dash0 Terraform provider.
-	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
-	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
 // DashboardApiListItem defines model for DashboardApiListItem.
@@ -721,11 +805,22 @@ type DashboardDefinition struct {
 // DashboardDefinitionKind defines model for DashboardDefinition.Kind.
 type DashboardDefinitionKind string
 
+// DashboardLabels defines model for DashboardLabels.
+type DashboardLabels struct {
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
 // DashboardMetadata defines model for DashboardMetadata.
 type DashboardMetadata struct {
 	Annotations     *DashboardAnnotations        `json:"annotations,omitempty"`
 	CreatedAt       *time.Time                   `json:"createdAt,omitempty"`
 	Dash0Extensions *DashboardMetadataExtensions `json:"dash0Extensions,omitempty"`
+	Labels          *DashboardLabels             `json:"labels,omitempty"`
 	Name            string                       `json:"name"`
 	Project         *string                      `json:"project,omitempty"`
 	UpdatedAt       *time.Time                   `json:"updatedAt,omitempty"`
@@ -754,8 +849,82 @@ type DashboardMetadataExtensions struct {
 // Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
 type Dataset = string
 
+// DatasetAction defines model for DatasetAction.
+type DatasetAction string
+
+// DatasetLoggingSettings defines model for DatasetLoggingSettings.
+type DatasetLoggingSettings struct {
+	Retention RetentionClass `json:"retention"`
+}
+
+// DatasetMetricsSettings defines model for DatasetMetricsSettings.
+type DatasetMetricsSettings struct {
+	// ExternalRedMetricsLastSeenAt A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	ExternalRedMetricsLastSeenAt *FixedTime     `json:"externalRedMetricsLastSeenAt,omitempty"`
+	Retention                    RetentionClass `json:"retention"`
+}
+
+// DatasetPermission defines model for DatasetPermission.
+type DatasetPermission struct {
+	Actions []DatasetAction `json:"actions"`
+	Role    *string         `json:"role,omitempty"`
+	TeamId  *string         `json:"teamId,omitempty"`
+	UserId  *string         `json:"userId,omitempty"`
+}
+
+// DatasetProfilingSettings defines model for DatasetProfilingSettings.
+type DatasetProfilingSettings struct {
+	Retention RetentionClass `json:"retention"`
+}
+
 // DatasetRestriction defines model for DatasetRestriction.
 type DatasetRestriction string
+
+// DatasetSettings defines model for DatasetSettings.
+type DatasetSettings struct {
+	CreatedAt        *time.Time               `json:"createdAt,omitempty"`
+	GeoLocation      GeoLocationSettings      `json:"geoLocation"`
+	IpAddresses      IpAddressesSettings      `json:"ipAddresses"`
+	Logging          DatasetLoggingSettings   `json:"logging"`
+	Metrics          DatasetMetricsSettings   `json:"metrics"`
+	Name             string                   `json:"name"`
+	Permissions      *[]DatasetPermission     `json:"permissions,omitempty"`
+	PermittedActions *[]DatasetAction         `json:"permittedActions,omitempty"`
+	Preferred        *bool                    `json:"preferred,omitempty"`
+	Profiling        DatasetProfilingSettings `json:"profiling"`
+
+	// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
+	//
+	// - disabled: No upgrade will be executed
+	// - latest: We will always upgrade to the latest and greatest
+	// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
+	//
+	// Defaults to `latest` for new organizations.
+	SemanticConventionUpgrades SemanticConventionUpgrades `json:"semanticConventionUpgrades"`
+
+	// Slug Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Slug             Dataset                `json:"slug"`
+	TelemetryFilters []TelemetryFilter      `json:"telemetryFilters"`
+	Tracing          DatasetTracingSettings `json:"tracing"`
+	UpdatedAt        *time.Time             `json:"updatedAt,omitempty"`
+	Version          *int                   `json:"version,omitempty"`
+}
+
+// DatasetTracingSettings defines model for DatasetTracingSettings.
+type DatasetTracingSettings struct {
+	// ConvertSpanEventsToLogRecords When enabled, span events are automatically converted to log records correlated with the parent span
+	// via traceId and spanId. This supports the migration away from the deprecated Span Event API towards
+	// the unified OTel event model where events are log records with names. Converted log records are tagged
+	// with the `dash0.span_event.converted` attribute.
+	ConvertSpanEventsToLogRecords *bool          `json:"convertSpanEventsToLogRecords,omitempty"`
+	Retention                     RetentionClass `json:"retention"`
+}
 
 // DiscordWebhookConfig defines model for DiscordWebhookConfig.
 type DiscordWebhookConfig struct {
@@ -859,6 +1028,15 @@ type FixedTime = time.Time
 // FixedTimeUnix The time corresponding to the given unix time in seconds and nanoseconds (as decimal places) since January 1, 1970 UTC.
 type FixedTimeUnix = string
 
+// GeoLocationSettings defines model for GeoLocationSettings.
+type GeoLocationSettings struct {
+	// EndUserGeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store.
+	EndUserGeoLocationStorageStrategy GeoLocationStorageStrategy `json:"endUserGeoLocationStorageStrategy"`
+}
+
+// GeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store.
+type GeoLocationStorageStrategy string
+
 // GetLogRecordsRequest defines model for GetLogRecordsRequest.
 type GetLogRecordsRequest struct {
 	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
@@ -923,6 +1101,9 @@ type GetSignalToMetricsResponse struct {
 	// HasMore Whether there are more results beyond the current page. Only present when pagination is used.
 	HasMore         *bool                       `json:"hasMore,omitempty"`
 	SignalToMetrics []SignalToMetricsDefinition `json:"signalToMetrics"`
+
+	// Total Total number of rules matching the request filters, ignoring pagination.
+	Total *int `json:"total,omitempty"`
 }
 
 // GetSpamFiltersResponse defines model for GetSpamFiltersResponse.
@@ -1204,6 +1385,14 @@ type InstrumentationScope struct {
 type InviteMemberRequest struct {
 	EmailAddress string `json:"emailAddress"`
 	Role         string `json:"role"`
+}
+
+// IpAddressStorageStrategy defines model for IpAddressStorageStrategy.
+type IpAddressStorageStrategy string
+
+// IpAddressesSettings defines model for IpAddressesSettings.
+type IpAddressesSettings struct {
+	EndUserIpAddressStorageStrategy IpAddressStorageStrategy `json:"endUserIpAddressStorageStrategy"`
 }
 
 // KeyValue KeyValue is a key-value pair that is used to store Span attributes, Link attributes, etc.
@@ -1664,6 +1853,48 @@ type OAuthTokenResponse struct {
 // - `refresh_token`: An OAuth 2.0 refresh token.
 type OAuthTokenType string
 
+// OTTLCondition The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
+// process data with OpenTelemetry-native concepts and constructs. An OTTL *Condition* is a boolean expression
+// determining a certain behavior.
+//
+// OTTL conditions are only valid for specific evaluation contexts:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
+//
+// Examples:
+//   - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
+type OTTLCondition = string
+
+// OTTLConditions defines model for OTTLConditions.
+type OTTLConditions = []OTTLCondition
+
+// OTTLStatement The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
+// process data with OpenTelemetry-native concepts and constructs. An OTTL *Statement* is an expression that
+// performs an action on telemetry data, such as setting, deleting, or transforming attributes.
+//
+// OTTL statements are used by the OpenTelemetry Transform Processor to modify telemetry data as it passes
+// through the collector pipeline:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/transformprocessor/README.md
+//
+// Statements are only valid for specific evaluation contexts:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
+//
+// Examples:
+//   - `set(attributes["http.request.method"], "GET")` sets an attribute value.
+//   - `delete_key(attributes, "http.request.header.authorization")` removes a sensitive attribute.
+//   - `truncate_all(attributes, 100)` truncates all attribute values to 100 characters.
+type OTTLStatement = string
+
+// OTTLStatements defines model for OTTLStatements.
+type OTTLStatements = []OTTLStatement
+
+// ObservedPatternEntry defines model for ObservedPatternEntry.
+type ObservedPatternEntry struct {
+	Dataset       string `json:"dataset"`
+	ExtractorType string `json:"extractorType"`
+	ScopeKey      string `json:"scopeKey"`
+	Template      string `json:"template"`
+}
+
 // OpsgenieConfig defines model for OpsgenieConfig.
 type OpsgenieConfig struct {
 	ApiKey   string                 `json:"apiKey"`
@@ -1772,7 +2003,7 @@ type PrometheusAlertRule_Annotations struct {
 	// FolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	FolderPath *string `json:"folderPath,omitempty"`
 
-	// Sharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Sharing Comma-separated list of principals to grant read and delete access to for API-managed check rules. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
 	Sharing *string `json:"sharing,omitempty"`
 
 	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
@@ -1908,9 +2139,28 @@ type PrometheusRuleDefinition struct {
 // exceed 1.0 at some timestamps. Use `query_offset` to delay evaluation enough for
 // the underlying data to settle.
 type PrometheusRuleGroup struct {
-	// Interval Evaluation interval for all rules in the group (e.g., "1m", "5m").
+	// Interval Evaluation interval for all rules in the group.
 	// Applies to every rule in the group; individual rules cannot override it.
 	// Defaults to "1m" if not specified.
+	//
+	// For **recording rules**, the minimum interval depends on the longest
+	// matrix-selector range in the rule's PromQL expression (the "query window"):
+	//
+	// | Query window           | Minimum interval                                                     |
+	// |------------------------|----------------------------------------------------------------------|
+	// | ≤ 1h+10m               | 1m (absolute floor)                                                  |
+	// | (1h+10m, 8h+10m]       | 5m                                                                   |
+	// | (8h+10m, 24h+10m]      | 10m — relaxed to **5m** for RR-over-RR                               |
+	// | (24h+10m, 30d+15m]     | 1h — relaxed to **5m** for RR-over-RR                                |
+	// | > 30d+15m              | rejected                                                             |
+	//
+	// "RR-over-RR" means every metric referenced by the recording rule's
+	// expression is itself an active recording-rule output in the same
+	// (organization, dataset). In that case the relaxed 5m floor applies for
+	// query windows above 8h+10m — the inner recording rule's own validation
+	// already bounded the per-eval cost.
+	//
+	// Alerting rules are not subject to these interval constraints.
 	Interval *string `json:"interval,omitempty"`
 
 	// Labels Labels to apply to all rules in the group. These are merged with rule-level labels;
@@ -2082,6 +2332,9 @@ type ResultRow struct {
 // ResultRows defines model for ResultRows.
 type ResultRows = []ResultRow
 
+// RetentionClass defines model for RetentionClass.
+type RetentionClass string
+
 // Sampling defines model for Sampling.
 type Sampling struct {
 	Mode SamplingMode `json:"mode"`
@@ -2245,6 +2498,43 @@ type ScopeSpans struct {
 	Spans []Span                `json:"spans"`
 }
 
+// SecretRef defines model for SecretRef.
+type SecretRef struct {
+	// Hash The hash is computed as follows:
+	// 1. Parse the secrets JSON into a generic structure
+	// 2. Recursively sort all object keys alphabetically (Unicode code point order)
+	// 3. Re-serialize to compact JSON (no whitespace between tokens)
+	// 4. Compute SHA-256 hash of the UTF-8 encoded JSON bytes
+	// 5. Encode the hash as lowercase hexadecimal string
+	//
+	// This ensures the hash is stable and reproducible across different implementations.
+	Hash string `json:"hash"`
+
+	// Id Opaque identifier of the encrypted secret.
+	Id string `json:"id"`
+}
+
+// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
+//
+// - disabled: No upgrade will be executed
+// - latest: We will always upgrade to the latest and greatest
+// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
+//
+// Defaults to `latest` for new organizations.
+type SemanticConventionUpgrades = string
+
+// SettingsPerOrganizationAndDatasetInfo defines model for SettingsPerOrganizationAndDatasetInfo.
+type SettingsPerOrganizationAndDatasetInfo struct {
+	DatasetSettings                     []DatasetSettings                       `json:"datasetSettings"`
+	ObservedPatterns                    *[]ObservedPatternEntry                 `json:"observedPatterns,omitempty"`
+	SamplingSettings                    []SamplingDefinition                    `json:"samplingSettings"`
+	SignalToMetricsSettings             []SignalToMetricsDefinition             `json:"signalToMetricsSettings"`
+	SourceMapSettings                   []SourceMapIntegration                  `json:"sourceMapSettings"`
+	TechnicalID                         string                                  `json:"technicalID"`
+	TelemetryTransformationRuleSettings []TelemetryTransformationRuleDefinition `json:"telemetryTransformationRuleSettings"`
+	TimeSeriesAggregationSettings       []TimeSeriesAggregationDefinition       `json:"timeSeriesAggregationSettings"`
+}
+
 // SeverityNumber SEVERITY_NUMBER_UNSPECIFIED = 0;
 // SEVERITY_NUMBER_TRACE  = 1;
 // SEVERITY_NUMBER_TRACE2 = 2;
@@ -2271,6 +2561,20 @@ type ScopeSpans struct {
 // SEVERITY_NUMBER_FATAL3 = 23;
 // SEVERITY_NUMBER_FATAL4 = 24;
 type SeverityNumber = int32
+
+// SignalToMetricsBulkUpsertRequest defines model for SignalToMetricsBulkUpsertRequest.
+type SignalToMetricsBulkUpsertRequest struct {
+	Items []SignalToMetricsDefinition `json:"items"`
+}
+
+// SignalToMetricsBulkUpsertResponse defines model for SignalToMetricsBulkUpsertResponse.
+type SignalToMetricsBulkUpsertResponse struct {
+	// Created Number of rules that were newly created.
+	Created int `json:"created"`
+
+	// Updated Number of rules that were updated.
+	Updated int `json:"updated"`
+}
 
 // SignalToMetricsCreateRequest defines model for SignalToMetricsCreateRequest.
 type SignalToMetricsCreateRequest = SignalToMetricsDefinition
@@ -2418,6 +2722,41 @@ type SlackConfig struct {
 	WebhookURL string `json:"webhookURL"`
 }
 
+// SourceMapIntegration defines model for SourceMapIntegration.
+type SourceMapIntegration struct {
+	Kind SourceMapIntegrationKind `json:"kind"`
+	Spec SourceMapIntegrationSpec `json:"spec"`
+}
+
+// SourceMapIntegrationKind defines model for SourceMapIntegration.Kind.
+type SourceMapIntegrationKind string
+
+// SourceMapIntegrationSecrets defines model for SourceMapIntegrationSecrets.
+type SourceMapIntegrationSecrets struct {
+	// BearerToken Bearer token for authorization
+	BearerToken *string `json:"bearerToken,omitempty"`
+
+	// Headers Secret header values keyed by header name
+	Headers *map[string]string `json:"headers,omitempty"`
+
+	// Password Basic auth password
+	Password *string `json:"password,omitempty"`
+}
+
+// SourceMapIntegrationSpec defines model for SourceMapIntegrationSpec.
+type SourceMapIntegrationSpec struct {
+	// Headers Custom HTTP headers to include in requests
+	Headers    *map[string]string           `json:"headers,omitempty"`
+	Secrets    *SourceMapIntegrationSecrets `json:"secrets,omitempty"`
+	SecretsRef *SecretRef                   `json:"secretsRef,omitempty"`
+
+	// UrlPrefixes URL prefixes for source map matching
+	UrlPrefixes []string `json:"urlPrefixes"`
+
+	// Username Basic auth username
+	Username *string `json:"username,omitempty"`
+}
+
 // SpamFilterAnnotations Spam filters use hard delete (removed from the dataset settings array),
 // so there is no `dash0.com/deleted-at` annotation. Timestamps
 // (`created-at`, `updated-at`) are not tracked because filters are stored
@@ -2432,6 +2771,11 @@ type SpamFilterAnnotations struct {
 // SpamFilterAnnotationsDash0Comenabled Whether this spam filter is active. Defaults to `"true"`.
 // When set to `"false"`, the filter is skipped.
 type SpamFilterAnnotationsDash0Comenabled string
+
+// SpamFilterApiVersion API version of the spam filter CRD.
+// - `v1alpha1`: spec uses `contexts` (array, single element).
+// - `v1alpha2`: spec uses `context` (scalar).
+type SpamFilterApiVersion string
 
 // SpamFilterApiVersionV1Alpha1 defines model for SpamFilterApiVersionV1Alpha1.
 type SpamFilterApiVersionV1Alpha1 string
@@ -3073,8 +3417,193 @@ type TeamsWebhookConfig struct {
 	Url string `json:"url"`
 }
 
+// TelemetryFilter defines model for TelemetryFilter.
+type TelemetryFilter struct {
+	// ApiVersion API version of the spam filter CRD.
+	// - `v1alpha1`: spec uses `contexts` (array, single element).
+	// - `v1alpha2`: spec uses `context` (scalar).
+	ApiVersion *SpamFilterApiVersion `json:"apiVersion,omitempty"`
+
+	// Condition The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
+	// process data with OpenTelemetry-native concepts and constructs. An OTTL *Condition* is a boolean expression
+	// determining a certain behavior.
+	//
+	// OTTL conditions are only valid for specific evaluation contexts:
+	// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
+	//
+	// Examples:
+	//  - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
+	Condition OTTLCondition          `json:"condition"`
+	Context   TelemetryFilterContext `json:"context"`
+
+	// Enabled Whether this telemetry filter is active. When absent or true, the filter
+	// is applied. When explicitly set to false, the filter is skipped.
+	Enabled *bool           `json:"enabled,omitempty"`
+	Filter  *FilterCriteria `json:"filter,omitempty"`
+
+	// Id Unique identifier for this spam filter. Server-generated on creation.
+	// For existing filters without an ID, a deterministic UUID is derived
+	// from a hash of the filter specification or of the condition.
+	Id *openapi_types.UUID `json:"id,omitempty"`
+
+	// Name An optional human-readable name for this telemetry filter.
+	Name *string `json:"name,omitempty"`
+
+	// Origin Immutable external identifier for this spam filter, used by
+	// Infrastructure-as-Code tools (Terraform, Kubernetes operator).
+	// When set, the filter is read-only in the UI.
+	Origin *string `json:"origin,omitempty"`
+
+	// Source Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Source *CrdSource `json:"source,omitempty"`
+}
+
 // TelemetryFilterContext defines model for TelemetryFilterContext.
 type TelemetryFilterContext string
+
+// TelemetryTransformationRuleAnnotations defines model for TelemetryTransformationRuleAnnotations.
+type TelemetryTransformationRuleAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the rule has been deleted but not yet purged. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// TelemetryTransformationRuleContext The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+// Not all contexts are valid for all signal types:
+//
+// For `traces`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `span`: Transform individual span properties and attributes.
+// - `spanevent`: Transform individual span event properties and attributes.
+//
+// For `metrics`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `metric`: Transform metric-level properties (name, description, type).
+// - `datapoint`: Transform individual metric data point attributes.
+//
+// For `logs`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `log`: Transform individual log record properties (body, severity, attributes).
+//
+// For `profiles`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `profile`: Transform individual profile properties and attributes.
+//
+// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+// resource, but a `metric` context cannot access individual data points.
+type TelemetryTransformationRuleContext string
+
+// TelemetryTransformationRuleDefinition defines model for TelemetryTransformationRuleDefinition.
+type TelemetryTransformationRuleDefinition struct {
+	Kind     TelemetryTransformationRuleDefinitionKind `json:"kind"`
+	Metadata TelemetryTransformationRuleMetadata       `json:"metadata"`
+	Spec     TelemetryTransformationRuleSpec           `json:"spec"`
+}
+
+// TelemetryTransformationRuleDefinitionKind defines model for TelemetryTransformationRuleDefinition.Kind.
+type TelemetryTransformationRuleDefinitionKind string
+
+// TelemetryTransformationRuleDisplay defines model for TelemetryTransformationRuleDisplay.
+type TelemetryTransformationRuleDisplay struct {
+	// Name Short-form name for the view to be shown prominently within the view list and atop
+	// the screen when the view is selected.
+	Name string `json:"name"`
+}
+
+// TelemetryTransformationRuleLabels defines model for TelemetryTransformationRuleLabels.
+type TelemetryTransformationRuleLabels struct {
+	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the telemetry transformation rule. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// TelemetryTransformationRuleMetadata defines model for TelemetryTransformationRuleMetadata.
+type TelemetryTransformationRuleMetadata struct {
+	Annotations *TelemetryTransformationRuleAnnotations `json:"annotations,omitempty"`
+	Labels      *TelemetryTransformationRuleLabels      `json:"labels,omitempty"`
+	Name        string                                  `json:"name"`
+}
+
+// TelemetryTransformationRuleSignalType The signal type that this transformation rule applies to.
+// - `traces`: Apply transformations to trace data (spans and span events).
+// - `metrics`: Apply transformations to metric data (metrics and data points).
+// - `logs`: Apply transformations to log data (log records).
+// - `profiles`: Apply transformations to profile data.
+type TelemetryTransformationRuleSignalType string
+
+// TelemetryTransformationRuleSpec defines model for TelemetryTransformationRuleSpec.
+type TelemetryTransformationRuleSpec struct {
+	Conditions *OTTLConditions `json:"conditions,omitempty"`
+
+	// Context The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+	// Not all contexts are valid for all signal types:
+	//
+	// For `traces`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `span`: Transform individual span properties and attributes.
+	// - `spanevent`: Transform individual span event properties and attributes.
+	//
+	// For `metrics`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `metric`: Transform metric-level properties (name, description, type).
+	// - `datapoint`: Transform individual metric data point attributes.
+	//
+	// For `logs`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `log`: Transform individual log record properties (body, severity, attributes).
+	//
+	// For `profiles`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `profile`: Transform individual profile properties and attributes.
+	//
+	// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+	// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+	// resource, but a `metric` context cannot access individual data points.
+	Context TelemetryTransformationRuleContext  `json:"context"`
+	Display *TelemetryTransformationRuleDisplay `json:"display,omitempty"`
+	Enabled bool                                `json:"enabled"`
+
+	// Signal The signal type that this transformation rule applies to.
+	// - `traces`: Apply transformations to trace data (spans and span events).
+	// - `metrics`: Apply transformations to metric data (metrics and data points).
+	// - `logs`: Apply transformations to log data (log records).
+	// - `profiles`: Apply transformations to profile data.
+	Signal     TelemetryTransformationRuleSignalType `json:"signal"`
+	Statements OTTLStatements                        `json:"statements"`
+}
 
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
@@ -3116,6 +3645,85 @@ type TimeReference = any
 type TimeReferenceRange struct {
 	From TimeReference `json:"from"`
 	To   TimeReference `json:"to"`
+}
+
+// TimeSeriesAggregationAttributeModification defines model for TimeSeriesAggregationAttributeModification.
+type TimeSeriesAggregationAttributeModification struct {
+	Kind TimeSeriesAggregationAttributeModificationKind `json:"kind"`
+	Spec TimeSeriesAggregationAttributeModificationSpec `json:"spec"`
+}
+
+// TimeSeriesAggregationAttributeModificationKind defines model for TimeSeriesAggregationAttributeModification.Kind.
+type TimeSeriesAggregationAttributeModificationKind string
+
+// TimeSeriesAggregationAttributeModificationContext defines model for TimeSeriesAggregationAttributeModificationContext.
+type TimeSeriesAggregationAttributeModificationContext string
+
+// TimeSeriesAggregationAttributeModificationSpec defines model for TimeSeriesAggregationAttributeModificationSpec.
+type TimeSeriesAggregationAttributeModificationSpec struct {
+	Context    *TimeSeriesAggregationAttributeModificationContext `json:"context,omitempty"`
+	KeyMatcher Matcher                                            `json:"keyMatcher"`
+}
+
+// TimeSeriesAggregationDefinition defines model for TimeSeriesAggregationDefinition.
+type TimeSeriesAggregationDefinition struct {
+	Kind     TimeSeriesAggregationDefinitionKind `json:"kind"`
+	Metadata TimeSeriesAggregationMetadata       `json:"metadata"`
+	Spec     TimeSeriesAggregationSpec           `json:"spec"`
+}
+
+// TimeSeriesAggregationDefinitionKind defines model for TimeSeriesAggregationDefinition.Kind.
+type TimeSeriesAggregationDefinitionKind string
+
+// TimeSeriesAggregationDisplay defines model for TimeSeriesAggregationDisplay.
+type TimeSeriesAggregationDisplay struct {
+	// Name Short-form name for the view to be shown prominently within the view list and atop
+	// the screen when the view is selected.
+	Name string `json:"name"`
+}
+
+// TimeSeriesAggregationLabels defines model for TimeSeriesAggregationLabels.
+type TimeSeriesAggregationLabels struct {
+	Custom          *map[string]string `json:"custom,omitempty"`
+	Dash0Comdataset *string            `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+}
+
+// TimeSeriesAggregationMetadata defines model for TimeSeriesAggregationMetadata.
+type TimeSeriesAggregationMetadata struct {
+	Labels *TimeSeriesAggregationLabels `json:"labels,omitempty"`
+	Name   string                       `json:"name"`
+}
+
+// TimeSeriesAggregationMetricNameMatch defines model for TimeSeriesAggregationMetricNameMatch.
+type TimeSeriesAggregationMetricNameMatch struct {
+	MetricNameMatcher Matcher        `json:"metricNameMatcher"`
+	OtherFilters      FilterCriteria `json:"otherFilters"`
+}
+
+// TimeSeriesAggregationSample defines model for TimeSeriesAggregationSample.
+type TimeSeriesAggregationSample struct {
+	Delay      *Duration `json:"delay,omitempty"`
+	Interval   Duration  `json:"interval"`
+	StaleAfter *Duration `json:"staleAfter,omitempty"`
+}
+
+// TimeSeriesAggregationSpec defines model for TimeSeriesAggregationSpec.
+type TimeSeriesAggregationSpec struct {
+	AttributeModifications *[]TimeSeriesAggregationAttributeModification `json:"attributeModifications,omitempty"`
+	Display                *TimeSeriesAggregationDisplay                 `json:"display,omitempty"`
+	Enabled                bool                                          `json:"enabled"`
+	Match                  TimeSeriesAggregationMetricNameMatch          `json:"match"`
+	Sample                 TimeSeriesAggregationSample                   `json:"sample"`
 }
 
 // TimingAssertion defines model for TimingAssertion.
@@ -3406,6 +4014,12 @@ type PostApiImportDashboardParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// PutApiImportSignalToMetricsParams defines parameters for PutApiImportSignalToMetrics.
+type PutApiImportSignalToMetricsParams struct {
+	// Dataset The dataset to deploy rules into. Required to prevent accidental deployment to the wrong dataset.
+	Dataset Dataset `form:"dataset" json:"dataset"`
+}
+
 // PostApiImportSyntheticCheckParams defines parameters for PostApiImportSyntheticCheck.
 type PostApiImportSyntheticCheckParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -3645,6 +4259,9 @@ type PostApiImportCheckRulesJSONRequestBody = PrometheusAlertRuleBulkCreateReque
 
 // PostApiImportDashboardJSONRequestBody defines body for PostApiImportDashboard for application/json ContentType.
 type PostApiImportDashboardJSONRequestBody = DashboardDefinition
+
+// PutApiImportSignalToMetricsJSONRequestBody defines body for PutApiImportSignalToMetrics for application/json ContentType.
+type PutApiImportSignalToMetricsJSONRequestBody = SignalToMetricsBulkUpsertRequest
 
 // PostApiImportSyntheticCheckJSONRequestBody defines body for PostApiImportSyntheticCheck for application/json ContentType.
 type PostApiImportSyntheticCheckJSONRequestBody = SyntheticCheckDefinition
@@ -5147,6 +5764,9 @@ type ClientInterface interface {
 
 	PutApiDashboardsOriginOrId(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, body PutApiDashboardsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiEdgeSettings request
+	GetApiEdgeSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostApiImportCheckRuleWithBody request with any body
 	PostApiImportCheckRuleWithBody(ctx context.Context, params *PostApiImportCheckRuleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -5161,6 +5781,11 @@ type ClientInterface interface {
 	PostApiImportDashboardWithBody(ctx context.Context, params *PostApiImportDashboardParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiImportDashboard(ctx context.Context, params *PostApiImportDashboardParams, body PostApiImportDashboardJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiImportSignalToMetricsWithBody request with any body
+	PutApiImportSignalToMetricsWithBody(ctx context.Context, params *PutApiImportSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiImportSignalToMetrics(ctx context.Context, params *PutApiImportSignalToMetricsParams, body PutApiImportSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiImportSyntheticCheckWithBody request with any body
 	PostApiImportSyntheticCheckWithBody(ctx context.Context, params *PostApiImportSyntheticCheckParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -5616,6 +6241,18 @@ func (c *generatedClient) PutApiDashboardsOriginOrId(ctx context.Context, origin
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) GetApiEdgeSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiEdgeSettingsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) PostApiImportCheckRuleWithBody(ctx context.Context, params *PostApiImportCheckRuleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiImportCheckRuleRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -5678,6 +6315,30 @@ func (c *generatedClient) PostApiImportDashboardWithBody(ctx context.Context, pa
 
 func (c *generatedClient) PostApiImportDashboard(ctx context.Context, params *PostApiImportDashboardParams, body PostApiImportDashboardJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiImportDashboardRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiImportSignalToMetricsWithBody(ctx context.Context, params *PutApiImportSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiImportSignalToMetricsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiImportSignalToMetrics(ctx context.Context, params *PutApiImportSignalToMetricsParams, body PutApiImportSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiImportSignalToMetricsRequest(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -7484,6 +8145,33 @@ func NewPutApiDashboardsOriginOrIdRequestWithBody(server string, originOrId stri
 	return req, nil
 }
 
+// NewGetApiEdgeSettingsRequest generates requests for GetApiEdgeSettings
+func NewGetApiEdgeSettingsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/edge/settings")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostApiImportCheckRuleRequest calls the generic PostApiImportCheckRule builder with application/json body
 func NewPostApiImportCheckRuleRequest(server string, params *PostApiImportCheckRuleParams, body PostApiImportCheckRuleJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -7661,6 +8349,64 @@ func NewPostApiImportDashboardRequestWithBody(server string, params *PostApiImpo
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPutApiImportSignalToMetricsRequest calls the generic PutApiImportSignalToMetrics builder with application/json body
+func NewPutApiImportSignalToMetricsRequest(server string, params *PutApiImportSignalToMetricsParams, body PutApiImportSignalToMetricsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiImportSignalToMetricsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPutApiImportSignalToMetricsRequestWithBody generates requests for PutApiImportSignalToMetrics with any type of body
+func NewPutApiImportSignalToMetricsRequestWithBody(server string, params *PutApiImportSignalToMetricsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/import/signal-to-metrics")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -10893,6 +11639,9 @@ type ClientWithResponsesInterface interface {
 
 	PutApiDashboardsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, body PutApiDashboardsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDashboardsOriginOrIdResponse, error)
 
+	// GetApiEdgeSettingsWithResponse request
+	GetApiEdgeSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiEdgeSettingsResponse, error)
+
 	// PostApiImportCheckRuleWithBodyWithResponse request with any body
 	PostApiImportCheckRuleWithBodyWithResponse(ctx context.Context, params *PostApiImportCheckRuleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportCheckRuleResponse, error)
 
@@ -10907,6 +11656,11 @@ type ClientWithResponsesInterface interface {
 	PostApiImportDashboardWithBodyWithResponse(ctx context.Context, params *PostApiImportDashboardParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportDashboardResponse, error)
 
 	PostApiImportDashboardWithResponse(ctx context.Context, params *PostApiImportDashboardParams, body PostApiImportDashboardJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiImportDashboardResponse, error)
+
+	// PutApiImportSignalToMetricsWithBodyWithResponse request with any body
+	PutApiImportSignalToMetricsWithBodyWithResponse(ctx context.Context, params *PutApiImportSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiImportSignalToMetricsResponse, error)
+
+	PutApiImportSignalToMetricsWithResponse(ctx context.Context, params *PutApiImportSignalToMetricsParams, body PutApiImportSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiImportSignalToMetricsResponse, error)
 
 	// PostApiImportSyntheticCheckWithBodyWithResponse request with any body
 	PostApiImportSyntheticCheckWithBodyWithResponse(ctx context.Context, params *PostApiImportSyntheticCheckParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportSyntheticCheckResponse, error)
@@ -11443,6 +12197,29 @@ func (r PutApiDashboardsOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiEdgeSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SettingsPerOrganizationAndDatasetInfo
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiEdgeSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiEdgeSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostApiImportCheckRuleResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -11506,6 +12283,29 @@ func (r PostApiImportDashboardResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiImportDashboardResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiImportSignalToMetricsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SignalToMetricsBulkUpsertResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiImportSignalToMetricsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiImportSignalToMetricsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -13026,6 +13826,15 @@ func (c *ClientWithResponses) PutApiDashboardsOriginOrIdWithResponse(ctx context
 	return ParsePutApiDashboardsOriginOrIdResponse(rsp)
 }
 
+// GetApiEdgeSettingsWithResponse request returning *GetApiEdgeSettingsResponse
+func (c *ClientWithResponses) GetApiEdgeSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiEdgeSettingsResponse, error) {
+	rsp, err := c.GetApiEdgeSettings(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiEdgeSettingsResponse(rsp)
+}
+
 // PostApiImportCheckRuleWithBodyWithResponse request with arbitrary body returning *PostApiImportCheckRuleResponse
 func (c *ClientWithResponses) PostApiImportCheckRuleWithBodyWithResponse(ctx context.Context, params *PostApiImportCheckRuleParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportCheckRuleResponse, error) {
 	rsp, err := c.PostApiImportCheckRuleWithBody(ctx, params, contentType, body, reqEditors...)
@@ -13075,6 +13884,23 @@ func (c *ClientWithResponses) PostApiImportDashboardWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParsePostApiImportDashboardResponse(rsp)
+}
+
+// PutApiImportSignalToMetricsWithBodyWithResponse request with arbitrary body returning *PutApiImportSignalToMetricsResponse
+func (c *ClientWithResponses) PutApiImportSignalToMetricsWithBodyWithResponse(ctx context.Context, params *PutApiImportSignalToMetricsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiImportSignalToMetricsResponse, error) {
+	rsp, err := c.PutApiImportSignalToMetricsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiImportSignalToMetricsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiImportSignalToMetricsWithResponse(ctx context.Context, params *PutApiImportSignalToMetricsParams, body PutApiImportSignalToMetricsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiImportSignalToMetricsResponse, error) {
+	rsp, err := c.PutApiImportSignalToMetrics(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiImportSignalToMetricsResponse(rsp)
 }
 
 // PostApiImportSyntheticCheckWithBodyWithResponse request with arbitrary body returning *PostApiImportSyntheticCheckResponse
@@ -14263,6 +15089,39 @@ func ParsePutApiDashboardsOriginOrIdResponse(rsp *http.Response) (*PutApiDashboa
 	return response, nil
 }
 
+// ParseGetApiEdgeSettingsResponse parses an HTTP response from a GetApiEdgeSettingsWithResponse call
+func ParseGetApiEdgeSettingsResponse(rsp *http.Response) (*GetApiEdgeSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiEdgeSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SettingsPerOrganizationAndDatasetInfo
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostApiImportCheckRuleResponse parses an HTTP response from a PostApiImportCheckRuleWithResponse call
 func ParsePostApiImportCheckRuleResponse(rsp *http.Response) (*PostApiImportCheckRuleResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -14345,6 +15204,39 @@ func ParsePostApiImportDashboardResponse(rsp *http.Response) (*PostApiImportDash
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest DashboardDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiImportSignalToMetricsResponse parses an HTTP response from a PutApiImportSignalToMetricsWithResponse call
+func ParsePutApiImportSignalToMetricsResponse(rsp *http.Response) (*PutApiImportSignalToMetricsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiImportSignalToMetricsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignalToMetricsBulkUpsertResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

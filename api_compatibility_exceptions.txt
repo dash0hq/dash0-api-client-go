@@ -77,3 +77,11 @@ StripSpamFilterServerFields
 # never matched a server-accepted value.
 TelemetryFilterContextMetric
 TelemetryFilterContextSpanEvent
+
+# <NEXT_RELEASE>: Upstream OpenAPI spec moved the dash0.com/source field on
+# dashboards out of DashboardAnnotations and into the new DashboardLabels
+# struct, reachable via DashboardMetadata.Labels.Dash0Comsource. Read and
+# write call sites must move from .Annotations.Dash0Comsource to
+# .Labels.Dash0Comsource. There is no field-level shim because Go does not
+# support aliasing struct fields.
+DashboardAnnotations.Dash0Comsource

@@ -132,8 +132,8 @@ func TestConvertPersesDashboardToDashboard_WithAnnotationsIncludingSource(t *tes
 	if d.Metadata.Annotations.Dash0Comsharing == nil || *d.Metadata.Annotations.Dash0Comsharing != "role:basic_member" {
 		t.Error("expected sharing annotation")
 	}
-	if d.Metadata.Annotations.Dash0Comsource == nil || string(*d.Metadata.Annotations.Dash0Comsource) != "terraform" {
-		t.Error("expected source annotation")
+	if d.Metadata.Labels == nil || d.Metadata.Labels.Dash0Comsource == nil || string(*d.Metadata.Labels.Dash0Comsource) != "terraform" {
+		t.Error("expected source label")
 	}
 }
 
@@ -157,8 +157,8 @@ func TestConvertPersesDashboardToDashboard_WithFolderPathOnly(t *testing.T) {
 	if d.Metadata.Annotations.Dash0Comsharing != nil {
 		t.Error("sharing should be nil")
 	}
-	if d.Metadata.Annotations.Dash0Comsource != nil {
-		t.Error("source should be nil")
+	if d.Metadata.Labels != nil {
+		t.Error("source label should not be set")
 	}
 }
 

@@ -46,11 +46,16 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefini
 		Spec: spec,
 	}
 
-	// Copy user-settable annotations (folder-path, sharing, source) from
-	// Perses CRD metadata into the typed Dashboard annotations struct.
+	// Copy user-settable annotations (folder-path, sharing) from Perses CRD
+	// metadata into the typed Dashboard annotations struct. The source field
+	// lives on DashboardLabels in the spec, so it is copied separately below.
 	annotations := convertPersesDashboardAnnotations(perses.Metadata.Annotations)
 	if annotations != nil {
 		dashboard.Metadata.Annotations = annotations
+	}
+	labels := convertPersesDashboardLabels(perses.Metadata.Annotations)
+	if labels != nil {
+		dashboard.Metadata.Labels = labels
 	}
 
 	// Copy dash0.com/id and dash0.com/dataset from labels into dash0Extensions.
@@ -75,7 +80,7 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefini
 
 // convertPersesDashboardAnnotations converts the untyped annotation map from a
 // PersesDashboard CRD into the typed DashboardAnnotations struct, copying only
-// user-settable annotations (folder-path, sharing, source).
+// user-settable annotations (folder-path, sharing).
 func convertPersesDashboardAnnotations(annotations map[string]string) *DashboardAnnotations {
 	if len(annotations) == 0 {
 		return nil
@@ -90,15 +95,23 @@ func convertPersesDashboardAnnotations(annotations map[string]string) *Dashboard
 		result.Dash0Comsharing = &v
 		hasAny = true
 	}
-	if v, ok := annotations[AnnotationSource]; ok {
-		source := DashboardSource(v)
-		result.Dash0Comsource = &source
-		hasAny = true
-	}
 	if !hasAny {
 		return nil
 	}
 	return &result
+}
+
+// convertPersesDashboardLabels copies labels-equivalent values that the Perses
+// CRD carries on its annotation map into the typed DashboardLabels struct.
+// Currently this only covers the source field, which the upstream spec moved
+// from DashboardAnnotations to DashboardLabels.
+func convertPersesDashboardLabels(annotations map[string]string) *DashboardLabels {
+	v, ok := annotations[AnnotationSource]
+	if !ok {
+		return nil
+	}
+	source := CrdSource(v)
+	return &DashboardLabels{Dash0Comsource: &source}
 }
 
 // extractDisplayName reads spec.display.name from a dashboard spec map.
