@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.12.3
+
+
+### Bug Fixes
+- compat updates
+- normalize API groups for spam filters
+
 ## v1.12.2
 
 

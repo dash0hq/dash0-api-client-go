@@ -42,7 +42,7 @@ package dash0
 // [SignalToMetricsSourceOperator], [SignalToMetricsSourceTerraform],
 // [SignalToMetricsSourceUi]) still work as deprecated aliases.
 //
-// # Migration guide (v1.12.x to <NEXT_RELEASE>)
+// # Migration guide (v1.12.x to v1.12.3)
 //
 // The upstream OpenAPI spec regeneration reverted the v1.9.0 [ViewType]
 // constant rename: the canonical names are once again the short forms
@@ -114,49 +114,49 @@ const SignalToMetricsSourceTerraform = Terraform
 // Deprecated: since v1.12.0. Use [Ui] instead.
 const SignalToMetricsSourceUi = Ui
 
-// Deprecated: since <NEXT_RELEASE>. Use [AwsLambda] instead.
+// Deprecated: since v1.12.3. Use [AwsLambda] instead.
 const ViewTypeAwsLambda = AwsLambda
 
-// Deprecated: since <NEXT_RELEASE>. Use [FailedChecks] instead.
+// Deprecated: since v1.12.3. Use [FailedChecks] instead.
 const ViewTypeFailedChecks = FailedChecks
 
-// Deprecated: since <NEXT_RELEASE>. Use [GcpCloudRunJobs] instead.
+// Deprecated: since v1.12.3. Use [GcpCloudRunJobs] instead.
 const ViewTypeGcpCloudRunJobs = GcpCloudRunJobs
 
-// Deprecated: since <NEXT_RELEASE>. Use [GcpCloudRunServices] instead.
+// Deprecated: since v1.12.3. Use [GcpCloudRunServices] instead.
 const ViewTypeGcpCloudRunServices = GcpCloudRunServices
 
-// Deprecated: since <NEXT_RELEASE>. Use [GcpCloudStorage] instead.
+// Deprecated: since v1.12.3. Use [GcpCloudStorage] instead.
 const ViewTypeGcpCloudStorage = GcpCloudStorage
 
-// Deprecated: since <NEXT_RELEASE>. Use [GcpPubsub] instead.
+// Deprecated: since v1.12.3. Use [GcpPubsub] instead.
 const ViewTypeGcpPubsub = GcpPubsub
 
-// Deprecated: since <NEXT_RELEASE>. Use [Logs] instead.
+// Deprecated: since v1.12.3. Use [Logs] instead.
 const ViewTypeLogs = Logs
 
-// Deprecated: since <NEXT_RELEASE>. Use [Metrics] instead.
+// Deprecated: since v1.12.3. Use [Metrics] instead.
 const ViewTypeMetrics = Metrics
 
-// Deprecated: since <NEXT_RELEASE>. Use [Profiles] instead.
+// Deprecated: since v1.12.3. Use [Profiles] instead.
 const ViewTypeProfiles = Profiles
 
-// Deprecated: since <NEXT_RELEASE>. Use [Resources] instead.
+// Deprecated: since v1.12.3. Use [Resources] instead.
 const ViewTypeResources = Resources
 
-// Deprecated: since <NEXT_RELEASE>. Use [Services] instead.
+// Deprecated: since v1.12.3. Use [Services] instead.
 const ViewTypeServices = Services
 
-// Deprecated: since <NEXT_RELEASE>. Use [Spans] instead.
+// Deprecated: since v1.12.3. Use [Spans] instead.
 const ViewTypeSpans = Spans
 
-// Deprecated: since <NEXT_RELEASE>. Use [Sql] instead.
+// Deprecated: since v1.12.3. Use [Sql] instead.
 const ViewTypeSql = Sql
 
-// Deprecated: since <NEXT_RELEASE>. Use [WebEvents] instead.
+// Deprecated: since v1.12.3. Use [WebEvents] instead.
 const ViewTypeWebEvents = WebEvents
 
-// Deprecated: since <NEXT_RELEASE>. Use [SpamFilterApiVersionV1Alpha1V1alpha1] instead.
+// Deprecated: since v1.12.3. Use [SpamFilterApiVersionV1Alpha1V1alpha1] instead.
 const V1alpha1 = SpamFilterApiVersionV1Alpha1V1alpha1
 
 // Dash0SpamFilter is a deprecated alias for [SpamFilterDefinitionKindDash0SpamFilter].
