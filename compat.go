@@ -41,6 +41,28 @@ package dash0
 // The old type and constants ([SignalToMetricsSourceApi],
 // [SignalToMetricsSourceOperator], [SignalToMetricsSourceTerraform],
 // [SignalToMetricsSourceUi]) still work as deprecated aliases.
+//
+// # Migration guide (v1.12.x to <NEXT_RELEASE>)
+//
+// The upstream OpenAPI spec regeneration reverted the v1.9.0 [ViewType]
+// constant rename: the canonical names are once again the short forms
+// ([FailedChecks], [Logs], [Metrics], [Resources], [Services], [Spans],
+// [Sql], [WebEvents], plus the previously prefix-only [AwsLambda],
+// [GcpCloudRunJobs], [GcpCloudRunServices], [GcpCloudStorage], [GcpPubsub],
+// and [Profiles]).
+// The prefixed names ([ViewTypeFailedChecks] etc.) remain as deprecated
+// aliases.
+//
+// The spam-filter v1alpha1 constant was renamed from [V1alpha1] to
+// [SpamFilterApiVersionV1Alpha1V1alpha1] because the new
+// [SpamFilterApiVersion] union type would have collided with the short name.
+// The old [V1alpha1] identifier is preserved as a deprecated alias.
+//
+// [DashboardAnnotations.Dash0Comsource] was moved by the upstream spec into
+// the new [DashboardLabels] struct accessible via
+// [DashboardMetadata.Labels.Dash0Comsource].
+// Update read and write call sites accordingly; there is no in-package
+// shim because struct fields cannot be aliased.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -92,29 +114,50 @@ const SignalToMetricsSourceTerraform = Terraform
 // Deprecated: since v1.12.0. Use [Ui] instead.
 const SignalToMetricsSourceUi = Ui
 
-// Deprecated: since v1.9.0. Use [ViewTypeFailedChecks] instead.
-const FailedChecks = ViewTypeFailedChecks
+// Deprecated: since <NEXT_RELEASE>. Use [AwsLambda] instead.
+const ViewTypeAwsLambda = AwsLambda
 
-// Deprecated: since v1.9.0. Use [ViewTypeLogs] instead.
-const Logs = ViewTypeLogs
+// Deprecated: since <NEXT_RELEASE>. Use [FailedChecks] instead.
+const ViewTypeFailedChecks = FailedChecks
 
-// Deprecated: since v1.9.0. Use [ViewTypeMetrics] instead.
-const Metrics = ViewTypeMetrics
+// Deprecated: since <NEXT_RELEASE>. Use [GcpCloudRunJobs] instead.
+const ViewTypeGcpCloudRunJobs = GcpCloudRunJobs
 
-// Deprecated: since v1.9.0. Use [ViewTypeResources] instead.
-const Resources = ViewTypeResources
+// Deprecated: since <NEXT_RELEASE>. Use [GcpCloudRunServices] instead.
+const ViewTypeGcpCloudRunServices = GcpCloudRunServices
 
-// Deprecated: since v1.9.0. Use [ViewTypeServices] instead.
-const Services = ViewTypeServices
+// Deprecated: since <NEXT_RELEASE>. Use [GcpCloudStorage] instead.
+const ViewTypeGcpCloudStorage = GcpCloudStorage
 
-// Deprecated: since v1.9.0. Use [ViewTypeSpans] instead.
-const Spans = ViewTypeSpans
+// Deprecated: since <NEXT_RELEASE>. Use [GcpPubsub] instead.
+const ViewTypeGcpPubsub = GcpPubsub
 
-// Deprecated: since v1.9.0. Use [ViewTypeSql] instead.
-const Sql = ViewTypeSql
+// Deprecated: since <NEXT_RELEASE>. Use [Logs] instead.
+const ViewTypeLogs = Logs
 
-// Deprecated: since v1.9.0. Use [ViewTypeWebEvents] instead.
-const WebEvents = ViewTypeWebEvents
+// Deprecated: since <NEXT_RELEASE>. Use [Metrics] instead.
+const ViewTypeMetrics = Metrics
+
+// Deprecated: since <NEXT_RELEASE>. Use [Profiles] instead.
+const ViewTypeProfiles = Profiles
+
+// Deprecated: since <NEXT_RELEASE>. Use [Resources] instead.
+const ViewTypeResources = Resources
+
+// Deprecated: since <NEXT_RELEASE>. Use [Services] instead.
+const ViewTypeServices = Services
+
+// Deprecated: since <NEXT_RELEASE>. Use [Spans] instead.
+const ViewTypeSpans = Spans
+
+// Deprecated: since <NEXT_RELEASE>. Use [Sql] instead.
+const ViewTypeSql = Sql
+
+// Deprecated: since <NEXT_RELEASE>. Use [WebEvents] instead.
+const ViewTypeWebEvents = WebEvents
+
+// Deprecated: since <NEXT_RELEASE>. Use [SpamFilterApiVersionV1Alpha1V1alpha1] instead.
+const V1alpha1 = SpamFilterApiVersionV1Alpha1V1alpha1
 
 // Dash0SpamFilter is a deprecated alias for [SpamFilterDefinitionKindDash0SpamFilter].
 //
