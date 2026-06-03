@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.13.1
+
+
+### Bug Fixes
+- expose `dataset` attribute for deep link URLs
+
 ## Unreleased
 
 
