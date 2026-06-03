@@ -3,8 +3,12 @@
 //
 // Transformations applied:
 //  1. Rename symbols that conflict with the public API of this package
-//     (ClientOption, NewClient, WithHTTPClient, WithBaseURL). oapi-codegen
-//     does not provide a configuration option to rename these.
+//     (ClientOption, NewClient, WithHTTPClient, WithBaseURL, PrometheusRule,
+//     and the PrometheusResultType "string" enum value, which oapi-codegen
+//     names String and would clash with the hand-written String helper).
+//     oapi-codegen does not provide a configuration option to rename these.
+//     Selector members (e.g. url.URL.String()) are left untouched so the
+//     rename never rewrites a method or field access on a different type.
 //  2. Remove deprecated fields from PrometheusAlertRule (Description, Summary,
 //     and the deprecated KeepFiringFor) since these have been replaced by
 //     annotations and the snake_case keep_firing_for field respectively.
@@ -31,6 +35,9 @@ var symbolRenames = map[string]string{
 	"WithHTTPClient": "withGeneratedHTTPClient",
 	"WithBaseURL":    "withGeneratedApiUrl",
 	"PrometheusRule": "generatedPrometheusRule",
+	// The PrometheusResultType "string" value is generated as the const String,
+	// which clashes with the hand-written String helper in util.go.
+	"String": "PrometheusResultTypeString",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry
@@ -82,17 +89,33 @@ func main() {
 	}
 }
 
-// renameSymbols replaces all occurrences of conflicting identifiers throughout
-// the AST.
+// renameSymbols replaces occurrences of conflicting identifiers throughout the
+// AST. Selector members (the Sel in expressions like url.URL.String()) are left
+// untouched, so a rename never rewrites a method or field access on a different
+// type that happens to share a name with a generated symbol.
 func renameSymbols(file *ast.File) {
-	ast.Inspect(file, func(n ast.Node) bool {
-		if ident, ok := n.(*ast.Ident); ok {
-			if replacement, found := symbolRenames[ident.Name]; found {
-				ident.Name = replacement
-			}
+	ast.Walk(symbolRenamer{}, file)
+}
+
+// symbolRenamer is an ast.Visitor that applies symbolRenames to identifiers,
+// skipping the selector member of selector expressions.
+type symbolRenamer struct{}
+
+func (r symbolRenamer) Visit(n ast.Node) ast.Visitor {
+	switch node := n.(type) {
+	case *ast.SelectorExpr:
+		// Rename within the X expression, but never the selector member: it
+		// resolves to a method or field on another type (for example the
+		// standard library's url.URL.String()).
+		ast.Walk(r, node.X)
+		return nil
+	case *ast.Ident:
+		if replacement, found := symbolRenames[node.Name]; found {
+			node.Name = replacement
 		}
-		return true
-	})
+		return nil
+	}
+	return r
 }
 
 // removeDeprecatedFields removes fields listed in the deprecatedFields map
