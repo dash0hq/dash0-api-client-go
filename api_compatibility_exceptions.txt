@@ -85,3 +85,17 @@ TelemetryFilterContextSpanEvent
 # .Labels.Dash0Comsource. There is no field-level shim because Go does not
 # support aliasing struct fields.
 DashboardAnnotations.Dash0Comsource
+
+# <NEXT_RELEASE>: DeeplinkURL and ViewDeeplinkURL gained a trailing
+# `dataset *string` parameter so links can be scoped to a specific dataset
+# in the Dash0 web app. Pass nil for the previous behavior (no dataset
+# query parameter). The deep-link builders were introduced one release
+# earlier in v1.13.0; there is no function-level shim because Go does not
+# support overloading and an alias cannot change arity.
+DeeplinkURL
+ViewDeeplinkURL
+
+# <NEXT_RELEASE>: Upstream OpenAPI spec dropped the
+# externalRedMetricsLastSeenAt field on DatasetMetricsSettings. Consumers
+# reading it should fall back to absence-as-unknown.
+DatasetMetricsSettings.ExternalRedMetricsLastSeenAt

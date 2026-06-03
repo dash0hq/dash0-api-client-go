@@ -13,22 +13,24 @@ type DeeplinkAssetType string
 
 // Supported deep link asset types.
 const (
-	DeeplinkAssetTypeDashboard      DeeplinkAssetType = "dashboard"
-	DeeplinkAssetTypeCheckRule      DeeplinkAssetType = "check-rule"
-	DeeplinkAssetTypeSyntheticCheck DeeplinkAssetType = "synthetic-check"
-	DeeplinkAssetTypeView           DeeplinkAssetType = "view"
-	DeeplinkAssetTypeTeam           DeeplinkAssetType = "team"
-	DeeplinkAssetTypeMember         DeeplinkAssetType = "member"
+	DeeplinkAssetTypeDashboard           DeeplinkAssetType = "dashboard"
+	DeeplinkAssetTypeCheckRule           DeeplinkAssetType = "check-rule"
+	DeeplinkAssetTypeSyntheticCheck      DeeplinkAssetType = "synthetic-check"
+	DeeplinkAssetTypeView                DeeplinkAssetType = "view"
+	DeeplinkAssetTypeTeam                DeeplinkAssetType = "team"
+	DeeplinkAssetTypeMember              DeeplinkAssetType = "member"
+	DeeplinkAssetTypeNotificationChannel DeeplinkAssetType = "notification-channel"
 )
 
 // Deep link path patterns per asset type.
 const (
-	deeplinkPathDashboard      = "/goto/dashboards"
-	deeplinkPathCheckRule      = "/goto/alerting/check-rules"
-	deeplinkPathSyntheticCheck = "/goto/alerting/synthetics"
-	deeplinkPathView           = "/goto/logs"
-	deeplinkPathTeam           = "/goto/settings/teams"
-	deeplinkPathMember         = "/goto/settings/members"
+	deeplinkPathDashboard           = "/goto/dashboards"
+	deeplinkPathCheckRule           = "/goto/alerting/check-rules"
+	deeplinkPathSyntheticCheck      = "/goto/alerting/synthetics"
+	deeplinkPathView                = "/goto/logs"
+	deeplinkPathTeam                = "/goto/settings/teams"
+	deeplinkPathMember              = "/goto/settings/members"
+	deeplinkPathNotificationChannel = "/goto/settings/notifications"
 
 	// View-type-specific deep link paths.
 	deeplinkPathViewLogs         = "/goto/logs"
@@ -40,12 +42,13 @@ const (
 	deeplinkPathViewWebEvents    = "/goto/web-events/explorer"
 
 	// Query parameter names per asset type.
-	deeplinkQueryDashboard      = "dashboard_id"
-	deeplinkQueryCheckRule      = "check_rule_id"
-	deeplinkQuerySyntheticCheck = "check_id"
-	deeplinkQueryView           = "view_id"
-	deeplinkQueryTeam           = "team_id"
-	deeplinkQueryMember         = "member_id"
+	deeplinkQueryDashboard           = "dashboard_id"
+	deeplinkQueryCheckRule           = "check_rule_id"
+	deeplinkQuerySyntheticCheck      = "check_id"
+	deeplinkQueryView                = "view_id"
+	deeplinkQueryTeam                = "team_id"
+	deeplinkQueryMember              = "member_id"
+	deeplinkQueryNotificationChannel = "channel_id"
 )
 
 // AppBaseURL derives the Dash0 web app base URL from an API URL.
@@ -86,10 +89,15 @@ func domainSuffix(hostname string) string {
 // DeeplinkURL constructs a Dash0 web app deep link for the given asset type and
 // ID, derived from the API URL (see [AppBaseURL]).
 //
+// When dataset is non-nil and non-empty, a `dataset=<dataset>` query parameter
+// is appended so the web app opens the page scoped to that dataset. Org-level
+// assets (team, member, notification channel) do not live in a dataset; pass
+// nil for those.
+//
 // It returns an empty string if the API URL cannot be parsed or the asset type
 // is not supported. For views, prefer [ViewDeeplinkURL], which selects the
 // correct page based on the view type.
-func DeeplinkURL(apiURL string, assetType DeeplinkAssetType, assetID string) string {
+func DeeplinkURL(apiURL string, assetType DeeplinkAssetType, assetID string, dataset *string) string {
 	baseURL := AppBaseURL(apiURL)
 	if baseURL == "" {
 		return ""
@@ -100,16 +108,24 @@ func DeeplinkURL(apiURL string, assetType DeeplinkAssetType, assetID string) str
 		return ""
 	}
 
-	return fmt.Sprintf("%s%s?%s=%s", baseURL, path, queryParam, url.QueryEscape(assetID))
+	params := url.Values{}
+	params.Set(queryParam, assetID)
+	if dataset != nil && *dataset != "" {
+		params.Set("dataset", *dataset)
+	}
+	return fmt.Sprintf("%s%s?%s", baseURL, path, params.Encode())
 }
 
 // ViewDeeplinkURL constructs a Dash0 web app deep link for a view, using the
 // view's type to select the correct page (for example "/goto/traces/explorer"
 // for span views, "/goto/logs" for log views).
 //
+// When dataset is non-nil and non-empty, a `dataset=<dataset>` query parameter
+// is appended so the web app opens the view scoped to that dataset.
+//
 // It returns an empty string if the API URL cannot be parsed or the view type
 // has no associated page.
-func ViewDeeplinkURL(apiURL string, viewType ViewType, viewID string) string {
+func ViewDeeplinkURL(apiURL string, viewType ViewType, viewID string, dataset *string) string {
 	baseURL := AppBaseURL(apiURL)
 	if baseURL == "" {
 		return ""
@@ -120,7 +136,12 @@ func ViewDeeplinkURL(apiURL string, viewType ViewType, viewID string) string {
 		return ""
 	}
 
-	return fmt.Sprintf("%s%s?%s=%s", baseURL, path, deeplinkQueryView, url.QueryEscape(viewID))
+	params := url.Values{}
+	params.Set(deeplinkQueryView, viewID)
+	if dataset != nil && *dataset != "" {
+		params.Set("dataset", *dataset)
+	}
+	return fmt.Sprintf("%s%s?%s", baseURL, path, params.Encode())
 }
 
 // viewTypePath maps a view type to the corresponding deep link path, or an
@@ -162,6 +183,8 @@ func deeplinkPathAndQuery(assetType DeeplinkAssetType) (string, string) {
 		return deeplinkPathTeam, deeplinkQueryTeam
 	case DeeplinkAssetTypeMember:
 		return deeplinkPathMember, deeplinkQueryMember
+	case DeeplinkAssetTypeNotificationChannel:
+		return deeplinkPathNotificationChannel, deeplinkQueryNotificationChannel
 	default:
 		return "", ""
 	}

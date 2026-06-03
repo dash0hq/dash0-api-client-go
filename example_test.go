@@ -729,11 +729,11 @@ func ExampleAppBaseURL() {
 }
 
 func ExampleDeeplinkURL() {
-	fmt.Println(dash0.DeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.DeeplinkAssetTypeDashboard, "abc-123"))
-	// Output: https://app.dash0.com/goto/dashboards?dashboard_id=abc-123
+	fmt.Println(dash0.DeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.DeeplinkAssetTypeDashboard, "abc-123", dash0.Ptr("production")))
+	// Output: https://app.dash0.com/goto/dashboards?dashboard_id=abc-123&dataset=production
 }
 
 func ExampleViewDeeplinkURL() {
-	fmt.Println(dash0.ViewDeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.Spans, "view-7"))
-	// Output: https://app.dash0.com/goto/traces/explorer?view_id=view-7
+	fmt.Println(dash0.ViewDeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.Spans, "view-7", dash0.Ptr("production")))
+	// Output: https://app.dash0.com/goto/traces/explorer?dataset=production&view_id=view-7
 }

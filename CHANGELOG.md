@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+
+### Bug Fixes
+- scope deep link URLs to a dataset and add notification channel asset type
+
+### Breaking
+- `DeeplinkURL` and `ViewDeeplinkURL` gained a trailing `dataset *string` parameter; pass `nil` to preserve the previous behavior
+
 ## v1.13.0
 
 

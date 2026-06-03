@@ -53,10 +53,11 @@ func TestDeeplinkURL(t *testing.T) {
 		{"view default", DeeplinkAssetTypeView, "v1", "/goto/logs", "view_id"},
 		{"team", DeeplinkAssetTypeTeam, "t1", "/goto/settings/teams", "team_id"},
 		{"member", DeeplinkAssetTypeMember, "m1", "/goto/settings/members", "member_id"},
+		{"notification channel", DeeplinkAssetTypeNotificationChannel, "n1", "/goto/settings/notifications", "channel_id"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u := parseURL(t, DeeplinkURL(api, tt.assetType, tt.id))
+			u := parseURL(t, DeeplinkURL(api, tt.assetType, tt.id, nil))
 			if u.Scheme != "https" {
 				t.Errorf("scheme = %q, want https", u.Scheme)
 			}
@@ -69,21 +70,41 @@ func TestDeeplinkURL(t *testing.T) {
 			if got := u.Query().Get(tt.queryParam); got != tt.id {
 				t.Errorf("query %s = %q, want %q", tt.queryParam, got, tt.id)
 			}
+			if _, ok := u.Query()["dataset"]; ok {
+				t.Error("dataset query param should be absent when dataset is nil")
+			}
 		})
 	}
 }
 
+func TestDeeplinkURL_WithDataset(t *testing.T) {
+	const api = "https://api.us-west-2.aws.dash0.com"
+	u := parseURL(t, DeeplinkURL(api, DeeplinkAssetTypeDashboard, "abc-123", Ptr("production")))
+	if got := u.Query().Get("dashboard_id"); got != "abc-123" {
+		t.Errorf("dashboard_id = %q, want abc-123", got)
+	}
+	if got := u.Query().Get("dataset"); got != "production" {
+		t.Errorf("dataset = %q, want production", got)
+	}
+
+	// Empty dataset string is treated as absent.
+	u = parseURL(t, DeeplinkURL(api, DeeplinkAssetTypeDashboard, "abc-123", Ptr("")))
+	if _, ok := u.Query()["dataset"]; ok {
+		t.Error("dataset query param should be absent when dataset is empty string")
+	}
+}
+
 func TestDeeplinkURL_Empty(t *testing.T) {
-	if got := DeeplinkURL("", DeeplinkAssetTypeDashboard, "x"); got != "" {
+	if got := DeeplinkURL("", DeeplinkAssetTypeDashboard, "x", nil); got != "" {
 		t.Errorf("empty api url: got %q, want empty", got)
 	}
-	if got := DeeplinkURL("https://api.us-west-2.aws.dash0.com", DeeplinkAssetType("bogus"), "x"); got != "" {
+	if got := DeeplinkURL("https://api.us-west-2.aws.dash0.com", DeeplinkAssetType("bogus"), "x", nil); got != "" {
 		t.Errorf("unknown asset type: got %q, want empty", got)
 	}
 }
 
 func TestDeeplinkURL_EscapesID(t *testing.T) {
-	u := parseURL(t, DeeplinkURL("https://api.dash0.com", DeeplinkAssetTypeDashboard, "a b&c"))
+	u := parseURL(t, DeeplinkURL("https://api.dash0.com", DeeplinkAssetTypeDashboard, "a b&c", nil))
 	if got := u.Query().Get("dashboard_id"); got != "a b&c" {
 		t.Errorf("dashboard_id = %q, want %q", got, "a b&c")
 	}
@@ -106,7 +127,7 @@ func TestViewDeeplinkURL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u := parseURL(t, ViewDeeplinkURL(api, tt.viewType, "view-1"))
+			u := parseURL(t, ViewDeeplinkURL(api, tt.viewType, "view-1", nil))
 			if u.Host != "app.dash0.com" {
 				t.Errorf("host = %q, want app.dash0.com", u.Host)
 			}
@@ -116,18 +137,31 @@ func TestViewDeeplinkURL(t *testing.T) {
 			if got := u.Query().Get("view_id"); got != "view-1" {
 				t.Errorf("view_id = %q, want view-1", got)
 			}
+			if _, ok := u.Query()["dataset"]; ok {
+				t.Error("dataset query param should be absent when dataset is nil")
+			}
 		})
+	}
+}
+
+func TestViewDeeplinkURL_WithDataset(t *testing.T) {
+	u := parseURL(t, ViewDeeplinkURL("https://api.eu-west-1.aws.dash0.com", Spans, "view-1", Ptr("production")))
+	if got := u.Query().Get("view_id"); got != "view-1" {
+		t.Errorf("view_id = %q, want view-1", got)
+	}
+	if got := u.Query().Get("dataset"); got != "production" {
+		t.Errorf("dataset = %q, want production", got)
 	}
 }
 
 func TestViewDeeplinkURL_Empty(t *testing.T) {
 	// View types without a dedicated page yield no deep link.
 	for _, vt := range []ViewType{Sql, Profiles, AwsLambda, GcpPubsub} {
-		if got := ViewDeeplinkURL("https://api.dash0.com", vt, "v1"); got != "" {
+		if got := ViewDeeplinkURL("https://api.dash0.com", vt, "v1", nil); got != "" {
 			t.Errorf("ViewDeeplinkURL(%q) = %q, want empty", vt, got)
 		}
 	}
-	if got := ViewDeeplinkURL("", Logs, "v1"); got != "" {
+	if got := ViewDeeplinkURL("", Logs, "v1", nil); got != "" {
 		t.Errorf("empty api url: got %q, want empty", got)
 	}
 }

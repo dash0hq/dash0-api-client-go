@@ -227,6 +227,14 @@ const (
 	Descending OrderingDirection = "descending"
 )
 
+// Defines values for PrometheusResultType.
+const (
+	Matrix                     PrometheusResultType = "matrix"
+	Scalar                     PrometheusResultType = "scalar"
+	PrometheusResultTypeString PrometheusResultType = "string"
+	Vector                     PrometheusResultType = "vector"
+)
+
 // Defines values for PrometheusRuleApiVersion.
 const (
 	MonitoringCoreosComv1 PrometheusRuleApiVersion = "monitoring.coreos.com/v1"
@@ -514,20 +522,21 @@ const (
 
 // Defines values for ViewType.
 const (
-	AwsLambda           ViewType = "aws_lambda"
-	FailedChecks        ViewType = "failed_checks"
-	GcpCloudRunJobs     ViewType = "gcp_cloud_run_jobs"
-	GcpCloudRunServices ViewType = "gcp_cloud_run_services"
-	GcpCloudStorage     ViewType = "gcp_cloud_storage"
-	GcpPubsub           ViewType = "gcp_pubsub"
-	Logs                ViewType = "logs"
-	Metrics             ViewType = "metrics"
-	Profiles            ViewType = "profiles"
-	Resources           ViewType = "resources"
-	Services            ViewType = "services"
-	Spans               ViewType = "spans"
-	Sql                 ViewType = "sql"
-	WebEvents           ViewType = "web_events"
+	AwsLambda            ViewType = "aws_lambda"
+	FailedChecks         ViewType = "failed_checks"
+	GcpCloudRunJobs      ViewType = "gcp_cloud_run_jobs"
+	GcpCloudRunServices  ViewType = "gcp_cloud_run_services"
+	GcpCloudSqlInstances ViewType = "gcp_cloud_sql_instances"
+	GcpCloudStorage      ViewType = "gcp_cloud_storage"
+	GcpPubsub            ViewType = "gcp_pubsub"
+	Logs                 ViewType = "logs"
+	Metrics              ViewType = "metrics"
+	Profiles             ViewType = "profiles"
+	Resources            ViewType = "resources"
+	Services             ViewType = "services"
+	Spans                ViewType = "spans"
+	Sql                  ViewType = "sql"
+	WebEvents            ViewType = "web_events"
 )
 
 // Defines values for ViewVisualizationMetric.
@@ -859,15 +868,7 @@ type DatasetLoggingSettings struct {
 
 // DatasetMetricsSettings defines model for DatasetMetricsSettings.
 type DatasetMetricsSettings struct {
-	// ExternalRedMetricsLastSeenAt A fixed point in time represented as an RFC 3339 date-time string.
-	//
-	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
-	//
-	// **Examples**:
-	// - `2024-01-15T14:30:00Z`
-	// - `2024-01-15T14:30:00+08:00`
-	ExternalRedMetricsLastSeenAt *FixedTime     `json:"externalRedMetricsLastSeenAt,omitempty"`
-	Retention                    RetentionClass `json:"retention"`
+	Retention RetentionClass `json:"retention"`
 }
 
 // DatasetPermission defines model for DatasetPermission.
@@ -1542,6 +1543,12 @@ type MemberSpec struct {
 	Display MemberDisplay `json:"display"`
 }
 
+// MetricSample defines model for MetricSample.
+type MetricSample = []interface{}
+
+// MetricSamples defines model for MetricSamples.
+type MetricSamples = []MetricSample
+
 // NameValuePair defines model for NameValuePair.
 type NameValuePair struct {
 	Name  string `json:"name"`
@@ -2068,6 +2075,183 @@ type PrometheusAlertRuleMetadataLabels struct {
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
+// PrometheusBuildInfo Build information about the Prometheus-compatible server. Only `version` is populated —
+// with the upstream Prometheus version Dash0 is compatible with, for client feature
+// detection. The remaining fields are retained for upstream API compatibility but are
+// always empty; Dash0 does not expose build internals.
+type PrometheusBuildInfo struct {
+	// Branch Not exposed by Dash0; always empty.
+	Branch *string `json:"branch,omitempty"`
+
+	// BuildDate Not exposed by Dash0; always empty.
+	BuildDate *string `json:"buildDate,omitempty"`
+
+	// BuildUser Not exposed by Dash0; always empty.
+	BuildUser *string `json:"buildUser,omitempty"`
+
+	// GoVersion Not exposed by Dash0; always empty.
+	GoVersion *string `json:"goVersion,omitempty"`
+
+	// Revision Not exposed by Dash0; always empty.
+	Revision *string `json:"revision,omitempty"`
+
+	// Version The upstream Prometheus version Dash0 is compatible with.
+	Version *string `json:"version,omitempty"`
+}
+
+// PrometheusBuildInfoResponse defines model for PrometheusBuildInfoResponse.
+type PrometheusBuildInfoResponse struct {
+	// Data Build information about the Prometheus-compatible server. Only `version` is populated —
+	// with the upstream Prometheus version Dash0 is compatible with, for client feature
+	// detection. The remaining fields are retained for upstream API compatibility but are
+	// always empty; Dash0 does not expose build internals.
+	Data     *PrometheusBuildInfo `json:"data,omitempty"`
+	Status   string               `json:"status"`
+	Warnings *[]string            `json:"warnings,omitempty"`
+}
+
+// PrometheusErrorResponse defines model for PrometheusErrorResponse.
+type PrometheusErrorResponse struct {
+	Error     string `json:"error"`
+	ErrorType string `json:"errorType"`
+
+	// Infos Info-level annotations produced while evaluating the query (Prometheus 3.0+).
+	// Only populated by the instant and range query endpoints.
+	Infos    *[]string `json:"infos,omitempty"`
+	Status   string    `json:"status"`
+	Warnings *[]string `json:"warnings,omitempty"`
+}
+
+// PrometheusFormatQueryRequest defines model for PrometheusFormatQueryRequest.
+type PrometheusFormatQueryRequest struct {
+	Query string `json:"query"`
+}
+
+// PrometheusFormatQueryResponse defines model for PrometheusFormatQueryResponse.
+type PrometheusFormatQueryResponse struct {
+	Data     *string   `json:"data,omitempty"`
+	Status   string    `json:"status"`
+	Warnings *[]string `json:"warnings,omitempty"`
+}
+
+// PrometheusLabelNamesOrValuesRequest defines model for PrometheusLabelNamesOrValuesRequest.
+type PrometheusLabelNamesOrValuesRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset  `json:"dataset,omitempty"`
+	End     *string   `json:"end,omitempty"`
+	Limit   *int64    `json:"limit,omitempty"`
+	Match   *[]string `json:"match[],omitempty"`
+	Start   *string   `json:"start,omitempty"`
+}
+
+// PrometheusLabelNamesOrValuesResponse defines model for PrometheusLabelNamesOrValuesResponse.
+type PrometheusLabelNamesOrValuesResponse struct {
+	Data     *[]string `json:"data,omitempty"`
+	Status   string    `json:"status"`
+	Warnings *[]string `json:"warnings,omitempty"`
+}
+
+// PrometheusMatrixResult defines model for PrometheusMatrixResult.
+type PrometheusMatrixResult = []PrometheusMatrixSampleResult
+
+// PrometheusMatrixSampleResult defines model for PrometheusMatrixSampleResult.
+type PrometheusMatrixSampleResult struct {
+	Metric PrometheusMetric `json:"metric"`
+	Values MetricSamples    `json:"values"`
+}
+
+// PrometheusMetadataRequest defines model for PrometheusMetadataRequest.
+type PrometheusMetadataRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset        *Dataset `json:"dataset,omitempty"`
+	End            *string  `json:"end,omitempty"`
+	Limit          *int64   `json:"limit,omitempty"`
+	LimitPerMetric *int64   `json:"limit_per_metric,omitempty"`
+	Metric         *string  `json:"metric,omitempty"`
+	Start          *string  `json:"start,omitempty"`
+}
+
+// PrometheusMetadataResponse defines model for PrometheusMetadataResponse.
+type PrometheusMetadataResponse struct {
+	// Data Metric metadata keyed by metric name. Each metric maps to a list of metadata entries.
+	Data     *map[string][]PrometheusMetricMetadata `json:"data,omitempty"`
+	Status   string                                 `json:"status"`
+	Warnings *[]string                              `json:"warnings,omitempty"`
+}
+
+// PrometheusMetric defines model for PrometheusMetric.
+type PrometheusMetric map[string]string
+
+// PrometheusMetricMetadata defines model for PrometheusMetricMetadata.
+type PrometheusMetricMetadata struct {
+	// Help A human-readable description of the metric.
+	Help *string `json:"help,omitempty"`
+
+	// Type The metric type as reported by the source. One of `counter`, `gauge`,
+	// `histogram`, `gaugehistogram`, `summary`, `info`, `stateset`, or `unknown`.
+	Type *string `json:"type,omitempty"`
+
+	// Unit The metric unit, if known.
+	Unit *string `json:"unit,omitempty"`
+}
+
+// PrometheusQueryRangeRequest defines model for PrometheusQueryRangeRequest.
+type PrometheusQueryRangeRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset `json:"dataset,omitempty"`
+	End     *string  `json:"end,omitempty"`
+	Limit   *int64   `json:"limit,omitempty"`
+	Query   string   `json:"query"`
+	Start   *string  `json:"start,omitempty"`
+	Step    string   `json:"step"`
+	Timeout *string  `json:"timeout,omitempty"`
+}
+
+// PrometheusQueryRequest defines model for PrometheusQueryRequest.
+type PrometheusQueryRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset `json:"dataset,omitempty"`
+	Limit   *int64   `json:"limit,omitempty"`
+	Query   string   `json:"query"`
+	Time    *string  `json:"time,omitempty"`
+	Timeout *string  `json:"timeout,omitempty"`
+}
+
+// PrometheusQueryResponse defines model for PrometheusQueryResponse.
+type PrometheusQueryResponse struct {
+	Data *PrometheusQueryResult `json:"data,omitempty"`
+
+	// Infos Info-level annotations produced while evaluating the query (Prometheus 3.0+),
+	// kept separate from `warnings`.
+	Infos    *[]string `json:"infos,omitempty"`
+	Status   string    `json:"status"`
+	Warnings *[]string `json:"warnings,omitempty"`
+}
+
+// PrometheusQueryResult defines model for PrometheusQueryResult.
+type PrometheusQueryResult struct {
+	Result PrometheusQueryResult_Result `json:"result"`
+
+	// ResultType The shape of the `result` field, mirroring Prometheus:
+	// - `vector`: instant-vector result (array of samples), returned by instant queries.
+	// - `matrix`: range-vector result (array of series with value ranges), returned by range queries.
+	// - `scalar`: a single scalar value.
+	// - `string`: a single string value.
+	ResultType PrometheusResultType `json:"resultType"`
+}
+
+// PrometheusQueryResult_Result defines model for PrometheusQueryResult.Result.
+type PrometheusQueryResult_Result struct {
+	union json.RawMessage
+}
+
+// PrometheusResultType The shape of the `result` field, mirroring Prometheus:
+// - `vector`: instant-vector result (array of samples), returned by instant queries.
+// - `matrix`: range-vector result (array of series with value ranges), returned by range queries.
+// - `scalar`: a single scalar value.
+// - `string`: a single string value.
+type PrometheusResultType string
+
 // PrometheusRule A resource following the monitoring.coreos.com/v1 PrometheusRule CRD format.
 // A PrometheusRule contains one or more rule groups, each evaluated at a common interval.
 // Groups may contain recording rules, alerting rules, or both.
@@ -2214,6 +2398,86 @@ type PrometheusRuleSpec struct {
 	// Groups Rule groups. Each group is evaluated independently at its own interval.
 	// Unlike the upstream PrometheusRule CRD, this field is required and must contain exactly one group.
 	Groups []PrometheusRuleGroup `json:"groups"`
+}
+
+// PrometheusRuntimeInfo Runtime information about the Prometheus-compatible server. Dash0 is not a single
+// Prometheus process, so most of the upstream runtime fields are not applicable: only
+// `reloadConfigSuccess` and `storageRetention` carry meaning. The remaining fields are
+// retained for upstream API compatibility but are always empty/zero — Dash0 does not
+// expose process, Go-runtime, or filesystem internals.
+type PrometheusRuntimeInfo struct {
+	// CWD Not exposed by Dash0; always empty.
+	CWD *string `json:"CWD,omitempty"`
+
+	// GODEBUG Not exposed by Dash0; always empty.
+	GODEBUG *string `json:"GODEBUG,omitempty"`
+
+	// GOGC Not exposed by Dash0; always empty.
+	GOGC *string `json:"GOGC,omitempty"`
+
+	// GOMAXPROCS Not exposed by Dash0; always 0.
+	GOMAXPROCS *int `json:"GOMAXPROCS,omitempty"`
+
+	// GOMEMLIMIT Not exposed by Dash0; always 0.
+	GOMEMLIMIT *int64 `json:"GOMEMLIMIT,omitempty"`
+
+	// CorruptionCount Not exposed by Dash0; always 0.
+	CorruptionCount *int64 `json:"corruptionCount,omitempty"`
+
+	// GoroutineCount Not exposed by Dash0; always 0.
+	GoroutineCount *int `json:"goroutineCount,omitempty"`
+
+	// Hostname Not exposed by Dash0; always empty.
+	Hostname *string `json:"hostname,omitempty"`
+
+	// LastConfigTime Not exposed by Dash0; always the zero time.
+	LastConfigTime *time.Time `json:"lastConfigTime,omitempty"`
+
+	// ReloadConfigSuccess Always `true`.
+	ReloadConfigSuccess *bool `json:"reloadConfigSuccess,omitempty"`
+
+	// ServerTime Not exposed by Dash0; always the zero time.
+	ServerTime *time.Time `json:"serverTime,omitempty"`
+
+	// StartTime Not exposed by Dash0; always the zero time.
+	StartTime *time.Time `json:"startTime,omitempty"`
+
+	// StorageRetention The data retention period.
+	StorageRetention *string `json:"storageRetention,omitempty"`
+}
+
+// PrometheusRuntimeInfoResponse defines model for PrometheusRuntimeInfoResponse.
+type PrometheusRuntimeInfoResponse struct {
+	// Data Runtime information about the Prometheus-compatible server. Dash0 is not a single
+	// Prometheus process, so most of the upstream runtime fields are not applicable: only
+	// `reloadConfigSuccess` and `storageRetention` carry meaning. The remaining fields are
+	// retained for upstream API compatibility but are always empty/zero — Dash0 does not
+	// expose process, Go-runtime, or filesystem internals.
+	Data     *PrometheusRuntimeInfo `json:"data,omitempty"`
+	Status   string                 `json:"status"`
+	Warnings *[]string              `json:"warnings,omitempty"`
+}
+
+// PrometheusScalarResult defines model for PrometheusScalarResult.
+type PrometheusScalarResult = MetricSample
+
+// PrometheusSeriesResponse defines model for PrometheusSeriesResponse.
+type PrometheusSeriesResponse struct {
+	Data     *[]PrometheusMetric `json:"data,omitempty"`
+	Status   string              `json:"status"`
+	Warnings *[]string           `json:"warnings,omitempty"`
+}
+
+// PrometheusStringResult defines model for PrometheusStringResult.
+type PrometheusStringResult = MetricSample
+
+// PrometheusVectorResult defines model for PrometheusVectorResult.
+type PrometheusVectorResult = []PrometheusVectorSampleResult
+
+// PrometheusVectorSampleResult defines model for PrometheusVectorSampleResult.
+type PrometheusVectorSampleResult struct {
+	Metric PrometheusMetric `json:"metric"`
+	Value  MetricSample     `json:"value"`
 }
 
 // QueryError Structured error information for query errors. Present alongside the error string when the error is related to the user's query (syntax, semantic, or execution errors). Not present for system-level errors (unauthorized access, unexpected failures).
@@ -4030,6 +4294,135 @@ type PostApiImportViewParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiPrometheusApiV1FormatQueryParams defines parameters for GetApiPrometheusApiV1FormatQuery.
+type GetApiPrometheusApiV1FormatQueryParams struct {
+	// Query PromQL expression to validate and pretty-print. The response `data` is the
+	// formatted expression. If the query contains Dash0 template variables (e.g.
+	// `$__range`, `$__interval`), the original query is returned unmodified.
+	Query string `form:"query" json:"query"`
+}
+
+// GetApiPrometheusApiV1LabelLabelNameValuesParams defines parameters for GetApiPrometheusApiV1LabelLabelNameValues.
+type GetApiPrometheusApiV1LabelLabelNameValuesParams struct {
+	// Start Start timestamp to restrict the set of returned label values.
+	Start *string `form:"start,omitempty" json:"start,omitempty"`
+
+	// End End timestamp to restrict the set of returned label values.
+	End *string `form:"end,omitempty" json:"end,omitempty"`
+
+	// Match Repeated series selector that restricts the label values returned.
+	Match *[]string `form:"match[],omitempty" json:"match[],omitempty"`
+
+	// Limit Maximum number of results. Defaults to and is capped at the server-configured maximum.
+	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Dataset Dataset to query. Defaults to the organization's default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiPrometheusApiV1LabelsParams defines parameters for GetApiPrometheusApiV1Labels.
+type GetApiPrometheusApiV1LabelsParams struct {
+	// Start Start timestamp to restrict the set of returned label names.
+	Start *string `form:"start,omitempty" json:"start,omitempty"`
+
+	// End End timestamp to restrict the set of returned label names.
+	End *string `form:"end,omitempty" json:"end,omitempty"`
+
+	// Match Repeated series selector that restricts the label names returned.
+	Match *[]string `form:"match[],omitempty" json:"match[],omitempty"`
+
+	// Limit Maximum number of results. Defaults to and is capped at the server-configured maximum.
+	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Dataset Dataset to query. Defaults to the organization's default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiPrometheusApiV1MetadataParams defines parameters for GetApiPrometheusApiV1Metadata.
+type GetApiPrometheusApiV1MetadataParams struct {
+	// Limit Maximum number of metrics to return. When omitted, all metrics are returned.
+	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// LimitPerMetric Maximum number of metadata entries to return per metric.
+	LimitPerMetric *int64 `form:"limit_per_metric,omitempty" json:"limit_per_metric,omitempty"`
+
+	// Metric If provided, only metadata for this metric name is returned. When omitted,
+	// metadata for all metrics is returned.
+	Metric *string `form:"metric,omitempty" json:"metric,omitempty"`
+
+	// Start Start timestamp. Must be provided together with `end`.
+	Start *string `form:"start,omitempty" json:"start,omitempty"`
+
+	// End End timestamp. Must be provided together with `start`.
+	End *string `form:"end,omitempty" json:"end,omitempty"`
+
+	// Dataset Dataset to query. Defaults to the organization's default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiPrometheusApiV1QueryParams defines parameters for GetApiPrometheusApiV1Query.
+type GetApiPrometheusApiV1QueryParams struct {
+	// Query PromQL expression to evaluate.
+	Query string `form:"query" json:"query"`
+
+	// Time Evaluation timestamp. Defaults to the current server time when omitted.
+	Time *string `form:"time,omitempty" json:"time,omitempty"`
+
+	// Timeout Per-query timeout, clamped to the server-configured maximum.
+	Timeout *string `form:"timeout,omitempty" json:"timeout,omitempty"`
+
+	// Limit Maximum number of returned series. Defaults to and is capped at the
+	// server-configured maximum.
+	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Dataset Dataset to query. Defaults to the organization's default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiPrometheusApiV1QueryRangeParams defines parameters for GetApiPrometheusApiV1QueryRange.
+type GetApiPrometheusApiV1QueryRangeParams struct {
+	// Query PromQL expression to evaluate.
+	Query string `form:"query" json:"query"`
+
+	// Start Start timestamp of the range (inclusive).
+	Start *string `form:"start,omitempty" json:"start,omitempty"`
+
+	// End End timestamp of the range (inclusive). Must not be before `start`.
+	End *string `form:"end,omitempty" json:"end,omitempty"`
+
+	// Step Query resolution step width, as a duration or a number of seconds.
+	Step string `form:"step" json:"step"`
+
+	// Timeout Per-query timeout, clamped to the server-configured maximum.
+	Timeout *string `form:"timeout,omitempty" json:"timeout,omitempty"`
+
+	// Limit Maximum number of returned series. Defaults to and is capped at the
+	// server-configured maximum.
+	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Dataset Dataset to query. Defaults to the organization's default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiPrometheusApiV1SeriesParams defines parameters for GetApiPrometheusApiV1Series.
+type GetApiPrometheusApiV1SeriesParams struct {
+	// Start Start timestamp to restrict the set of returned series.
+	Start *string `form:"start,omitempty" json:"start,omitempty"`
+
+	// End End timestamp to restrict the set of returned series.
+	End *string `form:"end,omitempty" json:"end,omitempty"`
+
+	// Match Repeated series selector that selects the series to return. Upstream
+	// Prometheus requires at least one selector.
+	Match *[]string `form:"match[],omitempty" json:"match[],omitempty"`
+
+	// Limit Maximum number of results. Defaults to and is capped at the server-configured maximum.
+	Limit *int64 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Dataset Dataset to query. Defaults to the organization's default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiRecordingRulesParams defines parameters for GetApiRecordingRules.
 type GetApiRecordingRulesParams struct {
 	// Dataset Filter by dataset.
@@ -4280,6 +4673,27 @@ type PostApiNotificationChannelsJSONRequestBody = NotificationChannelDefinition
 
 // PutApiNotificationChannelsOriginOrIdJSONRequestBody defines body for PutApiNotificationChannelsOriginOrId for application/json ContentType.
 type PutApiNotificationChannelsOriginOrIdJSONRequestBody = NotificationChannelDefinition
+
+// PostApiPrometheusApiV1FormatQueryJSONRequestBody defines body for PostApiPrometheusApiV1FormatQuery for application/json ContentType.
+type PostApiPrometheusApiV1FormatQueryJSONRequestBody = PrometheusFormatQueryRequest
+
+// PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody defines body for PostApiPrometheusApiV1LabelLabelNameValues for application/json ContentType.
+type PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody = PrometheusLabelNamesOrValuesRequest
+
+// PostApiPrometheusApiV1LabelsJSONRequestBody defines body for PostApiPrometheusApiV1Labels for application/json ContentType.
+type PostApiPrometheusApiV1LabelsJSONRequestBody = PrometheusLabelNamesOrValuesRequest
+
+// PostApiPrometheusApiV1MetadataJSONRequestBody defines body for PostApiPrometheusApiV1Metadata for application/json ContentType.
+type PostApiPrometheusApiV1MetadataJSONRequestBody = PrometheusMetadataRequest
+
+// PostApiPrometheusApiV1QueryJSONRequestBody defines body for PostApiPrometheusApiV1Query for application/json ContentType.
+type PostApiPrometheusApiV1QueryJSONRequestBody = PrometheusQueryRequest
+
+// PostApiPrometheusApiV1QueryRangeJSONRequestBody defines body for PostApiPrometheusApiV1QueryRange for application/json ContentType.
+type PostApiPrometheusApiV1QueryRangeJSONRequestBody = PrometheusQueryRangeRequest
+
+// PostApiPrometheusApiV1SeriesJSONRequestBody defines body for PostApiPrometheusApiV1Series for application/json ContentType.
+type PostApiPrometheusApiV1SeriesJSONRequestBody = PrometheusLabelNamesOrValuesRequest
 
 // PostApiRecordingRulesJSONRequestBody defines body for PostApiRecordingRules for application/json ContentType.
 type PostApiRecordingRulesJSONRequestBody = generatedPrometheusRule
@@ -5254,6 +5668,120 @@ func (t *NotificationChannelSpec_Config) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsPrometheusScalarResult returns the union data inside the PrometheusQueryResult_Result as a PrometheusScalarResult
+func (t PrometheusQueryResult_Result) AsPrometheusScalarResult() (PrometheusScalarResult, error) {
+	var body PrometheusScalarResult
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPrometheusScalarResult overwrites any union data inside the PrometheusQueryResult_Result as the provided PrometheusScalarResult
+func (t *PrometheusQueryResult_Result) FromPrometheusScalarResult(v PrometheusScalarResult) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePrometheusScalarResult performs a merge with any union data inside the PrometheusQueryResult_Result, using the provided PrometheusScalarResult
+func (t *PrometheusQueryResult_Result) MergePrometheusScalarResult(v PrometheusScalarResult) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPrometheusStringResult returns the union data inside the PrometheusQueryResult_Result as a PrometheusStringResult
+func (t PrometheusQueryResult_Result) AsPrometheusStringResult() (PrometheusStringResult, error) {
+	var body PrometheusStringResult
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPrometheusStringResult overwrites any union data inside the PrometheusQueryResult_Result as the provided PrometheusStringResult
+func (t *PrometheusQueryResult_Result) FromPrometheusStringResult(v PrometheusStringResult) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePrometheusStringResult performs a merge with any union data inside the PrometheusQueryResult_Result, using the provided PrometheusStringResult
+func (t *PrometheusQueryResult_Result) MergePrometheusStringResult(v PrometheusStringResult) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPrometheusVectorResult returns the union data inside the PrometheusQueryResult_Result as a PrometheusVectorResult
+func (t PrometheusQueryResult_Result) AsPrometheusVectorResult() (PrometheusVectorResult, error) {
+	var body PrometheusVectorResult
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPrometheusVectorResult overwrites any union data inside the PrometheusQueryResult_Result as the provided PrometheusVectorResult
+func (t *PrometheusQueryResult_Result) FromPrometheusVectorResult(v PrometheusVectorResult) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePrometheusVectorResult performs a merge with any union data inside the PrometheusQueryResult_Result, using the provided PrometheusVectorResult
+func (t *PrometheusQueryResult_Result) MergePrometheusVectorResult(v PrometheusVectorResult) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsPrometheusMatrixResult returns the union data inside the PrometheusQueryResult_Result as a PrometheusMatrixResult
+func (t PrometheusQueryResult_Result) AsPrometheusMatrixResult() (PrometheusMatrixResult, error) {
+	var body PrometheusMatrixResult
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPrometheusMatrixResult overwrites any union data inside the PrometheusQueryResult_Result as the provided PrometheusMatrixResult
+func (t *PrometheusQueryResult_Result) FromPrometheusMatrixResult(v PrometheusMatrixResult) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePrometheusMatrixResult performs a merge with any union data inside the PrometheusQueryResult_Result, using the provided PrometheusMatrixResult
+func (t *PrometheusQueryResult_Result) MergePrometheusMatrixResult(v PrometheusMatrixResult) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t PrometheusQueryResult_Result) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *PrometheusQueryResult_Result) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsSamplingConditionAnd returns the union data inside the SamplingCondition as a SamplingConditionAnd
 func (t SamplingCondition) AsSamplingConditionAnd() (SamplingConditionAnd, error) {
 	var body SamplingConditionAnd
@@ -5831,6 +6359,68 @@ type ClientInterface interface {
 	PutApiNotificationChannelsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1FormatQuery request
+	GetApiPrometheusApiV1FormatQuery(ctx context.Context, params *GetApiPrometheusApiV1FormatQueryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1FormatQueryWithBody request with any body
+	PostApiPrometheusApiV1FormatQueryWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1FormatQuery(ctx context.Context, body PostApiPrometheusApiV1FormatQueryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1LabelLabelNameValues request
+	GetApiPrometheusApiV1LabelLabelNameValues(ctx context.Context, labelName string, params *GetApiPrometheusApiV1LabelLabelNameValuesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1LabelLabelNameValuesWithBody request with any body
+	PostApiPrometheusApiV1LabelLabelNameValuesWithBody(ctx context.Context, labelName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1LabelLabelNameValues(ctx context.Context, labelName string, body PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1Labels request
+	GetApiPrometheusApiV1Labels(ctx context.Context, params *GetApiPrometheusApiV1LabelsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1LabelsWithBody request with any body
+	PostApiPrometheusApiV1LabelsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1Labels(ctx context.Context, body PostApiPrometheusApiV1LabelsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1Metadata request
+	GetApiPrometheusApiV1Metadata(ctx context.Context, params *GetApiPrometheusApiV1MetadataParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1MetadataWithBody request with any body
+	PostApiPrometheusApiV1MetadataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1Metadata(ctx context.Context, body PostApiPrometheusApiV1MetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1Query request
+	GetApiPrometheusApiV1Query(ctx context.Context, params *GetApiPrometheusApiV1QueryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1QueryWithBody request with any body
+	PostApiPrometheusApiV1QueryWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1Query(ctx context.Context, body PostApiPrometheusApiV1QueryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1QueryRange request
+	GetApiPrometheusApiV1QueryRange(ctx context.Context, params *GetApiPrometheusApiV1QueryRangeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1QueryRangeWithBody request with any body
+	PostApiPrometheusApiV1QueryRangeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1QueryRange(ctx context.Context, body PostApiPrometheusApiV1QueryRangeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1Series request
+	GetApiPrometheusApiV1Series(ctx context.Context, params *GetApiPrometheusApiV1SeriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiPrometheusApiV1SeriesWithBody request with any body
+	PostApiPrometheusApiV1SeriesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiPrometheusApiV1Series(ctx context.Context, body PostApiPrometheusApiV1SeriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1StatusBuildinfo request
+	GetApiPrometheusApiV1StatusBuildinfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiPrometheusApiV1StatusRuntimeinfo request
+	GetApiPrometheusApiV1StatusRuntimeinfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiRecordingRules request
 	GetApiRecordingRules(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -6543,6 +7133,282 @@ func (c *generatedClient) PutApiNotificationChannelsOriginOrIdWithBody(ctx conte
 
 func (c *generatedClient) PutApiNotificationChannelsOriginOrId(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiNotificationChannelsOriginOrIdRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1FormatQuery(ctx context.Context, params *GetApiPrometheusApiV1FormatQueryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1FormatQueryRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1FormatQueryWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1FormatQueryRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1FormatQuery(ctx context.Context, body PostApiPrometheusApiV1FormatQueryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1FormatQueryRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1LabelLabelNameValues(ctx context.Context, labelName string, params *GetApiPrometheusApiV1LabelLabelNameValuesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1LabelLabelNameValuesRequest(c.Server, labelName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1LabelLabelNameValuesWithBody(ctx context.Context, labelName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1LabelLabelNameValuesRequestWithBody(c.Server, labelName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1LabelLabelNameValues(ctx context.Context, labelName string, body PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1LabelLabelNameValuesRequest(c.Server, labelName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1Labels(ctx context.Context, params *GetApiPrometheusApiV1LabelsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1LabelsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1LabelsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1LabelsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1Labels(ctx context.Context, body PostApiPrometheusApiV1LabelsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1LabelsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1Metadata(ctx context.Context, params *GetApiPrometheusApiV1MetadataParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1MetadataRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1MetadataWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1MetadataRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1Metadata(ctx context.Context, body PostApiPrometheusApiV1MetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1MetadataRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1Query(ctx context.Context, params *GetApiPrometheusApiV1QueryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1QueryRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1QueryWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1QueryRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1Query(ctx context.Context, body PostApiPrometheusApiV1QueryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1QueryRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1QueryRange(ctx context.Context, params *GetApiPrometheusApiV1QueryRangeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1QueryRangeRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1QueryRangeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1QueryRangeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1QueryRange(ctx context.Context, body PostApiPrometheusApiV1QueryRangeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1QueryRangeRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1Series(ctx context.Context, params *GetApiPrometheusApiV1SeriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1SeriesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1SeriesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1SeriesRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiPrometheusApiV1Series(ctx context.Context, body PostApiPrometheusApiV1SeriesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiPrometheusApiV1SeriesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1StatusBuildinfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1StatusBuildinfoRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiPrometheusApiV1StatusRuntimeinfo(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiPrometheusApiV1StatusRuntimeinfoRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -8859,6 +9725,1113 @@ func NewPutApiNotificationChannelsOriginOrIdRequestWithBody(server string, origi
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1FormatQueryRequest generates requests for GetApiPrometheusApiV1FormatQuery
+func NewGetApiPrometheusApiV1FormatQueryRequest(server string, params *GetApiPrometheusApiV1FormatQueryParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/format_query")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "query", runtime.ParamLocationQuery, params.Query); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1FormatQueryRequest calls the generic PostApiPrometheusApiV1FormatQuery builder with application/json body
+func NewPostApiPrometheusApiV1FormatQueryRequest(server string, body PostApiPrometheusApiV1FormatQueryJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1FormatQueryRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1FormatQueryRequestWithBody generates requests for PostApiPrometheusApiV1FormatQuery with any type of body
+func NewPostApiPrometheusApiV1FormatQueryRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/format_query")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1LabelLabelNameValuesRequest generates requests for GetApiPrometheusApiV1LabelLabelNameValues
+func NewGetApiPrometheusApiV1LabelLabelNameValuesRequest(server string, labelName string, params *GetApiPrometheusApiV1LabelLabelNameValuesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "label_name", runtime.ParamLocationPath, labelName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/label/%s/values", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Start != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start", runtime.ParamLocationQuery, *params.Start); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.End != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end", runtime.ParamLocationQuery, *params.End); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Match != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "match[]", runtime.ParamLocationQuery, *params.Match); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1LabelLabelNameValuesRequest calls the generic PostApiPrometheusApiV1LabelLabelNameValues builder with application/json body
+func NewPostApiPrometheusApiV1LabelLabelNameValuesRequest(server string, labelName string, body PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1LabelLabelNameValuesRequestWithBody(server, labelName, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1LabelLabelNameValuesRequestWithBody generates requests for PostApiPrometheusApiV1LabelLabelNameValues with any type of body
+func NewPostApiPrometheusApiV1LabelLabelNameValuesRequestWithBody(server string, labelName string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "label_name", runtime.ParamLocationPath, labelName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/label/%s/values", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1LabelsRequest generates requests for GetApiPrometheusApiV1Labels
+func NewGetApiPrometheusApiV1LabelsRequest(server string, params *GetApiPrometheusApiV1LabelsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/labels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Start != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start", runtime.ParamLocationQuery, *params.Start); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.End != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end", runtime.ParamLocationQuery, *params.End); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Match != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "match[]", runtime.ParamLocationQuery, *params.Match); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1LabelsRequest calls the generic PostApiPrometheusApiV1Labels builder with application/json body
+func NewPostApiPrometheusApiV1LabelsRequest(server string, body PostApiPrometheusApiV1LabelsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1LabelsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1LabelsRequestWithBody generates requests for PostApiPrometheusApiV1Labels with any type of body
+func NewPostApiPrometheusApiV1LabelsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/labels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1MetadataRequest generates requests for GetApiPrometheusApiV1Metadata
+func NewGetApiPrometheusApiV1MetadataRequest(server string, params *GetApiPrometheusApiV1MetadataParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/metadata")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.LimitPerMetric != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit_per_metric", runtime.ParamLocationQuery, *params.LimitPerMetric); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Metric != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "metric", runtime.ParamLocationQuery, *params.Metric); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Start != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start", runtime.ParamLocationQuery, *params.Start); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.End != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end", runtime.ParamLocationQuery, *params.End); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1MetadataRequest calls the generic PostApiPrometheusApiV1Metadata builder with application/json body
+func NewPostApiPrometheusApiV1MetadataRequest(server string, body PostApiPrometheusApiV1MetadataJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1MetadataRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1MetadataRequestWithBody generates requests for PostApiPrometheusApiV1Metadata with any type of body
+func NewPostApiPrometheusApiV1MetadataRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/metadata")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1QueryRequest generates requests for GetApiPrometheusApiV1Query
+func NewGetApiPrometheusApiV1QueryRequest(server string, params *GetApiPrometheusApiV1QueryParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/query")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "query", runtime.ParamLocationQuery, params.Query); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Time != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "time", runtime.ParamLocationQuery, *params.Time); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Timeout != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "timeout", runtime.ParamLocationQuery, *params.Timeout); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1QueryRequest calls the generic PostApiPrometheusApiV1Query builder with application/json body
+func NewPostApiPrometheusApiV1QueryRequest(server string, body PostApiPrometheusApiV1QueryJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1QueryRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1QueryRequestWithBody generates requests for PostApiPrometheusApiV1Query with any type of body
+func NewPostApiPrometheusApiV1QueryRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/query")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1QueryRangeRequest generates requests for GetApiPrometheusApiV1QueryRange
+func NewGetApiPrometheusApiV1QueryRangeRequest(server string, params *GetApiPrometheusApiV1QueryRangeParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/query_range")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "query", runtime.ParamLocationQuery, params.Query); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Start != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start", runtime.ParamLocationQuery, *params.Start); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.End != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end", runtime.ParamLocationQuery, *params.End); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "step", runtime.ParamLocationQuery, params.Step); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Timeout != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "timeout", runtime.ParamLocationQuery, *params.Timeout); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1QueryRangeRequest calls the generic PostApiPrometheusApiV1QueryRange builder with application/json body
+func NewPostApiPrometheusApiV1QueryRangeRequest(server string, body PostApiPrometheusApiV1QueryRangeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1QueryRangeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1QueryRangeRequestWithBody generates requests for PostApiPrometheusApiV1QueryRange with any type of body
+func NewPostApiPrometheusApiV1QueryRangeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/query_range")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1SeriesRequest generates requests for GetApiPrometheusApiV1Series
+func NewGetApiPrometheusApiV1SeriesRequest(server string, params *GetApiPrometheusApiV1SeriesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/series")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Start != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start", runtime.ParamLocationQuery, *params.Start); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.End != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end", runtime.ParamLocationQuery, *params.End); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Match != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "match[]", runtime.ParamLocationQuery, *params.Match); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiPrometheusApiV1SeriesRequest calls the generic PostApiPrometheusApiV1Series builder with application/json body
+func NewPostApiPrometheusApiV1SeriesRequest(server string, body PostApiPrometheusApiV1SeriesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiPrometheusApiV1SeriesRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiPrometheusApiV1SeriesRequestWithBody generates requests for PostApiPrometheusApiV1Series with any type of body
+func NewPostApiPrometheusApiV1SeriesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/series")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1StatusBuildinfoRequest generates requests for GetApiPrometheusApiV1StatusBuildinfo
+func NewGetApiPrometheusApiV1StatusBuildinfoRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/status/buildinfo")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiPrometheusApiV1StatusRuntimeinfoRequest generates requests for GetApiPrometheusApiV1StatusRuntimeinfo
+func NewGetApiPrometheusApiV1StatusRuntimeinfoRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/prometheus/api/v1/status/runtimeinfo")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -11707,6 +13680,68 @@ type ClientWithResponsesInterface interface {
 
 	PutApiNotificationChannelsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiNotificationChannelsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiNotificationChannelsOriginOrIdResponse, error)
 
+	// GetApiPrometheusApiV1FormatQueryWithResponse request
+	GetApiPrometheusApiV1FormatQueryWithResponse(ctx context.Context, params *GetApiPrometheusApiV1FormatQueryParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1FormatQueryResponse, error)
+
+	// PostApiPrometheusApiV1FormatQueryWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1FormatQueryWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1FormatQueryResponse, error)
+
+	PostApiPrometheusApiV1FormatQueryWithResponse(ctx context.Context, body PostApiPrometheusApiV1FormatQueryJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1FormatQueryResponse, error)
+
+	// GetApiPrometheusApiV1LabelLabelNameValuesWithResponse request
+	GetApiPrometheusApiV1LabelLabelNameValuesWithResponse(ctx context.Context, labelName string, params *GetApiPrometheusApiV1LabelLabelNameValuesParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1LabelLabelNameValuesResponse, error)
+
+	// PostApiPrometheusApiV1LabelLabelNameValuesWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1LabelLabelNameValuesWithBodyWithResponse(ctx context.Context, labelName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelLabelNameValuesResponse, error)
+
+	PostApiPrometheusApiV1LabelLabelNameValuesWithResponse(ctx context.Context, labelName string, body PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelLabelNameValuesResponse, error)
+
+	// GetApiPrometheusApiV1LabelsWithResponse request
+	GetApiPrometheusApiV1LabelsWithResponse(ctx context.Context, params *GetApiPrometheusApiV1LabelsParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1LabelsResponse, error)
+
+	// PostApiPrometheusApiV1LabelsWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1LabelsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelsResponse, error)
+
+	PostApiPrometheusApiV1LabelsWithResponse(ctx context.Context, body PostApiPrometheusApiV1LabelsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelsResponse, error)
+
+	// GetApiPrometheusApiV1MetadataWithResponse request
+	GetApiPrometheusApiV1MetadataWithResponse(ctx context.Context, params *GetApiPrometheusApiV1MetadataParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1MetadataResponse, error)
+
+	// PostApiPrometheusApiV1MetadataWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1MetadataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1MetadataResponse, error)
+
+	PostApiPrometheusApiV1MetadataWithResponse(ctx context.Context, body PostApiPrometheusApiV1MetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1MetadataResponse, error)
+
+	// GetApiPrometheusApiV1QueryWithResponse request
+	GetApiPrometheusApiV1QueryWithResponse(ctx context.Context, params *GetApiPrometheusApiV1QueryParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1QueryResponse, error)
+
+	// PostApiPrometheusApiV1QueryWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1QueryWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryResponse, error)
+
+	PostApiPrometheusApiV1QueryWithResponse(ctx context.Context, body PostApiPrometheusApiV1QueryJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryResponse, error)
+
+	// GetApiPrometheusApiV1QueryRangeWithResponse request
+	GetApiPrometheusApiV1QueryRangeWithResponse(ctx context.Context, params *GetApiPrometheusApiV1QueryRangeParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1QueryRangeResponse, error)
+
+	// PostApiPrometheusApiV1QueryRangeWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1QueryRangeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryRangeResponse, error)
+
+	PostApiPrometheusApiV1QueryRangeWithResponse(ctx context.Context, body PostApiPrometheusApiV1QueryRangeJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryRangeResponse, error)
+
+	// GetApiPrometheusApiV1SeriesWithResponse request
+	GetApiPrometheusApiV1SeriesWithResponse(ctx context.Context, params *GetApiPrometheusApiV1SeriesParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1SeriesResponse, error)
+
+	// PostApiPrometheusApiV1SeriesWithBodyWithResponse request with any body
+	PostApiPrometheusApiV1SeriesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1SeriesResponse, error)
+
+	PostApiPrometheusApiV1SeriesWithResponse(ctx context.Context, body PostApiPrometheusApiV1SeriesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1SeriesResponse, error)
+
+	// GetApiPrometheusApiV1StatusBuildinfoWithResponse request
+	GetApiPrometheusApiV1StatusBuildinfoWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1StatusBuildinfoResponse, error)
+
+	// GetApiPrometheusApiV1StatusRuntimeinfoWithResponse request
+	GetApiPrometheusApiV1StatusRuntimeinfoWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1StatusRuntimeinfoResponse, error)
+
 	// GetApiRecordingRulesWithResponse request
 	GetApiRecordingRulesWithResponse(ctx context.Context, params *GetApiRecordingRulesParams, reqEditors ...RequestEditorFn) (*GetApiRecordingRulesResponse, error)
 
@@ -12559,6 +14594,374 @@ func (r PutApiNotificationChannelsOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiNotificationChannelsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1FormatQueryResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusFormatQueryResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1FormatQueryResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1FormatQueryResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1FormatQueryResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusFormatQueryResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1FormatQueryResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1FormatQueryResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1LabelLabelNameValuesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusLabelNamesOrValuesResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1LabelLabelNameValuesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1LabelLabelNameValuesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1LabelLabelNameValuesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusLabelNamesOrValuesResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1LabelLabelNameValuesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1LabelLabelNameValuesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1LabelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusLabelNamesOrValuesResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1LabelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1LabelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1LabelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusLabelNamesOrValuesResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1LabelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1LabelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1MetadataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusMetadataResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1MetadataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1MetadataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1MetadataResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusMetadataResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1MetadataResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1MetadataResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1QueryResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusQueryResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1QueryResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1QueryResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1QueryResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusQueryResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1QueryResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1QueryResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1QueryRangeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusQueryResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1QueryRangeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1QueryRangeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1QueryRangeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusQueryResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1QueryRangeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1QueryRangeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1SeriesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusSeriesResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1SeriesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1SeriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiPrometheusApiV1SeriesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusSeriesResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiPrometheusApiV1SeriesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiPrometheusApiV1SeriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1StatusBuildinfoResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusBuildInfoResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1StatusBuildinfoResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1StatusBuildinfoResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiPrometheusApiV1StatusRuntimeinfoResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *PrometheusRuntimeInfoResponse
+	JSONDefault  *PrometheusErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiPrometheusApiV1StatusRuntimeinfoResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiPrometheusApiV1StatusRuntimeinfoResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -14048,6 +16451,206 @@ func (c *ClientWithResponses) PutApiNotificationChannelsOriginOrIdWithResponse(c
 		return nil, err
 	}
 	return ParsePutApiNotificationChannelsOriginOrIdResponse(rsp)
+}
+
+// GetApiPrometheusApiV1FormatQueryWithResponse request returning *GetApiPrometheusApiV1FormatQueryResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1FormatQueryWithResponse(ctx context.Context, params *GetApiPrometheusApiV1FormatQueryParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1FormatQueryResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1FormatQuery(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1FormatQueryResponse(rsp)
+}
+
+// PostApiPrometheusApiV1FormatQueryWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1FormatQueryResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1FormatQueryWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1FormatQueryResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1FormatQueryWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1FormatQueryResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1FormatQueryWithResponse(ctx context.Context, body PostApiPrometheusApiV1FormatQueryJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1FormatQueryResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1FormatQuery(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1FormatQueryResponse(rsp)
+}
+
+// GetApiPrometheusApiV1LabelLabelNameValuesWithResponse request returning *GetApiPrometheusApiV1LabelLabelNameValuesResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1LabelLabelNameValuesWithResponse(ctx context.Context, labelName string, params *GetApiPrometheusApiV1LabelLabelNameValuesParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1LabelLabelNameValuesResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1LabelLabelNameValues(ctx, labelName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1LabelLabelNameValuesResponse(rsp)
+}
+
+// PostApiPrometheusApiV1LabelLabelNameValuesWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1LabelLabelNameValuesResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1LabelLabelNameValuesWithBodyWithResponse(ctx context.Context, labelName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelLabelNameValuesResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1LabelLabelNameValuesWithBody(ctx, labelName, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1LabelLabelNameValuesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1LabelLabelNameValuesWithResponse(ctx context.Context, labelName string, body PostApiPrometheusApiV1LabelLabelNameValuesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelLabelNameValuesResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1LabelLabelNameValues(ctx, labelName, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1LabelLabelNameValuesResponse(rsp)
+}
+
+// GetApiPrometheusApiV1LabelsWithResponse request returning *GetApiPrometheusApiV1LabelsResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1LabelsWithResponse(ctx context.Context, params *GetApiPrometheusApiV1LabelsParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1LabelsResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1Labels(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1LabelsResponse(rsp)
+}
+
+// PostApiPrometheusApiV1LabelsWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1LabelsResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1LabelsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelsResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1LabelsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1LabelsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1LabelsWithResponse(ctx context.Context, body PostApiPrometheusApiV1LabelsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1LabelsResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1Labels(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1LabelsResponse(rsp)
+}
+
+// GetApiPrometheusApiV1MetadataWithResponse request returning *GetApiPrometheusApiV1MetadataResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1MetadataWithResponse(ctx context.Context, params *GetApiPrometheusApiV1MetadataParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1MetadataResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1Metadata(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1MetadataResponse(rsp)
+}
+
+// PostApiPrometheusApiV1MetadataWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1MetadataResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1MetadataWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1MetadataResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1MetadataWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1MetadataResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1MetadataWithResponse(ctx context.Context, body PostApiPrometheusApiV1MetadataJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1MetadataResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1Metadata(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1MetadataResponse(rsp)
+}
+
+// GetApiPrometheusApiV1QueryWithResponse request returning *GetApiPrometheusApiV1QueryResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1QueryWithResponse(ctx context.Context, params *GetApiPrometheusApiV1QueryParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1QueryResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1Query(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1QueryResponse(rsp)
+}
+
+// PostApiPrometheusApiV1QueryWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1QueryResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1QueryWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1QueryWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1QueryResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1QueryWithResponse(ctx context.Context, body PostApiPrometheusApiV1QueryJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1Query(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1QueryResponse(rsp)
+}
+
+// GetApiPrometheusApiV1QueryRangeWithResponse request returning *GetApiPrometheusApiV1QueryRangeResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1QueryRangeWithResponse(ctx context.Context, params *GetApiPrometheusApiV1QueryRangeParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1QueryRangeResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1QueryRange(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1QueryRangeResponse(rsp)
+}
+
+// PostApiPrometheusApiV1QueryRangeWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1QueryRangeResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1QueryRangeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryRangeResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1QueryRangeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1QueryRangeResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1QueryRangeWithResponse(ctx context.Context, body PostApiPrometheusApiV1QueryRangeJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1QueryRangeResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1QueryRange(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1QueryRangeResponse(rsp)
+}
+
+// GetApiPrometheusApiV1SeriesWithResponse request returning *GetApiPrometheusApiV1SeriesResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1SeriesWithResponse(ctx context.Context, params *GetApiPrometheusApiV1SeriesParams, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1SeriesResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1Series(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1SeriesResponse(rsp)
+}
+
+// PostApiPrometheusApiV1SeriesWithBodyWithResponse request with arbitrary body returning *PostApiPrometheusApiV1SeriesResponse
+func (c *ClientWithResponses) PostApiPrometheusApiV1SeriesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1SeriesResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1SeriesWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1SeriesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiPrometheusApiV1SeriesWithResponse(ctx context.Context, body PostApiPrometheusApiV1SeriesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiPrometheusApiV1SeriesResponse, error) {
+	rsp, err := c.PostApiPrometheusApiV1Series(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiPrometheusApiV1SeriesResponse(rsp)
+}
+
+// GetApiPrometheusApiV1StatusBuildinfoWithResponse request returning *GetApiPrometheusApiV1StatusBuildinfoResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1StatusBuildinfoWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1StatusBuildinfoResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1StatusBuildinfo(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1StatusBuildinfoResponse(rsp)
+}
+
+// GetApiPrometheusApiV1StatusRuntimeinfoWithResponse request returning *GetApiPrometheusApiV1StatusRuntimeinfoResponse
+func (c *ClientWithResponses) GetApiPrometheusApiV1StatusRuntimeinfoWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiPrometheusApiV1StatusRuntimeinfoResponse, error) {
+	rsp, err := c.GetApiPrometheusApiV1StatusRuntimeinfo(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiPrometheusApiV1StatusRuntimeinfoResponse(rsp)
 }
 
 // GetApiRecordingRulesWithResponse request returning *GetApiRecordingRulesResponse
@@ -15607,6 +18210,534 @@ func ParsePutApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*Put
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1FormatQueryResponse parses an HTTP response from a GetApiPrometheusApiV1FormatQueryWithResponse call
+func ParseGetApiPrometheusApiV1FormatQueryResponse(rsp *http.Response) (*GetApiPrometheusApiV1FormatQueryResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1FormatQueryResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusFormatQueryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1FormatQueryResponse parses an HTTP response from a PostApiPrometheusApiV1FormatQueryWithResponse call
+func ParsePostApiPrometheusApiV1FormatQueryResponse(rsp *http.Response) (*PostApiPrometheusApiV1FormatQueryResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1FormatQueryResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusFormatQueryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1LabelLabelNameValuesResponse parses an HTTP response from a GetApiPrometheusApiV1LabelLabelNameValuesWithResponse call
+func ParseGetApiPrometheusApiV1LabelLabelNameValuesResponse(rsp *http.Response) (*GetApiPrometheusApiV1LabelLabelNameValuesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1LabelLabelNameValuesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusLabelNamesOrValuesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1LabelLabelNameValuesResponse parses an HTTP response from a PostApiPrometheusApiV1LabelLabelNameValuesWithResponse call
+func ParsePostApiPrometheusApiV1LabelLabelNameValuesResponse(rsp *http.Response) (*PostApiPrometheusApiV1LabelLabelNameValuesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1LabelLabelNameValuesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusLabelNamesOrValuesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1LabelsResponse parses an HTTP response from a GetApiPrometheusApiV1LabelsWithResponse call
+func ParseGetApiPrometheusApiV1LabelsResponse(rsp *http.Response) (*GetApiPrometheusApiV1LabelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1LabelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusLabelNamesOrValuesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1LabelsResponse parses an HTTP response from a PostApiPrometheusApiV1LabelsWithResponse call
+func ParsePostApiPrometheusApiV1LabelsResponse(rsp *http.Response) (*PostApiPrometheusApiV1LabelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1LabelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusLabelNamesOrValuesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1MetadataResponse parses an HTTP response from a GetApiPrometheusApiV1MetadataWithResponse call
+func ParseGetApiPrometheusApiV1MetadataResponse(rsp *http.Response) (*GetApiPrometheusApiV1MetadataResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1MetadataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusMetadataResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1MetadataResponse parses an HTTP response from a PostApiPrometheusApiV1MetadataWithResponse call
+func ParsePostApiPrometheusApiV1MetadataResponse(rsp *http.Response) (*PostApiPrometheusApiV1MetadataResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1MetadataResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusMetadataResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1QueryResponse parses an HTTP response from a GetApiPrometheusApiV1QueryWithResponse call
+func ParseGetApiPrometheusApiV1QueryResponse(rsp *http.Response) (*GetApiPrometheusApiV1QueryResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1QueryResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusQueryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1QueryResponse parses an HTTP response from a PostApiPrometheusApiV1QueryWithResponse call
+func ParsePostApiPrometheusApiV1QueryResponse(rsp *http.Response) (*PostApiPrometheusApiV1QueryResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1QueryResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusQueryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1QueryRangeResponse parses an HTTP response from a GetApiPrometheusApiV1QueryRangeWithResponse call
+func ParseGetApiPrometheusApiV1QueryRangeResponse(rsp *http.Response) (*GetApiPrometheusApiV1QueryRangeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1QueryRangeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusQueryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1QueryRangeResponse parses an HTTP response from a PostApiPrometheusApiV1QueryRangeWithResponse call
+func ParsePostApiPrometheusApiV1QueryRangeResponse(rsp *http.Response) (*PostApiPrometheusApiV1QueryRangeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1QueryRangeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusQueryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1SeriesResponse parses an HTTP response from a GetApiPrometheusApiV1SeriesWithResponse call
+func ParseGetApiPrometheusApiV1SeriesResponse(rsp *http.Response) (*GetApiPrometheusApiV1SeriesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1SeriesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusSeriesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiPrometheusApiV1SeriesResponse parses an HTTP response from a PostApiPrometheusApiV1SeriesWithResponse call
+func ParsePostApiPrometheusApiV1SeriesResponse(rsp *http.Response) (*PostApiPrometheusApiV1SeriesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiPrometheusApiV1SeriesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusSeriesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1StatusBuildinfoResponse parses an HTTP response from a GetApiPrometheusApiV1StatusBuildinfoWithResponse call
+func ParseGetApiPrometheusApiV1StatusBuildinfoResponse(rsp *http.Response) (*GetApiPrometheusApiV1StatusBuildinfoResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1StatusBuildinfoResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusBuildInfoResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiPrometheusApiV1StatusRuntimeinfoResponse parses an HTTP response from a GetApiPrometheusApiV1StatusRuntimeinfoWithResponse call
+func ParseGetApiPrometheusApiV1StatusRuntimeinfoResponse(rsp *http.Response) (*GetApiPrometheusApiV1StatusRuntimeinfoResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiPrometheusApiV1StatusRuntimeinfoResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PrometheusRuntimeInfoResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest PrometheusErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
