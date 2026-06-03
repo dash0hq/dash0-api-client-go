@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.13.0
+
+
+### Bug Fixes
+- rename generated PrometheusResultType String const
+
+### Features
+- add Dash0 web app deep link builders
+
 ## v1.12.3
 
 
