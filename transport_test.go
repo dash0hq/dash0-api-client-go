@@ -323,3 +323,42 @@ func TestRateLimitedTransport_RoundTrip(t *testing.T) {
 		}
 	})
 }
+
+func TestRetryTransport_Backoff(t *testing.T) {
+	tr := newRetryTransport(nil, 3, 500*time.Millisecond, 10*time.Second)
+
+	t.Run("no Retry-After header returns ok", func(t *testing.T) {
+		resp := &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}
+		wait, ok := tr.backoff(0, resp)
+		if !ok {
+			t.Fatal("expected ok = true when no Retry-After header is present")
+		}
+		if wait <= 0 {
+			t.Errorf("expected positive backoff wait, got %v", wait)
+		}
+	})
+
+	t.Run("Retry-After below waitMax returns ok", func(t *testing.T) {
+		resp := &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}
+		resp.Header.Set("Retry-After", "5")
+		wait, ok := tr.backoff(0, resp)
+		if !ok {
+			t.Fatal("expected ok = true when Retry-After is below waitMax")
+		}
+		if want := 5 * time.Second; wait != want {
+			t.Errorf("wait = %v, want %v", wait, want)
+		}
+	})
+
+	t.Run("Retry-After above waitMax returns not ok", func(t *testing.T) {
+		resp := &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}
+		resp.Header.Set("Retry-After", "60")
+		wait, ok := tr.backoff(0, resp)
+		if ok {
+			t.Fatal("expected ok = false when Retry-After exceeds waitMax")
+		}
+		if wait != 0 {
+			t.Errorf("wait = %v, want 0 when giving up", wait)
+		}
+	})
+}

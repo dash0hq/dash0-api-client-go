@@ -272,7 +272,10 @@ func (t *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}
 
 		// Calculate backoff
-		wait := t.backoff(attempt, resp)
+		wait, ok := t.backoff(attempt, resp)
+		if !ok {
+			break
+		}
 
 		// Wait with context cancellation support
 		select {
@@ -307,17 +310,18 @@ func (t *retryTransport) shouldRetry(resp *http.Response) bool {
 	return resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500
 }
 
-// backoff calculates the wait time before the next retry.
-func (t *retryTransport) backoff(attempt int, resp *http.Response) time.Duration {
+// backoff calculates the wait time before the next retry. It returns ok == false when retrying should be abandoned, for
+// example when a Retry-After header requests a longer wait than t.waitMax allows.
+func (t *retryTransport) backoff(attempt int, resp *http.Response) (time.Duration, bool) {
 	// Check Retry-After header
 	if resp != nil {
 		if ra := resp.Header.Get("Retry-After"); ra != "" {
 			if secs, err := strconv.Atoi(ra); err == nil && secs > 0 {
 				wait := time.Duration(secs) * time.Second
 				if wait > t.waitMax {
-					wait = t.waitMax
+					return 0, false
 				}
-				return wait
+				return wait, true
 			}
 		}
 	}
@@ -334,5 +338,5 @@ func (t *retryTransport) backoff(attempt int, resp *http.Response) time.Duration
 		wait += jitter
 	}
 
-	return wait
+	return wait, true
 }
