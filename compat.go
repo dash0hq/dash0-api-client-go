@@ -163,3 +163,15 @@ const V1alpha1 = SpamFilterApiVersionV1Alpha1V1alpha1
 //
 // Deprecated: since v1.12.1. Use [SpamFilterDefinitionKindDash0SpamFilter] instead.
 const Dash0SpamFilter = SpamFilterDefinitionKindDash0SpamFilter
+
+// Deprecated: since v1.13.1. Use [HtmlForm] instead.
+const Form = HttpRequestBodyKindForm
+
+// Deprecated: since v1.13.1. Use [HtmlGraphql] instead.
+const Graphql = HttpRequestBodyKindGraphql
+
+// Deprecated: since v1.13.1. Use [HtmlJson] instead.
+const Json = HttpRequestBodyKindJson
+
+// Deprecated: since v1.13.1. Use [HtmlRaw] instead.
+const Raw = HttpRequestBodyKindRaw
