@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -214,6 +216,101 @@ func TestRefreshOAuthToken(t *testing.T) {
 		}
 		if cfg.AuthToken != "dash0_at_old-token" {
 			t.Errorf("expected AuthToken unchanged after failure, got %s", cfg.AuthToken)
+		}
+	})
+
+	t.Run("concurrent refresh only fires one request", func(t *testing.T) {
+		var requestCount atomic.Int32
+		var release sync.WaitGroup
+		release.Add(1)
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestCount.Add(1)
+			// Hold the first request so the other goroutines pile up at
+			// the mutex. Subsequent requests (if any) are not held.
+			release.Wait()
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token":  "dash0_at_rotated",
+				"token_type":    "Bearer",
+				"expires_in":    3600,
+				"refresh_token": "rt-rotated",
+			})
+		}))
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt-original",
+					ExpiresAt:    time.Now().Add(1 * time.Minute),
+				},
+			}},
+		})
+
+		const goroutines = 8
+		cfgs := make([]*Configuration, goroutines)
+		errs := make([]error, goroutines)
+		var start, done sync.WaitGroup
+		start.Add(1)
+		done.Add(goroutines)
+		for i := 0; i < goroutines; i++ {
+			i := i
+			go func() {
+				defer done.Done()
+				// Each goroutine starts with its own snapshot of the
+				// configuration (as if it had just read the profile).
+				cfgs[i] = &Configuration{
+					ApiUrl:    server.URL,
+					AuthToken: "dash0_at_old",
+					OAuth: &OAuthState{
+						ClientID:     "cid",
+						RefreshToken: "rt-original",
+						ExpiresAt:    time.Now().Add(1 * time.Minute),
+					},
+				}
+				start.Wait()
+				errs[i] = refreshOAuthToken(store, "test", cfgs[i])
+			}()
+		}
+		start.Done()
+		// Give every goroutine a chance to enter refreshOAuthToken and
+		// block on the mutex before the in-flight request returns.
+		time.Sleep(50 * time.Millisecond)
+		release.Done()
+		done.Wait()
+
+		if got := requestCount.Load(); got != 1 {
+			t.Errorf("expected exactly 1 token request, got %d", got)
+		}
+		for i, err := range errs {
+			if err != nil {
+				t.Errorf("goroutine %d: unexpected error: %v", i, err)
+			}
+			if cfgs[i].AuthToken != "dash0_at_rotated" {
+				t.Errorf("goroutine %d: expected dash0_at_rotated, got %s",
+					i, cfgs[i].AuthToken)
+			}
+			if cfgs[i].OAuth == nil || cfgs[i].OAuth.RefreshToken != "rt-rotated" {
+				t.Errorf("goroutine %d: expected rt-rotated, got %+v",
+					i, cfgs[i].OAuth)
+			}
+		}
+
+		// Persisted state should reflect the rotation exactly once.
+		profiles, err := store.GetProfiles()
+		if err != nil {
+			t.Fatalf("failed to read profiles: %v", err)
+		}
+		persisted := profiles[0].Configuration
+		if persisted.AuthToken != "dash0_at_rotated" {
+			t.Errorf("persisted AuthToken = %s, want dash0_at_rotated", persisted.AuthToken)
+		}
+		if persisted.OAuth == nil || persisted.OAuth.RefreshToken != "rt-rotated" {
+			t.Errorf("persisted RefreshToken = %+v, want rt-rotated", persisted.OAuth)
 		}
 	})
 

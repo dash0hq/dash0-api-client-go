@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 const (
@@ -39,6 +40,11 @@ var (
 // Store handles profile storage and retrieval.
 type Store struct {
 	configDir string
+
+	// refreshMu serializes OAuth token refreshes so that concurrent callers
+	// of [Store.GetActiveConfiguration] do not race against each other and
+	// invalidate a rotated refresh token.
+	refreshMu sync.Mutex
 }
 
 // NewStore creates a new profile store.
