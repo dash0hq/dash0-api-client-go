@@ -683,6 +683,105 @@ func ExampleOAuthClient_ExchangeToken() {
 	// Output: Bearer
 }
 
+func ExampleOAuthClient_GetAuthorizationServerMetadata() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"issuer":                   "https://auth.example.com",
+			"authorization_endpoint":   "https://auth.example.com/oauth/authorize",
+			"token_endpoint":           "https://auth.example.com/oauth/token",
+			"response_types_supported": []string{"code"},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	metadata, err := client.GetAuthorizationServerMetadata(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(metadata.Issuer)
+	// Output: https://auth.example.com
+}
+
+func ExampleOAuthClient_GetProtectedResourceMetadata() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"resource":              "https://api.example.com",
+			"authorization_servers": []string{"https://auth.example.com"},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	metadata, err := client.GetProtectedResourceMetadata(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(metadata.Resource)
+	// Output: https://api.example.com
+}
+
+func ExampleOAuthClient_RevokeToken() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	hint := dash0.OAuthTokenTypeRefreshToken
+	err = client.RevokeToken(context.Background(), &dash0.OAuthRevocationRequest{
+		Token:         "dash0_rt_to-revoke",
+		TokenTypeHint: &hint,
+	})
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleIsOAuthTokenError() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":             "invalid_grant",
+			"error_description": "authorization code has expired",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	_, err = client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType: dash0.OAuthGrantTypeAuthorizationCode,
+		Code:      dash0.Ptr("expired"),
+		ClientId:  dash0.Ptr("my-client"),
+	})
+	fmt.Println(dash0.IsOAuthTokenError(err))
+	// Output: true
+}
+
 // FormatDuration
 
 func ExampleFormatDuration() {
