@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 	"time"
 )
@@ -54,16 +55,33 @@ func TestNewOAuthClient(t *testing.T) {
 		}
 	})
 
-	t.Run("ignores auth token", func(t *testing.T) {
-		client, err := NewOAuthClient(
-			WithApiUrl("https://api.example.com"),
-			WithAuthToken("auth_ignored"),
-		)
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
+	t.Run("rejects unsupported options", func(t *testing.T) {
+		cases := []struct {
+			name string
+			opt  ClientOption
+			want string
+		}{
+			{"WithAuthToken", WithAuthToken("auth_ignored"), "WithAuthToken"},
+			{"WithMaxConcurrentRequests", WithMaxConcurrentRequests(2), "WithMaxConcurrentRequests"},
+			{"WithMaxRetries", WithMaxRetries(2), "WithMaxRetries"},
+			{"WithRetryWaitMin", WithRetryWaitMin(1 * time.Second), "WithRetryWaitMin"},
+			{"WithRetryWaitMax", WithRetryWaitMax(5 * time.Second), "WithRetryWaitMax"},
+			{"WithTransport", WithTransport(NewTransport()), "WithTransport"},
+			{"WithOtlpEndpoint", WithOtlpEndpoint(OtlpEncodingJson, "https://otlp.example.com"), "WithOtlpEndpoint"},
 		}
-		if client == nil {
-			t.Fatal("expected non-nil client")
+		for _, tc := range cases {
+			t.Run(tc.name, func(t *testing.T) {
+				_, err := NewOAuthClient(
+					WithApiUrl("https://api.example.com"),
+					tc.opt,
+				)
+				if err == nil {
+					t.Fatalf("expected error mentioning %s, got nil", tc.want)
+				}
+				if !strings.Contains(err.Error(), tc.want) {
+					t.Errorf("error %q does not mention %s", err.Error(), tc.want)
+				}
+			})
 		}
 	})
 

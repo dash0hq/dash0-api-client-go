@@ -238,6 +238,43 @@ func WithOtlpEndpoint(encoding OtlpEncoding, url string) ClientOption {
 	}
 }
 
+// validateOAuthOptions returns an error if any ClientOption that is not
+// meaningful for an OAuth client was set. Only [WithApiUrl], [WithHTTPClient],
+// [WithTimeout], and [WithUserAgent] are accepted; passing anything else is
+// almost certainly a mistake by the caller and is rejected explicitly so the
+// silent-no-op footgun does not bite at runtime.
+func validateOAuthOptions(cfg *clientConfig) error {
+	var rejected []string
+	if cfg.authToken != "" {
+		rejected = append(rejected, "WithAuthToken")
+	}
+	if cfg.maxConcurrentSet {
+		rejected = append(rejected, "WithMaxConcurrentRequests")
+	}
+	if cfg.maxRetriesSet {
+		rejected = append(rejected, "WithMaxRetries")
+	}
+	if cfg.retryWaitMinSet {
+		rejected = append(rejected, "WithRetryWaitMin")
+	}
+	if cfg.retryWaitMaxSet {
+		rejected = append(rejected, "WithRetryWaitMax")
+	}
+	if cfg.transport != nil {
+		rejected = append(rejected, "WithTransport")
+	}
+	if cfg.otlpEndpoint != "" {
+		rejected = append(rejected, "WithOtlpEndpoint")
+	}
+	if len(rejected) == 0 {
+		return nil
+	}
+	return fmt.Errorf(
+		"dash0: NewOAuthClient does not support %s; only WithApiUrl, WithHTTPClient, WithTimeout, and WithUserAgent are accepted",
+		strings.Join(rejected, ", "),
+	)
+}
+
 // validateTransportConflicts returns an error if any transport-level
 // ClientOption was set alongside WithTransport.
 func validateTransportConflicts(cfg *clientConfig) error {

@@ -31,9 +31,9 @@ type Configuration struct {
 }
 
 type OAuthState struct {
-	ClientID     string    `json:"clientId"`
-	RefreshToken string    `json:"refreshToken"`
-	ExpiresAt    time.Time `json:"expiresAt"`
+	ClientID     string    `json:"clientId,omitempty"`
+	RefreshToken string    `json:"refreshToken,omitempty"`
+	ExpiresAt    time.Time `json:"expiresAt,omitzero"`
 }
 
 // DatasetPtr returns the dataset as a *string suitable for Dash0 API calls.

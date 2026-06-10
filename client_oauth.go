@@ -9,6 +9,11 @@ import (
 // OAuthClient provides methods for the Dash0 OAuth 2.0 authorization flow.
 // These endpoints do not require API key authentication.
 // Use [NewOAuthClient] to create an instance.
+//
+// For the inputs to [OAuthClient.AuthorizeURL] and [OAuthClient.ExchangeToken],
+// the recommended way to obtain them is:
+//   - [GeneratePKCEPair] for the PKCE verifier and S256 challenge (RFC 7636).
+//   - [GenerateOAuthState] for the `state` parameter (RFC 6749 §10.12).
 type OAuthClient interface {
 	// GetAuthorizationServerMetadata retrieves the OAuth 2.0 authorization
 	// server metadata (RFC 8414) from the well-known endpoint.
@@ -78,10 +83,12 @@ type oauthClient struct {
 }
 
 // NewOAuthClient creates a new OAuth client for the Dash0 API.
-// It accepts the same [ClientOption] functions as [NewClient].
-// [WithApiUrl] is required; [WithAuthToken] is not needed and is ignored.
-// Only [WithApiUrl], [WithHTTPClient], [WithTimeout], and [WithUserAgent] are
-// meaningful; other options are accepted but have no effect.
+// It accepts a subset of the [ClientOption] functions used by [NewClient];
+// only [WithApiUrl], [WithHTTPClient], [WithTimeout], and [WithUserAgent] are
+// supported. [WithApiUrl] is required. Passing any other option (notably
+// [WithAuthToken], retry/concurrency tuning, [WithTransport], or
+// [WithOtlpEndpoint]) returns an error so the caller does not silently rely on
+// a no-op.
 //
 // Example:
 //
@@ -96,6 +103,10 @@ func NewOAuthClient(opts ...ClientOption) (OAuthClient, error) {
 
 	if cfg.apiUrl == "" {
 		return nil, fmt.Errorf("dash0: API URL is required for OAuthClient (use WithApiUrl)")
+	}
+
+	if err := validateOAuthOptions(cfg); err != nil {
+		return nil, err
 	}
 
 	var httpClient *http.Client
