@@ -77,7 +77,18 @@ func NewStore(opts ...StoreOption) (*Store, error) {
 
 // GetActiveConfiguration returns the currently active configuration.
 // Environment variables take precedence over the active profile.
+// If the active profile uses OAuth, the access token is refreshed when close
+// to expiry.
 func (s *Store) GetActiveConfiguration() (*Configuration, error) {
+	return s.getActiveConfiguration(true)
+}
+
+// getActiveConfiguration is the shared implementation behind
+// [Store.GetActiveConfiguration]. The refreshOAuth flag controls whether an
+// OAuth-backed access token close to expiry is refreshed; callers that intend
+// to override the auth token anyway can pass false to skip the refresh
+// network call.
+func (s *Store) getActiveConfiguration(refreshOAuth bool) (*Configuration, error) {
 	envApiUrl := os.Getenv(EnvApiUrl)
 	envAuthToken := os.Getenv(EnvAuthToken)
 	envOtlpUrl := os.Getenv(EnvOtlpUrl)
@@ -103,8 +114,9 @@ func (s *Store) GetActiveConfiguration() (*Configuration, error) {
 	activeConfiguration := &activeProfile.Configuration
 
 	// If the profile uses OAuth and no env var overrides the auth token,
-	// refresh the access token when it is close to expiry.
-	if activeConfiguration.OAuth != nil && envAuthToken == "" {
+	// refresh the access token when it is close to expiry. Callers that
+	// will override the token anyway pass refreshOAuth=false to skip this.
+	if refreshOAuth && activeConfiguration.OAuth != nil && envAuthToken == "" {
 		if err := refreshOAuthToken(s, activeProfile.Name, activeConfiguration); err != nil {
 			return nil, err
 		}
@@ -144,11 +156,15 @@ func ResolveConfiguration(apiUrl, authToken string, opts ...StoreOption) (*Confi
 func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
 	result := &Configuration{}
 
-	// Try to get the active configuration for defaults.
+	// Try to get the active configuration for defaults. Skip the OAuth
+	// refresh when the caller is about to override the auth token -- the
+	// refreshed token would be discarded and the network call wasted (and
+	// could rotate the refresh token for no good reason).
+	refreshOAuth := authToken == ""
 	var configErr error
 	store, err := NewStore(opts...)
 	if err == nil {
-		cfg, err := store.GetActiveConfiguration()
+		cfg, err := store.getActiveConfiguration(refreshOAuth)
 		if err != nil {
 			// Store the error but don't return yet -- we might have explicit overrides.
 			configErr = err

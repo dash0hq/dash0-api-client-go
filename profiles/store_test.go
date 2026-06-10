@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -854,6 +855,85 @@ func TestResolveConfiguration(t *testing.T) {
 		}
 		if cfg.OAuth != nil {
 			t.Error("expected OAuth to be nil when explicit auth token provided")
+		}
+	})
+
+	t.Run("explicit auth token suppresses OAuth refresh", func(t *testing.T) {
+		var requestCount atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestCount.Add(1)
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token": "dash0_at_should_not_be_seen",
+				"token_type":   "Bearer",
+				"expires_in":   3600,
+			})
+		}))
+		defer server.Close()
+
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					// Near expiry: without the suppression this would fire a refresh.
+					ExpiresAt: time.Now().Add(1 * time.Minute),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("", "auth_explicit-token", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "auth_explicit-token" {
+			t.Errorf("expected auth_explicit-token, got %s", cfg.AuthToken)
+		}
+		if got := requestCount.Load(); got != 0 {
+			t.Errorf("expected 0 token-endpoint requests, got %d", got)
+		}
+	})
+
+	t.Run("no explicit auth token still refreshes OAuth", func(t *testing.T) {
+		var requestCount atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestCount.Add(1)
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token": "dash0_at_refreshed",
+				"token_type":   "Bearer",
+				"expires_in":   3600,
+			})
+		}))
+		defer server.Close()
+
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Minute),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("", "", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "dash0_at_refreshed" {
+			t.Errorf("expected dash0_at_refreshed, got %s", cfg.AuthToken)
+		}
+		if got := requestCount.Load(); got != 1 {
+			t.Errorf("expected 1 token-endpoint request, got %d", got)
 		}
 	})
 }

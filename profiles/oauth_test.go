@@ -257,8 +257,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		var start, done sync.WaitGroup
 		start.Add(1)
 		done.Add(goroutines)
-		for i := 0; i < goroutines; i++ {
-			i := i
+		for i := range goroutines {
 			go func() {
 				defer done.Done()
 				// Each goroutine starts with its own snapshot of the
