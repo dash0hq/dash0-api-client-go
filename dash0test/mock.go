@@ -711,7 +711,6 @@ type MockOAuthClient struct {
 	ExchangeTokenFunc                  func(ctx context.Context, request *dash0.OAuthTokenRequest) (*dash0.OAuthTokenResponse, error)
 	RevokeTokenFunc                    func(ctx context.Context, request *dash0.OAuthRevocationRequest) error
 	CloseFunc                          func(ctx context.Context) error
-	InnerFunc                          func() *dash0.ClientWithResponses
 }
 
 func (m *MockOAuthClient) GetAuthorizationServerMetadata(ctx context.Context) (*dash0.OAuthAuthorizationServerMetadata, error) {
@@ -759,13 +758,6 @@ func (m *MockOAuthClient) RevokeToken(ctx context.Context, request *dash0.OAuthR
 func (m *MockOAuthClient) Close(ctx context.Context) error {
 	if m.CloseFunc != nil {
 		return m.CloseFunc(ctx)
-	}
-	return nil
-}
-
-func (m *MockOAuthClient) Inner() *dash0.ClientWithResponses {
-	if m.InnerFunc != nil {
-		return m.InnerFunc()
 	}
 	return nil
 }

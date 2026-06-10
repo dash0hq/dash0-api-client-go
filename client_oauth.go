@@ -39,9 +39,6 @@ type OAuthClient interface {
 
 	// Close releases resources associated with the client.
 	Close(ctx context.Context) error
-
-	// Inner returns the underlying generated client for advanced use cases.
-	Inner() *ClientWithResponses
 }
 
 // AuthorizeURLParams contains the parameters for building an OAuth 2.0
@@ -244,9 +241,4 @@ func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationR
 // Close is a no-op for OAuthClient.
 func (c *oauthClient) Close(_ context.Context) error {
 	return nil
-}
-
-// Inner returns the underlying generated client for advanced use cases.
-func (c *oauthClient) Inner() *ClientWithResponses {
-	return c.inner
 }

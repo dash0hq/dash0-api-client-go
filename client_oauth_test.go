@@ -851,15 +851,3 @@ func TestOAuthClient_Close(t *testing.T) {
 		t.Errorf("Close() returned error: %v", err)
 	}
 }
-
-func TestOAuthClient_Inner(t *testing.T) {
-	client, err := NewOAuthClient(WithApiUrl("https://api.example.com"))
-	if err != nil {
-		t.Fatalf("failed to create client: %v", err)
-	}
-
-	inner := client.Inner()
-	if inner == nil {
-		t.Error("Inner() returned nil")
-	}
-}
