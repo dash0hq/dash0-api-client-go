@@ -97,10 +97,10 @@ const (
 
 // Defines values for HttpRequestBodyKind.
 const (
-	Form    HttpRequestBodyKind = "form"
-	Graphql HttpRequestBodyKind = "graphql"
-	Json    HttpRequestBodyKind = "json"
-	Raw     HttpRequestBodyKind = "raw"
+	HttpRequestBodyKindForm    HttpRequestBodyKind = "form"
+	HttpRequestBodyKindGraphql HttpRequestBodyKind = "graphql"
+	HttpRequestBodyKindJson    HttpRequestBodyKind = "json"
+	HttpRequestBodyKindRaw     HttpRequestBodyKind = "raw"
 )
 
 // Defines values for HttpRequestMethod.
@@ -250,6 +250,12 @@ const (
 	Kubernetes ResourceOrchestration = "kubernetes"
 )
 
+// Defines values for ResponseFormat.
+const (
+	ResponseFormatJson ResponseFormat = "json"
+	ResponseFormatYaml ResponseFormat = "yaml"
+)
+
 // Defines values for RetentionClass.
 const (
 	Default RetentionClass = "default"
@@ -303,6 +309,44 @@ const (
 const (
 	SignalToMetricsSignalTypeLogs  SignalToMetricsSignalType = "logs"
 	SignalToMetricsSignalTypeSpans SignalToMetricsSignalType = "spans"
+)
+
+// Defines values for SignalToMetricsTargetDatasetMode.
+const (
+	Alternative SignalToMetricsTargetDatasetMode = "alternative"
+	Both        SignalToMetricsTargetDatasetMode = "both"
+	Original    SignalToMetricsTargetDatasetMode = "original"
+)
+
+// Defines values for SloBudgetingMethod.
+const (
+	Occurrences     SloBudgetingMethod = "Occurrences"
+	RatioTimeslices SloBudgetingMethod = "RatioTimeslices"
+	Timeslices      SloBudgetingMethod = "Timeslices"
+)
+
+// Defines values for SloComparisonOperator.
+const (
+	Gt  SloComparisonOperator = "gt"
+	Gte SloComparisonOperator = "gte"
+	Lt  SloComparisonOperator = "lt"
+	Lte SloComparisonOperator = "lte"
+)
+
+// Defines values for SloDefinitionApiVersion.
+const (
+	Openslov1 SloDefinitionApiVersion = "openslo/v1"
+)
+
+// Defines values for SloDefinitionKind.
+const (
+	SLO SloDefinitionKind = "SLO"
+)
+
+// Defines values for SloRawType.
+const (
+	Failure SloRawType = "failure"
+	Success SloRawType = "success"
 )
 
 // Defines values for SourceMapIntegrationKind.
@@ -2588,6 +2632,11 @@ type ResourceSpans struct {
 	ScopeSpans []ScopeSpans `json:"scopeSpans"`
 }
 
+// ResponseFormat Serialization format of an API response body.
+// - `json`: JSON-serialized body.
+// - `yaml`: YAML-serialized body.
+type ResponseFormat string
+
 // ResultRow defines model for ResultRow.
 type ResultRow struct {
 	Values []KeyValue `json:"values"`
@@ -2943,11 +2992,27 @@ type SignalToMetricsSignalType string
 
 // SignalToMetricsSpec defines model for SignalToMetricsSpec.
 type SignalToMetricsSpec struct {
-	Display SignalToMetricsDisplay `json:"display"`
-	Enabled bool                   `json:"enabled"`
-	Match   SignalToMetricsMatch   `json:"match"`
-	Output  SignalToMetricsOutput  `json:"output"`
+	// AlternativeDatasetId The slug of the target dataset. Required when targetDatasetMode is
+	// `alternative` or `both`. Must not be set when targetDatasetMode is
+	// `original` or absent.
+	AlternativeDatasetId *string                `json:"alternativeDatasetId,omitempty"`
+	Display              SignalToMetricsDisplay `json:"display"`
+	Enabled              bool                   `json:"enabled"`
+	Match                SignalToMetricsMatch   `json:"match"`
+	Output               SignalToMetricsOutput  `json:"output"`
+
+	// TargetDatasetMode Controls where the generated metric is written.
+	// - `original`: Metric lands in the dataset where the rule is defined.
+	// - `alternative`: Metric lands in the dataset specified by `alternativeDatasetId`.
+	// - `both`: Metric is produced twice — once for the original dataset, once for the alternative.
+	TargetDatasetMode *SignalToMetricsTargetDatasetMode `json:"targetDatasetMode,omitempty"`
 }
+
+// SignalToMetricsTargetDatasetMode Controls where the generated metric is written.
+// - `original`: Metric lands in the dataset where the rule is defined.
+// - `alternative`: Metric lands in the dataset specified by `alternativeDatasetId`.
+// - `both`: Metric is produced twice — once for the original dataset, once for the alternative.
+type SignalToMetricsTargetDatasetMode string
 
 // SignalToMetricsTestRequest defines model for SignalToMetricsTestRequest.
 type SignalToMetricsTestRequest struct {
@@ -2984,6 +3049,347 @@ type SlackBotConfig struct {
 type SlackConfig struct {
 	Channel    string `json:"channel"`
 	WebhookURL string `json:"webhookURL"`
+}
+
+// SloAlertCondition An alert condition that defines when an alert should fire. Can be inline or a reference to an external AlertCondition.
+type SloAlertCondition struct {
+	// ConditionRef Reference to an external AlertCondition by name.
+	ConditionRef *string                    `json:"conditionRef,omitempty"`
+	Kind         *string                    `json:"kind,omitempty"`
+	Metadata     *SloAlertConditionMetadata `json:"metadata,omitempty"`
+	Spec         *SloAlertConditionSpec     `json:"spec,omitempty"`
+}
+
+// SloAlertConditionDetails Details of the alert condition. Defaults to burnrate kind.
+type SloAlertConditionDetails struct {
+	AlertAfter *Duration `json:"alertAfter,omitempty"`
+
+	// Kind Kind of alerting condition. Defaults to 'burnrate'.
+	Kind           *string  `json:"kind,omitempty"`
+	LookbackWindow Duration `json:"lookbackWindow"`
+
+	// Op Conditional operator used to compare the SLI against a threshold value.
+	Op SloComparisonOperator `json:"op"`
+
+	// Threshold Threshold value for the condition.
+	Threshold float32 `json:"threshold"`
+}
+
+// SloAlertConditionMetadata defines model for SloAlertConditionMetadata.
+type SloAlertConditionMetadata struct {
+	DisplayName *string `json:"displayName,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
+
+// SloAlertConditionSpec defines model for SloAlertConditionSpec.
+type SloAlertConditionSpec struct {
+	// Condition Details of the alert condition. Defaults to burnrate kind.
+	Condition SloAlertConditionDetails `json:"condition"`
+
+	// Description Description of the alert condition, up to 1050 characters.
+	Description *string `json:"description,omitempty"`
+
+	// Severity Severity level of the alert (e.g. 'page', 'warning', 'critical').
+	Severity string `json:"severity"`
+}
+
+// SloAlertNotificationTarget An alert notification target. Can be inline or a reference to an external AlertNotificationTarget via targetRef.
+type SloAlertNotificationTarget struct {
+	Kind     *string                 `json:"kind,omitempty"`
+	Metadata *map[string]interface{} `json:"metadata,omitempty"`
+	Spec     *map[string]interface{} `json:"spec,omitempty"`
+
+	// TargetRef Reference to an external AlertNotificationTarget by name.
+	TargetRef *string `json:"targetRef,omitempty"`
+}
+
+// SloAlertPolicy An alert policy following the OpenSLO AlertPolicy structure. Can contain inline conditions and notification targets, or reference an external policy via alertPolicyRef.
+type SloAlertPolicy struct {
+	// AlertPolicyRef Reference to an external AlertPolicy by name.
+	AlertPolicyRef *string                 `json:"alertPolicyRef,omitempty"`
+	Kind           *string                 `json:"kind,omitempty"`
+	Metadata       *SloAlertPolicyMetadata `json:"metadata,omitempty"`
+	Spec           *SloAlertPolicySpec     `json:"spec,omitempty"`
+}
+
+// SloAlertPolicyMetadata defines model for SloAlertPolicyMetadata.
+type SloAlertPolicyMetadata struct {
+	DisplayName *string `json:"displayName,omitempty"`
+	Name        *string `json:"name,omitempty"`
+}
+
+// SloAlertPolicySpec defines model for SloAlertPolicySpec.
+type SloAlertPolicySpec struct {
+	// AlertWhenBreaching Whether to trigger the alert when the condition is breaching.
+	AlertWhenBreaching bool `json:"alertWhenBreaching"`
+
+	// AlertWhenNoData Whether to trigger the alert when no data is available.
+	AlertWhenNoData bool `json:"alertWhenNoData"`
+
+	// AlertWhenResolved Whether to trigger the alert when the condition is resolved.
+	AlertWhenResolved bool `json:"alertWhenResolved"`
+
+	// Conditions Alert conditions (max one condition per OpenSLO v1).
+	Conditions []SloAlertCondition `json:"conditions"`
+
+	// Description Description of the alert policy, up to 1050 characters.
+	Description *string `json:"description,omitempty"`
+
+	// NotificationTargets Notification targets for this alert policy.
+	NotificationTargets []SloAlertNotificationTarget `json:"notificationTargets"`
+}
+
+// SloAnnotations defines model for SloAnnotations.
+type SloAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the SLO was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the SLO has been deleted but not yet purged. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0Comenabled Whether the SLO is actively tracked. Dash0 extension. Stored as a string; valid values are 'true' and 'false'. Defaults to 'true'.
+	Dash0Comenabled *string `json:"dash0.com/enabled,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising SLOs (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt    *time.Time        `json:"dash0.com/updated-at,omitempty"`
+	AdditionalProperties map[string]string `json:"-"`
+}
+
+// SloBudgetingMethod - `Occurrences`: Ratio of counts of good events to total events.
+// - `Timeslices`: Ratio of good time slices to total time slices.
+// - `RatioTimeslices`: Average of all time slices' success ratios.
+type SloBudgetingMethod string
+
+// SloCalendarWindow Calendar alignment configuration for a time window.
+type SloCalendarWindow struct {
+	// StartTime Start time in 24h format without time zone (e.g. '2020-01-21 12:30:00').
+	StartTime string `json:"startTime"`
+
+	// TimeZone IANA Time Zone Database name (e.g. 'America/New_York').
+	TimeZone string `json:"timeZone"`
+}
+
+// SloComparisonOperator Conditional operator used to compare the SLI against a threshold value.
+type SloComparisonOperator string
+
+// SloDefinition A Service Level Objective (SLO) that defines a target value or range of values for a
+// service level, described by a Service Level Indicator (SLI).
+// Compatible with the OpenSLO v1 specification (https://openslo.com/) with Dash0-specific
+// extensions for access control, dataset scoping, and UI organization.
+//
+// SLOs evaluate with a fixed 5-minute settling delay applied automatically: at any
+// moment, the SLI reflects telemetry that arrived at least 5 minutes ago. This
+// ensures late-arriving signals are included in the SLI computation, at the cost of a
+// small, fixed lag between live behavior and SLO state.
+type SloDefinition struct {
+	ApiVersion SloDefinitionApiVersion `json:"apiVersion"`
+	Kind       SloDefinitionKind       `json:"kind"`
+	Metadata   SloMetadata             `json:"metadata"`
+	Spec       SloSpec                 `json:"spec"`
+}
+
+// SloDefinitionApiVersion defines model for SloDefinition.ApiVersion.
+type SloDefinitionApiVersion string
+
+// SloDefinitionKind defines model for SloDefinition.Kind.
+type SloDefinitionKind string
+
+// SloIndicator Inline Service Level Indicator (SLI) following the OpenSLO SLI structure.
+type SloIndicator struct {
+	// Metadata Metadata for the inline SLI.
+	Metadata *SloIndicatorMetadata `json:"metadata,omitempty"`
+
+	// Spec SLI specification. Either ratioMetric or thresholdMetric must be provided.
+	Spec SloIndicatorSpec `json:"spec"`
+}
+
+// SloIndicatorMetadata Metadata for the inline SLI.
+type SloIndicatorMetadata struct {
+	// DisplayName Human-readable display name for the SLI.
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Name Name of the SLI.
+	Name *string `json:"name,omitempty"`
+}
+
+// SloIndicatorSpec SLI specification. Either ratioMetric or thresholdMetric must be provided.
+type SloIndicatorSpec struct {
+	// Description Optional description of the SLI, up to 1050 characters.
+	Description *string `json:"description,omitempty"`
+
+	// RatioMetric Ratio-based SLI metric. Provide either good+total, bad+total, or raw with rawType.
+	RatioMetric *SloRatioMetric `json:"ratioMetric,omitempty"`
+
+	// ThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against objective thresholds (op and value on the objective, not here).
+	ThresholdMetric *SloThresholdMetric `json:"thresholdMetric,omitempty"`
+}
+
+// SloLabels Resource labels. Keys prefixed with `dash0.com/` are reserved for Dash0-managed
+// metadata (id, version, dataset, origin, source); reserved or blank keys supplied by
+// the caller are ignored. Use any other key for user-defined labels, which are stored
+// and returned on read. At most 50 user-defined labels are allowed.
+type SloLabels struct {
+	// Dash0Comdataset Dataset this SLO belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the SLO. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created SLOs; non-empty for SLOs created via the internal API. SLOs with a non-empty origin have write access controlled exclusively through explicit permission entries rather than by the admin role.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `api`: created directly through the internal API.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Current version of the SLO. Needs to be set when updating an SLO to prevent conflicting writes.
+	Dash0Comversion      *string           `json:"dash0.com/version,omitempty"`
+	AdditionalProperties map[string]string `json:"-"`
+}
+
+// SloMetadata defines model for SloMetadata.
+type SloMetadata struct {
+	Annotations *SloAnnotations `json:"annotations,omitempty"`
+
+	// Labels Resource labels. Keys prefixed with `dash0.com/` are reserved for Dash0-managed
+	// metadata (id, version, dataset, origin, source); reserved or blank keys supplied by
+	// the caller are ignored. Use any other key for user-defined labels, which are stored
+	// and returned on read. At most 50 user-defined labels are allowed.
+	Labels *SloLabels `json:"labels,omitempty"`
+
+	// Name Display name of the SLO.
+	Name string `json:"name"`
+}
+
+// SloMetricSource Connection and query details for a metric data source. The spec field is an arbitrary object whose structure depends on the data source type. For Prometheus, it typically contains { query: "<PromQL expression>" }.
+type SloMetricSource struct {
+	// MetricSourceRef Optional reference to an existing DataSource object by name.
+	MetricSourceRef *string `json:"metricSourceRef,omitempty"`
+
+	// Spec Data-source-specific query parameters. This is an arbitrary object whose structure depends on the data source type.
+	Spec map[string]interface{} `json:"spec"`
+
+	// Type Predefined data source type (e.g. 'Prometheus', 'Datadog'). Optional when metricSourceRef is given.
+	Type *string `json:"type,omitempty"`
+}
+
+// SloMetricSourceWrapper Wraps a metric source for use in ratio metric numerator/denominator/raw.
+type SloMetricSourceWrapper struct {
+	// MetricSource Connection and query details for a metric data source. The spec field is an arbitrary object whose structure depends on the data source type. For Prometheus, it typically contains { query: "<PromQL expression>" }.
+	MetricSource SloMetricSource `json:"metricSource"`
+}
+
+// SloObjective An objective threshold for the SLO. Defines tolerance levels for the SLI metrics.
+type SloObjective struct {
+	// CompositeWeight Weight multiplier for composite SLOs. Default is 1. Only supported when declaring multiple objectives.
+	CompositeWeight *float32 `json:"compositeWeight,omitempty"`
+
+	// DisplayName Human-readable name for this objective.
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Indicator Inline Service Level Indicator (SLI) following the OpenSLO SLI structure.
+	Indicator *SloIndicator `json:"indicator,omitempty"`
+
+	// IndicatorRef Reference to an external SLI for composite SLOs. One of indicator or indicatorRef must be given per objective.
+	IndicatorRef *string `json:"indicatorRef,omitempty"`
+
+	// Op Conditional operator used to compare the SLI against a threshold value.
+	Op *SloComparisonOperator `json:"op,omitempty"`
+
+	// Target Budget target for this objective as a fraction [0.0, 1.0). Mutually exclusive with targetPercent; one of the two must be provided.
+	Target *float32 `json:"target,omitempty"`
+
+	// TargetPercent Budget target for this objective as a percentage [0.0, 100). Mutually exclusive with target; one of the two must be provided.
+	TargetPercent *float32 `json:"targetPercent,omitempty"`
+
+	// TimeSliceTarget Target for the ratio of good time slices to total time slices (0.0, 1.0]. Required only when budgetingMethod is Timeslices.
+	TimeSliceTarget *float32  `json:"timeSliceTarget,omitempty"`
+	TimeSliceWindow *Duration `json:"timeSliceWindow,omitempty"`
+
+	// Value Threshold value to compare against. Required when using thresholdMetric.
+	Value *float32 `json:"value,omitempty"`
+}
+
+// SloRatioMetric Ratio-based SLI metric. Provide either good+total, bad+total, or raw with rawType.
+type SloRatioMetric struct {
+	// Bad Wraps a metric source for use in ratio metric numerator/denominator/raw.
+	Bad *SloMetricSourceWrapper `json:"bad,omitempty"`
+
+	// Counter True if the metric is a monotonically increasing counter, false if it is a single number that can arbitrarily go up or down. Ignored when using raw.
+	Counter *bool `json:"counter,omitempty"`
+
+	// Good Wraps a metric source for use in ratio metric numerator/denominator/raw.
+	Good *SloMetricSourceWrapper `json:"good,omitempty"`
+
+	// Raw Wraps a metric source for use in ratio metric numerator/denominator/raw.
+	Raw *SloMetricSourceWrapper `json:"raw,omitempty"`
+
+	// RawType Required with raw. Indicates how the stored ratio was calculated:
+	// - `success`: good/total
+	// - `failure`: bad/total
+	RawType *SloRawType `json:"rawType,omitempty"`
+
+	// Total Wraps a metric source for use in ratio metric numerator/denominator/raw.
+	Total *SloMetricSourceWrapper `json:"total,omitempty"`
+}
+
+// SloRawType Required with raw. Indicates how the stored ratio was calculated:
+// - `success`: good/total
+// - `failure`: bad/total
+type SloRawType string
+
+// SloSpec defines model for SloSpec.
+type SloSpec struct {
+	// AlertPolicies Alert policies for this SLO. Each entry can be an inline AlertPolicy object or a reference to an external AlertPolicy via alertPolicyRef.
+	AlertPolicies *[]SloAlertPolicy `json:"alertPolicies,omitempty"`
+
+	// BudgetingMethod - `Occurrences`: Ratio of counts of good events to total events.
+	// - `Timeslices`: Ratio of good time slices to total time slices.
+	// - `RatioTimeslices`: Average of all time slices' success ratios.
+	BudgetingMethod SloBudgetingMethod `json:"budgetingMethod"`
+
+	// Description Optional description of the SLO, up to 1050 characters.
+	Description *string `json:"description,omitempty"`
+
+	// Indicator Inline Service Level Indicator (SLI) following the OpenSLO SLI structure.
+	Indicator *SloIndicator `json:"indicator,omitempty"`
+
+	// IndicatorRef Name of an external SLI. One of indicator or indicatorRef must be given. If declaring a composite SLO, indicators must be moved into objectives[].
+	IndicatorRef *string `json:"indicatorRef,omitempty"`
+
+	// Objectives Thresholds for the SLO. If thresholdMetric is used, only one objective may be defined. If using ratioMetric, any number of objectives can be defined.
+	Objectives []SloObjective `json:"objectives"`
+
+	// Service Name of the service this SLO is associated with.
+	Service *string `json:"service,omitempty"`
+
+	// TimeWindow Exactly one time window item: either a rolling or calendar-aligned time window.
+	TimeWindow *[]SloTimeWindow `json:"timeWindow,omitempty"`
+}
+
+// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against objective thresholds (op and value on the objective, not here).
+type SloThresholdMetric struct {
+	// MetricSource Connection and query details for a metric data source. The spec field is an arbitrary object whose structure depends on the data source type. For Prometheus, it typically contains { query: "<PromQL expression>" }.
+	MetricSource SloMetricSource `json:"metricSource"`
+}
+
+// SloTimeWindow A rolling or calendar-aligned time window for the SLO.
+type SloTimeWindow struct {
+	// Calendar Calendar alignment configuration for a time window.
+	Calendar *SloCalendarWindow `json:"calendar,omitempty"`
+	Duration Duration           `json:"duration"`
+
+	// IsRolling Whether this is a rolling time window. If omitted, assumed false when calendar is present.
+	IsRolling *bool `json:"isRolling,omitempty"`
 }
 
 // SourceMapIntegration defines model for SourceMapIntegration.
@@ -4527,6 +4933,40 @@ type PutApiSignalToMetricsOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiSlosParams defines parameters for GetApiSlos.
+type GetApiSlosParams struct {
+	// Dataset Filter by dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+}
+
+// PostApiSlosParams defines parameters for PostApiSlos.
+type PostApiSlosParams struct {
+	// Dataset Target dataset. Overrides dash0.com/dataset in metadata.labels if both are provided.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiSlosOriginOrIdParams defines parameters for DeleteApiSlosOriginOrId.
+type DeleteApiSlosOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiSlosOriginOrIdParams defines parameters for GetApiSlosOriginOrId.
+type GetApiSlosOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// Format Return OpenSLO YAML instead of JSON. Equivalent to `Accept: application/yaml`.
+	Format *ResponseFormat `form:"format,omitempty" json:"format,omitempty"`
+}
+
+// PutApiSlosOriginOrIdParams defines parameters for PutApiSlosOriginOrId.
+type PutApiSlosOriginOrIdParams struct {
+	// Dataset Target dataset. Overrides dash0.com/dataset in metadata.labels if both are provided.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiSpamFiltersParams defines parameters for GetApiSpamFilters.
 type GetApiSpamFiltersParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -4716,6 +5156,12 @@ type PostApiSignalToMetricsTestJSONRequestBody = SignalToMetricsTestRequest
 // PutApiSignalToMetricsOriginOrIdJSONRequestBody defines body for PutApiSignalToMetricsOriginOrId for application/json ContentType.
 type PutApiSignalToMetricsOriginOrIdJSONRequestBody = SignalToMetricsResponse
 
+// PostApiSlosJSONRequestBody defines body for PostApiSlos for application/json ContentType.
+type PostApiSlosJSONRequestBody = SloDefinition
+
+// PutApiSlosOriginOrIdJSONRequestBody defines body for PutApiSlosOriginOrId for application/json ContentType.
+type PutApiSlosOriginOrIdJSONRequestBody = SloDefinition
+
 // PostApiSpamFiltersJSONRequestBody defines body for PostApiSpamFilters for application/json ContentType.
 type PostApiSpamFiltersJSONRequestBody = SpamFilterCreateRequest
 
@@ -4868,6 +5314,277 @@ func (a PrometheusAlertRule_Annotations) MarshalJSON() ([]byte, error) {
 		object["summary"], err = json.Marshal(a.Summary)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'summary': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for SloAnnotations. Returns the specified
+// element and whether it was found
+func (a SloAnnotations) Get(fieldName string) (value string, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for SloAnnotations
+func (a *SloAnnotations) Set(fieldName string, value string) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]string)
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for SloAnnotations to handle AdditionalProperties
+func (a *SloAnnotations) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["dash0.com/created-at"]; found {
+		err = json.Unmarshal(raw, &a.Dash0ComcreatedAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/created-at': %w", err)
+		}
+		delete(object, "dash0.com/created-at")
+	}
+
+	if raw, found := object["dash0.com/deleted-at"]; found {
+		err = json.Unmarshal(raw, &a.Dash0ComdeletedAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/deleted-at': %w", err)
+		}
+		delete(object, "dash0.com/deleted-at")
+	}
+
+	if raw, found := object["dash0.com/enabled"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comenabled)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/enabled': %w", err)
+		}
+		delete(object, "dash0.com/enabled")
+	}
+
+	if raw, found := object["dash0.com/folder-path"]; found {
+		err = json.Unmarshal(raw, &a.Dash0ComfolderPath)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/folder-path': %w", err)
+		}
+		delete(object, "dash0.com/folder-path")
+	}
+
+	if raw, found := object["dash0.com/sharing"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comsharing)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/sharing': %w", err)
+		}
+		delete(object, "dash0.com/sharing")
+	}
+
+	if raw, found := object["dash0.com/updated-at"]; found {
+		err = json.Unmarshal(raw, &a.Dash0ComupdatedAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/updated-at': %w", err)
+		}
+		delete(object, "dash0.com/updated-at")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]string)
+		for fieldName, fieldBuf := range object {
+			var fieldVal string
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for SloAnnotations to handle AdditionalProperties
+func (a SloAnnotations) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Dash0ComcreatedAt != nil {
+		object["dash0.com/created-at"], err = json.Marshal(a.Dash0ComcreatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/created-at': %w", err)
+		}
+	}
+
+	if a.Dash0ComdeletedAt != nil {
+		object["dash0.com/deleted-at"], err = json.Marshal(a.Dash0ComdeletedAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/deleted-at': %w", err)
+		}
+	}
+
+	if a.Dash0Comenabled != nil {
+		object["dash0.com/enabled"], err = json.Marshal(a.Dash0Comenabled)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/enabled': %w", err)
+		}
+	}
+
+	if a.Dash0ComfolderPath != nil {
+		object["dash0.com/folder-path"], err = json.Marshal(a.Dash0ComfolderPath)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/folder-path': %w", err)
+		}
+	}
+
+	if a.Dash0Comsharing != nil {
+		object["dash0.com/sharing"], err = json.Marshal(a.Dash0Comsharing)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/sharing': %w", err)
+		}
+	}
+
+	if a.Dash0ComupdatedAt != nil {
+		object["dash0.com/updated-at"], err = json.Marshal(a.Dash0ComupdatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/updated-at': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for SloLabels. Returns the specified
+// element and whether it was found
+func (a SloLabels) Get(fieldName string) (value string, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for SloLabels
+func (a *SloLabels) Set(fieldName string, value string) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]string)
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for SloLabels to handle AdditionalProperties
+func (a *SloLabels) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["dash0.com/dataset"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comdataset)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/dataset': %w", err)
+		}
+		delete(object, "dash0.com/dataset")
+	}
+
+	if raw, found := object["dash0.com/id"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comid)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/id': %w", err)
+		}
+		delete(object, "dash0.com/id")
+	}
+
+	if raw, found := object["dash0.com/origin"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comorigin)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/origin': %w", err)
+		}
+		delete(object, "dash0.com/origin")
+	}
+
+	if raw, found := object["dash0.com/source"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comsource)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/source': %w", err)
+		}
+		delete(object, "dash0.com/source")
+	}
+
+	if raw, found := object["dash0.com/version"]; found {
+		err = json.Unmarshal(raw, &a.Dash0Comversion)
+		if err != nil {
+			return fmt.Errorf("error reading 'dash0.com/version': %w", err)
+		}
+		delete(object, "dash0.com/version")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]string)
+		for fieldName, fieldBuf := range object {
+			var fieldVal string
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for SloLabels to handle AdditionalProperties
+func (a SloLabels) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Dash0Comdataset != nil {
+		object["dash0.com/dataset"], err = json.Marshal(a.Dash0Comdataset)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/dataset': %w", err)
+		}
+	}
+
+	if a.Dash0Comid != nil {
+		object["dash0.com/id"], err = json.Marshal(a.Dash0Comid)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/id': %w", err)
+		}
+	}
+
+	if a.Dash0Comorigin != nil {
+		object["dash0.com/origin"], err = json.Marshal(a.Dash0Comorigin)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/origin': %w", err)
+		}
+	}
+
+	if a.Dash0Comsource != nil {
+		object["dash0.com/source"], err = json.Marshal(a.Dash0Comsource)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/source': %w", err)
+		}
+	}
+
+	if a.Dash0Comversion != nil {
+		object["dash0.com/version"], err = json.Marshal(a.Dash0Comversion)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'dash0.com/version': %w", err)
 		}
 	}
 
@@ -6484,6 +7201,25 @@ type ClientInterface interface {
 
 	PutApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiSlos request
+	GetApiSlos(ctx context.Context, params *GetApiSlosParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiSlosWithBody request with any body
+	PostApiSlosWithBody(ctx context.Context, params *PostApiSlosParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSlos(ctx context.Context, params *PostApiSlosParams, body PostApiSlosJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiSlosOriginOrId request
+	DeleteApiSlosOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiSlosOriginOrId request
+	GetApiSlosOriginOrId(ctx context.Context, originOrId string, params *GetApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiSlosOriginOrIdWithBody request with any body
+	PutApiSlosOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiSlosOriginOrId(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiSpamFilters request
 	GetApiSpamFilters(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -7685,6 +8421,90 @@ func (c *generatedClient) PutApiSignalToMetricsOriginOrIdWithBody(ctx context.Co
 
 func (c *generatedClient) PutApiSignalToMetricsOriginOrId(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiSignalToMetricsOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSlos(ctx context.Context, params *GetApiSlosParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSlosRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSlosWithBody(ctx context.Context, params *PostApiSlosParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSlosRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSlos(ctx context.Context, params *PostApiSlosParams, body PostApiSlosJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSlosRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiSlosOriginOrId(ctx context.Context, originOrId string, params *DeleteApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiSlosOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiSlosOriginOrId(ctx context.Context, originOrId string, params *GetApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiSlosOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSlosOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSlosOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiSlosOriginOrId(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiSlosOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -11886,6 +12706,330 @@ func NewPutApiSignalToMetricsOriginOrIdRequestWithBody(server string, originOrId
 	return req, nil
 }
 
+// NewGetApiSlosRequest generates requests for GetApiSlos
+func NewGetApiSlosRequest(server string, params *GetApiSlosParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/slos")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "originPrefix", runtime.ParamLocationQuery, *params.OriginPrefix); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiSlosRequest calls the generic PostApiSlos builder with application/json body
+func NewPostApiSlosRequest(server string, params *PostApiSlosParams, body PostApiSlosJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSlosRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiSlosRequestWithBody generates requests for PostApiSlos with any type of body
+func NewPostApiSlosRequestWithBody(server string, params *PostApiSlosParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/slos")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiSlosOriginOrIdRequest generates requests for DeleteApiSlosOriginOrId
+func NewDeleteApiSlosOriginOrIdRequest(server string, originOrId string, params *DeleteApiSlosOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/slos/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiSlosOriginOrIdRequest generates requests for GetApiSlosOriginOrId
+func NewGetApiSlosOriginOrIdRequest(server string, originOrId string, params *GetApiSlosOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/slos/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Format != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "format", runtime.ParamLocationQuery, *params.Format); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiSlosOriginOrIdRequest calls the generic PutApiSlosOriginOrId builder with application/json body
+func NewPutApiSlosOriginOrIdRequest(server string, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiSlosOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiSlosOriginOrIdRequestWithBody generates requests for PutApiSlosOriginOrId with any type of body
+func NewPutApiSlosOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/slos/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiSpamFiltersRequest generates requests for GetApiSpamFilters
 func NewGetApiSpamFiltersRequest(server string, params *GetApiSpamFiltersParams) (*http.Request, error) {
 	var err error
@@ -13804,6 +14948,25 @@ type ClientWithResponsesInterface interface {
 
 	PutApiSignalToMetricsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSignalToMetricsOriginOrIdParams, body PutApiSignalToMetricsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSignalToMetricsOriginOrIdResponse, error)
 
+	// GetApiSlosWithResponse request
+	GetApiSlosWithResponse(ctx context.Context, params *GetApiSlosParams, reqEditors ...RequestEditorFn) (*GetApiSlosResponse, error)
+
+	// PostApiSlosWithBodyWithResponse request with any body
+	PostApiSlosWithBodyWithResponse(ctx context.Context, params *PostApiSlosParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSlosResponse, error)
+
+	PostApiSlosWithResponse(ctx context.Context, params *PostApiSlosParams, body PostApiSlosJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSlosResponse, error)
+
+	// DeleteApiSlosOriginOrIdWithResponse request
+	DeleteApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSlosOriginOrIdResponse, error)
+
+	// GetApiSlosOriginOrIdWithResponse request
+	GetApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSlosOriginOrIdResponse, error)
+
+	// PutApiSlosOriginOrIdWithBodyWithResponse request with any body
+	PutApiSlosOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSlosOriginOrIdResponse, error)
+
+	PutApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSlosOriginOrIdResponse, error)
+
 	// GetApiSpamFiltersWithResponse request
 	GetApiSpamFiltersWithResponse(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*GetApiSpamFiltersResponse, error)
 
@@ -15340,6 +16503,121 @@ func (r PutApiSignalToMetricsOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiSlosResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]SloDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSlosResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSlosResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiSlosResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SloDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSlosResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSlosResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiSlosOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiSlosOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiSlosOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiSlosOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SloDefinition
+
+	JSONDefault *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiSlosOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiSlosOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiSlosOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SloDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiSlosOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiSlosOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiSpamFiltersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -16851,6 +18129,67 @@ func (c *ClientWithResponses) PutApiSignalToMetricsOriginOrIdWithResponse(ctx co
 		return nil, err
 	}
 	return ParsePutApiSignalToMetricsOriginOrIdResponse(rsp)
+}
+
+// GetApiSlosWithResponse request returning *GetApiSlosResponse
+func (c *ClientWithResponses) GetApiSlosWithResponse(ctx context.Context, params *GetApiSlosParams, reqEditors ...RequestEditorFn) (*GetApiSlosResponse, error) {
+	rsp, err := c.GetApiSlos(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSlosResponse(rsp)
+}
+
+// PostApiSlosWithBodyWithResponse request with arbitrary body returning *PostApiSlosResponse
+func (c *ClientWithResponses) PostApiSlosWithBodyWithResponse(ctx context.Context, params *PostApiSlosParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSlosResponse, error) {
+	rsp, err := c.PostApiSlosWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSlosResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSlosWithResponse(ctx context.Context, params *PostApiSlosParams, body PostApiSlosJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSlosResponse, error) {
+	rsp, err := c.PostApiSlos(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSlosResponse(rsp)
+}
+
+// DeleteApiSlosOriginOrIdWithResponse request returning *DeleteApiSlosOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiSlosOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiSlosOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiSlosOriginOrIdResponse(rsp)
+}
+
+// GetApiSlosOriginOrIdWithResponse request returning *GetApiSlosOriginOrIdResponse
+func (c *ClientWithResponses) GetApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiSlosOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiSlosOriginOrIdResponse, error) {
+	rsp, err := c.GetApiSlosOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiSlosOriginOrIdResponse(rsp)
+}
+
+// PutApiSlosOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiSlosOriginOrIdResponse
+func (c *ClientWithResponses) PutApiSlosOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSlosOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSlosOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSlosOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSlosOriginOrIdResponse, error) {
+	rsp, err := c.PutApiSlosOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiSlosOriginOrIdResponse(rsp)
 }
 
 // GetApiSpamFiltersWithResponse request returning *GetApiSpamFiltersResponse
@@ -19291,6 +20630,164 @@ func ParsePutApiSignalToMetricsOriginOrIdResponse(rsp *http.Response) (*PutApiSi
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSlosResponse parses an HTTP response from a GetApiSlosWithResponse call
+func ParseGetApiSlosResponse(rsp *http.Response) (*GetApiSlosResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSlosResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []SloDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiSlosResponse parses an HTTP response from a PostApiSlosWithResponse call
+func ParsePostApiSlosResponse(rsp *http.Response) (*PostApiSlosResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSlosResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SloDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiSlosOriginOrIdResponse parses an HTTP response from a DeleteApiSlosOriginOrIdWithResponse call
+func ParseDeleteApiSlosOriginOrIdResponse(rsp *http.Response) (*DeleteApiSlosOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiSlosOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiSlosOriginOrIdResponse parses an HTTP response from a GetApiSlosOriginOrIdWithResponse call
+func ParseGetApiSlosOriginOrIdResponse(rsp *http.Response) (*GetApiSlosOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiSlosOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SloDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiSlosOriginOrIdResponse parses an HTTP response from a PutApiSlosOriginOrIdWithResponse call
+func ParsePutApiSlosOriginOrIdResponse(rsp *http.Response) (*PutApiSlosOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiSlosOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SloDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
