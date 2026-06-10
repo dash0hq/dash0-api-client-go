@@ -2,8 +2,11 @@ package dash0_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"time"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
@@ -581,6 +584,103 @@ func ExampleClearRecordingRuleID() {
 	dash0.ClearRecordingRuleID(rule)
 	fmt.Println(dash0.GetRecordingRuleID(rule) == "")
 	// Output: true
+}
+
+// OAuthClient
+
+func ExampleNewOAuthClient() {
+	client, err := dash0.NewOAuthClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+	fmt.Println(client != nil)
+	// Output: true
+}
+
+func ExampleOAuthClient_AuthorizeURL() {
+	client, err := dash0.NewOAuthClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	authorizeURL, err := client.AuthorizeURL(&dash0.AuthorizeURLParams{
+		ResponseType:        "code",
+		ClientID:            "my-client",
+		RedirectURI:         "http://localhost:8080/callback",
+		CodeChallenge:       "challenge",
+		CodeChallengeMethod: "S256",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(authorizeURL != "")
+	// Output: true
+}
+
+func ExampleOAuthClient_RegisterClient() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"client_id":                 "generated-id",
+			"client_name":               "My CLI",
+			"registration_access_token": "reg_token",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	resp, err := client.RegisterClient(context.Background(), &dash0.OAuthClientRegistrationRequest{
+		ClientName:   "My CLI",
+		RedirectUris: []string{"http://localhost:8080/callback"},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(resp.ClientId)
+	// Output: generated-id
+}
+
+func ExampleOAuthClient_ExchangeToken() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"access_token": "dash0_at_example",
+			"token_type":   "Bearer",
+			"expires_in":   900,
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	resp, err := client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeAuthorizationCode,
+		Code:         dash0.Ptr("auth-code"),
+		RedirectUri:  dash0.Ptr("http://localhost:8080/callback"),
+		CodeVerifier: dash0.Ptr("verifier"),
+		ClientId:     dash0.Ptr("my-client"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(resp.TokenType)
+	// Output: Bearer
 }
 
 // FormatDuration

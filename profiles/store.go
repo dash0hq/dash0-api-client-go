@@ -96,12 +96,21 @@ func (s *Store) GetActiveConfiguration() (*Configuration, error) {
 
 	activeConfiguration := &activeProfile.Configuration
 
+	// If the profile uses OAuth and no env var overrides the auth token,
+	// refresh the access token when it is close to expiry.
+	if activeConfiguration.OAuth != nil && envAuthToken == "" {
+		if err := refreshOAuthToken(s, activeProfile.Name, activeConfiguration); err != nil {
+			return nil, err
+		}
+	}
+
 	// Override with env vars if set.
 	if envApiUrl != "" {
 		activeConfiguration.ApiUrl = envApiUrl
 	}
 	if envAuthToken != "" {
 		activeConfiguration.AuthToken = envAuthToken
+		activeConfiguration.OAuth = nil
 	}
 	if envOtlpUrl != "" {
 		activeConfiguration.OtlpUrl = envOtlpUrl
@@ -142,6 +151,7 @@ func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, op
 			result.AuthToken = cfg.AuthToken
 			result.OtlpUrl = cfg.OtlpUrl
 			result.Dataset = cfg.Dataset
+			result.OAuth = cfg.OAuth
 		}
 	}
 
@@ -166,6 +176,7 @@ func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, op
 	}
 	if authToken != "" {
 		result.AuthToken = authToken
+		result.OAuth = nil
 	}
 	if otlpUrl != "" {
 		result.OtlpUrl = otlpUrl
@@ -296,6 +307,9 @@ func (s *Store) UpdateProfile(name string, updateFn func(*Configuration)) error 
 }
 
 // RemoveProfile removes a profile from the configuration.
+// If the profile has OAuth state, the refresh token is revoked before removal.
+// Revocation is best-effort; a failure does not prevent the profile from being
+// removed.
 // If the removed profile was the active profile, the first remaining profile
 // becomes active.
 func (s *Store) RemoveProfile(profileName string) error {
@@ -305,18 +319,23 @@ func (s *Store) RemoveProfile(profileName string) error {
 	}
 
 	var found bool
+	var removedConfig Configuration
 	var newProfiles []Profile
 	for _, profile := range profiles {
 		if profile.Name != profileName {
 			newProfiles = append(newProfiles, profile)
 		} else {
 			found = true
+			removedConfig = profile.Configuration
 		}
 	}
 
 	if !found {
 		return ErrProfileNotFound
 	}
+
+	// Best-effort: revoke OAuth tokens before removing the profile.
+	_ = revokeOAuthTokens(&removedConfig)
 
 	// Check if removing the active profile.
 	activeProfileName, err := s.getActiveProfileName()

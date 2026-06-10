@@ -2,6 +2,7 @@ package dash0
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -159,4 +160,41 @@ func IsConflict(err error) bool {
 		return apiErr.StatusCode == http.StatusConflict
 	}
 	return false
+}
+
+// OAuthTokenError represents an OAuth 2.0 token endpoint error response
+// (RFC 6749 section 5.2).
+// The token endpoint returns a structured error body with an error code,
+// optional description, and optional URI, rather than the generic JSON error
+// format used by other API endpoints.
+type OAuthTokenError struct {
+	// StatusCode is the HTTP status code (typically 400).
+	StatusCode int
+
+	// Code is the OAuth 2.0 error code (e.g., "invalid_grant",
+	// "invalid_request").
+	Code string
+
+	// Description is the optional human-readable error description.
+	Description string
+
+	// URI is the optional URI identifying a human-readable web page with
+	// error information.
+	URI string
+}
+
+// Error implements the error interface.
+func (e *OAuthTokenError) Error() string {
+	if e.Description != "" {
+		return fmt.Sprintf("dash0 oauth error: %s: %s (status: %d)",
+			e.Code, e.Description, e.StatusCode)
+	}
+	return fmt.Sprintf("dash0 oauth error: %s (status: %d)",
+		e.Code, e.StatusCode)
+}
+
+// IsOAuthTokenError returns true if the error is an OAuthTokenError.
+func IsOAuthTokenError(err error) bool {
+	var oauthErr *OAuthTokenError
+	return errors.As(err, &oauthErr)
 }

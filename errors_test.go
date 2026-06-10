@@ -1,6 +1,8 @@
 package dash0
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -316,4 +318,70 @@ func TestErrorHelpers_NonAPIError(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestOAuthTokenError_Error(t *testing.T) {
+	tests := []struct {
+		name     string
+		err      *OAuthTokenError
+		expected string
+	}{
+		{
+			name: "with description",
+			err: &OAuthTokenError{
+				StatusCode:  400,
+				Code:        "invalid_grant",
+				Description: "authorization code has expired",
+			},
+			expected: "dash0 oauth error: invalid_grant: authorization code has expired (status: 400)",
+		},
+		{
+			name: "without description",
+			err: &OAuthTokenError{
+				StatusCode: 400,
+				Code:       "invalid_request",
+			},
+			expected: "dash0 oauth error: invalid_request (status: 400)",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.err.Error()
+			if got != tt.expected {
+				t.Errorf("Error() = %q, want %q", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestIsOAuthTokenError(t *testing.T) {
+	t.Run("returns true for OAuthTokenError", func(t *testing.T) {
+		err := &OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}
+		if !IsOAuthTokenError(err) {
+			t.Error("expected true for *OAuthTokenError")
+		}
+	})
+
+	t.Run("returns true for wrapped OAuthTokenError", func(t *testing.T) {
+		inner := &OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}
+		err := fmt.Errorf("wrapper: %w", inner)
+		if !IsOAuthTokenError(err) {
+			t.Error("expected true for wrapped *OAuthTokenError")
+		}
+	})
+
+	t.Run("returns false for APIError", func(t *testing.T) {
+		err := &APIError{StatusCode: 400}
+		if IsOAuthTokenError(err) {
+			t.Error("expected false for *APIError")
+		}
+	})
+
+	t.Run("returns false for non-API error", func(t *testing.T) {
+		err := errors.New("something else")
+		if IsOAuthTokenError(err) {
+			t.Error("expected false for plain error")
+		}
+	})
 }

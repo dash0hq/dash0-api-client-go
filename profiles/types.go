@@ -11,7 +11,11 @@
 // [dash0.DatasetPtr] -- never the reverse.
 package profiles
 
-import dash0 "github.com/dash0hq/dash0-api-client-go"
+import (
+	"time"
+
+	dash0 "github.com/dash0hq/dash0-api-client-go"
+)
 
 // Configuration represents a Dash0 configuration with connection parameters.
 type Configuration struct {
@@ -19,6 +23,17 @@ type Configuration struct {
 	AuthToken string `json:"authToken"`
 	OtlpUrl   string `json:"otlpUrl,omitempty"`
 	Dataset   string `json:"dataset,omitempty"`
+
+	// OAuth is set when the profile should authorize using an OAuth access token.
+	// Potentially refreshed when close to the expiry. The actual OAuth access token
+	// is located within the AuthToken field.
+	OAuth *OAuthState `json:"oAuth,omitempty"`
+}
+
+type OAuthState struct {
+	ClientID     string    `json:"clientId"`
+	RefreshToken string    `json:"refreshToken"`
+	ExpiresAt    time.Time `json:"expiresAt"`
 }
 
 // DatasetPtr returns the dataset as a *string suitable for Dash0 API calls.

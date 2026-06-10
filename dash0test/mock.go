@@ -692,3 +692,83 @@ func (m *MockClient) Inner() *dash0.ClientWithResponses {
 
 // Compile-time check that MockClient implements dash0.Client.
 var _ dash0.Client = (*MockClient)(nil)
+
+// MockOAuthClient is a configurable mock implementation of dash0.OAuthClient.
+// Set the function fields to customize behavior for each test.
+//
+// Example:
+//
+//	mock := &dash0test.MockOAuthClient{
+//	    ExchangeTokenFunc: func(ctx context.Context, request *dash0.OAuthTokenRequest) (*dash0.OAuthTokenResponse, error) {
+//	        return &dash0.OAuthTokenResponse{AccessToken: "test-token", TokenType: "Bearer", ExpiresIn: 3600}, nil
+//	    },
+//	}
+type MockOAuthClient struct {
+	GetAuthorizationServerMetadataFunc func(ctx context.Context) (*dash0.OAuthAuthorizationServerMetadata, error)
+	GetProtectedResourceMetadataFunc   func(ctx context.Context) (*dash0.OAuthProtectedResourceMetadata, error)
+	AuthorizeURLFunc                   func(params *dash0.AuthorizeURLParams) (string, error)
+	RegisterClientFunc                 func(ctx context.Context, request *dash0.OAuthClientRegistrationRequest) (*dash0.OAuthClientRegistrationResponse, error)
+	ExchangeTokenFunc                  func(ctx context.Context, request *dash0.OAuthTokenRequest) (*dash0.OAuthTokenResponse, error)
+	RevokeTokenFunc                    func(ctx context.Context, request *dash0.OAuthRevocationRequest) error
+	CloseFunc                          func(ctx context.Context) error
+	InnerFunc                          func() *dash0.ClientWithResponses
+}
+
+func (m *MockOAuthClient) GetAuthorizationServerMetadata(ctx context.Context) (*dash0.OAuthAuthorizationServerMetadata, error) {
+	if m.GetAuthorizationServerMetadataFunc != nil {
+		return m.GetAuthorizationServerMetadataFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockOAuthClient) GetProtectedResourceMetadata(ctx context.Context) (*dash0.OAuthProtectedResourceMetadata, error) {
+	if m.GetProtectedResourceMetadataFunc != nil {
+		return m.GetProtectedResourceMetadataFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockOAuthClient) AuthorizeURL(params *dash0.AuthorizeURLParams) (string, error) {
+	if m.AuthorizeURLFunc != nil {
+		return m.AuthorizeURLFunc(params)
+	}
+	return "", nil
+}
+
+func (m *MockOAuthClient) RegisterClient(ctx context.Context, request *dash0.OAuthClientRegistrationRequest) (*dash0.OAuthClientRegistrationResponse, error) {
+	if m.RegisterClientFunc != nil {
+		return m.RegisterClientFunc(ctx, request)
+	}
+	return nil, nil
+}
+
+func (m *MockOAuthClient) ExchangeToken(ctx context.Context, request *dash0.OAuthTokenRequest) (*dash0.OAuthTokenResponse, error) {
+	if m.ExchangeTokenFunc != nil {
+		return m.ExchangeTokenFunc(ctx, request)
+	}
+	return nil, nil
+}
+
+func (m *MockOAuthClient) RevokeToken(ctx context.Context, request *dash0.OAuthRevocationRequest) error {
+	if m.RevokeTokenFunc != nil {
+		return m.RevokeTokenFunc(ctx, request)
+	}
+	return nil
+}
+
+func (m *MockOAuthClient) Close(ctx context.Context) error {
+	if m.CloseFunc != nil {
+		return m.CloseFunc(ctx)
+	}
+	return nil
+}
+
+func (m *MockOAuthClient) Inner() *dash0.ClientWithResponses {
+	if m.InnerFunc != nil {
+		return m.InnerFunc()
+	}
+	return nil
+}
+
+// Compile-time check that MockOAuthClient implements dash0.OAuthClient.
+var _ dash0.OAuthClient = (*MockOAuthClient)(nil)
