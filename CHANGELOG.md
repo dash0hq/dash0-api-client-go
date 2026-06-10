@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.14.0
+
+
+### Features
+- abort retries when Retry-After > max wait time
+
 ## v1.13.1
 
 
