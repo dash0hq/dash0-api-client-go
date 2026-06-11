@@ -757,6 +757,32 @@ func ExampleOAuthClient_RevokeToken() {
 	// Output: true
 }
 
+func ExampleIsOAuthInvalidGrant() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":             "invalid_grant",
+			"error_description": "refresh token revoked",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	_, err = client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeRefreshToken,
+		RefreshToken: dash0.Ptr("dash0_rt_revoked"),
+		ClientId:     dash0.Ptr("my-client"),
+	})
+	fmt.Println(dash0.IsOAuthInvalidGrant(err))
+	// Output: true
+}
+
 func ExampleIsOAuthTokenError() {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

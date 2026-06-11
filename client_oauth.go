@@ -244,6 +244,9 @@ func (c *oauthClient) AuthorizeURL(params *AuthorizeURLParams) (string, error) {
 
 // RegisterClient performs OAuth 2.0 dynamic client registration.
 func (c *oauthClient) RegisterClient(ctx context.Context, request *OAuthClientRegistrationRequest) (*OAuthClientRegistrationResponse, error) {
+	if request == nil {
+		return nil, fmt.Errorf("dash0: RegisterClient requires non-nil request")
+	}
 	resp, err := c.inner.PostOauthRegisterWithResponse(ctx, *request)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: register client failed: %w", err)
@@ -260,6 +263,9 @@ func (c *oauthClient) RegisterClient(ctx context.Context, request *OAuthClientRe
 // ExchangeToken exchanges an authorization code or refresh token for an access
 // token.
 func (c *oauthClient) ExchangeToken(ctx context.Context, request *OAuthTokenRequest) (*OAuthTokenResponse, error) {
+	if request == nil {
+		return nil, fmt.Errorf("dash0: ExchangeToken requires non-nil request")
+	}
 	resp, err := c.inner.PostOauthTokenWithFormdataBodyWithResponse(ctx, *request)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: exchange token failed: %w", err)
@@ -283,6 +289,9 @@ func (c *oauthClient) ExchangeToken(ctx context.Context, request *OAuthTokenRequ
 
 // RevokeToken revokes an access or refresh token.
 func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationRequest) error {
+	if request == nil {
+		return fmt.Errorf("dash0: RevokeToken requires non-nil request")
+	}
 	resp, err := c.inner.PostOauthRevokeWithFormdataBodyWithResponse(ctx, *request)
 	if err != nil {
 		return fmt.Errorf("dash0: revoke token failed: %w", err)

@@ -73,25 +73,33 @@ type Store struct {
 //  2. The DASH0_CONFIG_DIR environment variable (if set).
 //  3. ~/.dash0/ (default).
 func NewStore(opts ...StoreOption) (*Store, error) {
+	configDir, err := resolveConfigDir(opts)
+	if err != nil {
+		return nil, err
+	}
+	return &Store{configDir: configDir}, nil
+}
+
+// resolveConfigDir computes the configuration directory using the shared
+// precedence rule: explicit [WithConfigDir] > DASH0_CONFIG_DIR env var > ~/.dash0/.
+// Used by both [NewStore] and [NewOAuthClientStore] so the resolution stays in
+// one place.
+func resolveConfigDir(opts []StoreOption) (string, error) {
 	cfg := &storeConfig{}
 	for _, opt := range opts {
 		opt(cfg)
 	}
-
 	if cfg.configDir != "" {
-		return &Store{configDir: cfg.configDir}, nil
+		return cfg.configDir, nil
 	}
-
-	if configDir := os.Getenv(EnvConfigDir); configDir != "" {
-		return &Store{configDir: configDir}, nil
+	if d := os.Getenv(EnvConfigDir); d != "" {
+		return d, nil
 	}
-
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user home directory: %w", err)
+		return "", fmt.Errorf("failed to get user home directory: %w", err)
 	}
-
-	return &Store{configDir: filepath.Join(homeDir, ConfigDirName)}, nil
+	return filepath.Join(homeDir, ConfigDirName), nil
 }
 
 // GetActiveConfiguration returns the currently active configuration.
@@ -456,7 +464,16 @@ func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) er
 	// (still-successful) local removal.
 	revokeErr := revokeOAuthTokens(ctx, &removedConfig)
 
-	// Check if removing the active profile.
+	// Persist the profiles list first so that, if the active-profile pointer
+	// update fails below, on-disk state is at least consistent with the caller's
+	// request (the profile is gone). Recovering a dangling active-profile
+	// pointer is a softer failure mode than leaving a "removed" profile on disk.
+	if err := s.saveProfiles(newProfiles); err != nil {
+		return err
+	}
+
+	// If we just removed the active profile, point activeProfile at the first
+	// remaining profile, or remove the pointer when no profiles remain.
 	activeProfileName, err := s.getActiveProfileName()
 	if err == nil && activeProfileName == profileName {
 		if len(newProfiles) > 0 {
@@ -468,10 +485,6 @@ func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) er
 				return fmt.Errorf("failed to remove active profile file: %w", err)
 			}
 		}
-	}
-
-	if err := s.saveProfiles(newProfiles); err != nil {
-		return err
 	}
 
 	if revokeErr != nil {

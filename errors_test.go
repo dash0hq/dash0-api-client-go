@@ -343,6 +343,25 @@ func TestOAuthTokenError_Error(t *testing.T) {
 			},
 			expected: "dash0 oauth error: invalid_request (status: 400)",
 		},
+		{
+			name: "with description and URI",
+			err: &OAuthTokenError{
+				StatusCode:  400,
+				Code:        "invalid_grant",
+				Description: "authorization code has expired",
+				URI:         "https://docs.example.com/errors/invalid_grant",
+			},
+			expected: "dash0 oauth error: invalid_grant: authorization code has expired (status: 400) (see: https://docs.example.com/errors/invalid_grant)",
+		},
+		{
+			name: "with URI but no description",
+			err: &OAuthTokenError{
+				StatusCode: 400,
+				Code:       "invalid_request",
+				URI:        "https://docs.example.com/errors/invalid_request",
+			},
+			expected: "dash0 oauth error: invalid_request (status: 400) (see: https://docs.example.com/errors/invalid_request)",
+		},
 	}
 
 	for _, tt := range tests {
@@ -382,6 +401,86 @@ func TestIsOAuthTokenError(t *testing.T) {
 		err := errors.New("something else")
 		if IsOAuthTokenError(err) {
 			t.Error("expected false for plain error")
+		}
+	})
+}
+
+func TestIsOAuthInvalidGrant(t *testing.T) {
+	t.Run("returns true for invalid_grant", func(t *testing.T) {
+		err := &OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}
+		if !IsOAuthInvalidGrant(err) {
+			t.Error("expected true for invalid_grant")
+		}
+	})
+
+	t.Run("returns true for wrapped invalid_grant", func(t *testing.T) {
+		inner := &OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}
+		err := fmt.Errorf("wrapper: %w", inner)
+		if !IsOAuthInvalidGrant(err) {
+			t.Error("expected true for wrapped invalid_grant")
+		}
+	})
+
+	t.Run("returns false for other OAuth error codes", func(t *testing.T) {
+		for _, code := range []string{"invalid_request", "invalid_client", "unauthorized_client", "unsupported_grant_type", "invalid_scope"} {
+			err := &OAuthTokenError{StatusCode: 400, Code: code}
+			if IsOAuthInvalidGrant(err) {
+				t.Errorf("expected false for code %q", code)
+			}
+		}
+	})
+
+	t.Run("returns false for APIError", func(t *testing.T) {
+		err := &APIError{StatusCode: 400}
+		if IsOAuthInvalidGrant(err) {
+			t.Error("expected false for *APIError")
+		}
+	})
+
+	t.Run("returns false for plain error", func(t *testing.T) {
+		if IsOAuthInvalidGrant(errors.New("boom")) {
+			t.Error("expected false for plain error")
+		}
+	})
+}
+
+// TestStatusCodeHelpers_AcceptOAuthTokenError pins the behaviour added when
+// the Is* family was refactored to route through statusCodeOf, which unwraps
+// *OAuthTokenError in addition to *APIError. Without this test the contract is
+// implicit and a future regression could narrow the helpers back to *APIError
+// only.
+func TestStatusCodeHelpers_AcceptOAuthTokenError(t *testing.T) {
+	cases := []struct {
+		status int
+		check  func(error) bool
+		name   string
+	}{
+		{http.StatusBadRequest, IsBadRequest, "IsBadRequest"},
+		{http.StatusUnauthorized, IsUnauthorized, "IsUnauthorized"},
+		{http.StatusForbidden, IsForbidden, "IsForbidden"},
+		{http.StatusNotFound, IsNotFound, "IsNotFound"},
+		{http.StatusConflict, IsConflict, "IsConflict"},
+		{http.StatusTooManyRequests, IsRateLimited, "IsRateLimited"},
+		{http.StatusInternalServerError, IsServerError, "IsServerError"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := &OAuthTokenError{StatusCode: tc.status, Code: "test"}
+			if !tc.check(err) {
+				t.Errorf("%s(*OAuthTokenError{StatusCode: %d}) = false, want true", tc.name, tc.status)
+			}
+			// Wrapped via fmt.Errorf must still match (statusCodeOf uses errors.As).
+			wrapped := fmt.Errorf("wrapped: %w", err)
+			if !tc.check(wrapped) {
+				t.Errorf("%s(wrapped *OAuthTokenError{StatusCode: %d}) = false, want true", tc.name, tc.status)
+			}
+		})
+	}
+
+	t.Run("mismatched status returns false", func(t *testing.T) {
+		err := &OAuthTokenError{StatusCode: http.StatusBadRequest, Code: "test"}
+		if IsNotFound(err) {
+			t.Error("IsNotFound should be false for a 400-status OAuthTokenError")
 		}
 	})
 }

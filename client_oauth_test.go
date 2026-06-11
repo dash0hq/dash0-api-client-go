@@ -903,6 +903,50 @@ func TestOAuthClient_RevokeToken(t *testing.T) {
 	})
 }
 
+func TestOAuthClient_NilRequestReturnsError(t *testing.T) {
+	client, err := NewOAuthClient(WithApiUrl("https://api.example.com"))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	t.Run("RegisterClient", func(t *testing.T) {
+		_, err := client.RegisterClient(context.Background(), nil)
+		if err == nil {
+			t.Fatal("expected error for nil request")
+		}
+		if !strings.Contains(err.Error(), "non-nil request") {
+			t.Errorf("error %q should mention non-nil request", err.Error())
+		}
+	})
+
+	t.Run("ExchangeToken", func(t *testing.T) {
+		_, err := client.ExchangeToken(context.Background(), nil)
+		if err == nil {
+			t.Fatal("expected error for nil request")
+		}
+		if !strings.Contains(err.Error(), "non-nil request") {
+			t.Errorf("error %q should mention non-nil request", err.Error())
+		}
+	})
+
+	t.Run("RevokeToken", func(t *testing.T) {
+		err := client.RevokeToken(context.Background(), nil)
+		if err == nil {
+			t.Fatal("expected error for nil request")
+		}
+		if !strings.Contains(err.Error(), "non-nil request") {
+			t.Errorf("error %q should mention non-nil request", err.Error())
+		}
+	})
+
+	t.Run("AuthorizeURL", func(t *testing.T) {
+		_, err := client.AuthorizeURL(nil)
+		if err == nil {
+			t.Fatal("expected error for nil params")
+		}
+	})
+}
+
 func TestOAuthClient_Close(t *testing.T) {
 	client, err := NewOAuthClient(WithApiUrl("https://api.example.com"))
 	if err != nil {

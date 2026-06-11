@@ -40,21 +40,11 @@ type oauthClientsFile struct {
 // NewOAuthClientStore mirrors [NewStore]: explicit [WithConfigDir] >
 // DASH0_CONFIG_DIR > ~/.dash0/.
 func NewOAuthClientStore(opts ...StoreOption) (*OAuthClientStore, error) {
-	cfg := &storeConfig{}
-	for _, opt := range opts {
-		opt(cfg)
-	}
-	if cfg.configDir != "" {
-		return &OAuthClientStore{configDir: cfg.configDir}, nil
-	}
-	if d := os.Getenv(EnvConfigDir); d != "" {
-		return &OAuthClientStore{configDir: d}, nil
-	}
-	home, err := os.UserHomeDir()
+	configDir, err := resolveConfigDir(opts)
 	if err != nil {
-		return nil, fmt.Errorf("failed to determine home directory: %w", err)
+		return nil, err
 	}
-	return &OAuthClientStore{configDir: filepath.Join(home, ConfigDirName)}, nil
+	return &OAuthClientStore{configDir: configDir}, nil
 }
 
 // CanonicalAPIURL normalises an API URL into the key form used by
