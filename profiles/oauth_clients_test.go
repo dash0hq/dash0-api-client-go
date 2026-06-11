@@ -1,8 +1,11 @@
 package profiles
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -102,7 +105,7 @@ func TestOAuthClientStore_EquivalentURLsCollapse(t *testing.T) {
 	}
 }
 
-func TestOAuthClientStore_CorruptFileIsAMissAndPutOverwrites(t *testing.T) {
+func TestOAuthClientStore_CorruptFileSurfacesAndPutQuarantines(t *testing.T) {
 	s, dir := newTestOAuthClientStore(t)
 
 	path := filepath.Join(dir, OAuthClientsFileName)
@@ -110,24 +113,99 @@ func TestOAuthClientStore_CorruptFileIsAMissAndPutOverwrites(t *testing.T) {
 		t.Fatalf("seed write failed: %v", err)
 	}
 
-	rec, ok, err := s.Get("https://api.example.com")
-	if err != nil {
-		t.Fatalf("Get returned error on corrupt file: %v", err)
-	}
-	if ok {
-		t.Errorf("expected miss on corrupt file, got %+v", rec)
+	// Get on a corrupt file surfaces the corruption rather than silently
+	// missing — operators need to know the cache is unreadable.
+	_, _, err := s.Get("https://api.example.com")
+	if !errors.Is(err, ErrOAuthClientsFileCorrupt) {
+		t.Fatalf("expected ErrOAuthClientsFileCorrupt on corrupt file, got %v", err)
 	}
 
+	// Put on a corrupt file quarantines the bad file (renames it with a
+	// .corrupt-<timestamp> suffix) and then writes the new record cleanly.
+	// Previous registrations are lost from the active file but preserved on
+	// disk for manual recovery.
 	want := OAuthClientRecord{ClientID: "cid", RedirectURI: "http://localhost/cb"}
 	if err := s.Put("https://api.example.com", want); err != nil {
 		t.Fatalf("Put on corrupt file failed: %v", err)
 	}
+
+	// Subsequent Get reads the new record cleanly.
 	got, ok, err := s.Get("https://api.example.com")
 	if err != nil {
 		t.Fatalf("Get after Put failed: %v", err)
 	}
 	if !ok || got != want {
 		t.Errorf("Get returned (%+v, %v), want (%+v, true)", got, ok, want)
+	}
+
+	// A quarantine file should now exist in the directory.
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		t.Fatalf("ReadDir: %v", err)
+	}
+	var quarantineCount int
+	for _, e := range entries {
+		if strings.HasPrefix(e.Name(), OAuthClientsFileName+".corrupt-") {
+			quarantineCount++
+		}
+	}
+	if quarantineCount != 1 {
+		t.Errorf("expected exactly 1 quarantine file, got %d", quarantineCount)
+	}
+}
+
+func TestOAuthClientStore_CrossProcessPutSerializes(t *testing.T) {
+	// Two distinct OAuthClientStore instances against the same config dir
+	// mimic two CLI invocations. Each does N Puts against a distinct API URL;
+	// after both finish, all 2N records must be present — the cross-process
+	// flock guarantees no read-modify-write loses an entry.
+	dir := t.TempDir()
+	const perProcess = 10
+	storeA, _ := NewOAuthClientStore(WithConfigDir(dir))
+	storeB, _ := NewOAuthClientStore(WithConfigDir(dir))
+
+	done := make(chan error, 2)
+	put := func(store *OAuthClientStore, prefix string) {
+		for i := range perProcess {
+			rec := OAuthClientRecord{
+				ClientID:    fmt.Sprintf("%s-cid-%d", prefix, i),
+				RedirectURI: "http://localhost/cb",
+			}
+			apiURL := fmt.Sprintf("https://api-%s-%d.example.com", prefix, i)
+			if err := store.Put(apiURL, rec); err != nil {
+				done <- err
+				return
+			}
+		}
+		done <- nil
+	}
+	go put(storeA, "a")
+	go put(storeB, "b")
+	for range 2 {
+		if err := <-done; err != nil {
+			t.Fatalf("Put failed: %v", err)
+		}
+	}
+
+	// Read every record back via a fresh store.
+	verify, _ := NewOAuthClientStore(WithConfigDir(dir))
+	for _, prefix := range []string{"a", "b"} {
+		for i := range perProcess {
+			apiURL := fmt.Sprintf("https://api-%s-%d.example.com", prefix, i)
+			rec, ok, err := verify.Get(apiURL)
+			if err != nil {
+				t.Errorf("Get(%s): %v", apiURL, err)
+				continue
+			}
+			if !ok {
+				t.Errorf("Get(%s): record missing — cross-process serialization lost an update", apiURL)
+				continue
+			}
+			wantCID := fmt.Sprintf("%s-cid-%d", prefix, i)
+			if rec.ClientID != wantCID {
+				t.Errorf("Get(%s): ClientID = %q, want %q", apiURL, rec.ClientID, wantCID)
+			}
+		}
 	}
 }
 
@@ -175,6 +253,18 @@ func TestCanonicalAPIURL(t *testing.T) {
 		{"https://api.example.com/v1/", "https://api.example.com/v1"},
 		{"https://api.example.com?x=1", "https://api.example.com"},
 		{"https://api.example.com#frag", "https://api.example.com"},
+		// Userinfo must not survive into the cache key.
+		{"https://user:pass@api.example.com/", "https://api.example.com"},
+		{"https://user@api.example.com/", "https://api.example.com"},
+		// Default port for the scheme is dropped so two equivalent URLs
+		// collapse to the same key.
+		{"https://api.example.com:443/", "https://api.example.com"},
+		{"http://api.example.com:80/", "http://api.example.com"},
+		// Non-default ports survive.
+		{"https://api.example.com:8443/", "https://api.example.com:8443"},
+		// path.Clean collapses "." and "..".
+		{"https://api.example.com/v1/./", "https://api.example.com/v1"},
+		{"https://api.example.com/a/b/../v1/", "https://api.example.com/a/v1"},
 	}
 	for _, c := range cases {
 		got, err := CanonicalAPIURL(c.raw)

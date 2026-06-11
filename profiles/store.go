@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -72,12 +73,53 @@ type Store struct {
 //  1. Explicit [WithConfigDir] option (if provided).
 //  2. The DASH0_CONFIG_DIR environment variable (if set).
 //  3. ~/.dash0/ (default).
+//
+// As a best-effort hygiene step, any leftover writeFileAtomic temp files in
+// the resolved directory are removed.
+// SIGKILL or a panic mid-write skips the deferred cleanup in writeFileAtomic,
+// so .tmp-* files can accumulate.
 func NewStore(opts ...StoreOption) (*Store, error) {
 	configDir, err := resolveConfigDir(opts)
 	if err != nil {
 		return nil, err
 	}
+	cleanupStaleTempFiles(configDir)
 	return &Store{configDir: configDir}, nil
+}
+
+// MaxProfileNameLength is the maximum allowed length of a profile name.
+// The cap keeps profile names within filesystem-friendly bounds and prevents
+// pathological inputs from inflating the activeProfile pointer file.
+const MaxProfileNameLength = 64
+
+// validateProfileName rejects names whose shape would corrupt the
+// activeProfile pointer file or surprise downstream consumers.
+// The activeProfile file is a single-line plain-text pointer; embedded
+// newlines, NUL bytes, or other control characters silently break the read
+// path, so the name must be ASCII-safe.
+// Path separators are rejected because some downstream tools (Bash
+// completions, shell prompts) join the name into paths.
+// A leading dot is rejected to avoid colliding with the sentinel files
+// (.profile-lock, .oauth-clients-lock).
+func validateProfileName(name string) error {
+	if name == "" {
+		return fmt.Errorf("profile name must not be empty")
+	}
+	if len(name) > MaxProfileNameLength {
+		return fmt.Errorf("profile name %q exceeds maximum length of %d", name, MaxProfileNameLength)
+	}
+	if strings.HasPrefix(name, ".") {
+		return fmt.Errorf("profile name %q must not start with '.'", name)
+	}
+	for _, r := range name {
+		switch {
+		case r < 0x20 || r == 0x7f:
+			return fmt.Errorf("profile name %q contains control character (0x%02x)", name, r)
+		case r == '/' || r == '\\':
+			return fmt.Errorf("profile name %q must not contain path separators", name)
+		}
+	}
+	return nil
 }
 
 // resolveConfigDir computes the configuration directory using the shared
@@ -339,7 +381,13 @@ func (s *Store) AddProfile(profile Profile) error {
 
 // AddProfileContext is the context-aware variant of [Store.AddProfile].
 // The ctx bounds the wait to acquire the cross-process [.profile-lock].
+// Returns an error from [validateProfileName] when the profile name is empty,
+// contains control characters or path separators, starts with '.', or exceeds
+// [MaxProfileNameLength].
 func (s *Store) AddProfileContext(ctx context.Context, profile Profile) error {
+	if err := validateProfileName(profile.Name); err != nil {
+		return err
+	}
 	s.refreshMu.Lock()
 	defer s.refreshMu.Unlock()
 	release, err := acquireProfileLock(ctx, s.configDir)
@@ -445,18 +493,45 @@ func (s *Store) RemoveProfile(profileName string) error {
 }
 
 // RemoveProfileContext is the context-aware variant of [Store.RemoveProfile].
+//
+// The token-revocation HTTP round-trip runs AFTER the in-process and
+// cross-process locks are released, so a hung authorization server cannot
+// pin sibling CLI invocations sharing the same config directory.
+// The cost is that the locks no longer cover the revocation; an interleaved
+// process observing the now-removed profile will not see the revoke
+// in-flight.
+// That is acceptable because the refresh token is already gone from disk
+// before revocation begins; the worst-case server-side residue is the
+// unrevoked refresh token until its natural expiry.
 func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) error {
+	removedConfig, err := s.removeProfileLocally(ctx, profileName)
+	if err != nil {
+		return err
+	}
+
+	// Best-effort revocation outside the locks. A hung IdP only blocks the
+	// caller, not sibling CLI processes.
+	if err := revokeOAuthTokens(ctx, removedConfig); err != nil {
+		return fmt.Errorf("%w: %v", ErrRevocationFailed, err)
+	}
+	return nil
+}
+
+// removeProfileLocally removes the profile from disk under the locks and
+// returns the removed configuration (for use by the caller's best-effort
+// revocation step after the locks are released).
+func (s *Store) removeProfileLocally(ctx context.Context, profileName string) (*Configuration, error) {
 	s.refreshMu.Lock()
 	defer s.refreshMu.Unlock()
 	release, err := acquireProfileLock(ctx, s.configDir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer release()
 
 	profiles, err := s.GetProfiles()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var found bool
@@ -472,41 +547,39 @@ func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) er
 	}
 
 	if !found {
-		return ErrProfileNotFound
+		return nil, ErrProfileNotFound
 	}
-
-	// Best-effort: revoke OAuth tokens before removing the profile.
-	// Capture the failure so it can be surfaced to the caller alongside the
-	// (still-successful) local removal.
-	revokeErr := revokeOAuthTokens(ctx, &removedConfig)
 
 	// Persist the profiles list first so that, if the active-profile pointer
 	// update fails below, on-disk state is at least consistent with the caller's
 	// request (the profile is gone). Recovering a dangling active-profile
 	// pointer is a softer failure mode than leaving a "removed" profile on disk.
 	if err := s.saveProfiles(newProfiles); err != nil {
-		return err
+		return nil, err
 	}
 
 	// If we just removed the active profile, point activeProfile at the first
 	// remaining profile, or remove the pointer when no profiles remain.
+	// On a write failure for the new active pointer, attempt to remove the
+	// dangling pointer file so a subsequent invocation sees "no active
+	// profile" rather than "profile not found" — a self-heal that keeps the
+	// store usable without manual recovery.
 	activeProfileName, err := s.getActiveProfileName()
 	if err == nil && activeProfileName == profileName {
 		if len(newProfiles) > 0 {
-			if err := s.setActiveProfileLocked(newProfiles[0].Name); err != nil {
-				return err
+			if setErr := s.setActiveProfileLocked(newProfiles[0].Name); setErr != nil {
+				// Best-effort self-heal: clear the dangling pointer.
+				_ = os.Remove(filepath.Join(s.configDir, ActiveProfileFileName))
+				return nil, setErr
 			}
 		} else {
 			if err := os.Remove(filepath.Join(s.configDir, ActiveProfileFileName)); err != nil && !os.IsNotExist(err) {
-				return fmt.Errorf("failed to remove active profile file: %w", err)
+				return nil, fmt.Errorf("failed to remove active profile file: %w", err)
 			}
 		}
 	}
 
-	if revokeErr != nil {
-		return fmt.Errorf("%w: %v", ErrRevocationFailed, revokeErr)
-	}
-	return nil
+	return &removedConfig, nil
 }
 
 // SetActiveProfile sets the active profile by name.
@@ -587,6 +660,61 @@ func (s *Store) saveProfiles(profiles []Profile) error {
 	return writeFileAtomic(s.configDir, profilesFilePath, data)
 }
 
+// ensureConfigDirMode creates dir at [configDirMode] (0700) if it does not
+// exist, and downgrades the mode to 0700 if it exists with broader
+// permissions.
+// This protects refresh tokens persisted by users whose ~/.dash0 was created
+// under a previous tool version with a wider umask.
+// The chmod is best-effort: a failure to tighten an existing directory is
+// surfaced as an error so the caller can decide whether to proceed, but the
+// directory creation itself is the primary guarantee.
+func ensureConfigDirMode(dir string) error {
+	if err := os.MkdirAll(dir, configDirMode); err != nil {
+		return fmt.Errorf("failed to create config directory %s: %w", dir, err)
+	}
+	info, statErr := os.Stat(dir)
+	if statErr != nil {
+		// MkdirAll succeeded above, so a follow-up Stat failure is unusual;
+		// surface it rather than silently proceeding with unknown permissions.
+		return fmt.Errorf("failed to stat config directory %s: %w", dir, statErr)
+	}
+	// Only tighten if the directory is broader than configDirMode. We do not
+	// widen — a user who deliberately set 0750 (e.g., for a group-shared
+	// dev machine) should keep that, but anything wider than 0700 means
+	// world or group can read OAuth refresh tokens.
+	if perm := info.Mode().Perm(); perm&^configDirMode != 0 {
+		if err := os.Chmod(dir, configDirMode); err != nil {
+			return fmt.Errorf("failed to tighten config directory %s mode from %o to %o: %w",
+				dir, perm, configDirMode, err)
+		}
+	}
+	return nil
+}
+
+// cleanupStaleTempFiles removes leftover writeFileAtomic temp files in dir.
+// SIGKILL or a panic mid-write skips the deferred cleanup in
+// [writeFileAtomic], so .tmp-* files can accumulate over time.
+// This is best-effort: any error is swallowed because the temp files are
+// pure clutter and a failure to clean them up does not affect correctness.
+func cleanupStaleTempFiles(dir string) {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return
+	}
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		// writeFileAtomic uses os.CreateTemp(dir, base+".tmp-*"); we match
+		// the marker without re-implementing CreateTemp's naming.
+		if !strings.Contains(name, ".tmp-") {
+			continue
+		}
+		_ = os.Remove(filepath.Join(dir, name))
+	}
+}
+
 // writeFileAtomic writes data to path via a sibling temp file followed by
 // os.Rename, so a crash mid-write leaves either the previous contents intact
 // or the new contents fully written.
@@ -594,8 +722,8 @@ func (s *Store) saveProfiles(profiles []Profile) error {
 // with [configFileMode] (0600) — these files persist OAuth refresh tokens,
 // so they are owner-only.
 func writeFileAtomic(dir, path string, data []byte) error {
-	if err := os.MkdirAll(dir, configDirMode); err != nil {
-		return fmt.Errorf("failed to create config directory %s: %w", dir, err)
+	if err := ensureConfigDirMode(dir); err != nil {
+		return err
 	}
 
 	tmp, err := os.CreateTemp(dir, filepath.Base(path)+".tmp-*")

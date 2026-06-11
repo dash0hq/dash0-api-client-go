@@ -19,15 +19,30 @@ const OAuthRefreshThreshold = 5 * time.Minute
 // untrustworthy and the response is rejected before the caller can adopt it.
 const OAuthRefreshMaxExpiresIn = 24 * time.Hour
 
-// OAuthRefreshTokenEndpointRetries is the number of additional attempts
-// refreshOAuthToken makes when the token endpoint returns a transient failure
-// (5xx response or network error).
-// A single transient blip should not force the user to re-authenticate.
-const OAuthRefreshTokenEndpointRetries = 2
+// terminalOAuthErrorCodes are the RFC 6749 §5.2 error codes that the library
+// treats as permanently rejecting the stored credential.
+// When the token endpoint returns one of these, the OAuth state is cleared
+// from disk and [ErrReauthenticationRequired] is returned so the caller knows
+// the only path forward is a fresh interactive login.
+// Codes outside this set (e.g., invalid_request, unsupported_grant_type,
+// invalid_scope) are surfaced as the underlying [*dash0.OAuthTokenError] for
+// the caller to handle.
+var terminalOAuthErrorCodes = map[string]struct{}{
+	"invalid_grant":       {},
+	"invalid_client":      {},
+	"unauthorized_client": {},
+}
 
-// OAuthRefreshTokenEndpointRetryDelay is the fixed delay between retries of
-// the token endpoint when the previous attempt failed transiently.
-const OAuthRefreshTokenEndpointRetryDelay = 250 * time.Millisecond
+// isTerminalOAuthError reports whether err carries an [*dash0.OAuthTokenError]
+// whose Code is in [terminalOAuthErrorCodes].
+func isTerminalOAuthError(err error) bool {
+	var oauthErr *dash0.OAuthTokenError
+	if !errors.As(err, &oauthErr) {
+		return false
+	}
+	_, ok := terminalOAuthErrorCodes[oauthErr.Code]
+	return ok
+}
 
 // ErrReauthenticationRequired is returned by refresh-bearing operations when
 // the OAuth refresh token is no longer accepted by the authorization server
@@ -142,11 +157,13 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 	}
 	defer func() { _ = oauthClient.Close(ctx) }()
 
-	resp, err := exchangeRefreshTokenWithRetry(ctx, oauthClient, cfg.OAuth.ClientID, cfg.OAuth.RefreshToken)
+	resp, err := exchangeRefreshToken(ctx, oauthClient, cfg.OAuth.ClientID, cfg.OAuth.RefreshToken)
 	if err != nil {
-		if dash0.IsOAuthInvalidGrant(err) {
+		if isTerminalOAuthError(err) {
 			// The refresh token has been revoked, expired, or otherwise
-			// rejected. Clear the dead state from disk so the next
+			// rejected — RFC 6749 §5.2 invalid_grant / invalid_client /
+			// unauthorized_client are all terminal for the stored
+			// credential. Clear the dead state from disk so the next
 			// invocation does not retry the same credential, and signal
 			// the caller that interactive re-auth is required.
 			// updateProfileLocked is used here because we already hold
@@ -165,11 +182,12 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 		return fmt.Errorf("OAuth token refresh failed: %w", err)
 	}
 
-	if err := validateRefreshResponse(resp); err != nil {
+	trustedExpiresIn, err := validateRefreshResponse(resp)
+	if err != nil {
 		return fmt.Errorf("OAuth token refresh: %w", err)
 	}
 
-	newExpiresAt := time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second)
+	newExpiresAt := time.Now().Add(time.Duration(trustedExpiresIn) * time.Second)
 	newRefreshToken := cfg.OAuth.RefreshToken
 	if resp.RefreshToken != nil && *resp.RefreshToken != "" {
 		newRefreshToken = *resp.RefreshToken
@@ -198,83 +216,80 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 	return nil
 }
 
-// exchangeRefreshTokenWithRetry calls ExchangeToken with a refresh_token
-// grant, retrying once for transient failures (5xx or network errors).
-// A non-retriable error — most notably an OAuth invalid_grant on a 400 — is
-// returned immediately so callers can react without burning extra round-trips.
-func exchangeRefreshTokenWithRetry(ctx context.Context, oauthClient dash0.OAuthClient, clientID, refreshToken string) (*dash0.OAuthTokenResponse, error) {
-	var lastErr error
-	for attempt := 0; attempt <= OAuthRefreshTokenEndpointRetries; attempt++ {
-		resp, err := oauthClient.ExchangeToken(ctx, &dash0.OAuthTokenRequest{
-			GrantType:    dash0.OAuthGrantTypeRefreshToken,
-			RefreshToken: dash0.Ptr(refreshToken),
-			ClientId:     dash0.Ptr(clientID),
-		})
-		if err == nil {
-			return resp, nil
-		}
-		lastErr = err
-		// 4xx and structured OAuth errors are not retried — the IdP has
-		// made a deliberate decision. Only transient errors (5xx, network)
-		// get another attempt.
-		if !isTransientRefreshError(err) {
-			return nil, err
-		}
-		if attempt < OAuthRefreshTokenEndpointRetries {
-			select {
-			case <-ctx.Done():
-				return nil, ctx.Err()
-			case <-time.After(OAuthRefreshTokenEndpointRetryDelay):
-			}
-		}
-	}
-	return nil, lastErr
+// exchangeRefreshToken calls the token endpoint with a refresh_token grant.
+//
+// The library does not retry refresh-token grants on transient (5xx, network)
+// errors: the authorization server may have already rotated the refresh token
+// before failing to deliver its response, so a retry would re-send a now-burned
+// credential and the server would reply invalid_grant, forcing
+// re-authentication.
+// Any failure — including transient ones — is propagated unchanged so the
+// caller can surface a "try again later" error rather than wedge the stored
+// credential.
+func exchangeRefreshToken(ctx context.Context, oauthClient dash0.OAuthClient, clientID, refreshToken string) (*dash0.OAuthTokenResponse, error) {
+	return oauthClient.ExchangeToken(ctx, &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeRefreshToken,
+		RefreshToken: dash0.Ptr(refreshToken),
+		ClientId:     dash0.Ptr(clientID),
+	})
 }
 
-// isTransientRefreshError reports whether err is the kind of failure that is
-// worth retrying once at the token endpoint: a 5xx response, or a transport
-// error that does not carry a 4xx classification.
-func isTransientRefreshError(err error) bool {
-	if dash0.IsServerError(err) {
-		return true
-	}
-	// IsOAuthTokenError covers 400 structured responses. Any non-OAuth,
-	// non-APIError-classified failure (network reset, connection refused,
-	// TLS handshake error, etc.) is a transport failure worth retrying.
-	if dash0.IsOAuthTokenError(err) {
-		return false
-	}
-	var apiErr *dash0.APIError
-	if errors.As(err, &apiErr) {
-		// Any classifiable HTTP response other than 5xx: do not retry.
-		return false
-	}
-	// Default: treat unclassified errors as transient (network-level).
-	return true
-}
+// OAuthRefreshExpiresInDefault is the lifetime assumed when the IdP omits
+// expires_in.
+// RFC 6749 §5.1 makes expires_in RECOMMENDED but not required; rather than
+// reject a compliant response that omits it, the library falls back to this
+// conservative default, which is comfortably above [OAuthRefreshMinExpiresIn]
+// so an immediate refresh storm does not follow.
+const OAuthRefreshExpiresInDefault = 1 * time.Hour
+
+// OAuthRefreshMinExpiresIn is the minimum trusted lifetime of a refreshed
+// access token.
+// Tokens shorter than this would cross [OAuthRefreshThreshold] almost
+// immediately and trigger a per-minute refresh storm; the IdP either
+// misconfigured the client or is unhealthy, and the safe response is to
+// reject the rotation and surface a clear error.
+// The 2× factor preserves a useful working window: at least one
+// OAuthRefreshThreshold of "fresh" plus another of "still serviceable".
+const OAuthRefreshMinExpiresIn = 2 * OAuthRefreshThreshold
 
 // validateRefreshResponse rejects responses that violate the basic invariants
-// of an OAuth token-endpoint reply.
+// of an OAuth token-endpoint reply, and applies a conservative default for
+// the recommended-but-omitted expires_in field.
 // The IdP can return anything, including hostile or buggy values; trusting
-// expires_in <= 0, missing access_token, or unexpected token_type leads to a
-// runaway refresh loop or silent authentication failures.
-func validateRefreshResponse(resp *dash0.OAuthTokenResponse) error {
+// missing access_token, unexpected token_type, or a refresh-storm-inducing
+// expires_in leads to a runaway refresh loop or silent authentication failures.
+// On success the returned int is the trusted expires_in value in seconds
+// (either the IdP-supplied value or [OAuthRefreshExpiresInDefault]).
+func validateRefreshResponse(resp *dash0.OAuthTokenResponse) (int, error) {
 	if resp == nil {
-		return fmt.Errorf("nil response from token endpoint")
+		return 0, fmt.Errorf("nil response from token endpoint")
 	}
 	if resp.AccessToken == "" {
-		return fmt.Errorf("token endpoint returned empty access_token")
+		return 0, fmt.Errorf("token endpoint returned empty access_token")
 	}
 	if resp.TokenType != "" && !strings.EqualFold(resp.TokenType, "Bearer") {
-		return fmt.Errorf("token endpoint returned unsupported token_type %q (only Bearer is accepted)", resp.TokenType)
+		return 0, fmt.Errorf("token endpoint returned unsupported token_type %q (only Bearer is accepted)", resp.TokenType)
 	}
-	if resp.ExpiresIn <= 0 {
-		return fmt.Errorf("token endpoint returned non-positive expires_in (%d); refusing to enter a refresh loop", resp.ExpiresIn)
+
+	expiresIn := int64(resp.ExpiresIn)
+	if expiresIn == 0 {
+		// RFC 6749 §5.1: expires_in is RECOMMENDED, not required.
+		// Fall back to a conservative default rather than reject.
+		expiresIn = int64(OAuthRefreshExpiresInDefault / time.Second)
 	}
-	if maxSeconds := int64(OAuthRefreshMaxExpiresIn / time.Second); int64(resp.ExpiresIn) > maxSeconds || int64(resp.ExpiresIn) > math.MaxInt32 {
-		return fmt.Errorf("token endpoint returned implausibly large expires_in (%d); refusing", resp.ExpiresIn)
+	if expiresIn < 0 {
+		return 0, fmt.Errorf("token endpoint returned negative expires_in (%d); refusing", resp.ExpiresIn)
 	}
-	return nil
+	if minSeconds := int64(OAuthRefreshMinExpiresIn / time.Second); expiresIn < minSeconds {
+		return 0, fmt.Errorf(
+			"token endpoint returned expires_in (%d s) below the minimum refresh-storm floor (%d s); refusing to enter a refresh loop",
+			expiresIn, minSeconds,
+		)
+	}
+	if maxSeconds := int64(OAuthRefreshMaxExpiresIn / time.Second); expiresIn > maxSeconds || expiresIn > math.MaxInt32 {
+		return 0, fmt.Errorf("token endpoint returned implausibly large expires_in (%d); refusing", resp.ExpiresIn)
+	}
+	return int(expiresIn), nil
 }
 
 // revokeOAuthTokens revokes the OAuth refresh token associated with cfg.

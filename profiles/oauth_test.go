@@ -213,6 +213,49 @@ func TestRefreshOAuthToken(t *testing.T) {
 		}
 	})
 
+	t.Run("invalid_client also clears state and returns ErrReauthenticationRequired", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error":             "invalid_client",
+				"error_description": "client deleted server-side",
+			})
+		}))
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		profile := Profile{
+			Name: "test",
+			Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old-token",
+				OAuth: &OAuthState{
+					ClientID:     "cid-deleted",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(-1 * time.Minute),
+				},
+			},
+		}
+		createTestProfilesFile(t, dir, []Profile{profile})
+
+		cfg := &profile.Configuration
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		if !errors.Is(err, ErrReauthenticationRequired) {
+			t.Fatalf("expected ErrReauthenticationRequired for invalid_client, got: %v", err)
+		}
+		if cfg.OAuth != nil {
+			t.Errorf("expected cfg.OAuth cleared after invalid_client, got %+v", cfg.OAuth)
+		}
+		ps, err := store.GetProfiles()
+		if err != nil {
+			t.Fatalf("GetProfiles: %v", err)
+		}
+		if ps[0].Configuration.OAuth != nil {
+			t.Errorf("expected persisted OAuth cleared after invalid_client, got %+v", ps[0].Configuration.OAuth)
+		}
+	})
+
 	t.Run("persistedOAuth nil cleared concurrently", func(t *testing.T) {
 		// Snapshot says OAuth state is present; another process clears it
 		// between the snapshot read and the post-lock re-read. The function
@@ -620,9 +663,10 @@ func TestRevokeOAuthTokens(t *testing.T) {
 
 func TestValidateRefreshResponse(t *testing.T) {
 	cases := []struct {
-		name    string
-		resp    *dash0.OAuthTokenResponse
-		wantErr string
+		name              string
+		resp              *dash0.OAuthTokenResponse
+		wantErr           string
+		wantTrustedExpIn  int
 	}{
 		{
 			name:    "nil response",
@@ -640,14 +684,19 @@ func TestValidateRefreshResponse(t *testing.T) {
 			wantErr: "unsupported token_type",
 		},
 		{
-			name:    "zero expires_in",
-			resp:    &dash0.OAuthTokenResponse{AccessToken: "at", TokenType: "Bearer", ExpiresIn: 0},
-			wantErr: "non-positive expires_in",
+			name:             "zero expires_in falls back to default",
+			resp:             &dash0.OAuthTokenResponse{AccessToken: "at", TokenType: "Bearer", ExpiresIn: 0},
+			wantTrustedExpIn: int(OAuthRefreshExpiresInDefault / time.Second),
 		},
 		{
 			name:    "negative expires_in",
 			resp:    &dash0.OAuthTokenResponse{AccessToken: "at", TokenType: "Bearer", ExpiresIn: -1},
-			wantErr: "non-positive expires_in",
+			wantErr: "negative expires_in",
+		},
+		{
+			name:    "expires_in below refresh-storm floor",
+			resp:    &dash0.OAuthTokenResponse{AccessToken: "at", TokenType: "Bearer", ExpiresIn: int64((OAuthRefreshMinExpiresIn - time.Second) / time.Second)},
+			wantErr: "refresh-storm floor",
 		},
 		{
 			name:    "expires_in beyond 24h ceiling",
@@ -655,20 +704,25 @@ func TestValidateRefreshResponse(t *testing.T) {
 			wantErr: "implausibly large expires_in",
 		},
 		{
-			name: "happy path with empty token_type defaults to OK",
-			resp: &dash0.OAuthTokenResponse{AccessToken: "at", ExpiresIn: 3600},
+			name:             "happy path with empty token_type defaults to OK",
+			resp:             &dash0.OAuthTokenResponse{AccessToken: "at", ExpiresIn: 3600},
+			wantTrustedExpIn: 3600,
 		},
 		{
-			name: "happy path with Bearer (case-insensitive)",
-			resp: &dash0.OAuthTokenResponse{AccessToken: "at", TokenType: "bearer", ExpiresIn: 3600},
+			name:             "happy path with Bearer (case-insensitive)",
+			resp:             &dash0.OAuthTokenResponse{AccessToken: "at", TokenType: "bearer", ExpiresIn: 3600},
+			wantTrustedExpIn: 3600,
 		},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			err := validateRefreshResponse(c.resp)
+			trustedExpIn, err := validateRefreshResponse(c.resp)
 			if c.wantErr == "" {
 				if err != nil {
 					t.Errorf("expected nil error, got %v", err)
+				}
+				if trustedExpIn != c.wantTrustedExpIn {
+					t.Errorf("trustedExpiresIn = %d, want %d", trustedExpIn, c.wantTrustedExpIn)
 				}
 				return
 			}
@@ -682,89 +736,11 @@ func TestValidateRefreshResponse(t *testing.T) {
 	}
 }
 
-func TestIsTransientRefreshError(t *testing.T) {
-	cases := []struct {
-		name string
-		err  error
-		want bool
-	}{
-		{"5xx APIError", &dash0.APIError{StatusCode: 503}, true},
-		{"4xx APIError", &dash0.APIError{StatusCode: 401}, false},
-		{"OAuthTokenError (invalid_grant)", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}, false},
-		{"OAuthTokenError (invalid_client)", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_client"}, false},
-		{"unclassified network-like error", errors.New("connection refused"), true},
-	}
-	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			if got := isTransientRefreshError(c.err); got != c.want {
-				t.Errorf("isTransientRefreshError = %v, want %v", got, c.want)
-			}
-		})
-	}
-}
-
-func TestExchangeRefreshTokenWithRetry(t *testing.T) {
-	t.Run("retries on 5xx and eventually succeeds", func(t *testing.T) {
-		var hits atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			n := hits.Add(1)
-			if n < 2 {
-				w.WriteHeader(http.StatusBadGateway)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]any{
-				"access_token": "dash0_at_ok",
-				"token_type":   "Bearer",
-				"expires_in":   3600,
-			})
-		}))
-		defer server.Close()
-
-		oauthClient, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
-		if err != nil {
-			t.Fatalf("create client: %v", err)
-		}
-		defer func() { _ = oauthClient.Close(context.Background()) }()
-
-		resp, err := exchangeRefreshTokenWithRetry(context.Background(), oauthClient, "cid", "rt")
-		if err != nil {
-			t.Fatalf("expected success after retry, got %v", err)
-		}
-		if resp.AccessToken != "dash0_at_ok" {
-			t.Errorf("AccessToken = %q, want dash0_at_ok", resp.AccessToken)
-		}
-		if got := hits.Load(); got != 2 {
-			t.Errorf("expected 2 requests (1 transient + 1 success), got %d", got)
-		}
-	})
-
-	t.Run("invalid_grant short-circuits without retry", func(t *testing.T) {
-		var hits atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			hits.Add(1)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
-			_ = json.NewEncoder(w).Encode(map[string]string{"error": "invalid_grant"})
-		}))
-		defer server.Close()
-
-		oauthClient, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
-		if err != nil {
-			t.Fatalf("create client: %v", err)
-		}
-		defer func() { _ = oauthClient.Close(context.Background()) }()
-
-		_, err = exchangeRefreshTokenWithRetry(context.Background(), oauthClient, "cid", "rt")
-		if !dash0.IsOAuthInvalidGrant(err) {
-			t.Fatalf("expected invalid_grant, got %v", err)
-		}
-		if got := hits.Load(); got != 1 {
-			t.Errorf("expected 1 request (no retry on invalid_grant), got %d", got)
-		}
-	})
-
-	t.Run("all retries exhausted returns last transient error", func(t *testing.T) {
+func TestExchangeRefreshToken(t *testing.T) {
+	t.Run("transient 5xx is propagated without retry", func(t *testing.T) {
+		// Refresh-token grants must NOT be retried at the library layer:
+		// the IdP may have rotated the refresh token before failing to
+		// deliver its response, so a retry would burn the rotated family.
 		var hits atomic.Int32
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			hits.Add(1)
@@ -778,22 +754,41 @@ func TestExchangeRefreshTokenWithRetry(t *testing.T) {
 		}
 		defer func() { _ = oauthClient.Close(context.Background()) }()
 
-		_, err = exchangeRefreshTokenWithRetry(context.Background(), oauthClient, "cid", "rt")
+		_, err = exchangeRefreshToken(context.Background(), oauthClient, "cid", "rt")
 		if err == nil {
-			t.Fatal("expected error after exhausting retries, got nil")
+			t.Fatal("expected error on 5xx, got nil")
 		}
 		if !dash0.IsServerError(err) {
 			t.Errorf("expected server error, got: %v", err)
 		}
-		if got := hits.Load(); int(got) != OAuthRefreshTokenEndpointRetries+1 {
-			t.Errorf("expected %d attempts (initial + retries), got %d", OAuthRefreshTokenEndpointRetries+1, got)
+		if got := hits.Load(); got != 1 {
+			t.Errorf("expected exactly 1 attempt (no retry), got %d", got)
 		}
 	})
 
-	t.Run("cancelled context returns ctx.Err without burning extra attempts", func(t *testing.T) {
-		var hits atomic.Int32
+	t.Run("invalid_grant is propagated as *OAuthTokenError", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			hits.Add(1)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]string{"error": "invalid_grant"})
+		}))
+		defer server.Close()
+
+		oauthClient, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+		if err != nil {
+			t.Fatalf("create client: %v", err)
+		}
+		defer func() { _ = oauthClient.Close(context.Background()) }()
+
+		_, err = exchangeRefreshToken(context.Background(), oauthClient, "cid", "rt")
+		if !dash0.IsOAuthInvalidGrant(err) {
+			t.Fatalf("expected invalid_grant, got %v", err)
+		}
+	})
+
+	t.Run("cancelled context returns ctx.Err", func(t *testing.T) {
+		// A cancelled context must short-circuit the HTTP call cleanly.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadGateway)
 		}))
 		defer server.Close()
@@ -807,15 +802,33 @@ func TestExchangeRefreshTokenWithRetry(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		_, err = exchangeRefreshTokenWithRetry(ctx, oauthClient, "cid", "rt")
+		_, err = exchangeRefreshToken(ctx, oauthClient, "cid", "rt")
 		if err == nil {
 			t.Fatal("expected error from cancelled context, got nil")
 		}
-		// One attempt may fire before the cancellation is observed; the
-		// retry loop's inter-attempt select must then bail rather than
-		// burn additional round-trips.
-		if got := hits.Load(); got > 1 {
-			t.Errorf("expected at most 1 request with cancelled context, got %d", got)
-		}
 	})
+}
+
+func TestIsTerminalOAuthError(t *testing.T) {
+	cases := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{"invalid_grant", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}, true},
+		{"invalid_client", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_client"}, true},
+		{"unauthorized_client", &dash0.OAuthTokenError{StatusCode: 400, Code: "unauthorized_client"}, true},
+		{"invalid_request (non-terminal)", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_request"}, false},
+		{"invalid_scope (non-terminal)", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_scope"}, false},
+		{"unsupported_grant_type (non-terminal)", &dash0.OAuthTokenError{StatusCode: 400, Code: "unsupported_grant_type"}, false},
+		{"5xx APIError", &dash0.APIError{StatusCode: 503}, false},
+		{"plain error", errors.New("boom"), false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := isTerminalOAuthError(c.err); got != c.want {
+				t.Errorf("isTerminalOAuthError = %v, want %v", got, c.want)
+			}
+		})
+	}
 }

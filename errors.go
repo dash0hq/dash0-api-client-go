@@ -168,6 +168,13 @@ func IsConflict(err error) bool {
 // The token endpoint returns a structured error body with an error code,
 // optional description, and optional URI, rather than the generic JSON error
 // format used by other API endpoints.
+//
+// Security note: the Description and URI fields are returned verbatim by the
+// authorization server and may carry attacker-influenced content if the IdP
+// itself is compromised or operates a relay.
+// Surfaces that auto-render the URI (CLI hyperlinks, log scrapers that follow
+// links) should treat it as untrusted; surfaces that log [OAuthTokenError.Error]
+// should escape control characters in the description before display.
 type OAuthTokenError struct {
 	// StatusCode is the HTTP status code (typically 400).
 	StatusCode int
@@ -176,11 +183,14 @@ type OAuthTokenError struct {
 	// "invalid_request").
 	Code string
 
-	// Description is the optional human-readable error description.
+	// Description is the optional human-readable error description, supplied
+	// verbatim by the authorization server.
+	// See the type-level security note.
 	Description string
 
 	// URI is the optional URI identifying a human-readable web page with
-	// error information.
+	// error information, supplied verbatim by the authorization server.
+	// See the type-level security note.
 	URI string
 }
 

@@ -55,6 +55,9 @@ type OAuthClient interface {
 	RevokeToken(ctx context.Context, request *OAuthRevocationRequest) error
 
 	// Close releases resources associated with the client.
+	// Implementations should at minimum drop idle HTTP connections held by
+	// the underlying transport; the ctx is reserved for future
+	// graceful-shutdown work and is currently unused.
 	Close(ctx context.Context) error
 }
 
@@ -94,8 +97,9 @@ type AuthorizeURLParams struct {
 
 // oauthClient is the concrete implementation of OAuthClient.
 type oauthClient struct {
-	inner  *ClientWithResponses
-	apiURL string
+	inner      *ClientWithResponses
+	httpClient *http.Client
+	apiURL     string
 }
 
 // NewOAuthClient creates a new OAuth client for the Dash0 API.
@@ -158,8 +162,9 @@ func NewOAuthClient(opts ...ClientOption) (OAuthClient, error) {
 	}
 
 	return &oauthClient{
-		inner:  inner,
-		apiURL: cfg.apiUrl,
+		inner:      inner,
+		httpClient: httpClient,
+		apiURL:     cfg.apiUrl,
 	}, nil
 }
 
@@ -313,7 +318,16 @@ func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationR
 	return nil
 }
 
-// Close is a no-op for OAuthClient.
+// Close releases idle HTTP connections held by the OAuth client's underlying
+// [*http.Client].
+// The provided context is currently unused; the signature accepts one for
+// symmetry with [Client.Close] and to leave room for future graceful-shutdown
+// work.
+// Calling Close on an [OAuthClient] returned by [NewOAuthClient] is safe and
+// idempotent.
 func (c *oauthClient) Close(_ context.Context) error {
+	if c.httpClient != nil {
+		c.httpClient.CloseIdleConnections()
+	}
 	return nil
 }

@@ -13,6 +13,116 @@ import (
 	"time"
 )
 
+func TestValidateProfileName(t *testing.T) {
+	t.Run("rejects", func(t *testing.T) {
+		cases := []struct {
+			name   string
+			input  string
+			reason string
+		}{
+			{"empty", "", "empty"},
+			{"newline", "dev\nprod", "control character"},
+			{"NUL", "dev\x00prod", "control character"},
+			{"leading dot", ".profile-lock", "must not start with '.'"},
+			{"forward slash", "dev/prod", "path separators"},
+			{"backslash", "dev\\prod", "path separators"},
+			{"too long", strings.Repeat("a", MaxProfileNameLength+1), "exceeds maximum length"},
+		}
+		for _, c := range cases {
+			t.Run(c.name, func(t *testing.T) {
+				err := validateProfileName(c.input)
+				if err == nil {
+					t.Fatalf("expected error for %q", c.input)
+				}
+				if !strings.Contains(err.Error(), c.reason) {
+					t.Errorf("error %q does not mention %q", err.Error(), c.reason)
+				}
+			})
+		}
+	})
+
+	t.Run("accepts", func(t *testing.T) {
+		for _, name := range []string{
+			"dev",
+			"prod",
+			"my-profile",
+			"team_a.qa",
+			"Profile1",
+			strings.Repeat("a", MaxProfileNameLength),
+		} {
+			t.Run(name, func(t *testing.T) {
+				if err := validateProfileName(name); err != nil {
+					t.Errorf("unexpected error for %q: %v", name, err)
+				}
+			})
+		}
+	})
+}
+
+func TestAddProfile_RejectsInvalidName(t *testing.T) {
+	store, _ := newTestStore(t)
+	err := store.AddProfile(Profile{
+		Name: "bad\nname",
+		Configuration: Configuration{
+			ApiUrl:    "https://api.example.com",
+			AuthToken: "auth_x",
+		},
+	})
+	if err == nil {
+		t.Fatal("expected error for invalid profile name")
+	}
+	if !strings.Contains(err.Error(), "control character") {
+		t.Errorf("error should mention control character, got: %v", err)
+	}
+}
+
+func TestEnsureConfigDirMode_DowngradesBroadPermissions(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.Chmod(dir, 0o755); err != nil {
+		t.Fatalf("seed chmod: %v", err)
+	}
+
+	if err := ensureConfigDirMode(dir); err != nil {
+		t.Fatalf("ensureConfigDirMode: %v", err)
+	}
+
+	info, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("stat: %v", err)
+	}
+	if perm := info.Mode().Perm(); perm != configDirMode {
+		t.Errorf("perm = %o, want %o", perm, configDirMode)
+	}
+}
+
+func TestCleanupStaleTempFiles_RemovesLeftovers(t *testing.T) {
+	dir := t.TempDir()
+	stalePaths := []string{
+		filepath.Join(dir, "profiles.json.tmp-abc123"),
+		filepath.Join(dir, "oauth-clients.json.tmp-def456"),
+	}
+	for _, p := range stalePaths {
+		if err := os.WriteFile(p, []byte("partial"), 0600); err != nil {
+			t.Fatalf("seed: %v", err)
+		}
+	}
+	keepPath := filepath.Join(dir, "profiles.json")
+	if err := os.WriteFile(keepPath, []byte(`{"profiles":[]}`), 0600); err != nil {
+		t.Fatalf("seed keep: %v", err)
+	}
+
+	cleanupStaleTempFiles(dir)
+
+	for _, p := range stalePaths {
+		if _, err := os.Stat(p); !os.IsNotExist(err) {
+			t.Errorf("expected %s to be removed, stat err = %v", p, err)
+		}
+	}
+	if _, err := os.Stat(keepPath); err != nil {
+		t.Errorf("non-temp file should be preserved: %v", err)
+	}
+}
+
 func TestNewStore(t *testing.T) {
 	t.Run("with WithConfigDir", func(t *testing.T) {
 		dir := t.TempDir()
