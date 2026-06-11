@@ -238,27 +238,42 @@ func WithOtlpEndpoint(encoding OtlpEncoding, url string) ClientOption {
 	}
 }
 
-// validateOAuthOptions returns an error if any ClientOption that is not
-// meaningful for an OAuth client was set. Only [WithApiUrl], [WithHTTPClient],
-// [WithTimeout], and [WithUserAgent] are accepted; passing anything else is
-// almost certainly a mistake by the caller and is rejected explicitly so the
-// silent-no-op footgun does not bite at runtime.
-func validateOAuthOptions(cfg *clientConfig) error {
-	var rejected []string
-	if cfg.authToken != "" {
-		rejected = append(rejected, "WithAuthToken")
+// transportOptionsSet returns the names of transport-level ClientOption
+// functions that were explicitly set on cfg.
+// Used by both [validateOAuthOptions] and [validateTransportConflicts] to
+// detect overlaps between transport configuration and incompatible options.
+// When includeHTTPClient is true, WithHTTPClient is also reported; the OAuth
+// validator accepts WithHTTPClient and therefore passes false.
+func transportOptionsSet(cfg *clientConfig, includeHTTPClient bool) []string {
+	var names []string
+	if includeHTTPClient && cfg.httpClientSet {
+		names = append(names, "WithHTTPClient")
 	}
 	if cfg.maxConcurrentSet {
-		rejected = append(rejected, "WithMaxConcurrentRequests")
+		names = append(names, "WithMaxConcurrentRequests")
 	}
 	if cfg.maxRetriesSet {
-		rejected = append(rejected, "WithMaxRetries")
+		names = append(names, "WithMaxRetries")
 	}
 	if cfg.retryWaitMinSet {
-		rejected = append(rejected, "WithRetryWaitMin")
+		names = append(names, "WithRetryWaitMin")
 	}
 	if cfg.retryWaitMaxSet {
-		rejected = append(rejected, "WithRetryWaitMax")
+		names = append(names, "WithRetryWaitMax")
+	}
+	return names
+}
+
+// validateOAuthOptions returns an error if any ClientOption that is not
+// meaningful for an OAuth client was set.
+// Only [WithApiUrl], [WithHTTPClient], [WithTimeout], and [WithUserAgent] are
+// accepted; passing anything else is almost certainly a mistake by the caller
+// and is rejected explicitly so the silent-no-op footgun does not bite at
+// runtime.
+func validateOAuthOptions(cfg *clientConfig) error {
+	rejected := transportOptionsSet(cfg, false)
+	if cfg.authToken != "" {
+		rejected = append(rejected, "WithAuthToken")
 	}
 	if cfg.transport != nil {
 		rejected = append(rejected, "WithTransport")
@@ -278,22 +293,7 @@ func validateOAuthOptions(cfg *clientConfig) error {
 // validateTransportConflicts returns an error if any transport-level
 // ClientOption was set alongside WithTransport.
 func validateTransportConflicts(cfg *clientConfig) error {
-	var conflicts []string
-	if cfg.httpClientSet {
-		conflicts = append(conflicts, "WithHTTPClient")
-	}
-	if cfg.maxConcurrentSet {
-		conflicts = append(conflicts, "WithMaxConcurrentRequests")
-	}
-	if cfg.maxRetriesSet {
-		conflicts = append(conflicts, "WithMaxRetries")
-	}
-	if cfg.retryWaitMinSet {
-		conflicts = append(conflicts, "WithRetryWaitMin")
-	}
-	if cfg.retryWaitMaxSet {
-		conflicts = append(conflicts, "WithRetryWaitMax")
-	}
+	conflicts := transportOptionsSet(cfg, true)
 	if len(conflicts) == 0 {
 		return nil
 	}

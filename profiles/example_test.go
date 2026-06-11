@@ -174,3 +174,50 @@ func ExampleConfiguration_ClientOptions() {
 	// Output:
 	// produced 2 client options
 }
+
+func ExampleNewOAuthClientStore() {
+	store, err := profiles.NewOAuthClientStore(profiles.WithConfigDir("/tmp/dash0-example-clients"))
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	_, found, err := store.Get("https://api.eu-west-1.aws.dash0.com")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println("found:", found)
+	// Output:
+	// found: false
+}
+
+func ExampleCanonicalAPIURL() {
+	key, err := profiles.CanonicalAPIURL("HTTPS://API.EU-WEST-1.AWS.DASH0.COM/?x=1#frag")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(key)
+	// Output: https://api.eu-west-1.aws.dash0.com
+}
+
+func ExampleOAuthClientStore_Put() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, err := profiles.NewOAuthClientStore(profiles.WithConfigDir(configDir))
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	if err := store.Put("https://api.eu-west-1.aws.dash0.com", profiles.OAuthClientRecord{
+		ClientID:    "client-123",
+		RedirectURI: "http://localhost:8080/callback",
+	}); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	rec, found, _ := store.Get("https://api.eu-west-1.aws.dash0.com")
+	fmt.Println(found, rec.ClientID)
+	// Output: true client-123
+}

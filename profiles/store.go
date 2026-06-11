@@ -1,6 +1,7 @@
 package profiles
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -30,6 +31,18 @@ const (
 	EnvConfigDir = "DASH0_CONFIG_DIR"
 )
 
+// configDirMode is the permission mode used when creating the configuration
+// directory.
+// The profile file persists OAuth refresh tokens, so the directory is created
+// owner-only (0700) to mirror the protection already applied to
+// oauth-clients.json.
+const configDirMode = 0o700
+
+// configFileMode is the permission mode used when writing the profile file
+// and the active-profile pointer.
+// Owner-only (0600) because both files can be load-bearing credentials.
+const configFileMode = 0o600
+
 var (
 	// ErrNoActiveProfile is returned when there is no active profile.
 	ErrNoActiveProfile = errors.New("no active profile configured")
@@ -38,12 +51,18 @@ var (
 )
 
 // Store handles profile storage and retrieval.
+//
+// Cross-process refresh: Store serializes OAuth token refreshes both within a
+// process (via an in-memory mutex) and across processes that share the same
+// config directory (via an OS-level advisory lock on .profile-lock, backed
+// by [github.com/gofrs/flock]).
 type Store struct {
 	configDir string
 
 	// refreshMu serializes OAuth token refreshes so that concurrent callers
-	// of [Store.GetActiveConfiguration] do not race against each other and
-	// invalidate a rotated refresh token.
+	// of [Store.GetActiveConfigurationContext] do not race against each
+	// other and invalidate a rotated refresh token.
+	// Cross-process serialization is layered on top via [acquireProfileLock].
 	refreshMu sync.Mutex
 }
 
@@ -78,17 +97,27 @@ func NewStore(opts ...StoreOption) (*Store, error) {
 // GetActiveConfiguration returns the currently active configuration.
 // Environment variables take precedence over the active profile.
 // If the active profile uses OAuth, the access token is refreshed when close
-// to expiry.
+// to expiry, using [context.Background] for the refresh request.
+// Use [Store.GetActiveConfigurationContext] to plumb a cancellable context
+// through the refresh.
 func (s *Store) GetActiveConfiguration() (*Configuration, error) {
-	return s.getActiveConfiguration(true)
+	return s.getActiveConfigurationContext(context.Background(), true)
 }
 
-// getActiveConfiguration is the shared implementation behind
-// [Store.GetActiveConfiguration]. The refreshOAuth flag controls whether an
-// OAuth-backed access token close to expiry is refreshed; callers that intend
-// to override the auth token anyway can pass false to skip the refresh
-// network call.
-func (s *Store) getActiveConfiguration(refreshOAuth bool) (*Configuration, error) {
+// GetActiveConfigurationContext is the context-aware variant of
+// [Store.GetActiveConfiguration].
+// The ctx is propagated through the OAuth refresh round-trip so a hung
+// authorization server does not pin the caller for the full HTTP timeout.
+func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configuration, error) {
+	return s.getActiveConfigurationContext(ctx, true)
+}
+
+// getActiveConfigurationContext is the shared implementation behind
+// [Store.GetActiveConfiguration] and [Store.GetActiveConfigurationContext].
+// The refreshOAuth flag controls whether an OAuth-backed access token close
+// to expiry is refreshed; callers that intend to override the auth token
+// anyway can pass false to skip the refresh network call.
+func (s *Store) getActiveConfigurationContext(ctx context.Context, refreshOAuth bool) (*Configuration, error) {
 	envApiUrl := os.Getenv(EnvApiUrl)
 	envAuthToken := os.Getenv(EnvAuthToken)
 	envOtlpUrl := os.Getenv(EnvOtlpUrl)
@@ -114,10 +143,11 @@ func (s *Store) getActiveConfiguration(refreshOAuth bool) (*Configuration, error
 	activeConfiguration := &activeProfile.Configuration
 
 	// If the profile uses OAuth and no env var overrides the auth token,
-	// refresh the access token when it is close to expiry. Callers that
-	// will override the token anyway pass refreshOAuth=false to skip this.
+	// refresh the access token when it is close to expiry.
+	// Callers that will override the token anyway pass refreshOAuth=false to
+	// skip this.
 	if refreshOAuth && activeConfiguration.OAuth != nil && envAuthToken == "" {
-		if err := refreshOAuthToken(s, activeProfile.Name, activeConfiguration); err != nil {
+		if err := refreshOAuthToken(ctx, s, activeProfile.Name, activeConfiguration); err != nil {
 			return nil, err
 		}
 	}
@@ -147,24 +177,42 @@ func (s *Store) getActiveConfiguration(refreshOAuth bool) (*Configuration, error
 // This is a convenience function that creates a temporary [Store] internally.
 // Pass [StoreOption] values (e.g. [WithConfigDir]) to control how the
 // profile store is constructed.
+//
+// OAuth refresh, if needed, uses [context.Background]; use
+// [ResolveConfigurationContext] to plumb a cancellable context.
 func ResolveConfiguration(apiUrl, authToken string, opts ...StoreOption) (*Configuration, error) {
-	return ResolveConfigurationWithOtlp(apiUrl, authToken, "", "", opts...)
+	return ResolveConfigurationWithOtlpContext(context.Background(), apiUrl, authToken, "", "", opts...)
+}
+
+// ResolveConfigurationContext is the context-aware variant of
+// [ResolveConfiguration].
+func ResolveConfigurationContext(ctx context.Context, apiUrl, authToken string, opts ...StoreOption) (*Configuration, error) {
+	return ResolveConfigurationWithOtlpContext(ctx, apiUrl, authToken, "", "", opts...)
 }
 
 // ResolveConfigurationWithOtlp is like [ResolveConfiguration] but also accepts
 // OTLP URL and dataset overrides.
+//
+// OAuth refresh, if needed, uses [context.Background]; use
+// [ResolveConfigurationWithOtlpContext] to plumb a cancellable context.
 func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
+	return ResolveConfigurationWithOtlpContext(context.Background(), apiUrl, authToken, otlpUrl, dataset, opts...)
+}
+
+// ResolveConfigurationWithOtlpContext is the context-aware variant of
+// [ResolveConfigurationWithOtlp].
+func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
 	result := &Configuration{}
 
-	// Try to get the active configuration for defaults. Skip the OAuth
-	// refresh when the caller is about to override the auth token -- the
-	// refreshed token would be discarded and the network call wasted (and
-	// could rotate the refresh token for no good reason).
+	// Try to get the active configuration for defaults.
+	// Skip the OAuth refresh when the caller is about to override the auth
+	// token -- the refreshed token would be discarded and the network call
+	// wasted (and could rotate the refresh token for no good reason).
 	refreshOAuth := authToken == ""
 	var configErr error
 	store, err := NewStore(opts...)
 	if err == nil {
-		cfg, err := store.getActiveConfiguration(refreshOAuth)
+		cfg, err := store.getActiveConfigurationContext(ctx, refreshOAuth)
 		if err != nil {
 			// Store the error but don't return yet -- we might have explicit overrides.
 			configErr = err
@@ -272,7 +320,18 @@ func (s *Store) GetProfiles() ([]Profile, error) {
 // AddProfile adds a new profile to the configuration.
 // If a profile with the same name already exists, it is replaced.
 // When adding the first profile, it is automatically set as active.
+//
+// The read-modify-write sequence is serialized cross-process via the
+// .profile-lock sentinel; see [Store] for the locking model.
 func (s *Store) AddProfile(profile Profile) error {
+	s.refreshMu.Lock()
+	defer s.refreshMu.Unlock()
+	release, err := acquireProfileLock(context.Background(), s.configDir)
+	if err != nil {
+		return err
+	}
+	defer release()
+
 	profiles, err := s.GetProfiles()
 	if err != nil {
 		return err
@@ -288,14 +347,14 @@ func (s *Store) AddProfile(profile Profile) error {
 
 	profiles = append(profiles, profile)
 
-	err = s.saveProfiles(profiles)
-	if err != nil {
+	if err := s.saveProfiles(profiles); err != nil {
 		return err
 	}
 
-	// If this is the first profile, make it active.
+	// If this is the first profile, make it active. Use the unlocked
+	// helper because we already hold both locks.
 	if len(profiles) == 1 {
-		if err := s.SetActiveProfile(profile.Name); err != nil {
+		if err := s.setActiveProfileLocked(profile.Name); err != nil {
 			return err
 		}
 	}
@@ -306,7 +365,24 @@ func (s *Store) AddProfile(profile Profile) error {
 // UpdateProfile finds a profile by name and applies updateFn to its
 // configuration, then saves.
 // Returns an error if no profile with the given name exists.
+//
+// The read-modify-write sequence is serialized cross-process via the
+// .profile-lock sentinel; see [Store] for the locking model.
 func (s *Store) UpdateProfile(name string, updateFn func(*Configuration)) error {
+	s.refreshMu.Lock()
+	defer s.refreshMu.Unlock()
+	release, err := acquireProfileLock(context.Background(), s.configDir)
+	if err != nil {
+		return err
+	}
+	defer release()
+	return s.updateProfileLocked(name, updateFn)
+}
+
+// updateProfileLocked is the unlocked body of [Store.UpdateProfile] for
+// callers that already hold refreshMu and the .profile-lock file lock (notably
+// [refreshOAuthToken]).
+func (s *Store) updateProfileLocked(name string, updateFn func(*Configuration)) error {
 	profiles, err := s.GetProfiles()
 	if err != nil {
 		return err
@@ -329,12 +405,31 @@ func (s *Store) UpdateProfile(name string, updateFn func(*Configuration)) error 
 }
 
 // RemoveProfile removes a profile from the configuration.
-// If the profile has OAuth state, the refresh token is revoked before removal.
-// Revocation is best-effort; a failure does not prevent the profile from being
-// removed.
+// If the profile has OAuth state, the refresh token is revoked before removal,
+// using [context.Background] for the revoke request.
+// Use [Store.RemoveProfileContext] to plumb a cancellable context.
+//
+// Revocation is best-effort: if it fails, the local profile is still removed
+// and the returned error wraps [ErrRevocationFailed].
+// Callers can detect this with [errors.Is] and surface a "revoke manually"
+// hint -- the refresh token may still be live on the authorization server.
+//
 // If the removed profile was the active profile, the first remaining profile
 // becomes active.
 func (s *Store) RemoveProfile(profileName string) error {
+	return s.RemoveProfileContext(context.Background(), profileName)
+}
+
+// RemoveProfileContext is the context-aware variant of [Store.RemoveProfile].
+func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) error {
+	s.refreshMu.Lock()
+	defer s.refreshMu.Unlock()
+	release, err := acquireProfileLock(ctx, s.configDir)
+	if err != nil {
+		return err
+	}
+	defer release()
+
 	profiles, err := s.GetProfiles()
 	if err != nil {
 		return err
@@ -357,13 +452,15 @@ func (s *Store) RemoveProfile(profileName string) error {
 	}
 
 	// Best-effort: revoke OAuth tokens before removing the profile.
-	_ = revokeOAuthTokens(&removedConfig)
+	// Capture the failure so it can be surfaced to the caller alongside the
+	// (still-successful) local removal.
+	revokeErr := revokeOAuthTokens(ctx, &removedConfig)
 
 	// Check if removing the active profile.
 	activeProfileName, err := s.getActiveProfileName()
 	if err == nil && activeProfileName == profileName {
 		if len(newProfiles) > 0 {
-			if err := s.SetActiveProfile(newProfiles[0].Name); err != nil {
+			if err := s.setActiveProfileLocked(newProfiles[0].Name); err != nil {
 				return err
 			}
 		} else {
@@ -373,12 +470,35 @@ func (s *Store) RemoveProfile(profileName string) error {
 		}
 	}
 
-	return s.saveProfiles(newProfiles)
+	if err := s.saveProfiles(newProfiles); err != nil {
+		return err
+	}
+
+	if revokeErr != nil {
+		return fmt.Errorf("%w: %v", ErrRevocationFailed, revokeErr)
+	}
+	return nil
 }
 
 // SetActiveProfile sets the active profile by name.
 // Returns [ErrProfileNotFound] if no profile with the given name exists.
+//
+// The change is serialized cross-process via the .profile-lock sentinel; see
+// [Store] for the locking model.
 func (s *Store) SetActiveProfile(profileName string) error {
+	s.refreshMu.Lock()
+	defer s.refreshMu.Unlock()
+	release, err := acquireProfileLock(context.Background(), s.configDir)
+	if err != nil {
+		return err
+	}
+	defer release()
+	return s.setActiveProfileLocked(profileName)
+}
+
+// setActiveProfileLocked is the unlocked body of [Store.SetActiveProfile] for
+// callers that already hold both locks.
+func (s *Store) setActiveProfileLocked(profileName string) error {
 	profiles, err := s.GetProfiles()
 	if err != nil {
 		return err
@@ -396,16 +516,8 @@ func (s *Store) SetActiveProfile(profileName string) error {
 		return ErrProfileNotFound
 	}
 
-	if err := os.MkdirAll(s.configDir, 0755); err != nil {
-		return fmt.Errorf("failed to create config directory: %w", err)
-	}
-
 	activeProfilePath := filepath.Join(s.configDir, ActiveProfileFileName)
-	if err := os.WriteFile(activeProfilePath, []byte(profileName), 0644); err != nil {
-		return fmt.Errorf("failed to write active profile: %w", err)
-	}
-
-	return nil
+	return writeFileAtomic(s.configDir, activeProfilePath, []byte(profileName))
 }
 
 func (s *Store) getActiveProfileName() (string, error) {
@@ -428,10 +540,6 @@ func (s *Store) getActiveProfileName() (string, error) {
 }
 
 func (s *Store) saveProfiles(profiles []Profile) error {
-	if err := os.MkdirAll(s.configDir, 0755); err != nil {
-		return fmt.Errorf("failed to create config directory: %w", err)
-	}
-
 	profilesFile := ProfilesFile{Profiles: profiles}
 	data, err := json.MarshalIndent(profilesFile, "", "  ")
 	if err != nil {
@@ -439,9 +547,51 @@ func (s *Store) saveProfiles(profiles []Profile) error {
 	}
 
 	profilesFilePath := filepath.Join(s.configDir, ProfilesFileName)
-	if err := os.WriteFile(profilesFilePath, data, 0644); err != nil {
-		return fmt.Errorf("failed to write profiles file: %w", err)
+	return writeFileAtomic(s.configDir, profilesFilePath, data)
+}
+
+// writeFileAtomic writes data to path via a sibling temp file followed by
+// os.Rename, so a crash mid-write leaves either the previous contents intact
+// or the new contents fully written.
+// The parent directory is created with [configDirMode] (0700) and the file
+// with [configFileMode] (0600) — these files persist OAuth refresh tokens,
+// so they are owner-only.
+func writeFileAtomic(dir, path string, data []byte) error {
+	if err := os.MkdirAll(dir, configDirMode); err != nil {
+		return fmt.Errorf("failed to create config directory %s: %w", dir, err)
 	}
 
+	tmp, err := os.CreateTemp(dir, filepath.Base(path)+".tmp-*")
+	if err != nil {
+		return fmt.Errorf("failed to create temp file in %s: %w", dir, err)
+	}
+	tmpPath := tmp.Name()
+	// Best-effort cleanup if anything below fails before the rename.
+	cleanup := true
+	defer func() {
+		if cleanup {
+			_ = os.Remove(tmpPath)
+		}
+	}()
+
+	if err := tmp.Chmod(configFileMode); err != nil {
+		_ = tmp.Close()
+		return fmt.Errorf("failed to chmod temp file: %w", err)
+	}
+	if _, err := tmp.Write(data); err != nil {
+		_ = tmp.Close()
+		return fmt.Errorf("failed to write temp file: %w", err)
+	}
+	if err := tmp.Sync(); err != nil {
+		_ = tmp.Close()
+		return fmt.Errorf("failed to sync temp file: %w", err)
+	}
+	if err := tmp.Close(); err != nil {
+		return fmt.Errorf("failed to close temp file: %w", err)
+	}
+	if err := os.Rename(tmpPath, path); err != nil {
+		return fmt.Errorf("failed to rename %s to %s: %w", tmpPath, path, err)
+	}
+	cleanup = false
 	return nil
 }

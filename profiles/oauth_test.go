@@ -1,9 +1,13 @@
 package profiles
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -17,7 +21,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 	t.Run("no OAuth state", func(t *testing.T) {
 		store, _ := newTestStore(t)
 		cfg := &Configuration{AuthToken: "auth_something"}
-		err := refreshOAuthToken(store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -41,7 +45,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 			{Name: "test", Configuration: *cfg},
 		})
 
-		err := refreshOAuthToken(store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -74,7 +78,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -139,7 +143,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -158,7 +162,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		}
 	})
 
-	t.Run("refresh fails", func(t *testing.T) {
+	t.Run("invalid_grant clears OAuth state and returns ErrReauthenticationRequired", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
@@ -185,12 +189,24 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(store, "test", cfg)
-		if err == nil {
-			t.Fatal("expected error, got nil")
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		if !errors.Is(err, ErrReauthenticationRequired) {
+			t.Fatalf("expected ErrReauthenticationRequired, got: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_old-token" {
-			t.Errorf("expected AuthToken unchanged after failure, got %s", cfg.AuthToken)
+		if cfg.OAuth != nil {
+			t.Errorf("expected cfg.OAuth cleared after invalid_grant, got %+v", cfg.OAuth)
+		}
+		if cfg.AuthToken != "" {
+			t.Errorf("expected cfg.AuthToken cleared after invalid_grant, got %q", cfg.AuthToken)
+		}
+		// Verify the on-disk state was also cleared so a subsequent call
+		// does not retry the dead credential.
+		ps, err := store.GetProfiles()
+		if err != nil {
+			t.Fatalf("GetProfiles: %v", err)
+		}
+		if ps[0].Configuration.OAuth != nil {
+			t.Errorf("expected persisted OAuth cleared after invalid_grant, got %+v", ps[0].Configuration.OAuth)
 		}
 	})
 
@@ -210,7 +226,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
 		if err == nil {
 			t.Fatal("expected error for missing API URL, got nil")
 		}
@@ -272,7 +288,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 					},
 				}
 				start.Wait()
-				errs[i] = refreshOAuthToken(store, "test", cfgs[i])
+				errs[i] = refreshOAuthToken(context.Background(), store, "test", cfgs[i])
 			}()
 		}
 		start.Done()
@@ -313,6 +329,144 @@ func TestRefreshOAuthToken(t *testing.T) {
 		}
 	})
 
+	t.Run("cross-process flock serializes concurrent refreshes via separate Store instances", func(t *testing.T) {
+		// Two distinct *Store instances over the same config directory
+		// mimic two CLI invocations: the in-process refreshMu does not
+		// connect them, so only the file lock prevents both from hitting
+		// the token endpoint simultaneously and rotating the same family.
+		var inFlight, peak atomic.Int32
+		var release sync.WaitGroup
+		release.Add(1)
+		var requestCount atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			n := inFlight.Add(1)
+			defer inFlight.Add(-1)
+			for {
+				p := peak.Load()
+				if n <= p || peak.CompareAndSwap(p, n) {
+					break
+				}
+			}
+			requestCount.Add(1)
+			release.Wait()
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token":  "dash0_at_rotated",
+				"token_type":    "Bearer",
+				"expires_in":    3600,
+				"refresh_token": "rt-rotated",
+			})
+		}))
+		defer server.Close()
+
+		_, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt-original",
+					ExpiresAt:    time.Now().Add(1 * time.Minute),
+				},
+			}},
+		})
+
+		const processes = 4
+		errs := make([]error, processes)
+		var done sync.WaitGroup
+		done.Add(processes)
+		for i := range processes {
+			go func() {
+				defer done.Done()
+				storeI, _ := NewStore(WithConfigDir(dir))
+				cfg := &Configuration{
+					ApiUrl:    server.URL,
+					AuthToken: "dash0_at_old",
+					OAuth: &OAuthState{
+						ClientID:     "cid",
+						RefreshToken: "rt-original",
+						ExpiresAt:    time.Now().Add(1 * time.Minute),
+					},
+				}
+				errs[i] = refreshOAuthToken(context.Background(), storeI, "test", cfg)
+			}()
+		}
+		// Give every goroutine a chance to enter the locked section before
+		// the first request returns.
+		time.Sleep(100 * time.Millisecond)
+		release.Done()
+		done.Wait()
+
+		for i, err := range errs {
+			if err != nil {
+				t.Errorf("process %d: unexpected error: %v", i, err)
+			}
+		}
+		// At most one process should ever be in-flight at the token
+		// endpoint at once — that is the property the flock guarantees.
+		if got := peak.Load(); got > 1 {
+			t.Errorf("peak concurrent token-endpoint requests = %d, want 1 (cross-process flock failed)", got)
+		}
+		// Subsequent processes pick up the persisted rotated token and
+		// short-circuit, so the request count is usually 1; allow up to 2
+		// in case scheduler timing lets two processes both pass the expiry
+		// check before either acquires the lock.
+		if got := requestCount.Load(); got > 2 {
+			t.Errorf("expected at most 2 token-endpoint requests, got %d", got)
+		}
+	})
+
+	t.Run("GetProfiles failure inside the lock surfaces a wrapped error", func(t *testing.T) {
+		// Corrupt profiles.json so GetProfiles fails after the refresh
+		// mutex is acquired. The function should return a wrapped error
+		// instead of panicking or silently zeroing cfg.
+		store, dir := newTestStore(t)
+		profilesPath := filepath.Join(dir, ProfilesFileName)
+		if err := os.WriteFile(profilesPath, []byte("not json"), 0o600); err != nil {
+			t.Fatalf("seed corrupt profile: %v", err)
+		}
+
+		cfg := &Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "dash0_at_old",
+			OAuth: &OAuthState{
+				ClientID:     "cid",
+				RefreshToken: "rt",
+				ExpiresAt:    time.Now().Add(-1 * time.Minute),
+			},
+		}
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		if err == nil {
+			t.Fatal("expected error from corrupted profile, got nil")
+		}
+		if !strings.Contains(err.Error(), "re-read profiles") {
+			t.Errorf("error should mention re-read failure, got: %v", err)
+		}
+	})
+
+	t.Run("profile removed concurrently returns dedicated error", func(t *testing.T) {
+		// The profile vanished between snapshot and post-lock re-read.
+		// Surface a dedicated error rather than silently zeroing cfg.
+		store, _ := newTestStore(t)
+		cfg := &Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "dash0_at_old",
+			OAuth: &OAuthState{
+				ClientID:     "cid",
+				RefreshToken: "rt",
+				ExpiresAt:    time.Now().Add(-1 * time.Minute),
+			},
+		}
+		err := refreshOAuthToken(context.Background(), store, "missing-profile", cfg)
+		if err == nil {
+			t.Fatal("expected error for missing profile, got nil")
+		}
+		if !strings.Contains(err.Error(), "no longer exists") {
+			t.Errorf("error should mention missing profile, got: %v", err)
+		}
+	})
+
 	t.Run("token already expired refresh succeeds", func(t *testing.T) {
 		server := newTokenServer(t, tokenServerResponse{
 			AccessToken: "dash0_at_fresh-token",
@@ -336,7 +490,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -349,7 +503,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 func TestRevokeOAuthTokens(t *testing.T) {
 	t.Run("no OAuth state", func(t *testing.T) {
 		cfg := &Configuration{AuthToken: "auth_something"}
-		err := revokeOAuthTokens(cfg)
+		err := revokeOAuthTokens(context.Background(), cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -364,7 +518,7 @@ func TestRevokeOAuthTokens(t *testing.T) {
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
 		}
-		err := revokeOAuthTokens(cfg)
+		err := revokeOAuthTokens(context.Background(), cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -384,7 +538,7 @@ func TestRevokeOAuthTokens(t *testing.T) {
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
 		}
-		err := revokeOAuthTokens(cfg)
+		err := revokeOAuthTokens(context.Background(), cfg)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -413,7 +567,7 @@ func TestRevokeOAuthTokens(t *testing.T) {
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
 		}
-		err := revokeOAuthTokens(cfg)
+		err := revokeOAuthTokens(context.Background(), cfg)
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}

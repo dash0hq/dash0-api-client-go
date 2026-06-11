@@ -6,6 +6,18 @@ import (
 	"net/http"
 )
 
+// OAuthResponseTypeCode is the prefixed alias for the [Code] response type
+// (RFC 6749 §4.1).
+// Prefer this name in user code — the bare [Code] survives only for the
+// oapi-codegen-generated constant set.
+const OAuthResponseTypeCode = Code
+
+// OAuthCodeChallengeMethodS256 is the prefixed alias for the [S256] PKCE
+// code-challenge method (RFC 7636).
+// Prefer this name in user code — the bare [S256] survives only for the
+// oapi-codegen-generated constant set.
+const OAuthCodeChallengeMethodS256 = S256
+
 // OAuthClient provides methods for the Dash0 OAuth 2.0 authorization flow.
 // These endpoints do not require API key authentication.
 // Use [NewOAuthClient] to create an instance.
@@ -49,8 +61,9 @@ type OAuthClient interface {
 // AuthorizeURLParams contains the parameters for building an OAuth 2.0
 // authorization URL.
 type AuthorizeURLParams struct {
-	// ResponseType must be "code" for the authorization code flow.
-	ResponseType string
+	// ResponseType must be [OAuthResponseTypeCode].
+	// Defaults to [OAuthResponseTypeCode] when empty.
+	ResponseType OAuthResponseType
 
 	// ClientID is the client identifier obtained during registration.
 	ClientID string
@@ -61,15 +74,18 @@ type AuthorizeURLParams struct {
 	// Scope is an optional space-separated list of requested scopes.
 	Scope *string
 
-	// State is an optional opaque value for CSRF protection, returned
-	// unchanged in the redirect.
-	State *string
+	// State is an opaque value bound to the request for CSRF protection
+	// (RFC 6749 §10.12); the authorization server returns it unchanged in
+	// the redirect.
+	// State is mandatory: use [GenerateOAuthState] to produce a fresh value.
+	State string
 
 	// CodeChallenge is the PKCE code challenge (RFC 7636).
 	CodeChallenge string
 
-	// CodeChallengeMethod must be "S256".
-	CodeChallengeMethod string
+	// CodeChallengeMethod must be [OAuthCodeChallengeMethodS256].
+	// Defaults to [OAuthCodeChallengeMethodS256] when empty.
+	CodeChallengeMethod OAuthCodeChallengeMethod
 
 	// Prompt is an optional space-separated list of prompt directives.
 	// Supported value: "consent".
@@ -85,10 +101,11 @@ type oauthClient struct {
 // NewOAuthClient creates a new OAuth client for the Dash0 API.
 // It accepts a subset of the [ClientOption] functions used by [NewClient];
 // only [WithApiUrl], [WithHTTPClient], [WithTimeout], and [WithUserAgent] are
-// supported. [WithApiUrl] is required. Passing any other option (notably
-// [WithAuthToken], retry/concurrency tuning, [WithTransport], or
-// [WithOtlpEndpoint]) returns an error so the caller does not silently rely on
-// a no-op.
+// supported.
+// [WithApiUrl] is required.
+// Passing any other option (notably [WithAuthToken], retry/concurrency
+// tuning, [WithTransport], or [WithOtlpEndpoint]) returns an error so the
+// caller does not silently rely on a no-op.
 //
 // Example:
 //
@@ -180,15 +197,42 @@ func (c *oauthClient) GetProtectedResourceMetadata(ctx context.Context) (*OAuthP
 
 // AuthorizeURL builds the OAuth 2.0 authorization URL without making an HTTP
 // request.
+//
+// State is mandatory: an empty value is rejected because it is the only CSRF
+// defense in the authorization-code-with-PKCE flow targeted by this client
+// (RFC 6749 §10.12).
+// ResponseType defaults to [OAuthResponseTypeCode] when empty; any other value
+// is rejected.
+// CodeChallengeMethod defaults to [OAuthCodeChallengeMethodS256] when empty;
+// any other value is rejected to prevent PKCE downgrade.
 func (c *oauthClient) AuthorizeURL(params *AuthorizeURLParams) (string, error) {
+	if params == nil {
+		return "", fmt.Errorf("dash0: AuthorizeURL requires non-nil params")
+	}
+	if params.State == "" {
+		return "", fmt.Errorf("dash0: AuthorizeURL requires a non-empty State for CSRF protection; use GenerateOAuthState to produce one")
+	}
+	responseType := params.ResponseType
+	if responseType == "" {
+		responseType = OAuthResponseTypeCode
+	} else if responseType != OAuthResponseTypeCode {
+		return "", fmt.Errorf("dash0: AuthorizeURL ResponseType must be %q, got %q", OAuthResponseTypeCode, responseType)
+	}
+	challengeMethod := params.CodeChallengeMethod
+	if challengeMethod == "" {
+		challengeMethod = OAuthCodeChallengeMethodS256
+	} else if challengeMethod != OAuthCodeChallengeMethodS256 {
+		return "", fmt.Errorf("dash0: AuthorizeURL CodeChallengeMethod must be %q, got %q", OAuthCodeChallengeMethodS256, challengeMethod)
+	}
+	state := params.State
 	genParams := &GetOauthAuthorizeParams{
-		ResponseType:        params.ResponseType,
+		ResponseType:        string(responseType),
 		ClientId:            params.ClientID,
 		RedirectUri:         params.RedirectURI,
 		Scope:               params.Scope,
-		State:               params.State,
+		State:               &state,
 		CodeChallenge:       params.CodeChallenge,
-		CodeChallengeMethod: params.CodeChallengeMethod,
+		CodeChallengeMethod: string(challengeMethod),
 		Prompt:              params.Prompt,
 	}
 	req, err := NewGetOauthAuthorizeRequest(c.apiURL, genParams)

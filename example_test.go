@@ -609,11 +609,12 @@ func ExampleOAuthClient_AuthorizeURL() {
 	}
 
 	authorizeURL, err := client.AuthorizeURL(&dash0.AuthorizeURLParams{
-		ResponseType:        "code",
+		ResponseType:        dash0.OAuthResponseTypeCode,
 		ClientID:            "my-client",
 		RedirectURI:         "http://localhost:8080/callback",
+		State:               "csrf-token",
 		CodeChallenge:       "challenge",
-		CodeChallengeMethod: "S256",
+		CodeChallengeMethod: dash0.OAuthCodeChallengeMethodS256,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -935,4 +936,27 @@ func ExampleDeeplinkURL() {
 func ExampleViewDeeplinkURL() {
 	fmt.Println(dash0.ViewDeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.Spans, "view-7", dash0.Ptr("production")))
 	// Output: https://app.dash0.com/goto/traces/explorer?dataset=production&view_id=view-7
+}
+
+// PKCE and OAuth state helpers
+
+func ExampleGeneratePKCEPair() {
+	pair, err := dash0.GeneratePKCEPair()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// The verifier is base64url(32 random bytes) without padding — 43 chars.
+	// The S256 challenge is base64url(SHA-256(verifier)) — also 43 chars.
+	fmt.Println(len(pair.Verifier), len(pair.Challenge))
+	// Output: 43 43
+}
+
+func ExampleGenerateOAuthState() {
+	state, err := dash0.GenerateOAuthState()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// base64url(32 random bytes) without padding — 43 chars.
+	fmt.Println(len(state))
+	// Output: 43
 }

@@ -2,6 +2,7 @@ package profiles
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -434,7 +435,7 @@ func TestRemoveProfile(t *testing.T) {
 		}
 	})
 
-	t.Run("removes profile even when revocation fails", func(t *testing.T) {
+	t.Run("removes profile but surfaces revocation failure via ErrRevocationFailed", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
@@ -455,10 +456,11 @@ func TestRemoveProfile(t *testing.T) {
 		setActiveProfile(t, dir, "oauth-profile")
 
 		err := svc.RemoveProfile("oauth-profile")
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
+		if !errors.Is(err, ErrRevocationFailed) {
+			t.Fatalf("expected ErrRevocationFailed, got: %v", err)
 		}
 
+		// The local removal still succeeded even though revocation failed.
 		profiles, err := svc.GetProfiles()
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)

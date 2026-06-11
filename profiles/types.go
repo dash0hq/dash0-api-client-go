@@ -25,11 +25,17 @@ type Configuration struct {
 	Dataset   string `json:"dataset,omitempty"`
 
 	// OAuth is set when the profile should authorize using an OAuth access token.
-	// Potentially refreshed when close to the expiry. The actual OAuth access token
-	// is located within the AuthToken field.
-	OAuth *OAuthState `json:"oAuth,omitempty"`
+	// Potentially refreshed when close to the expiry.
+	// The actual OAuth access token is located within the AuthToken field.
+	OAuth *OAuthState `json:"oauth,omitempty"`
 }
 
+// OAuthState carries the OAuth-specific state that must survive across CLI
+// invocations: the dynamic client identifier issued at registration (RFC 7591),
+// the long-lived refresh token used to mint new access tokens, and the access
+// token's expiry deadline.
+// The current access token lives in [Configuration.AuthToken]; OAuthState only
+// describes how to refresh it.
 type OAuthState struct {
 	ClientID     string    `json:"clientId,omitempty"`
 	RefreshToken string    `json:"refreshToken,omitempty"`

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 // OAuthClientsFileName is the file storing cached dynamic client registrations.
@@ -20,10 +21,15 @@ type OAuthClientRecord struct {
 }
 
 // OAuthClientStore caches dynamic client registrations keyed by canonical
-// API URL. The file is created mode 0600 because RegistrationAccessToken
-// (RFC 7592) is a long-lived management credential.
+// API URL.
+// The file is created mode 0600 because RegistrationAccessToken (RFC 7592)
+// is a long-lived management credential.
+//
+// In-process mutation (Get/Put/Delete) is serialized by mu; cross-process
+// coordination is not provided, mirroring the [Store] caveat.
 type OAuthClientStore struct {
 	configDir string
+	mu        sync.Mutex
 }
 
 // oauthClientsFile is the on-disk layout: clients keyed by canonical API URL.
@@ -78,17 +84,24 @@ func (s *OAuthClientStore) Get(apiURL string) (OAuthClientRecord, bool, error) {
 	if err != nil {
 		return OAuthClientRecord{}, false, err
 	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	f := s.load()
 	rec, ok := f.Clients[key]
 	return rec, ok, nil
 }
 
 // Put upserts a record for apiURL.
+// The read-modify-write sequence is guarded by an in-process mutex so two
+// concurrent registrations against different API URLs do not race and lose
+// each other's record.
 func (s *OAuthClientStore) Put(apiURL string, rec OAuthClientRecord) error {
 	key, err := CanonicalAPIURL(apiURL)
 	if err != nil {
 		return err
 	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	f := s.load()
 	f.Clients[key] = rec
 	return s.save(f)
@@ -100,6 +113,8 @@ func (s *OAuthClientStore) Delete(apiURL string) error {
 	if err != nil {
 		return err
 	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	f := s.load()
 	if _, ok := f.Clients[key]; !ok {
 		return nil
@@ -108,8 +123,9 @@ func (s *OAuthClientStore) Delete(apiURL string) error {
 	return s.save(f)
 }
 
-// load reads the on-disk file. A missing, unreadable, or corrupt file
-// yields an empty, ready-to-mutate result -- the next save overwrites cleanly.
+// load reads the on-disk file.
+// A missing, unreadable, or corrupt file yields an empty, ready-to-mutate
+// result — the next save overwrites cleanly.
 func (s *OAuthClientStore) load() oauthClientsFile {
 	empty := oauthClientsFile{Clients: map[string]OAuthClientRecord{}}
 	data, err := os.ReadFile(filepath.Join(s.configDir, OAuthClientsFileName))
@@ -126,19 +142,16 @@ func (s *OAuthClientStore) load() oauthClientsFile {
 	return f
 }
 
-// save writes the file atomically-enough for a single-user CLI cache:
-// directory created 0700 if missing, file written 0600.
+// save writes the file via a temp file + os.Rename so a crash mid-write
+// leaves either the previous contents intact or the new contents fully
+// written.
+// The directory is created 0700 and the file 0600 to protect the long-lived
+// RegistrationAccessToken (RFC 7592).
 func (s *OAuthClientStore) save(f oauthClientsFile) error {
-	if err := os.MkdirAll(s.configDir, 0700); err != nil {
-		return fmt.Errorf("failed to create config directory %s: %w", s.configDir, err)
-	}
 	data, err := json.MarshalIndent(f, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal oauth clients: %w", err)
 	}
 	path := filepath.Join(s.configDir, OAuthClientsFileName)
-	if err := os.WriteFile(path, data, 0600); err != nil {
-		return fmt.Errorf("failed to write oauth clients file %s: %w", path, err)
-	}
-	return nil
+	return writeFileAtomic(s.configDir, path, data)
 }

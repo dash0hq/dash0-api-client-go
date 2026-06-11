@@ -229,6 +229,84 @@ func TestMyService(t *testing.T) {
 }
 ```
 
+## OAuth 2.0 authentication
+
+The library provides a separate `OAuthClient` for the public OAuth endpoints (no API token required) and a `profiles` package that persists OAuth state to disk and transparently refreshes access tokens.
+
+The CLI orchestration (PKCE code generation, browser redirect, callback server) lives in the Dash0 CLI repository; this library provides the API surface and state management it builds on.
+
+End-to-end flow for a `dash0 login`-style command:
+
+```go
+// 1. Generate PKCE parameters and CSRF state.
+pair, _ := dash0.GeneratePKCEPair()
+state, _ := dash0.GenerateOAuthState()
+
+// 2. Discover or register a client (omitted), then build the authorize URL.
+oauthClient, _ := dash0.NewOAuthClient(dash0.WithApiUrl(apiURL))
+defer oauthClient.Close(context.Background())
+
+authorizeURL, _ := oauthClient.AuthorizeURL(&dash0.AuthorizeURLParams{
+    ClientID:      clientID,
+    RedirectURI:   "http://localhost:8080/callback",
+    State:         state,
+    CodeChallenge: pair.Challenge,
+    // ResponseType defaults to dash0.OAuthResponseTypeCode.
+    // CodeChallengeMethod defaults to dash0.OAuthCodeChallengeMethodS256.
+})
+
+// 3. After the user consents and the callback delivers the authorization code:
+resp, _ := oauthClient.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+    GrantType:    dash0.OAuthGrantTypeAuthorizationCode,
+    Code:         dash0.Ptr(authorizationCode),
+    RedirectUri:  dash0.Ptr("http://localhost:8080/callback"),
+    CodeVerifier: dash0.Ptr(pair.Verifier),
+    ClientId:     dash0.Ptr(clientID),
+})
+
+// 4. Persist the OAuth state alongside the active access token.
+store, _ := profiles.NewStore()
+_ = store.AddProfile(profiles.Profile{
+    Name: "production",
+    Configuration: profiles.Configuration{
+        ApiUrl:    apiURL,
+        AuthToken: resp.AccessToken,
+        OAuth: &profiles.OAuthState{
+            ClientID:     clientID,
+            RefreshToken: *resp.RefreshToken,
+            ExpiresAt:    time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second),
+        },
+    },
+})
+```
+
+On subsequent invocations, `Store.GetActiveConfigurationContext(ctx)` returns the active configuration and transparently refreshes the access token when it is within 5 minutes of expiry.
+A token that the authorization server rejects (`invalid_grant`) is cleared from disk and surfaces as `profiles.ErrReauthenticationRequired`, so the caller can trigger a fresh interactive login without retrying the dead credential.
+
+### Files written under the config directory
+
+The `profiles` package stores state in the directory resolved by `WithConfigDir` > `DASH0_CONFIG_DIR` > `~/.dash0/`:
+
+| File | Purpose | Mode |
+|------|---------|------|
+| `profiles.json` | Named profiles, including OAuth refresh tokens. | 0600 |
+| `activeProfile` | Name of the currently active profile. | 0600 |
+| `oauth-clients.json` | Dynamic client registrations (RFC 7591) keyed by canonical API URL, including the RFC 7592 `RegistrationAccessToken`. | 0600 |
+| `.profile-lock` | Sentinel file used for cross-process advisory locking (see below). | 0600 |
+
+The directory itself is created with mode 0700.
+All file writes go through a temp-file + `os.Rename` to avoid leaving a half-written file if the process crashes mid-write.
+
+### Concurrency model
+
+The `profiles.Store` serializes mutations of `profiles.json` and `activeProfile` at two layers:
+
+* In-process: an internal mutex guards every read-modify-write sequence (`AddProfile`, `UpdateProfile`, `RemoveProfile`, `SetActiveProfile`, and the transparent OAuth refresh inside `GetActiveConfigurationContext`).
+* Cross-process: an OS-level advisory lock on `.profile-lock`, backed by [github.com/gofrs/flock](https://github.com/gofrs/flock), prevents two CLI invocations sharing a config directory from refreshing or mutating profiles concurrently.
+
+Without the cross-process lock, two CLI invocations could both refresh the same profile in the 5-minute pre-expiry window, both rotate the server-side refresh-token family, and the loser would 401 on the next API call.
+The lock makes the rotation deterministic: the second invocation waits, re-reads the freshly persisted tokens, and uses them instead of refreshing again with a stale refresh token.
+
 ## License
 
 See [LICENSE](LICENSE) for details.

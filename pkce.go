@@ -15,8 +15,9 @@ type PKCEPair struct {
 	Challenge string // pass to AuthorizeURL as CodeChallenge with method S256
 }
 
-// GeneratePKCEPair returns a fresh verifier and its S256 challenge per RFC 7636.
-// The verifier is base64url(32 random bytes) -- 43 characters, no padding.
+// GeneratePKCEPair returns a fresh verifier and its S256 challenge per
+// RFC 7636.
+// The verifier is base64url(32 random bytes) — 43 characters, no padding.
 func GeneratePKCEPair() (PKCEPair, error) {
 	buf := make([]byte, 32)
 	if _, err := rand.Read(buf); err != nil {
@@ -29,7 +30,8 @@ func GeneratePKCEPair() (PKCEPair, error) {
 }
 
 // GenerateOAuthState returns a fresh opaque value suitable for the OAuth
-// `state` parameter (RFC 6749 §10.12). 43 base64url characters, no padding.
+// `state` parameter (RFC 6749 §10.12).
+// 43 base64url characters, no padding.
 func GenerateOAuthState() (string, error) {
 	buf := make([]byte, 32)
 	if _, err := rand.Read(buf); err != nil {

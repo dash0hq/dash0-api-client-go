@@ -106,60 +106,61 @@ func newAPIErrorWithBody(resp *http.Response, body []byte) *APIError {
 	return apiErr
 }
 
+// statusCodeOf extracts the HTTP status code from either an [*APIError] or an
+// [*OAuthTokenError], following the error chain via [errors.As].
+// Returns (0, false) when neither type is in the chain.
+func statusCodeOf(err error) (int, bool) {
+	var apiErr *APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.StatusCode, true
+	}
+	var oauthErr *OAuthTokenError
+	if errors.As(err, &oauthErr) {
+		return oauthErr.StatusCode, true
+	}
+	return 0, false
+}
+
 // IsNotFound returns true if the error is a 404 Not Found.
 func IsNotFound(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == http.StatusNotFound
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code == http.StatusNotFound
 }
 
 // IsUnauthorized returns true if the error is a 401 Unauthorized.
 func IsUnauthorized(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == http.StatusUnauthorized
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code == http.StatusUnauthorized
 }
 
 // IsForbidden returns true if the error is a 403 Forbidden.
 func IsForbidden(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == http.StatusForbidden
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code == http.StatusForbidden
 }
 
 // IsRateLimited returns true if the error is a 429 Too Many Requests.
 func IsRateLimited(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == http.StatusTooManyRequests
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code == http.StatusTooManyRequests
 }
 
 // IsServerError returns true if the error is a 5xx server error.
 func IsServerError(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode >= 500 && apiErr.StatusCode < 600
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code >= 500 && code < 600
 }
 
 // IsBadRequest returns true if the error is a 400 Bad Request.
 func IsBadRequest(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == http.StatusBadRequest
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code == http.StatusBadRequest
 }
 
 // IsConflict returns true if the error is a 409 Conflict.
 func IsConflict(err error) bool {
-	if apiErr, ok := err.(*APIError); ok {
-		return apiErr.StatusCode == http.StatusConflict
-	}
-	return false
+	code, ok := statusCodeOf(err)
+	return ok && code == http.StatusConflict
 }
 
 // OAuthTokenError represents an OAuth 2.0 token endpoint error response
@@ -184,17 +185,39 @@ type OAuthTokenError struct {
 }
 
 // Error implements the error interface.
+// The format is "dash0 oauth error: <code>[: <description>] (status: <code>)[ (see: <uri>)]",
+// preserving the RFC 6749 §5.2 error_uri field when the IdP provides one.
 func (e *OAuthTokenError) Error() string {
+	var msg string
 	if e.Description != "" {
-		return fmt.Sprintf("dash0 oauth error: %s: %s (status: %d)",
+		msg = fmt.Sprintf("dash0 oauth error: %s: %s (status: %d)",
 			e.Code, e.Description, e.StatusCode)
+	} else {
+		msg = fmt.Sprintf("dash0 oauth error: %s (status: %d)",
+			e.Code, e.StatusCode)
 	}
-	return fmt.Sprintf("dash0 oauth error: %s (status: %d)",
-		e.Code, e.StatusCode)
+	if e.URI != "" {
+		msg += fmt.Sprintf(" (see: %s)", e.URI)
+	}
+	return msg
 }
 
 // IsOAuthTokenError returns true if the error is an OAuthTokenError.
 func IsOAuthTokenError(err error) bool {
 	var oauthErr *OAuthTokenError
 	return errors.As(err, &oauthErr)
+}
+
+// IsOAuthInvalidGrant returns true if the error is an [*OAuthTokenError] whose
+// Code is "invalid_grant".
+// This is the OAuth 2.0 signal that the refresh token is no longer accepted by
+// the authorization server (rotated, revoked, expired, or the user's session
+// was terminated) and the caller must initiate a fresh interactive login.
+// See RFC 6749 §5.2.
+func IsOAuthInvalidGrant(err error) bool {
+	var oauthErr *OAuthTokenError
+	if !errors.As(err, &oauthErr) {
+		return false
+	}
+	return oauthErr.Code == "invalid_grant"
 }

@@ -355,13 +355,13 @@ func TestOAuthClient_AuthorizeURL(t *testing.T) {
 		state := "random-state"
 		prompt := "consent"
 		result, err := client.AuthorizeURL(&AuthorizeURLParams{
-			ResponseType:        "code",
+			ResponseType:        OAuthResponseTypeCode,
 			ClientID:            "my-client-id",
 			RedirectURI:         "http://localhost:8080/callback",
 			Scope:               &scope,
-			State:               &state,
+			State:               state,
 			CodeChallenge:       "abc123challenge",
-			CodeChallengeMethod: "S256",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
 			Prompt:              &prompt,
 		})
 		if err != nil {
@@ -412,11 +412,12 @@ func TestOAuthClient_AuthorizeURL(t *testing.T) {
 
 	t.Run("builds URL with required parameters only", func(t *testing.T) {
 		result, err := client.AuthorizeURL(&AuthorizeURLParams{
-			ResponseType:        "code",
+			ResponseType:        OAuthResponseTypeCode,
 			ClientID:            "client-1",
 			RedirectURI:         "http://localhost/cb",
+			State:               "csrf-state",
 			CodeChallenge:       "challenge",
-			CodeChallengeMethod: "S256",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
 		})
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
@@ -431,11 +432,55 @@ func TestOAuthClient_AuthorizeURL(t *testing.T) {
 		if got := query.Get("scope"); got != "" {
 			t.Errorf("scope should be absent, got %q", got)
 		}
-		if got := query.Get("state"); got != "" {
-			t.Errorf("state should be absent, got %q", got)
+		if got := query.Get("state"); got != "csrf-state" {
+			t.Errorf("state = %q, want %q", got, "csrf-state")
 		}
 		if got := query.Get("prompt"); got != "" {
 			t.Errorf("prompt should be absent, got %q", got)
+		}
+	})
+
+	t.Run("rejects empty State", func(t *testing.T) {
+		_, err := client.AuthorizeURL(&AuthorizeURLParams{
+			ResponseType:        OAuthResponseTypeCode,
+			ClientID:            "client-1",
+			RedirectURI:         "http://localhost/cb",
+			CodeChallenge:       "challenge",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
+		})
+		if err == nil {
+			t.Fatal("expected error for empty State, got nil")
+		}
+		if !strings.Contains(err.Error(), "State") {
+			t.Errorf("error should mention State, got: %v", err)
+		}
+	})
+
+	t.Run("rejects plain CodeChallengeMethod", func(t *testing.T) {
+		_, err := client.AuthorizeURL(&AuthorizeURLParams{
+			ResponseType:        OAuthResponseTypeCode,
+			ClientID:            "client-1",
+			RedirectURI:         "http://localhost/cb",
+			State:               "csrf-state",
+			CodeChallenge:       "challenge",
+			CodeChallengeMethod: OAuthCodeChallengeMethod("plain"),
+		})
+		if err == nil {
+			t.Fatal("expected error for plain CodeChallengeMethod, got nil")
+		}
+	})
+
+	t.Run("rejects non-code ResponseType", func(t *testing.T) {
+		_, err := client.AuthorizeURL(&AuthorizeURLParams{
+			ResponseType:        OAuthResponseType("token"),
+			ClientID:            "client-1",
+			RedirectURI:         "http://localhost/cb",
+			State:               "csrf-state",
+			CodeChallenge:       "challenge",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
+		})
+		if err == nil {
+			t.Fatal("expected error for non-code ResponseType, got nil")
 		}
 	})
 }
