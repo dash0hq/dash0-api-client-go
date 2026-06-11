@@ -97,7 +97,8 @@ func (s *OAuthClientStore) Put(apiURL string, rec OAuthClientRecord) error {
 	return s.save(f)
 }
 
-// Delete removes the record for apiURL. A miss is a no-op.
+// Delete removes the record for apiURL.
+// A miss is a no-op.
 func (s *OAuthClientStore) Delete(apiURL string) error {
 	key, err := CanonicalAPIURL(apiURL)
 	if err != nil {

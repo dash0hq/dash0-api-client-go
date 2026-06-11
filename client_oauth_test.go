@@ -440,6 +440,54 @@ func TestOAuthClient_AuthorizeURL(t *testing.T) {
 		}
 	})
 
+	t.Run("rejects empty ClientID", func(t *testing.T) {
+		_, err := client.AuthorizeURL(&AuthorizeURLParams{
+			ResponseType:        OAuthResponseTypeCode,
+			RedirectURI:         "http://localhost/cb",
+			State:               "csrf-state",
+			CodeChallenge:       "challenge",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
+		})
+		if err == nil {
+			t.Fatal("expected error for empty ClientID, got nil")
+		}
+		if !strings.Contains(err.Error(), "ClientID") {
+			t.Errorf("error should mention ClientID, got: %v", err)
+		}
+	})
+
+	t.Run("rejects empty RedirectURI", func(t *testing.T) {
+		_, err := client.AuthorizeURL(&AuthorizeURLParams{
+			ResponseType:        OAuthResponseTypeCode,
+			ClientID:            "client-1",
+			State:               "csrf-state",
+			CodeChallenge:       "challenge",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
+		})
+		if err == nil {
+			t.Fatal("expected error for empty RedirectURI, got nil")
+		}
+		if !strings.Contains(err.Error(), "RedirectURI") {
+			t.Errorf("error should mention RedirectURI, got: %v", err)
+		}
+	})
+
+	t.Run("rejects empty CodeChallenge", func(t *testing.T) {
+		_, err := client.AuthorizeURL(&AuthorizeURLParams{
+			ResponseType:        OAuthResponseTypeCode,
+			ClientID:            "client-1",
+			RedirectURI:         "http://localhost/cb",
+			State:               "csrf-state",
+			CodeChallengeMethod: OAuthCodeChallengeMethodS256,
+		})
+		if err == nil {
+			t.Fatal("expected error for empty CodeChallenge, got nil")
+		}
+		if !strings.Contains(err.Error(), "CodeChallenge") {
+			t.Errorf("error should mention CodeChallenge, got: %v", err)
+		}
+	})
+
 	t.Run("rejects empty State", func(t *testing.T) {
 		_, err := client.AuthorizeURL(&AuthorizeURLParams{
 			ResponseType:        OAuthResponseTypeCode,
@@ -899,6 +947,26 @@ func TestOAuthClient_RevokeToken(t *testing.T) {
 		}
 		if !IsServerError(err) {
 			t.Errorf("expected server error, got: %v", err)
+		}
+	})
+
+	t.Run("204 No Content treated as success", func(t *testing.T) {
+		// RFC 7009 §2.2 permits 204 in some implementations.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNoContent)
+		}))
+		defer server.Close()
+
+		client, err := NewOAuthClient(WithApiUrl(server.URL))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		err = client.RevokeToken(context.Background(), &OAuthRevocationRequest{
+			Token: "token-to-revoke",
+		})
+		if err != nil {
+			t.Errorf("expected nil error for 204, got: %v", err)
 		}
 	})
 }

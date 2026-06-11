@@ -209,8 +209,17 @@ func (c *oauthClient) AuthorizeURL(params *AuthorizeURLParams) (string, error) {
 	if params == nil {
 		return "", fmt.Errorf("dash0: AuthorizeURL requires non-nil params")
 	}
+	if params.ClientID == "" {
+		return "", fmt.Errorf("dash0: AuthorizeURL requires a non-empty ClientID")
+	}
+	if params.RedirectURI == "" {
+		return "", fmt.Errorf("dash0: AuthorizeURL requires a non-empty RedirectURI")
+	}
 	if params.State == "" {
 		return "", fmt.Errorf("dash0: AuthorizeURL requires a non-empty State for CSRF protection; use GenerateOAuthState to produce one")
+	}
+	if params.CodeChallenge == "" {
+		return "", fmt.Errorf("dash0: AuthorizeURL requires a non-empty CodeChallenge; use GeneratePKCEPair to produce one")
 	}
 	responseType := params.ResponseType
 	if responseType == "" {
@@ -288,6 +297,8 @@ func (c *oauthClient) ExchangeToken(ctx context.Context, request *OAuthTokenRequ
 }
 
 // RevokeToken revokes an access or refresh token.
+// Per RFC 7009 §2.2 the authorization server returns 200 on success; some
+// servers return 204 instead. Any 2xx status is treated as success.
 func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationRequest) error {
 	if request == nil {
 		return fmt.Errorf("dash0: RevokeToken requires non-nil request")
@@ -296,7 +307,7 @@ func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationR
 	if err != nil {
 		return fmt.Errorf("dash0: revoke token failed: %w", err)
 	}
-	if resp.StatusCode() != http.StatusOK {
+	if status := resp.StatusCode(); status < 200 || status >= 300 {
 		return newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
 	return nil

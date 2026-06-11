@@ -4,8 +4,62 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+// newTestStore returns a fresh Store rooted at t.TempDir().
+func newTestStore(t *testing.T) (*Store, string) {
+	t.Helper()
+	dir := t.TempDir()
+	svc, err := NewStore(WithConfigDir(dir))
+	if err != nil {
+		t.Fatalf("Failed to create store: %v", err)
+	}
+	return svc, dir
+}
+
+// createTestProfilesFile seeds the profiles file in configDir.
+func createTestProfilesFile(t *testing.T, configDir string, profiles []Profile) {
+	t.Helper()
+	profilesFile := ProfilesFile{Profiles: profiles}
+	data, err := json.MarshalIndent(profilesFile, "", "  ")
+	if err != nil {
+		t.Fatalf("Failed to marshal profiles: %v", err)
+	}
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		t.Fatalf("Failed to create directory: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(configDir, ProfilesFileName), data, 0644); err != nil {
+		t.Fatalf("Failed to write profiles file: %v", err)
+	}
+}
+
+// setActiveProfile writes the active-profile pointer file directly, bypassing
+// validation in setActiveProfileLocked. Useful for tests that need to seed a
+// specific (possibly stale) pointer.
+func setActiveProfile(t *testing.T, configDir, profileName string) {
+	t.Helper()
+	if err := os.WriteFile(filepath.Join(configDir, ActiveProfileFileName), []byte(profileName), 0644); err != nil {
+		t.Fatalf("Failed to write active profile: %v", err)
+	}
+}
+
+// parsePostForm parses an HTTP request body as a urlencoded form and returns
+// the first value for each key as a flat map.
+func parsePostForm(r *http.Request) (map[string]string, error) {
+	if err := r.ParseForm(); err != nil {
+		return nil, err
+	}
+	m := make(map[string]string, len(r.PostForm))
+	for k, v := range r.PostForm {
+		if len(v) > 0 {
+			m[k] = v[0]
+		}
+	}
+	return m, nil
+}
 
 // tokenServerResponse configures the mock token endpoint response.
 type tokenServerResponse struct {
@@ -26,13 +80,7 @@ func newTokenServer(t *testing.T, resp tokenServerResponse, lastRequest *map[str
 			return
 		}
 		if lastRequest != nil {
-			if err := r.ParseForm(); err == nil {
-				m := make(map[string]string, len(r.PostForm))
-				for k, v := range r.PostForm {
-					if len(v) > 0 {
-						m[k] = v[0]
-					}
-				}
+			if m, err := parsePostForm(r); err == nil {
 				*lastRequest = m
 			}
 		}
@@ -61,13 +109,7 @@ func newRevokeServer(t *testing.T, lastRequest *map[string]string) *httptest.Ser
 			return
 		}
 		if lastRequest != nil {
-			if err := r.ParseForm(); err == nil {
-				m := make(map[string]string, len(r.PostForm))
-				for k, v := range r.PostForm {
-					if len(v) > 0 {
-						m[k] = v[0]
-					}
-				}
+			if m, err := parsePostForm(r); err == nil {
 				*lastRequest = m
 			}
 		}

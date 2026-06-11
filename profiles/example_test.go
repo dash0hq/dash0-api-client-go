@@ -25,7 +25,10 @@ func ExampleNewStore() {
 }
 
 func ExampleNewStore_withConfigDir() {
-	svc, err := profiles.NewStore(profiles.WithConfigDir("/tmp/dash0-test"))
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	svc, err := profiles.NewStore(profiles.WithConfigDir(configDir))
 	if err != nil {
 		fmt.Println("error:", err)
 		return
@@ -177,7 +180,10 @@ func ExampleConfiguration_ClientOptions() {
 }
 
 func ExampleNewOAuthClientStore() {
-	store, err := profiles.NewOAuthClientStore(profiles.WithConfigDir("/tmp/dash0-example-clients"))
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, err := profiles.NewOAuthClientStore(profiles.WithConfigDir(configDir))
 	if err != nil {
 		fmt.Println("error:", err)
 		return
@@ -190,6 +196,25 @@ func ExampleNewOAuthClientStore() {
 	fmt.Println("found:", found)
 	// Output:
 	// found: false
+}
+
+func ExampleOAuthClientStore_Get() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewOAuthClientStore(profiles.WithConfigDir(configDir))
+	_ = store.Put("https://api.eu-west-1.aws.dash0.com", profiles.OAuthClientRecord{
+		ClientID:    "client-123",
+		RedirectURI: "http://localhost:8080/callback",
+	})
+
+	rec, found, err := store.Get("https://api.eu-west-1.aws.dash0.com")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(found, rec.ClientID)
+	// Output: true client-123
 }
 
 func ExampleCanonicalAPIURL() {
@@ -270,6 +295,28 @@ func ExampleStore_GetActiveConfigurationContext() {
 
 	// Output:
 	// https://api.eu-west-1.aws.dash0.com
+}
+
+func ExampleStore_RemoveProfile() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewStore(profiles.WithConfigDir(configDir))
+	_ = store.AddProfile(profiles.Profile{
+		Name: "dev",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_dev-token",
+		},
+	})
+
+	if err := store.RemoveProfile("dev"); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	all, _ := store.GetProfiles()
+	fmt.Println("remaining:", len(all))
+	// Output: remaining: 0
 }
 
 func ExampleStore_RemoveProfileContext() {

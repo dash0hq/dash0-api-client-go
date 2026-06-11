@@ -331,10 +331,18 @@ func (s *Store) GetProfiles() ([]Profile, error) {
 //
 // The read-modify-write sequence is serialized cross-process via the
 // .profile-lock sentinel; see [Store] for the locking model.
+// Lock acquisition uses [context.Background]; callers that need to bound the
+// wait should use [Store.AddProfileContext].
 func (s *Store) AddProfile(profile Profile) error {
+	return s.AddProfileContext(context.Background(), profile)
+}
+
+// AddProfileContext is the context-aware variant of [Store.AddProfile].
+// The ctx bounds the wait to acquire the cross-process [.profile-lock].
+func (s *Store) AddProfileContext(ctx context.Context, profile Profile) error {
 	s.refreshMu.Lock()
 	defer s.refreshMu.Unlock()
-	release, err := acquireProfileLock(context.Background(), s.configDir)
+	release, err := acquireProfileLock(ctx, s.configDir)
 	if err != nil {
 		return err
 	}
@@ -376,10 +384,18 @@ func (s *Store) AddProfile(profile Profile) error {
 //
 // The read-modify-write sequence is serialized cross-process via the
 // .profile-lock sentinel; see [Store] for the locking model.
+// Lock acquisition uses [context.Background]; callers that need to bound the
+// wait should use [Store.UpdateProfileContext].
 func (s *Store) UpdateProfile(name string, updateFn func(*Configuration)) error {
+	return s.UpdateProfileContext(context.Background(), name, updateFn)
+}
+
+// UpdateProfileContext is the context-aware variant of [Store.UpdateProfile].
+// The ctx bounds the wait to acquire the cross-process [.profile-lock].
+func (s *Store) UpdateProfileContext(ctx context.Context, name string, updateFn func(*Configuration)) error {
 	s.refreshMu.Lock()
 	defer s.refreshMu.Unlock()
-	release, err := acquireProfileLock(context.Background(), s.configDir)
+	release, err := acquireProfileLock(ctx, s.configDir)
 	if err != nil {
 		return err
 	}
@@ -498,10 +514,18 @@ func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) er
 //
 // The change is serialized cross-process via the .profile-lock sentinel; see
 // [Store] for the locking model.
+// Lock acquisition uses [context.Background]; callers that need to bound the
+// wait should use [Store.SetActiveProfileContext].
 func (s *Store) SetActiveProfile(profileName string) error {
+	return s.SetActiveProfileContext(context.Background(), profileName)
+}
+
+// SetActiveProfileContext is the context-aware variant of [Store.SetActiveProfile].
+// The ctx bounds the wait to acquire the cross-process [.profile-lock].
+func (s *Store) SetActiveProfileContext(ctx context.Context, profileName string) error {
 	s.refreshMu.Lock()
 	defer s.refreshMu.Unlock()
-	release, err := acquireProfileLock(context.Background(), s.configDir)
+	release, err := acquireProfileLock(ctx, s.configDir)
 	if err != nil {
 		return err
 	}

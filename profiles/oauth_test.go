@@ -208,6 +208,47 @@ func TestRefreshOAuthToken(t *testing.T) {
 		if ps[0].Configuration.OAuth != nil {
 			t.Errorf("expected persisted OAuth cleared after invalid_grant, got %+v", ps[0].Configuration.OAuth)
 		}
+		if ps[0].Configuration.AuthToken != "" {
+			t.Errorf("expected persisted AuthToken cleared after invalid_grant, got %q", ps[0].Configuration.AuthToken)
+		}
+	})
+
+	t.Run("persistedOAuth nil cleared concurrently", func(t *testing.T) {
+		// Snapshot says OAuth state is present; another process clears it
+		// between the snapshot read and the post-lock re-read. The function
+		// should adopt the cleared state and return nil without making any
+		// HTTP call.
+		store, dir := newTestStore(t)
+		persisted := Profile{
+			Name: "test",
+			Configuration: Configuration{
+				ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+				AuthToken: "dash0_at_persisted-token",
+				// OAuth deliberately nil on the persisted profile.
+			},
+		}
+		createTestProfilesFile(t, dir, []Profile{persisted})
+
+		// Caller snapshot still has OAuth (as if the snapshot was taken
+		// before the concurrent clear).
+		cfg := &Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "dash0_at_caller-token",
+			OAuth: &OAuthState{
+				ClientID:     "cid",
+				RefreshToken: "rt",
+				ExpiresAt:    time.Now().Add(-1 * time.Minute),
+			},
+		}
+		if err := refreshOAuthToken(context.Background(), store, "test", cfg); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OAuth != nil {
+			t.Errorf("expected cfg.OAuth cleared to match disk, got %+v", cfg.OAuth)
+		}
+		if cfg.AuthToken != "dash0_at_persisted-token" {
+			t.Errorf("expected cfg.AuthToken adopted from disk, got %q", cfg.AuthToken)
+		}
 	})
 
 	t.Run("missing API URL", func(t *testing.T) {
@@ -720,6 +761,32 @@ func TestExchangeRefreshTokenWithRetry(t *testing.T) {
 		}
 		if got := hits.Load(); got != 1 {
 			t.Errorf("expected 1 request (no retry on invalid_grant), got %d", got)
+		}
+	})
+
+	t.Run("all retries exhausted returns last transient error", func(t *testing.T) {
+		var hits atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			hits.Add(1)
+			w.WriteHeader(http.StatusBadGateway)
+		}))
+		defer server.Close()
+
+		oauthClient, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+		if err != nil {
+			t.Fatalf("create client: %v", err)
+		}
+		defer func() { _ = oauthClient.Close(context.Background()) }()
+
+		_, err = exchangeRefreshTokenWithRetry(context.Background(), oauthClient, "cid", "rt")
+		if err == nil {
+			t.Fatal("expected error after exhausting retries, got nil")
+		}
+		if !dash0.IsServerError(err) {
+			t.Errorf("expected server error, got: %v", err)
+		}
+		if got := hits.Load(); int(got) != OAuthRefreshTokenEndpointRetries+1 {
+			t.Errorf("expected %d attempts (initial + retries), got %d", OAuthRefreshTokenEndpointRetries+1, got)
 		}
 	})
 

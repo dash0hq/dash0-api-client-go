@@ -13,38 +13,6 @@ import (
 	"time"
 )
 
-func createTestProfilesFile(t *testing.T, configDir string, profiles []Profile) {
-	t.Helper()
-	profilesFile := ProfilesFile{Profiles: profiles}
-	data, err := json.MarshalIndent(profilesFile, "", "  ")
-	if err != nil {
-		t.Fatalf("Failed to marshal profiles: %v", err)
-	}
-	if err := os.MkdirAll(configDir, 0755); err != nil {
-		t.Fatalf("Failed to create directory: %v", err)
-	}
-	if err := os.WriteFile(filepath.Join(configDir, ProfilesFileName), data, 0644); err != nil {
-		t.Fatalf("Failed to write profiles file: %v", err)
-	}
-}
-
-func setActiveProfile(t *testing.T, configDir, profileName string) {
-	t.Helper()
-	if err := os.WriteFile(filepath.Join(configDir, ActiveProfileFileName), []byte(profileName), 0644); err != nil {
-		t.Fatalf("Failed to write active profile: %v", err)
-	}
-}
-
-func newTestStore(t *testing.T) (*Store, string) {
-	t.Helper()
-	dir := t.TempDir()
-	svc, err := NewStore(WithConfigDir(dir))
-	if err != nil {
-		t.Fatalf("Failed to create store: %v", err)
-	}
-	return svc, dir
-}
-
 func TestNewStore(t *testing.T) {
 	t.Run("with WithConfigDir", func(t *testing.T) {
 		dir := t.TempDir()
