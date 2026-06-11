@@ -52,12 +52,17 @@ type oauthClientsFile struct {
 
 // NewOAuthClientStore mirrors [NewStore]: explicit [WithConfigDir] >
 // DASH0_CONFIG_DIR > ~/.dash0/.
+// Same best-effort hygiene as [NewStore]: best-effort dir-mode tightening and
+// stale-tempfile cleanup when the directory already exists.
 func NewOAuthClientStore(opts ...StoreOption) (*OAuthClientStore, error) {
 	configDir, err := resolveConfigDir(opts)
 	if err != nil {
 		return nil, err
 	}
-	cleanupStaleTempFiles(configDir)
+	if _, err := os.Stat(configDir); err == nil {
+		_ = ensureConfigDirMode(configDir)
+		cleanupStaleTempFiles(configDir)
+	}
 	return &OAuthClientStore{configDir: configDir}, nil
 }
 
@@ -81,11 +86,18 @@ func CanonicalAPIURL(raw string) (string, error) {
 	// Strip userinfo. Credentials in an API URL would otherwise be persisted
 	// verbatim into the on-disk cache key, leaking them into oauth-clients.json.
 	u.User = nil
-	hostname := strings.ToLower(u.Hostname())
+	// u.Hostname() strips IPv6 brackets, so re-bracket when the host contains
+	// a colon (a literal IPv6 address; DNS hostnames cannot contain colons).
+	// Without this, a URL like https://[::1]:8443/v1 would canonicalize to
+	// https://::1:8443/v1, which the next url.Parse round-trip cannot recover.
+	host := strings.ToLower(u.Hostname())
+	if strings.Contains(host, ":") {
+		host = "[" + host + "]"
+	}
 	if port := u.Port(); port != "" && !isDefaultPort(u.Scheme, port) {
-		u.Host = hostname + ":" + port
+		u.Host = host + ":" + port
 	} else {
-		u.Host = hostname
+		u.Host = host
 	}
 	if u.Path != "" {
 		// path.Clean collapses ".", "..", and duplicate "/" segments. We also
@@ -147,7 +159,10 @@ func (s *OAuthClientStore) Put(apiURL string, rec OAuthClientRecord) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.withFileLock(context.Background(), func() error {
-		f, _ := s.load(true)
+		f, err := s.load(true)
+		if err != nil {
+			return err
+		}
 		f.Clients[key] = rec
 		return s.save(f)
 	})
@@ -164,7 +179,10 @@ func (s *OAuthClientStore) Delete(apiURL string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.withFileLock(context.Background(), func() error {
-		f, _ := s.load(true)
+		f, err := s.load(true)
+		if err != nil {
+			return err
+		}
 		if _, ok := f.Clients[key]; !ok {
 			return nil
 		}

@@ -405,6 +405,32 @@ func TestIsOAuthTokenError(t *testing.T) {
 	})
 }
 
+func TestIsOAuthTerminalError(t *testing.T) {
+	cases := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{"invalid_grant", &OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}, true},
+		{"invalid_client", &OAuthTokenError{StatusCode: 400, Code: "invalid_client"}, true},
+		{"unauthorized_client", &OAuthTokenError{StatusCode: 400, Code: "unauthorized_client"}, true},
+		{"invalid_request (non-terminal)", &OAuthTokenError{StatusCode: 400, Code: "invalid_request"}, false},
+		{"invalid_scope (non-terminal)", &OAuthTokenError{StatusCode: 400, Code: "invalid_scope"}, false},
+		{"unsupported_grant_type (non-terminal)", &OAuthTokenError{StatusCode: 400, Code: "unsupported_grant_type"}, false},
+		{"wrapped invalid_client", fmt.Errorf("wrap: %w", &OAuthTokenError{StatusCode: 400, Code: "invalid_client"}), true},
+		{"5xx APIError", &APIError{StatusCode: 503}, false},
+		{"plain error", errors.New("boom"), false},
+		{"nil error", nil, false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := IsOAuthTerminalError(c.err); got != c.want {
+				t.Errorf("IsOAuthTerminalError = %v, want %v", got, c.want)
+			}
+		})
+	}
+}
+
 func TestIsOAuthInvalidGrant(t *testing.T) {
 	t.Run("returns true for invalid_grant", func(t *testing.T) {
 		err := &OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}

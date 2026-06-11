@@ -265,6 +265,12 @@ func TestCanonicalAPIURL(t *testing.T) {
 		// path.Clean collapses "." and "..".
 		{"https://api.example.com/v1/./", "https://api.example.com/v1"},
 		{"https://api.example.com/a/b/../v1/", "https://api.example.com/a/v1"},
+		// IPv6 hosts must keep their brackets so a subsequent url.Parse of
+		// the canonical form parses back to the same host:port.
+		{"https://[::1]/v1", "https://[::1]/v1"},
+		{"https://[::1]:8443/api", "https://[::1]:8443/api"},
+		{"https://[2001:db8::1]:443/", "https://[2001:db8::1]"},
+		{"https://[2001:DB8::1]/api", "https://[2001:db8::1]/api"},
 	}
 	for _, c := range cases {
 		got, err := CanonicalAPIURL(c.raw)

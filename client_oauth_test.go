@@ -1026,3 +1026,72 @@ func TestOAuthClient_Close(t *testing.T) {
 		t.Errorf("Close() returned error: %v", err)
 	}
 }
+
+// closeTrackingTransport records whether CloseIdleConnections was ever called
+// on it via the http.Transport idle-connection-closer interface.
+type closeTrackingTransport struct {
+	inner  http.RoundTripper
+	closed bool
+}
+
+func (t *closeTrackingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return t.inner.RoundTrip(req)
+}
+
+func (t *closeTrackingTransport) CloseIdleConnections() {
+	t.closed = true
+}
+
+func TestOAuthClient_CloseDoesNotTouchUserSuppliedTransport(t *testing.T) {
+	// When the caller supplies an *http.Client via WithHTTPClient, our Close
+	// must NOT call CloseIdleConnections on the underlying Transport — that
+	// would drop idle connections owned by the caller's other clients
+	// sharing the same Transport (e.g., an otelhttp wrapper).
+	tracker := &closeTrackingTransport{inner: http.DefaultTransport}
+	userClient := &http.Client{Transport: tracker}
+
+	client, err := NewOAuthClient(
+		WithApiUrl("https://api.example.com"),
+		WithHTTPClient(userClient),
+	)
+	if err != nil {
+		t.Fatalf("create client: %v", err)
+	}
+
+	if err := client.Close(context.Background()); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	if tracker.closed {
+		t.Error("Close called CloseIdleConnections on the user-supplied Transport; it must be a no-op when the caller owns the transport")
+	}
+}
+
+func TestOAuthClient_CloseClosesOwnedTransport(t *testing.T) {
+	// The mirror: when NewOAuthClient created its own client (no
+	// WithHTTPClient), Close must drop idle connections on the owned
+	// transport so callers using `defer client.Close(...)` get the cleanup
+	// the doc comment promises.
+	//
+	// We cannot intercept http.Transport.CloseIdleConnections directly, so
+	// we verify the contract by issuing a request, then Close, and asserting
+	// no error / no panic. This guards against future regressions that
+	// reintroduce a nil dereference or wrong-branch logic.
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(OAuthAuthorizationServerMetadata{
+			Issuer: "https://auth.example.com",
+		})
+	}))
+	defer server.Close()
+
+	client, err := NewOAuthClient(WithApiUrl(server.URL))
+	if err != nil {
+		t.Fatalf("create client: %v", err)
+	}
+	if _, err := client.GetAuthorizationServerMetadata(context.Background()); err != nil {
+		t.Fatalf("warm up: %v", err)
+	}
+	if err := client.Close(context.Background()); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+}

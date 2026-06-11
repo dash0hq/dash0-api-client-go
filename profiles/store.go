@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -74,16 +75,24 @@ type Store struct {
 //  2. The DASH0_CONFIG_DIR environment variable (if set).
 //  3. ~/.dash0/ (default).
 //
-// As a best-effort hygiene step, any leftover writeFileAtomic temp files in
-// the resolved directory are removed.
+// Best-effort hygiene on the resolved directory: the mode is tightened to
+// [configDirMode] (0700) when broader, and any leftover writeFileAtomic temp
+// files older than [staleTempFileAge] are removed.
 // SIGKILL or a panic mid-write skips the deferred cleanup in writeFileAtomic,
 // so .tmp-* files can accumulate.
+// Both steps tolerate a missing directory (it will be created later by
+// writeFileAtomic when the first write happens).
 func NewStore(opts ...StoreOption) (*Store, error) {
 	configDir, err := resolveConfigDir(opts)
 	if err != nil {
 		return nil, err
 	}
-	cleanupStaleTempFiles(configDir)
+	if _, err := os.Stat(configDir); err == nil {
+		// Best-effort tighten; failures (e.g., we don't own the dir) are
+		// tolerated. The file mode (0600) still protects credential contents.
+		_ = ensureConfigDirMode(configDir)
+		cleanupStaleTempFiles(configDir)
+	}
 	return &Store{configDir: configDir}, nil
 }
 
@@ -661,13 +670,19 @@ func (s *Store) saveProfiles(profiles []Profile) error {
 }
 
 // ensureConfigDirMode creates dir at [configDirMode] (0700) if it does not
-// exist, and downgrades the mode to 0700 if it exists with broader
+// exist, and best-effort tightens the mode to 0700 if it exists with broader
 // permissions.
 // This protects refresh tokens persisted by users whose ~/.dash0 was created
 // under a previous tool version with a wider umask.
-// The chmod is best-effort: a failure to tighten an existing directory is
-// surfaced as an error so the caller can decide whether to proceed, but the
-// directory creation itself is the primary guarantee.
+//
+// The chmod is best-effort: callers may legitimately point DASH0_CONFIG_DIR
+// at a directory they do not own (e.g., a shared /opt/dash0 or a mounted
+// volume on a multi-user box). On those layouts os.Chmod returns EPERM, and
+// failing the call would render the library unusable for a non-credential
+// concern — the file mode (0600) already protects the refresh-token contents
+// even when the directory is group-listable.
+// The directory creation itself remains a hard requirement; only the tighten
+// step is silently ignored on permission failure.
 func ensureConfigDirMode(dir string) error {
 	if err := os.MkdirAll(dir, configDirMode); err != nil {
 		return fmt.Errorf("failed to create config directory %s: %w", dir, err)
@@ -678,41 +693,80 @@ func ensureConfigDirMode(dir string) error {
 		// surface it rather than silently proceeding with unknown permissions.
 		return fmt.Errorf("failed to stat config directory %s: %w", dir, statErr)
 	}
-	// Only tighten if the directory is broader than configDirMode. We do not
-	// widen — a user who deliberately set 0750 (e.g., for a group-shared
-	// dev machine) should keep that, but anything wider than 0700 means
-	// world or group can read OAuth refresh tokens.
+	// Only tighten if the directory is broader than configDirMode. Group and
+	// other bits beyond 0700 mean group or world can list refresh-token
+	// filenames; we still tighten on a best-effort basis even when the
+	// directory was deliberately group-shared, because the credentials are
+	// owner-only at the file level.
 	if perm := info.Mode().Perm(); perm&^configDirMode != 0 {
-		if err := os.Chmod(dir, configDirMode); err != nil {
-			return fmt.Errorf("failed to tighten config directory %s mode from %o to %o: %w",
-				dir, perm, configDirMode, err)
-		}
+		// Best-effort: ignore Chmod failures (EPERM on dirs we do not own).
+		_ = os.Chmod(dir, configDirMode)
 	}
 	return nil
+}
+
+// staleTempFileAge is the minimum age before a leftover temp file is eligible
+// for cleanup.
+// The window must be larger than the longest realistic [writeFileAtomic]
+// invocation so a concurrent in-flight write is never racing the sweep —
+// SSD writes complete in milliseconds, network home directories can take
+// seconds.
+const staleTempFileAge = 60 * time.Second
+
+// staleTempFilePrefixes are the file-name prefixes whose .tmp-* siblings the
+// library is responsible for cleaning up.
+// Anchoring to the prefixes prevents the sweep from touching unrelated files
+// the user may have placed in the config dir.
+var staleTempFilePrefixes = []string{
+	ProfilesFileName,
+	ActiveProfileFileName,
+	OAuthClientsFileName,
 }
 
 // cleanupStaleTempFiles removes leftover writeFileAtomic temp files in dir.
 // SIGKILL or a panic mid-write skips the deferred cleanup in
 // [writeFileAtomic], so .tmp-* files can accumulate over time.
-// This is best-effort: any error is swallowed because the temp files are
-// pure clutter and a failure to clean them up does not affect correctness.
+// Only files whose name matches a known managed prefix and whose mtime is
+// older than [staleTempFileAge] are removed; this avoids racing with a
+// concurrent in-process writeFileAtomic and avoids touching unrelated files
+// the user may have placed in the dir.
+// Best-effort: any error is swallowed because the temp files are pure
+// clutter and a failure to clean them up does not affect correctness.
 func cleanupStaleTempFiles(dir string) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return
 	}
+	cutoff := time.Now().Add(-staleTempFileAge)
 	for _, entry := range entries {
 		if entry.IsDir() {
 			continue
 		}
 		name := entry.Name()
-		// writeFileAtomic uses os.CreateTemp(dir, base+".tmp-*"); we match
-		// the marker without re-implementing CreateTemp's naming.
-		if !strings.Contains(name, ".tmp-") {
+		if !isManagedTempFileName(name) {
+			continue
+		}
+		info, err := entry.Info()
+		if err != nil {
+			continue
+		}
+		if info.ModTime().After(cutoff) {
 			continue
 		}
 		_ = os.Remove(filepath.Join(dir, name))
 	}
+}
+
+// isManagedTempFileName reports whether name matches the pattern
+// "<managed-prefix>.tmp-*" used by [writeFileAtomic] via os.CreateTemp.
+func isManagedTempFileName(name string) bool {
+	for _, prefix := range staleTempFilePrefixes {
+		marker := prefix + ".tmp-"
+		if strings.HasPrefix(name, marker) {
+			return true
+		}
+	}
+	return false
 }
 
 // writeFileAtomic writes data to path via a sibling temp file followed by

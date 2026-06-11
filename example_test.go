@@ -783,6 +783,35 @@ func ExampleIsOAuthInvalidGrant() {
 	// Output: true
 }
 
+func ExampleIsOAuthTerminalError() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":             "invalid_client",
+			"error_description": "client deleted server-side",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	_, err = client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeRefreshToken,
+		RefreshToken: dash0.Ptr("dash0_rt_orphaned"),
+		ClientId:     dash0.Ptr("deleted-client"),
+	})
+	// IsOAuthTerminalError covers invalid_grant, invalid_client, and
+	// unauthorized_client — any "the IdP will not accept this credential
+	// again" signal that warrants a fresh interactive login.
+	fmt.Println(dash0.IsOAuthTerminalError(err))
+	// Output: true
+}
+
 func ExampleIsOAuthTokenError() {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

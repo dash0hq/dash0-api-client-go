@@ -213,6 +213,134 @@ func TestRefreshOAuthToken(t *testing.T) {
 		}
 	})
 
+	t.Run("unauthorized_client also clears state and returns ErrReauthenticationRequired", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error":             "unauthorized_client",
+				"error_description": "client revoked",
+			})
+		}))
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		profile := Profile{
+			Name: "test",
+			Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid-revoked",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(-1 * time.Minute),
+				},
+			},
+		}
+		createTestProfilesFile(t, dir, []Profile{profile})
+
+		cfg := &profile.Configuration
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		if !errors.Is(err, ErrReauthenticationRequired) {
+			t.Fatalf("expected ErrReauthenticationRequired for unauthorized_client, got: %v", err)
+		}
+		if cfg.OAuth != nil {
+			t.Errorf("expected cfg.OAuth cleared after unauthorized_client, got %+v", cfg.OAuth)
+		}
+	})
+
+	t.Run("rotated-but-invalid response clears state as terminal", func(t *testing.T) {
+		// The IdP returned 200 OK with an expires_in below our refresh-storm
+		// floor. RFC 6749 §6 lets the IdP rotate the refresh token before
+		// returning, so the on-disk credential may already be dead — treat
+		// the validation rejection as terminal and surface
+		// ErrReauthenticationRequired immediately.
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token":  "dash0_at_rotated",
+				"token_type":    "Bearer",
+				"expires_in":    1, // below the refresh-storm floor
+				"refresh_token": "rt-rotated",
+			})
+		}))
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		profile := Profile{
+			Name: "test",
+			Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt-original",
+					ExpiresAt:    time.Now().Add(-1 * time.Minute),
+				},
+			},
+		}
+		createTestProfilesFile(t, dir, []Profile{profile})
+
+		cfg := &profile.Configuration
+		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		if !errors.Is(err, ErrReauthenticationRequired) {
+			t.Fatalf("expected ErrReauthenticationRequired, got: %v", err)
+		}
+		if cfg.OAuth != nil {
+			t.Errorf("expected cfg.OAuth cleared, got %+v", cfg.OAuth)
+		}
+		ps, err := store.GetProfiles()
+		if err != nil {
+			t.Fatalf("GetProfiles: %v", err)
+		}
+		if ps[0].Configuration.OAuth != nil {
+			t.Errorf("expected persisted OAuth cleared, got %+v", ps[0].Configuration.OAuth)
+		}
+	})
+
+	t.Run("expires_in omitted falls back to default", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			// No expires_in field; the library should fall back to
+			// OAuthRefreshExpiresInDefault.
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token": "dash0_at_new",
+				"token_type":   "Bearer",
+			})
+		}))
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		profile := Profile{
+			Name: "test",
+			Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(-1 * time.Minute),
+				},
+			},
+		}
+		createTestProfilesFile(t, dir, []Profile{profile})
+
+		cfg := &profile.Configuration
+		if err := refreshOAuthToken(context.Background(), store, "test", cfg); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "dash0_at_new" {
+			t.Errorf("AuthToken = %q, want dash0_at_new", cfg.AuthToken)
+		}
+		// ExpiresAt should land at roughly OAuthRefreshExpiresInDefault from now.
+		gotDelta := time.Until(cfg.OAuth.ExpiresAt)
+		tolerance := 30 * time.Second
+		if gotDelta < OAuthRefreshExpiresInDefault-tolerance ||
+			gotDelta > OAuthRefreshExpiresInDefault+tolerance {
+			t.Errorf("ExpiresAt delta = %s, want ~%s (±%s)", gotDelta, OAuthRefreshExpiresInDefault, tolerance)
+		}
+	})
+
 	t.Run("invalid_client also clears state and returns ErrReauthenticationRequired", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
@@ -809,26 +937,3 @@ func TestExchangeRefreshToken(t *testing.T) {
 	})
 }
 
-func TestIsTerminalOAuthError(t *testing.T) {
-	cases := []struct {
-		name string
-		err  error
-		want bool
-	}{
-		{"invalid_grant", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_grant"}, true},
-		{"invalid_client", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_client"}, true},
-		{"unauthorized_client", &dash0.OAuthTokenError{StatusCode: 400, Code: "unauthorized_client"}, true},
-		{"invalid_request (non-terminal)", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_request"}, false},
-		{"invalid_scope (non-terminal)", &dash0.OAuthTokenError{StatusCode: 400, Code: "invalid_scope"}, false},
-		{"unsupported_grant_type (non-terminal)", &dash0.OAuthTokenError{StatusCode: 400, Code: "unsupported_grant_type"}, false},
-		{"5xx APIError", &dash0.APIError{StatusCode: 503}, false},
-		{"plain error", errors.New("boom"), false},
-	}
-	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			if got := isTerminalOAuthError(c.err); got != c.want {
-				t.Errorf("isTerminalOAuthError = %v, want %v", got, c.want)
-			}
-		})
-	}
-}

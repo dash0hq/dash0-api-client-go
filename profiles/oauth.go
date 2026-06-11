@@ -19,31 +19,6 @@ const OAuthRefreshThreshold = 5 * time.Minute
 // untrustworthy and the response is rejected before the caller can adopt it.
 const OAuthRefreshMaxExpiresIn = 24 * time.Hour
 
-// terminalOAuthErrorCodes are the RFC 6749 §5.2 error codes that the library
-// treats as permanently rejecting the stored credential.
-// When the token endpoint returns one of these, the OAuth state is cleared
-// from disk and [ErrReauthenticationRequired] is returned so the caller knows
-// the only path forward is a fresh interactive login.
-// Codes outside this set (e.g., invalid_request, unsupported_grant_type,
-// invalid_scope) are surfaced as the underlying [*dash0.OAuthTokenError] for
-// the caller to handle.
-var terminalOAuthErrorCodes = map[string]struct{}{
-	"invalid_grant":       {},
-	"invalid_client":      {},
-	"unauthorized_client": {},
-}
-
-// isTerminalOAuthError reports whether err carries an [*dash0.OAuthTokenError]
-// whose Code is in [terminalOAuthErrorCodes].
-func isTerminalOAuthError(err error) bool {
-	var oauthErr *dash0.OAuthTokenError
-	if !errors.As(err, &oauthErr) {
-		return false
-	}
-	_, ok := terminalOAuthErrorCodes[oauthErr.Code]
-	return ok
-}
-
 // ErrReauthenticationRequired is returned by refresh-bearing operations when
 // the OAuth refresh token is no longer accepted by the authorization server
 // (RFC 6749 invalid_grant) and the caller must initiate a fresh interactive
@@ -159,7 +134,7 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 
 	resp, err := exchangeRefreshToken(ctx, oauthClient, cfg.OAuth.ClientID, cfg.OAuth.RefreshToken)
 	if err != nil {
-		if isTerminalOAuthError(err) {
+		if dash0.IsOAuthTerminalError(err) {
 			// The refresh token has been revoked, expired, or otherwise
 			// rejected — RFC 6749 §5.2 invalid_grant / invalid_client /
 			// unauthorized_client are all terminal for the stored
@@ -184,7 +159,24 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 
 	trustedExpiresIn, err := validateRefreshResponse(resp)
 	if err != nil {
-		return fmt.Errorf("OAuth token refresh: %w", err)
+		// The IdP returned 200 OK and (per RFC 6749 §6) may have already
+		// rotated the refresh token before we rejected its response. The
+		// on-disk credential is therefore stale: the next refresh will
+		// receive invalid_grant. Treat this case as terminal — clear stored
+		// state and surface ErrReauthenticationRequired — so the caller
+		// learns about the forced re-auth immediately instead of after a
+		// confusing extra round-trip.
+		clearErr := store.updateProfileLocked(profileName, func(persisted *Configuration) {
+			persisted.OAuth = nil
+			persisted.AuthToken = ""
+		})
+		cfg.OAuth = nil
+		cfg.AuthToken = ""
+		if clearErr != nil {
+			return fmt.Errorf("%w (response validation failed: %v; and failed to clear stored state: %v)",
+				ErrReauthenticationRequired, err, clearErr)
+		}
+		return fmt.Errorf("%w (response validation failed: %v)", ErrReauthenticationRequired, err)
 	}
 
 	newExpiresAt := time.Now().Add(time.Duration(trustedExpiresIn) * time.Second)

@@ -297,6 +297,94 @@ func ExampleStore_GetActiveConfigurationContext() {
 	// https://api.eu-west-1.aws.dash0.com
 }
 
+func ExampleStore_AddProfileContext() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewStore(profiles.WithConfigDir(configDir))
+
+	// The Context variant lets the caller bound the wait for the
+	// cross-process .profile-lock acquisition — useful when a long-running
+	// agent flow already has a deadline context to honor.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := store.AddProfileContext(ctx, profiles.Profile{
+		Name: "dev",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_dev-token",
+		},
+	})
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	all, _ := store.GetProfiles()
+	fmt.Println("count:", len(all))
+	// Output: count: 1
+}
+
+func ExampleStore_UpdateProfileContext() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewStore(profiles.WithConfigDir(configDir))
+	_ = store.AddProfile(profiles.Profile{
+		Name: "dev",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_dev-token",
+		},
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := store.UpdateProfileContext(ctx, "dev", func(cfg *profiles.Configuration) {
+		cfg.Dataset = "production"
+	}); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	all, _ := store.GetProfiles()
+	fmt.Println(all[0].Configuration.Dataset)
+	// Output: production
+}
+
+func ExampleStore_SetActiveProfileContext() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewStore(profiles.WithConfigDir(configDir))
+	_ = store.AddProfile(profiles.Profile{
+		Name: "dev",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_dev-token",
+		},
+	})
+	_ = store.AddProfile(profiles.Profile{
+		Name: "prod",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.us-west-2.aws.dash0.com",
+			AuthToken: "auth_prod-token",
+		},
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := store.SetActiveProfileContext(ctx, "prod"); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	active, _ := store.GetActiveProfile()
+	fmt.Println(active.Name)
+	// Output: prod
+}
+
 func ExampleStore_RemoveProfile() {
 	configDir, _ := os.MkdirTemp("", "dash0-example-*")
 	defer func() { _ = os.RemoveAll(configDir) }()

@@ -95,18 +95,78 @@ func TestEnsureConfigDirMode_DowngradesBroadPermissions(t *testing.T) {
 	}
 }
 
+func TestEnsureConfigDirMode_NoopWhenAlreadyTight(t *testing.T) {
+	dir := t.TempDir()
+	// Seed at exactly configDirMode; ensureConfigDirMode must not touch it.
+	if err := os.Chmod(dir, configDirMode); err != nil {
+		t.Fatalf("seed chmod: %v", err)
+	}
+	infoBefore, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("stat before: %v", err)
+	}
+
+	if err := ensureConfigDirMode(dir); err != nil {
+		t.Fatalf("ensureConfigDirMode: %v", err)
+	}
+
+	infoAfter, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("stat after: %v", err)
+	}
+	if infoBefore.Mode().Perm() != infoAfter.Mode().Perm() {
+		t.Errorf("perm changed: before=%o after=%o", infoBefore.Mode().Perm(), infoAfter.Mode().Perm())
+	}
+}
+
+func TestEnsureConfigDirMode_TolerantOfTighterExisting(t *testing.T) {
+	// A directory already at 0600 has no execute bit so we can't `cd` into
+	// it, but ensureConfigDirMode must not consider it broader-than-needed
+	// and try to "fix" it. The bits 0600 are a strict subset of 0700.
+	dir := t.TempDir()
+	if err := os.Chmod(dir, 0o600); err != nil {
+		t.Fatalf("seed chmod: %v", err)
+	}
+	defer func() { _ = os.Chmod(dir, configDirMode) }() // restore for t.TempDir cleanup
+
+	if err := ensureConfigDirMode(dir); err != nil {
+		t.Fatalf("ensureConfigDirMode: %v", err)
+	}
+}
+
 func TestCleanupStaleTempFiles_RemovesLeftovers(t *testing.T) {
 	dir := t.TempDir()
+	// Stale temp files matching a managed prefix and older than the cutoff.
 	stalePaths := []string{
-		filepath.Join(dir, "profiles.json.tmp-abc123"),
-		filepath.Join(dir, "oauth-clients.json.tmp-def456"),
+		filepath.Join(dir, ProfilesFileName+".tmp-abc123"),
+		filepath.Join(dir, OAuthClientsFileName+".tmp-def456"),
+		filepath.Join(dir, ActiveProfileFileName+".tmp-ghi789"),
 	}
 	for _, p := range stalePaths {
 		if err := os.WriteFile(p, []byte("partial"), 0600); err != nil {
-			t.Fatalf("seed: %v", err)
+			t.Fatalf("seed stale: %v", err)
+		}
+		oldTime := time.Now().Add(-(staleTempFileAge + time.Minute))
+		if err := os.Chtimes(p, oldTime, oldTime); err != nil {
+			t.Fatalf("backdate %s: %v", p, err)
 		}
 	}
-	keepPath := filepath.Join(dir, "profiles.json")
+
+	// A recent temp file from a concurrent in-flight writeFileAtomic must
+	// be preserved.
+	recentPath := filepath.Join(dir, ProfilesFileName+".tmp-recent")
+	if err := os.WriteFile(recentPath, []byte("in-flight"), 0600); err != nil {
+		t.Fatalf("seed recent: %v", err)
+	}
+
+	// A file whose name contains ".tmp-" but does not match a managed prefix
+	// must be left alone — only managed temp files are eligible for sweep.
+	unrelatedPath := filepath.Join(dir, "user-stuff.tmp-keep")
+	if err := os.WriteFile(unrelatedPath, []byte("user data"), 0600); err != nil {
+		t.Fatalf("seed unrelated: %v", err)
+	}
+
+	keepPath := filepath.Join(dir, ProfilesFileName)
 	if err := os.WriteFile(keepPath, []byte(`{"profiles":[]}`), 0600); err != nil {
 		t.Fatalf("seed keep: %v", err)
 	}
@@ -115,8 +175,14 @@ func TestCleanupStaleTempFiles_RemovesLeftovers(t *testing.T) {
 
 	for _, p := range stalePaths {
 		if _, err := os.Stat(p); !os.IsNotExist(err) {
-			t.Errorf("expected %s to be removed, stat err = %v", p, err)
+			t.Errorf("expected stale temp %s to be removed, stat err = %v", p, err)
 		}
+	}
+	if _, err := os.Stat(recentPath); err != nil {
+		t.Errorf("recent temp file must be preserved (concurrent write race): %v", err)
+	}
+	if _, err := os.Stat(unrelatedPath); err != nil {
+		t.Errorf("unrelated file must be preserved: %v", err)
 	}
 	if _, err := os.Stat(keepPath); err != nil {
 		t.Errorf("non-temp file should be preserved: %v", err)

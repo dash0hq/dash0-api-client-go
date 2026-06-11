@@ -99,7 +99,13 @@ type AuthorizeURLParams struct {
 type oauthClient struct {
 	inner      *ClientWithResponses
 	httpClient *http.Client
-	apiURL     string
+	// ownsHTTPClient reports whether httpClient was constructed by
+	// NewOAuthClient (true) or wraps a user-supplied [http.Client] via
+	// WithHTTPClient (false). Close calls CloseIdleConnections only when we
+	// own the client, so a user-shared Transport (a common pattern with
+	// otelhttp wrappers) is not disturbed by our Close.
+	ownsHTTPClient bool
+	apiURL         string
 }
 
 // NewOAuthClient creates a new OAuth client for the Dash0 API.
@@ -131,7 +137,13 @@ func NewOAuthClient(opts ...ClientOption) (OAuthClient, error) {
 	}
 
 	var httpClient *http.Client
+	ownsHTTPClient := true
 	if cfg.httpClient != nil {
+		// Wrap the user-supplied client. We share its Transport so it is
+		// not safe for Close to call CloseIdleConnections on it — that
+		// would drop idle connections owned by the caller's other clients
+		// using the same Transport (e.g., an otelhttp.Transport reused
+		// across SDK clients).
 		httpClient = &http.Client{
 			Transport:     cfg.httpClient.Transport,
 			Timeout:       cfg.httpClient.Timeout,
@@ -141,6 +153,7 @@ func NewOAuthClient(opts ...ClientOption) (OAuthClient, error) {
 		if cfg.timeoutSet {
 			httpClient.Timeout = cfg.timeout
 		}
+		ownsHTTPClient = false
 	} else {
 		httpClient = &http.Client{
 			Timeout: cfg.timeout,
@@ -162,9 +175,10 @@ func NewOAuthClient(opts ...ClientOption) (OAuthClient, error) {
 	}
 
 	return &oauthClient{
-		inner:      inner,
-		httpClient: httpClient,
-		apiURL:     cfg.apiUrl,
+		inner:          inner,
+		httpClient:     httpClient,
+		ownsHTTPClient: ownsHTTPClient,
+		apiURL:         cfg.apiUrl,
 	}, nil
 }
 
@@ -319,14 +333,18 @@ func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationR
 }
 
 // Close releases idle HTTP connections held by the OAuth client's underlying
-// [*http.Client].
+// [*http.Client] when the client was constructed by [NewOAuthClient].
+// When the underlying client was supplied via [WithHTTPClient], Close is a
+// no-op because the caller owns the transport — calling
+// [http.Client.CloseIdleConnections] on a shared transport would drop idle
+// connections owned by the caller's other clients using the same transport.
 // The provided context is currently unused; the signature accepts one for
 // symmetry with [Client.Close] and to leave room for future graceful-shutdown
 // work.
 // Calling Close on an [OAuthClient] returned by [NewOAuthClient] is safe and
 // idempotent.
 func (c *oauthClient) Close(_ context.Context) error {
-	if c.httpClient != nil {
+	if c.ownsHTTPClient && c.httpClient != nil {
 		c.httpClient.CloseIdleConnections()
 	}
 	return nil

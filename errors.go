@@ -224,10 +224,40 @@ func IsOAuthTokenError(err error) bool {
 // the authorization server (rotated, revoked, expired, or the user's session
 // was terminated) and the caller must initiate a fresh interactive login.
 // See RFC 6749 §5.2.
+//
+// Note: IsOAuthInvalidGrant is the narrow predicate for the single
+// "invalid_grant" code. Callers that want the broader "should I prompt for
+// re-authentication?" check should use [IsOAuthTerminalError], which also
+// covers "invalid_client" and "unauthorized_client" — codes the library
+// itself treats as terminal for the stored credential.
 func IsOAuthInvalidGrant(err error) bool {
 	var oauthErr *OAuthTokenError
 	if !errors.As(err, &oauthErr) {
 		return false
 	}
 	return oauthErr.Code == "invalid_grant"
+}
+
+// IsOAuthTerminalError reports whether err carries an [*OAuthTokenError]
+// whose Code identifies a terminal credential rejection.
+// A terminal rejection means the stored credential is no longer accepted by
+// the authorization server and the caller must initiate a fresh interactive
+// login; no amount of retry, refresh, or back-off will recover the session.
+// The current terminal set per RFC 6749 §5.2 is "invalid_grant",
+// "invalid_client", and "unauthorized_client".
+//
+// This is the predicate the [github.com/dash0hq/dash0-api-client-go/profiles]
+// package uses to decide when to clear stored OAuth state from disk; callers
+// driving a login UI should align with the same set so the UI prompt matches
+// the library's recovery model.
+func IsOAuthTerminalError(err error) bool {
+	var oauthErr *OAuthTokenError
+	if !errors.As(err, &oauthErr) {
+		return false
+	}
+	switch oauthErr.Code {
+	case "invalid_grant", "invalid_client", "unauthorized_client":
+		return true
+	}
+	return false
 }
