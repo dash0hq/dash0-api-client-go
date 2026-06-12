@@ -3,6 +3,7 @@ module github.com/dash0hq/dash0-api-client-go
 go 1.25.1
 
 require (
+	github.com/gofrs/flock v0.13.0
 	github.com/oapi-codegen/runtime v1.1.2
 	go.opentelemetry.io/collector/pdata v1.51.0
 	golang.org/x/sync v0.19.0
@@ -20,4 +21,5 @@ require (
 	go.opentelemetry.io/collector/featuregate v1.51.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 )

@@ -2,8 +2,11 @@ package dash0_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"time"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
@@ -583,6 +586,258 @@ func ExampleClearRecordingRuleID() {
 	// Output: true
 }
 
+// OAuthClient
+
+func ExampleNewOAuthClient() {
+	client, err := dash0.NewOAuthClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+	fmt.Println(client != nil)
+	// Output: true
+}
+
+func ExampleOAuthClient_AuthorizeURL() {
+	client, err := dash0.NewOAuthClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	authorizeURL, err := client.AuthorizeURL(&dash0.AuthorizeURLParams{
+		ResponseType:        dash0.OAuthResponseTypeCode,
+		ClientID:            "my-client",
+		RedirectURI:         "http://localhost:8080/callback",
+		State:               "csrf-token",
+		CodeChallenge:       "challenge",
+		CodeChallengeMethod: dash0.OAuthCodeChallengeMethodS256,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(authorizeURL != "")
+	// Output: true
+}
+
+func ExampleOAuthClient_RegisterClient() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"client_id":                 "generated-id",
+			"client_name":               "My CLI",
+			"registration_access_token": "reg_token",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	resp, err := client.RegisterClient(context.Background(), &dash0.OAuthClientRegistrationRequest{
+		ClientName:   "My CLI",
+		RedirectUris: []string{"http://localhost:8080/callback"},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(resp.ClientId)
+	// Output: generated-id
+}
+
+func ExampleOAuthClient_ExchangeToken() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"access_token": "dash0_at_example",
+			"token_type":   "Bearer",
+			"expires_in":   900,
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	resp, err := client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeAuthorizationCode,
+		Code:         dash0.Ptr("auth-code"),
+		RedirectUri:  dash0.Ptr("http://localhost:8080/callback"),
+		CodeVerifier: dash0.Ptr("verifier"),
+		ClientId:     dash0.Ptr("my-client"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(resp.TokenType)
+	// Output: Bearer
+}
+
+func ExampleOAuthClient_GetAuthorizationServerMetadata() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"issuer":                   "https://auth.example.com",
+			"authorization_endpoint":   "https://auth.example.com/oauth/authorize",
+			"token_endpoint":           "https://auth.example.com/oauth/token",
+			"response_types_supported": []string{"code"},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	metadata, err := client.GetAuthorizationServerMetadata(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(metadata.Issuer)
+	// Output: https://auth.example.com
+}
+
+func ExampleOAuthClient_GetProtectedResourceMetadata() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"resource":              "https://api.example.com",
+			"authorization_servers": []string{"https://auth.example.com"},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	metadata, err := client.GetProtectedResourceMetadata(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(metadata.Resource)
+	// Output: https://api.example.com
+}
+
+func ExampleOAuthClient_RevokeToken() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	hint := dash0.OAuthTokenTypeRefreshToken
+	err = client.RevokeToken(context.Background(), &dash0.OAuthRevocationRequest{
+		Token:         "dash0_rt_to-revoke",
+		TokenTypeHint: &hint,
+	})
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleIsOAuthInvalidGrant() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":             "invalid_grant",
+			"error_description": "refresh token revoked",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	_, err = client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeRefreshToken,
+		RefreshToken: dash0.Ptr("dash0_rt_revoked"),
+		ClientId:     dash0.Ptr("my-client"),
+	})
+	fmt.Println(dash0.IsOAuthInvalidGrant(err))
+	// Output: true
+}
+
+func ExampleIsOAuthTerminalError() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":             "invalid_client",
+			"error_description": "client deleted server-side",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	_, err = client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType:    dash0.OAuthGrantTypeRefreshToken,
+		RefreshToken: dash0.Ptr("dash0_rt_orphaned"),
+		ClientId:     dash0.Ptr("deleted-client"),
+	})
+	// IsOAuthTerminalError covers invalid_grant, invalid_client, and
+	// unauthorized_client — any "the IdP will not accept this credential
+	// again" signal that warrants a fresh interactive login.
+	fmt.Println(dash0.IsOAuthTerminalError(err))
+	// Output: true
+}
+
+func ExampleIsOAuthTokenError() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":             "invalid_grant",
+			"error_description": "authorization code has expired",
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewOAuthClient(dash0.WithApiUrl(server.URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	_, err = client.ExchangeToken(context.Background(), &dash0.OAuthTokenRequest{
+		GrantType: dash0.OAuthGrantTypeAuthorizationCode,
+		Code:      dash0.Ptr("expired"),
+		ClientId:  dash0.Ptr("my-client"),
+	})
+	fmt.Println(dash0.IsOAuthTokenError(err))
+	// Output: true
+}
+
 // FormatDuration
 
 func ExampleFormatDuration() {
@@ -736,4 +991,27 @@ func ExampleDeeplinkURL() {
 func ExampleViewDeeplinkURL() {
 	fmt.Println(dash0.ViewDeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.Spans, "view-7", dash0.Ptr("production")))
 	// Output: https://app.dash0.com/goto/traces/explorer?dataset=production&view_id=view-7
+}
+
+// PKCE and OAuth state helpers
+
+func ExampleGeneratePKCEPair() {
+	pair, err := dash0.GeneratePKCEPair()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// The verifier is base64url(32 random bytes) without padding — 43 chars.
+	// The S256 challenge is base64url(SHA-256(verifier)) — also 43 chars.
+	fmt.Println(len(pair.Verifier), len(pair.Challenge))
+	// Output: 43 43
+}
+
+func ExampleGenerateOAuthState() {
+	state, err := dash0.GenerateOAuthState()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// base64url(32 random bytes) without padding — 43 chars.
+	fmt.Println(len(state))
+	// Output: 43
 }

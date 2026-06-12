@@ -36,7 +36,7 @@ func TestNewClient(t *testing.T) {
 		}
 	})
 
-	t.Run("auth token must start with auth_", func(t *testing.T) {
+	t.Run("auth token must start with auth_ or dash0_at_", func(t *testing.T) {
 		_, err := NewClient(
 			WithApiUrl("https://api.example.com"),
 			WithAuthToken("invalid_token"),
@@ -45,8 +45,22 @@ func TestNewClient(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected error for invalid auth token prefix")
 		}
-		if !strings.Contains(err.Error(), "must start with 'auth_'") {
+		if !strings.Contains(err.Error(), "must start with") {
 			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+
+	t.Run("accepts dash0_at_ token", func(t *testing.T) {
+		client, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("dash0_at_oauthtoken123"),
+		)
+
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if client == nil {
+			t.Fatal("expected client to be created")
 		}
 	})
 

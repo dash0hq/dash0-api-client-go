@@ -2,42 +2,191 @@ package profiles
 
 import (
 	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
+	"time"
 )
 
-func createTestProfilesFile(t *testing.T, configDir string, profiles []Profile) {
-	t.Helper()
-	profilesFile := ProfilesFile{Profiles: profiles}
-	data, err := json.MarshalIndent(profilesFile, "", "  ")
-	if err != nil {
-		t.Fatalf("Failed to marshal profiles: %v", err)
+func TestValidateProfileName(t *testing.T) {
+	t.Run("rejects", func(t *testing.T) {
+		cases := []struct {
+			name   string
+			input  string
+			reason string
+		}{
+			{"empty", "", "empty"},
+			{"newline", "dev\nprod", "control character"},
+			{"NUL", "dev\x00prod", "control character"},
+			{"leading dot", ".profile-lock", "must not start with '.'"},
+			{"forward slash", "dev/prod", "path separators"},
+			{"backslash", "dev\\prod", "path separators"},
+			{"too long", strings.Repeat("a", MaxProfileNameLength+1), "exceeds maximum length"},
+		}
+		for _, c := range cases {
+			t.Run(c.name, func(t *testing.T) {
+				err := validateProfileName(c.input)
+				if err == nil {
+					t.Fatalf("expected error for %q", c.input)
+				}
+				if !strings.Contains(err.Error(), c.reason) {
+					t.Errorf("error %q does not mention %q", err.Error(), c.reason)
+				}
+			})
+		}
+	})
+
+	t.Run("accepts", func(t *testing.T) {
+		for _, name := range []string{
+			"dev",
+			"prod",
+			"my-profile",
+			"team_a.qa",
+			"Profile1",
+			strings.Repeat("a", MaxProfileNameLength),
+		} {
+			t.Run(name, func(t *testing.T) {
+				if err := validateProfileName(name); err != nil {
+					t.Errorf("unexpected error for %q: %v", name, err)
+				}
+			})
+		}
+	})
+}
+
+func TestAddProfile_RejectsInvalidName(t *testing.T) {
+	store, _ := newTestStore(t)
+	err := store.AddProfile(Profile{
+		Name: "bad\nname",
+		Configuration: Configuration{
+			ApiUrl:    "https://api.example.com",
+			AuthToken: "auth_x",
+		},
+	})
+	if err == nil {
+		t.Fatal("expected error for invalid profile name")
 	}
-	if err := os.MkdirAll(configDir, 0755); err != nil {
-		t.Fatalf("Failed to create directory: %v", err)
-	}
-	if err := os.WriteFile(filepath.Join(configDir, ProfilesFileName), data, 0644); err != nil {
-		t.Fatalf("Failed to write profiles file: %v", err)
+	if !strings.Contains(err.Error(), "control character") {
+		t.Errorf("error should mention control character, got: %v", err)
 	}
 }
 
-func setActiveProfile(t *testing.T, configDir, profileName string) {
-	t.Helper()
-	if err := os.WriteFile(filepath.Join(configDir, ActiveProfileFileName), []byte(profileName), 0644); err != nil {
-		t.Fatalf("Failed to write active profile: %v", err)
-	}
-}
-
-func newTestStore(t *testing.T) (*Store, string) {
-	t.Helper()
+func TestEnsureConfigDirMode_DowngradesBroadPermissions(t *testing.T) {
 	dir := t.TempDir()
-	svc, err := NewStore(WithConfigDir(dir))
-	if err != nil {
-		t.Fatalf("Failed to create store: %v", err)
+	if err := os.Chmod(dir, 0o755); err != nil {
+		t.Fatalf("seed chmod: %v", err)
 	}
-	return svc, dir
+
+	if err := ensureConfigDirMode(dir); err != nil {
+		t.Fatalf("ensureConfigDirMode: %v", err)
+	}
+
+	info, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("stat: %v", err)
+	}
+	if perm := info.Mode().Perm(); perm != configDirMode {
+		t.Errorf("perm = %o, want %o", perm, configDirMode)
+	}
+}
+
+func TestEnsureConfigDirMode_NoopWhenAlreadyTight(t *testing.T) {
+	dir := t.TempDir()
+	// Seed at exactly configDirMode; ensureConfigDirMode must not touch it.
+	if err := os.Chmod(dir, configDirMode); err != nil {
+		t.Fatalf("seed chmod: %v", err)
+	}
+	infoBefore, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("stat before: %v", err)
+	}
+
+	if err := ensureConfigDirMode(dir); err != nil {
+		t.Fatalf("ensureConfigDirMode: %v", err)
+	}
+
+	infoAfter, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("stat after: %v", err)
+	}
+	if infoBefore.Mode().Perm() != infoAfter.Mode().Perm() {
+		t.Errorf("perm changed: before=%o after=%o", infoBefore.Mode().Perm(), infoAfter.Mode().Perm())
+	}
+}
+
+func TestEnsureConfigDirMode_TolerantOfTighterExisting(t *testing.T) {
+	// A directory already at 0600 has no execute bit so we can't `cd` into
+	// it, but ensureConfigDirMode must not consider it broader-than-needed
+	// and try to "fix" it. The bits 0600 are a strict subset of 0700.
+	dir := t.TempDir()
+	if err := os.Chmod(dir, 0o600); err != nil {
+		t.Fatalf("seed chmod: %v", err)
+	}
+	defer func() { _ = os.Chmod(dir, configDirMode) }() // restore for t.TempDir cleanup
+
+	if err := ensureConfigDirMode(dir); err != nil {
+		t.Fatalf("ensureConfigDirMode: %v", err)
+	}
+}
+
+func TestCleanupStaleTempFiles_RemovesLeftovers(t *testing.T) {
+	dir := t.TempDir()
+	// Stale temp files matching a managed prefix and older than the cutoff.
+	stalePaths := []string{
+		filepath.Join(dir, ProfilesFileName+".tmp-abc123"),
+		filepath.Join(dir, OAuthClientsFileName+".tmp-def456"),
+		filepath.Join(dir, ActiveProfileFileName+".tmp-ghi789"),
+	}
+	for _, p := range stalePaths {
+		if err := os.WriteFile(p, []byte("partial"), 0600); err != nil {
+			t.Fatalf("seed stale: %v", err)
+		}
+		oldTime := time.Now().Add(-(staleTempFileAge + time.Minute))
+		if err := os.Chtimes(p, oldTime, oldTime); err != nil {
+			t.Fatalf("backdate %s: %v", p, err)
+		}
+	}
+
+	// A recent temp file from a concurrent in-flight writeFileAtomic must
+	// be preserved.
+	recentPath := filepath.Join(dir, ProfilesFileName+".tmp-recent")
+	if err := os.WriteFile(recentPath, []byte("in-flight"), 0600); err != nil {
+		t.Fatalf("seed recent: %v", err)
+	}
+
+	// A file whose name contains ".tmp-" but does not match a managed prefix
+	// must be left alone — only managed temp files are eligible for sweep.
+	unrelatedPath := filepath.Join(dir, "user-stuff.tmp-keep")
+	if err := os.WriteFile(unrelatedPath, []byte("user data"), 0600); err != nil {
+		t.Fatalf("seed unrelated: %v", err)
+	}
+
+	keepPath := filepath.Join(dir, ProfilesFileName)
+	if err := os.WriteFile(keepPath, []byte(`{"profiles":[]}`), 0600); err != nil {
+		t.Fatalf("seed keep: %v", err)
+	}
+
+	cleanupStaleTempFiles(dir)
+
+	for _, p := range stalePaths {
+		if _, err := os.Stat(p); !os.IsNotExist(err) {
+			t.Errorf("expected stale temp %s to be removed, stat err = %v", p, err)
+		}
+	}
+	if _, err := os.Stat(recentPath); err != nil {
+		t.Errorf("recent temp file must be preserved (concurrent write race): %v", err)
+	}
+	if _, err := os.Stat(unrelatedPath); err != nil {
+		t.Errorf("unrelated file must be preserved: %v", err)
+	}
+	if _, err := os.Stat(keepPath); err != nil {
+		t.Errorf("non-temp file should be preserved: %v", err)
+	}
 }
 
 func TestNewStore(t *testing.T) {
@@ -390,6 +539,81 @@ func TestRemoveProfile(t *testing.T) {
 		}
 	})
 
+	t.Run("revokes OAuth refresh token", func(t *testing.T) {
+		var lastReq map[string]string
+		server := newRevokeServer(t, &lastReq)
+		defer server.Close()
+
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "oauth-profile", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt-to-revoke",
+					ExpiresAt:    time.Now().Add(1 * time.Hour),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "oauth-profile")
+
+		err := svc.RemoveProfile("oauth-profile")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		if lastReq["token"] != "rt-to-revoke" {
+			t.Errorf("expected revoke token rt-to-revoke, got %s", lastReq["token"])
+		}
+		if lastReq["token_type_hint"] != "refresh_token" {
+			t.Errorf("expected token_type_hint refresh_token, got %s", lastReq["token_type_hint"])
+		}
+
+		profiles, err := svc.GetProfiles()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(profiles) != 0 {
+			t.Errorf("expected 0 profiles, got %d", len(profiles))
+		}
+	})
+
+	t.Run("removes profile but surfaces revocation failure via ErrRevocationFailed", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "oauth-profile", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Hour),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "oauth-profile")
+
+		err := svc.RemoveProfile("oauth-profile")
+		if !errors.Is(err, ErrRevocationFailed) {
+			t.Fatalf("expected ErrRevocationFailed, got: %v", err)
+		}
+
+		// The local removal still succeeded even though revocation failed.
+		profiles, err := svc.GetProfiles()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(profiles) != 0 {
+			t.Errorf("expected 0 profiles after failed revocation, got %d", len(profiles))
+		}
+	})
+
 	t.Run("not found", func(t *testing.T) {
 		svc, _ := newTestStore(t)
 		err := svc.RemoveProfile("nonexistent")
@@ -540,6 +764,91 @@ func TestGetActiveConfiguration(t *testing.T) {
 			t.Errorf("expected dataset profile-dataset, got %s", cfg.Dataset)
 		}
 	})
+
+	t.Run("OAuth token not near expiry uses existing auth token", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl:    "https://api.example.com",
+				AuthToken: "dash0_at_current-token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Hour),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "dash0_at_current-token" {
+			t.Errorf("expected dash0_at_current-token, got %s", cfg.AuthToken)
+		}
+		if cfg.OAuth == nil {
+			t.Error("expected OAuth state to be preserved")
+		}
+	})
+
+	t.Run("OAuth token near expiry triggers refresh", func(t *testing.T) {
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_refreshed-token",
+			ExpiresIn:   3600,
+		}, nil)
+		defer server.Close()
+
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old-token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(2 * time.Minute),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "dash0_at_refreshed-token" {
+			t.Errorf("expected dash0_at_refreshed-token, got %s", cfg.AuthToken)
+		}
+	})
+
+	t.Run("DASH0_AUTH_TOKEN env var clears OAuth state", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl:    "https://api.example.com",
+				AuthToken: "dash0_at_oauth-token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Hour),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+		t.Setenv(EnvAuthToken, "auth_env-token")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "auth_env-token" {
+			t.Errorf("expected auth_env-token, got %s", cfg.AuthToken)
+		}
+		if cfg.OAuth != nil {
+			t.Error("expected OAuth to be nil when env var overrides")
+		}
+	})
 }
 
 func TestResolveConfiguration(t *testing.T) {
@@ -638,6 +947,139 @@ func TestResolveConfiguration(t *testing.T) {
 		}
 		if cfg.OtlpUrl != "https://otlp-flag.example.com" {
 			t.Errorf("expected OTLP URL https://otlp-flag.example.com, got %s", cfg.OtlpUrl)
+		}
+	})
+
+	t.Run("OAuth state propagated from profile", func(t *testing.T) {
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    "https://api.example.com",
+				AuthToken: "dash0_at_oauth-token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Hour),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("", "", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OAuth == nil {
+			t.Fatal("expected OAuth state to be propagated")
+		}
+		if cfg.OAuth.ClientID != "cid" {
+			t.Errorf("expected ClientID cid, got %s", cfg.OAuth.ClientID)
+		}
+	})
+
+	t.Run("explicit auth token clears OAuth state", func(t *testing.T) {
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    "https://api.example.com",
+				AuthToken: "dash0_at_oauth-token",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Hour),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("", "auth_explicit-token", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "auth_explicit-token" {
+			t.Errorf("expected auth_explicit-token, got %s", cfg.AuthToken)
+		}
+		if cfg.OAuth != nil {
+			t.Error("expected OAuth to be nil when explicit auth token provided")
+		}
+	})
+
+	t.Run("explicit auth token suppresses OAuth refresh", func(t *testing.T) {
+		var requestCount atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestCount.Add(1)
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token": "dash0_at_should_not_be_seen",
+				"token_type":   "Bearer",
+				"expires_in":   3600,
+			})
+		}))
+		defer server.Close()
+
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					// Near expiry: without the suppression this would fire a refresh.
+					ExpiresAt: time.Now().Add(1 * time.Minute),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("", "auth_explicit-token", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "auth_explicit-token" {
+			t.Errorf("expected auth_explicit-token, got %s", cfg.AuthToken)
+		}
+		if got := requestCount.Load(); got != 0 {
+			t.Errorf("expected 0 token-endpoint requests, got %d", got)
+		}
+	})
+
+	t.Run("no explicit auth token still refreshes OAuth", func(t *testing.T) {
+		var requestCount atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestCount.Add(1)
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"access_token": "dash0_at_refreshed",
+				"token_type":   "Bearer",
+				"expires_in":   3600,
+			})
+		}))
+		defer server.Close()
+
+		dir := t.TempDir()
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_old",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(1 * time.Minute),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test")
+
+		cfg, err := ResolveConfiguration("", "", WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "dash0_at_refreshed" {
+			t.Errorf("expected dash0_at_refreshed, got %s", cfg.AuthToken)
+		}
+		if got := requestCount.Load(); got != 1 {
+			t.Errorf("expected 1 token-endpoint request, got %d", got)
 		}
 	})
 }

@@ -169,8 +169,8 @@ func NewClient(opts ...ClientOption) (Client, error) {
 	if cfg.authToken == "" {
 		return nil, fmt.Errorf("dash0: auth token is required (use WithAuthToken)")
 	}
-	if !strings.HasPrefix(cfg.authToken, "auth_") {
-		return nil, fmt.Errorf("dash0: auth token must start with 'auth_'")
+	if !strings.HasPrefix(cfg.authToken, "auth_") && !strings.HasPrefix(cfg.authToken, "dash0_at_") {
+		return nil, fmt.Errorf("dash0: auth token must start with 'auth_' or 'dash0_at_'")
 	}
 
 	// Validate that WithTransport does not conflict with transport-level options.

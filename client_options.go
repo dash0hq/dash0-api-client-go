@@ -238,25 +238,62 @@ func WithOtlpEndpoint(encoding OtlpEncoding, url string) ClientOption {
 	}
 }
 
+// transportOptionsSet returns the names of transport-level ClientOption
+// functions that were explicitly set on cfg.
+// Used by both [validateOAuthOptions] and [validateTransportConflicts] to
+// detect overlaps between transport configuration and incompatible options.
+// When includeHTTPClient is true, WithHTTPClient is also reported; the OAuth
+// validator accepts WithHTTPClient and therefore passes false.
+func transportOptionsSet(cfg *clientConfig, includeHTTPClient bool) []string {
+	var names []string
+	if includeHTTPClient && cfg.httpClientSet {
+		names = append(names, "WithHTTPClient")
+	}
+	if cfg.maxConcurrentSet {
+		names = append(names, "WithMaxConcurrentRequests")
+	}
+	if cfg.maxRetriesSet {
+		names = append(names, "WithMaxRetries")
+	}
+	if cfg.retryWaitMinSet {
+		names = append(names, "WithRetryWaitMin")
+	}
+	if cfg.retryWaitMaxSet {
+		names = append(names, "WithRetryWaitMax")
+	}
+	return names
+}
+
+// validateOAuthOptions returns an error if any ClientOption that is not
+// meaningful for an OAuth client was set.
+// Only [WithApiUrl], [WithHTTPClient], [WithTimeout], and [WithUserAgent] are
+// accepted; passing anything else is almost certainly a mistake by the caller
+// and is rejected explicitly so the silent-no-op footgun does not bite at
+// runtime.
+func validateOAuthOptions(cfg *clientConfig) error {
+	rejected := transportOptionsSet(cfg, false)
+	if cfg.authToken != "" {
+		rejected = append(rejected, "WithAuthToken")
+	}
+	if cfg.transport != nil {
+		rejected = append(rejected, "WithTransport")
+	}
+	if cfg.otlpEndpoint != "" {
+		rejected = append(rejected, "WithOtlpEndpoint")
+	}
+	if len(rejected) == 0 {
+		return nil
+	}
+	return fmt.Errorf(
+		"dash0: NewOAuthClient does not support %s; only WithApiUrl, WithHTTPClient, WithTimeout, and WithUserAgent are accepted",
+		strings.Join(rejected, ", "),
+	)
+}
+
 // validateTransportConflicts returns an error if any transport-level
 // ClientOption was set alongside WithTransport.
 func validateTransportConflicts(cfg *clientConfig) error {
-	var conflicts []string
-	if cfg.httpClientSet {
-		conflicts = append(conflicts, "WithHTTPClient")
-	}
-	if cfg.maxConcurrentSet {
-		conflicts = append(conflicts, "WithMaxConcurrentRequests")
-	}
-	if cfg.maxRetriesSet {
-		conflicts = append(conflicts, "WithMaxRetries")
-	}
-	if cfg.retryWaitMinSet {
-		conflicts = append(conflicts, "WithRetryWaitMin")
-	}
-	if cfg.retryWaitMaxSet {
-		conflicts = append(conflicts, "WithRetryWaitMax")
-	}
+	conflicts := transportOptionsSet(cfg, true)
 	if len(conflicts) == 0 {
 		return nil
 	}

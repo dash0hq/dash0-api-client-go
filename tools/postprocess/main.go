@@ -44,6 +44,11 @@ var symbolRenames = map[string]string{
 	"String": "PrometheusResultTypeString",
 }
 
+// constRenames maps short constant names to prefixed replacements. Unlike
+// symbolRenames (which apply globally), these are only applied to const
+// value specs to avoid renaming identically-named struct fields.
+var constRenames = map[string]string{}
+
 // deprecatedFields lists fields to remove from specific structs. Each entry
 // maps a struct type name to a set of field names whose doc comments contain
 // "Deprecated". Only fields with deprecated comments are actually removed, so
@@ -72,6 +77,7 @@ func main() {
 	}
 
 	renameSymbols(file)
+	renameConsts(file)
 	removeDeprecatedFields(file, fset)
 	stripYAMLHandling(file)
 	// Note: we intentionally do NOT remove duplicate struct fields. If
@@ -121,6 +127,43 @@ func (r symbolRenamer) Visit(n ast.Node) ast.Visitor {
 		return nil
 	}
 	return r
+}
+
+// renameConsts renames const identifiers listed in constRenames. Only names
+// that appear as the identifier of a const ValueSpec are renamed, leaving
+// identically-named struct fields untouched.
+func renameConsts(file *ast.File) {
+	// Collect the set of positions that are const value spec names.
+	constPositions := map[token.Pos]bool{}
+	for _, decl := range file.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.CONST {
+			continue
+		}
+		for _, spec := range genDecl.Specs {
+			vs, ok := spec.(*ast.ValueSpec)
+			if !ok {
+				continue
+			}
+			for _, name := range vs.Names {
+				if _, found := constRenames[name.Name]; found {
+					constPositions[name.Pos()] = true
+				}
+			}
+		}
+	}
+
+	// Walk the AST and rename only identifiers at collected positions.
+	ast.Inspect(file, func(n ast.Node) bool {
+		if ident, ok := n.(*ast.Ident); ok {
+			if constPositions[ident.Pos()] {
+				if replacement, found := constRenames[ident.Name]; found {
+					ident.Name = replacement
+				}
+			}
+		}
+		return true
+	})
 }
 
 // removeDeprecatedFields removes fields listed in the deprecatedFields map
