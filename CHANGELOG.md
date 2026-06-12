@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.15.0
+
+
+### Features
+- add OAuthClient for unauthenticated OAuth 2.0 endpoints
+
 ## v1.14.0
 
 
