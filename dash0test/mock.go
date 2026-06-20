@@ -112,6 +112,10 @@ type MockClient struct {
 	GetLogRecordsFunc     func(ctx context.Context, request *dash0.GetLogRecordsRequest) (*dash0.GetLogRecordsResponse, error)
 	GetLogRecordsIterFunc func(ctx context.Context, request *dash0.GetLogRecordsRequest) *dash0.Iter[dash0.ResourceLogs]
 
+	// Failed Checks
+	GetFailedChecksFunc     func(ctx context.Context, request *dash0.GetFailedChecksRequest) (*dash0.GetFailedChecksResponse, error)
+	GetFailedChecksIterFunc func(ctx context.Context, request *dash0.GetFailedChecksRequest) *dash0.Iter[dash0.Issue]
+
 	// Import
 	ImportCheckRuleFunc      func(ctx context.Context, rule *dash0.PrometheusAlertRule, dataset *string) (*dash0.PrometheusAlertRule, error)
 	ImportDashboardFunc      func(ctx context.Context, dashboard *dash0.DashboardDefinition, dataset *string) (*dash0.DashboardDefinition, error)
@@ -617,6 +621,22 @@ func (m *MockClient) GetLogRecords(ctx context.Context, request *dash0.GetLogRec
 func (m *MockClient) GetLogRecordsIter(ctx context.Context, request *dash0.GetLogRecordsRequest) *dash0.Iter[dash0.ResourceLogs] {
 	if m.GetLogRecordsIterFunc != nil {
 		return m.GetLogRecordsIterFunc(ctx, request)
+	}
+	return nil
+}
+
+// Failed Checks
+
+func (m *MockClient) GetFailedChecks(ctx context.Context, request *dash0.GetFailedChecksRequest) (*dash0.GetFailedChecksResponse, error) {
+	if m.GetFailedChecksFunc != nil {
+		return m.GetFailedChecksFunc(ctx, request)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetFailedChecksIter(ctx context.Context, request *dash0.GetFailedChecksRequest) *dash0.Iter[dash0.Issue] {
+	if m.GetFailedChecksIterFunc != nil {
+		return m.GetFailedChecksIterFunc(ctx, request)
 	}
 	return nil
 }

@@ -249,6 +249,13 @@ func SpansExplorerURL(apiURL string, filters []DeeplinkFilter, from, to string, 
 	return explorerURL(apiURL, deeplinkPathViewTracing, filters, from, to, dataset)
 }
 
+// FailedChecksExplorerURL builds a deep link to the Dash0 alerting failed checks view.
+// The URL includes optional filter criteria, time range, and optional dataset as query parameters.
+// It returns an empty string if the API URL is empty or cannot be parsed.
+func FailedChecksExplorerURL(apiURL string, filters []DeeplinkFilter, from, to string, dataset *string) string {
+	return explorerURL(apiURL, deeplinkPathViewFailedChecks, filters, from, to, dataset)
+}
+
 // TracesExplorerURL builds a deep link to the Dash0 traces explorer for a
 // specific trace. The URL includes the trace ID and optional dataset as query
 // parameters.

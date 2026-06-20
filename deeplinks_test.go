@@ -231,6 +231,30 @@ func TestLogsExplorerURL(t *testing.T) {
 	}
 }
 
+func TestFailedChecksExplorerURL(t *testing.T) {
+	filters := []DeeplinkFilter{{Key: "priority", Operator: "is", Value: "p1"}}
+	u := parseURL(t, FailedChecksExplorerURL("https://api.us-west-2.aws.dash0.com", filters, "now-1h", "now", Ptr("production")))
+	if u.Host != "app.dash0.com" {
+		t.Errorf("host = %q, want app.dash0.com", u.Host)
+	}
+	if u.Path != "/goto/alerting/failed-checks" {
+		t.Errorf("path = %q, want /goto/alerting/failed-checks", u.Path)
+	}
+	q := u.Query()
+	if q.Get("from") != "now-1h" {
+		t.Errorf("from = %q, want now-1h", q.Get("from"))
+	}
+	if q.Get("to") != "now" {
+		t.Errorf("to = %q, want now", q.Get("to"))
+	}
+	if q.Get("dataset") != "production" {
+		t.Errorf("dataset = %q, want production", q.Get("dataset"))
+	}
+	if f := q.Get("filter"); len(f) == 0 || f[0] != '[' {
+		t.Errorf("filter = %q, want a JSON array", f)
+	}
+}
+
 func TestTracesExplorerURL(t *testing.T) {
 	u := parseURL(t, TracesExplorerURL("https://api.dash0.com", "trace-abc", nil))
 	if u.Path != "/goto/traces/explorer" {
@@ -250,6 +274,9 @@ func TestExplorerURL_EmptyAPIURL(t *testing.T) {
 	}
 	if got := SpansExplorerURL("", nil, "now-1h", "now", nil); got != "" {
 		t.Errorf("SpansExplorerURL empty api url = %q, want empty", got)
+	}
+	if got := FailedChecksExplorerURL("", nil, "now-1h", "now", nil); got != "" {
+		t.Errorf("FailedChecksExplorerURL empty api url = %q, want empty", got)
 	}
 	if got := TracesExplorerURL("", "t", nil); got != "" {
 		t.Errorf("TracesExplorerURL empty api url = %q, want empty", got)

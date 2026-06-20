@@ -993,6 +993,59 @@ func ExampleViewDeeplinkURL() {
 	// Output: https://app.dash0.com/goto/traces/explorer?dataset=production&view_id=view-7
 }
 
+func ExampleFailedChecksExplorerURL() {
+	filters := []dash0.DeeplinkFilter{{Key: "priority", Operator: "is", Value: "p1"}}
+	fmt.Println(dash0.FailedChecksExplorerURL("https://api.us-west-2.aws.dash0.com", filters, "now-1h", "now", dash0.Ptr("production")))
+	// Output: https://app.dash0.com/goto/alerting/failed-checks?dataset=production&filter=%5B%7B%22key%22%3A%22priority%22%2C%22operator%22%3A%22is%22%2C%22value%22%3A%22p1%22%7D%5D&from=now-1h&to=now
+}
+
+// Failed checks
+
+func ExampleClient_GetFailedChecks() {
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	resp, err := client.GetFailedChecks(context.Background(), &dash0.GetFailedChecksRequest{
+		TimeRange:  dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+		Pagination: &dash0.CursorPagination{Limit: dash0.Int64(50)},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, issue := range resp.Issues {
+		fmt.Println(issue.Id, issue.InstanceStatus, issue.CheckRule.Name)
+	}
+}
+
+func ExampleClient_GetFailedChecksIter() {
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	iter := client.GetFailedChecksIter(context.Background(), &dash0.GetFailedChecksRequest{
+		TimeRange:  dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+		Pagination: &dash0.CursorPagination{Limit: dash0.Int64(100)},
+	})
+	for iter.Next() {
+		issue := iter.Current()
+		fmt.Println(issue.Id, issue.InstanceStatus)
+	}
+	if err := iter.Err(); err != nil {
+		log.Fatal(err)
+	}
+}
+
 // PKCE and OAuth state helpers
 
 func ExampleGeneratePKCEPair() {

@@ -118,6 +118,10 @@ type Client interface {
 	GetLogRecords(ctx context.Context, request *GetLogRecordsRequest) (*GetLogRecordsResponse, error)
 	GetLogRecordsIter(ctx context.Context, request *GetLogRecordsRequest) *Iter[ResourceLogs]
 
+	// Failed Checks
+	GetFailedChecks(ctx context.Context, request *GetFailedChecksRequest) (*GetFailedChecksResponse, error)
+	GetFailedChecksIter(ctx context.Context, request *GetFailedChecksRequest) *Iter[Issue]
+
 	// Import
 	ImportCheckRule(ctx context.Context, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error)
 	ImportDashboard(ctx context.Context, dashboard *DashboardDefinition, dataset *string) (*DashboardDefinition, error)
