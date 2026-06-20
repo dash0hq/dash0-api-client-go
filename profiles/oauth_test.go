@@ -791,10 +791,10 @@ func TestRevokeOAuthTokens(t *testing.T) {
 
 func TestValidateRefreshResponse(t *testing.T) {
 	cases := []struct {
-		name              string
-		resp              *dash0.OAuthTokenResponse
-		wantErr           string
-		wantTrustedExpIn  int
+		name             string
+		resp             *dash0.OAuthTokenResponse
+		wantErr          string
+		wantTrustedExpIn int
 	}{
 		{
 			name:    "nil response",
@@ -936,4 +936,3 @@ func TestExchangeRefreshToken(t *testing.T) {
 		}
 	})
 }
-

@@ -63,6 +63,22 @@ package dash0
 // [DashboardMetadata.Labels.Dash0Comsource].
 // Update read and write call sites accordingly; there is no in-package
 // shim because struct fields cannot be aliased.
+//
+// # Migration guide (v1.15.x to <NEXT_RELEASE>)
+//
+// The upstream OpenAPI spec reverted the [HttpRequestBodyKind] constant
+// rename: the canonical names are once again the short forms ([Form],
+// [Graphql], [Json], [Raw]).
+// The prefixed names ([HttpRequestBodyKindForm], [HttpRequestBodyKindGraphql],
+// [HttpRequestBodyKindJson], [HttpRequestBodyKindRaw]) remain as deprecated
+// aliases.
+//
+// The upstream spec also dropped the [ResponseFormat] type (and its
+// [ResponseFormatJson] and [ResponseFormatYaml] constants) along with the
+// `format` query parameter on the SLO GET endpoint
+// ([GetApiSlosOriginOrIdParams.Format]).
+// There is no in-package shim because the type, constants, and field were
+// removed wholesale by the upstream spec.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -164,14 +180,22 @@ const V1alpha1 = SpamFilterApiVersionV1Alpha1V1alpha1
 // Deprecated: since v1.12.1. Use [SpamFilterDefinitionKindDash0SpamFilter] instead.
 const Dash0SpamFilter = SpamFilterDefinitionKindDash0SpamFilter
 
-// Deprecated: since v1.13.1. Use [HtmlForm] instead.
-const Form = HttpRequestBodyKindForm
+// HttpRequestBodyKindForm is a deprecated alias for [Form].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Form] instead.
+const HttpRequestBodyKindForm = Form
 
-// Deprecated: since v1.13.1. Use [HtmlGraphql] instead.
-const Graphql = HttpRequestBodyKindGraphql
+// HttpRequestBodyKindGraphql is a deprecated alias for [Graphql].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Graphql] instead.
+const HttpRequestBodyKindGraphql = Graphql
 
-// Deprecated: since v1.13.1. Use [HtmlJson] instead.
-const Json = HttpRequestBodyKindJson
+// HttpRequestBodyKindJson is a deprecated alias for [Json].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Json] instead.
+const HttpRequestBodyKindJson = Json
 
-// Deprecated: since v1.13.1. Use [HtmlRaw] instead.
-const Raw = HttpRequestBodyKindRaw
+// HttpRequestBodyKindRaw is a deprecated alias for [Raw].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Raw] instead.
+const HttpRequestBodyKindRaw = Raw

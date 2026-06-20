@@ -99,3 +99,14 @@ ViewDeeplinkURL
 # externalRedMetricsLastSeenAt field on DatasetMetricsSettings. Consumers
 # reading it should fall back to absence-as-unknown.
 DatasetMetricsSettings.ExternalRedMetricsLastSeenAt
+
+# <NEXT_RELEASE>: Upstream OpenAPI spec removed the ResponseFormat type
+# (with its ResponseFormatJson and ResponseFormatYaml constants) and the
+# `format` query parameter on the SLO GET endpoint
+# (GetApiSlosOriginOrIdParams.Format). No in-package shim is possible
+# because the type, constants, and field were removed wholesale by the
+# upstream spec.
+ResponseFormat
+ResponseFormatJson
+ResponseFormatYaml
+GetApiSlosOriginOrIdParams.Format

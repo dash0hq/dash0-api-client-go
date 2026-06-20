@@ -62,6 +62,7 @@ const (
 
 // Defines values for DatasetAction.
 const (
+	DatasetCreateAgent0Automation   DatasetAction = "dataset:createAgent0Automation"
 	DatasetCreateCheckRule          DatasetAction = "dataset:createCheckRule"
 	DatasetCreateRecordingRuleGroup DatasetAction = "dataset:createRecordingRuleGroup"
 	DatasetCreateSLO                DatasetAction = "dataset:createSLO"
@@ -75,6 +76,13 @@ const (
 const (
 	Restricted   DatasetRestriction = "restricted"
 	Unrestricted DatasetRestriction = "unrestricted"
+)
+
+// Defines values for EdgeLogTemplateFieldType.
+const (
+	N0 EdgeLogTemplateFieldType = 0
+	N1 EdgeLogTemplateFieldType = 1
+	N2 EdgeLogTemplateFieldType = 2
 )
 
 // Defines values for ErrorAssertionKind.
@@ -97,10 +105,10 @@ const (
 
 // Defines values for HttpRequestBodyKind.
 const (
-	HttpRequestBodyKindForm    HttpRequestBodyKind = "form"
-	HttpRequestBodyKindGraphql HttpRequestBodyKind = "graphql"
-	HttpRequestBodyKindJson    HttpRequestBodyKind = "json"
-	HttpRequestBodyKindRaw     HttpRequestBodyKind = "raw"
+	Form    HttpRequestBodyKind = "form"
+	Graphql HttpRequestBodyKind = "graphql"
+	Json    HttpRequestBodyKind = "json"
+	Raw     HttpRequestBodyKind = "raw"
 )
 
 // Defines values for HttpRequestMethod.
@@ -248,12 +256,6 @@ const (
 // Defines values for ResourceOrchestration.
 const (
 	Kubernetes ResourceOrchestration = "kubernetes"
-)
-
-// Defines values for ResponseFormat.
-const (
-	ResponseFormatJson ResponseFormat = "json"
-	ResponseFormatYaml ResponseFormat = "yaml"
 )
 
 // Defines values for RetentionClass.
@@ -978,6 +980,42 @@ type DiscordWebhookConfig struct {
 
 // Duration defines model for Duration.
 type Duration = string
+
+// EdgeLogParserPattern A learned log-parser pattern applied by dash0logparserprocessor on edge collectors
+// in apply-only mode. The regex carries `(?P<level>…)` and `(?P<message>…)` named
+// capture groups that set OTLP severity and the `dash0.log.message` attribute.
+type EdgeLogParserPattern struct {
+	// Pattern Regex with `(?P<level>…)` and `(?P<message>…)` named capture groups.
+	Pattern string `json:"pattern"`
+
+	// PatternId Stable content-addressed identifier (SHA1 of the regex source).
+	PatternId  string `json:"patternId"`
+	WorkloadId string `json:"workloadId"`
+}
+
+// EdgeLogTemplate A learned log template applied by dash0loggroupingprocessor on edge collectors.
+type EdgeLogTemplate struct {
+	FieldNames []string                   `json:"fieldNames"`
+	FieldTypes []EdgeLogTemplateFieldType `json:"fieldTypes"`
+	NumFields  int                        `json:"numFields"`
+
+	// Regexp Regex with named capture groups for each placeholder.
+	Regexp string `json:"regexp"`
+
+	// Template Human-readable template with `<fieldName>` placeholders; stamped on `dash0.log.pattern`.
+	Template string `json:"template"`
+
+	// TemplateId Stable content-addressed identifier for the template.
+	TemplateId string `json:"templateId"`
+	WorkloadId string `json:"workloadId"`
+}
+
+// EdgeLogTemplateFieldType - `0`: String.
+// - `1`: Numeric.
+// - `2`: Bool.
+//
+// Mirrors model.FieldType in dash0loggroupingprocessor.
+type EdgeLogTemplateFieldType int
 
 // EmailConfig defines model for EmailConfig.
 type EmailConfig struct {
@@ -2632,11 +2670,6 @@ type ResourceSpans struct {
 	ScopeSpans []ScopeSpans `json:"scopeSpans"`
 }
 
-// ResponseFormat Serialization format of an API response body.
-// - `json`: JSON-serialized body.
-// - `yaml`: YAML-serialized body.
-type ResponseFormat string
-
 // ResultRow defines model for ResultRow.
 type ResultRow struct {
 	Values []KeyValue `json:"values"`
@@ -2838,7 +2871,15 @@ type SemanticConventionUpgrades = string
 
 // SettingsPerOrganizationAndDatasetInfo defines model for SettingsPerOrganizationAndDatasetInfo.
 type SettingsPerOrganizationAndDatasetInfo struct {
-	DatasetSettings                     []DatasetSettings                       `json:"datasetSettings"`
+	DatasetSettings []DatasetSettings `json:"datasetSettings"`
+
+	// LogParserPatterns Learned log-parser patterns for this organization, mined by the SaaS dash0-ai
+	// logparser pipeline. Absence preserves the edge cache; an empty array clears it.
+	LogParserPatterns *[]EdgeLogParserPattern `json:"logParserPatterns,omitempty"`
+
+	// LogTemplates Learned log templates for this organization, mined by the SaaS dash0-ai
+	// loggrouping pipeline. Absence preserves the edge cache; an empty array clears it.
+	LogTemplates                        *[]EdgeLogTemplate                      `json:"logTemplates,omitempty"`
 	ObservedPatterns                    *[]ObservedPatternEntry                 `json:"observedPatterns,omitempty"`
 	SamplingSettings                    []SamplingDefinition                    `json:"samplingSettings"`
 	SignalToMetricsSettings             []SignalToMetricsDefinition             `json:"signalToMetricsSettings"`
@@ -3104,6 +3145,7 @@ type SloAlertNotificationTarget struct {
 }
 
 // SloAlertPolicy An alert policy following the OpenSLO AlertPolicy structure. Can contain inline conditions and notification targets, or reference an external policy via alertPolicyRef.
+// Not supported by Dash0: alert policies on SLOs are accepted for OpenSLO compatibility but ignored. See the alertPolicies field on SloSpec.
 type SloAlertPolicy struct {
 	// AlertPolicyRef Reference to an external AlertPolicy by name.
 	AlertPolicyRef *string                 `json:"alertPolicyRef,omitempty"`
@@ -3139,7 +3181,10 @@ type SloAlertPolicySpec struct {
 	NotificationTargets []SloAlertNotificationTarget `json:"notificationTargets"`
 }
 
-// SloAnnotations defines model for SloAnnotations.
+// SloAnnotations Resource annotations. Keys prefixed with `dash0.com/` are reserved for Dash0-managed
+// metadata (timestamps, enabled, folder path, sharing); reserved or blank keys supplied
+// by the caller are ignored. Use any other key for user-defined annotations, which are
+// stored and returned on read. At most 50 user-defined annotations are allowed.
 type SloAnnotations struct {
 	// Dash0ComcreatedAt Timestamp when the SLO was created. Set by the server; read-only.
 	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
@@ -3182,6 +3227,9 @@ type SloComparisonOperator string
 // service level, described by a Service Level Indicator (SLI).
 // Compatible with the OpenSLO v1 specification (https://openslo.com/) with Dash0-specific
 // extensions for access control, dataset scoping, and UI organization.
+//
+// Alerting on SLOs (spec.alertPolicies) is not supported. The field is accepted for
+// OpenSLO compatibility but ignored; see spec.alertPolicies for details.
 //
 // SLOs evaluate with a fixed 5-minute settling delay applied automatically: at any
 // moment, the SLI reflects telemetry that arrived at least 5 minutes ago. This
@@ -3258,6 +3306,10 @@ type SloLabels struct {
 
 // SloMetadata defines model for SloMetadata.
 type SloMetadata struct {
+	// Annotations Resource annotations. Keys prefixed with `dash0.com/` are reserved for Dash0-managed
+	// metadata (timestamps, enabled, folder path, sharing); reserved or blank keys supplied
+	// by the caller are ignored. Use any other key for user-defined annotations, which are
+	// stored and returned on read. At most 50 user-defined annotations are allowed.
 	Annotations *SloAnnotations `json:"annotations,omitempty"`
 
 	// Labels Resource labels. Keys prefixed with `dash0.com/` are reserved for Dash0-managed
@@ -3349,7 +3401,8 @@ type SloRawType string
 
 // SloSpec defines model for SloSpec.
 type SloSpec struct {
-	// AlertPolicies Alert policies for this SLO. Each entry can be an inline AlertPolicy object or a reference to an external AlertPolicy via alertPolicyRef.
+	// AlertPolicies Alert policies for this SLO, following the OpenSLO v1 specification.
+	// Not supported by Dash0. This field is accepted for OpenSLO compatibility, but any alert policies are ignored: they are not stored, not evaluated, and not returned when reading the SLO back.
 	AlertPolicies *[]SloAlertPolicy `json:"alertPolicies,omitempty"`
 
 	// BudgetingMethod - `Occurrences`: Ratio of counts of good events to total events.
@@ -4956,9 +5009,6 @@ type DeleteApiSlosOriginOrIdParams struct {
 // GetApiSlosOriginOrIdParams defines parameters for GetApiSlosOriginOrId.
 type GetApiSlosOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
-
-	// Format Return OpenSLO YAML instead of JSON. Equivalent to `Accept: application/yaml`.
-	Format *ResponseFormat `form:"format,omitempty" json:"format,omitempty"`
 }
 
 // PutApiSlosOriginOrIdParams defines parameters for PutApiSlosOriginOrId.
@@ -12934,22 +12984,6 @@ func NewGetApiSlosOriginOrIdRequest(server string, originOrId string, params *Ge
 
 		}
 
-		if params.Format != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "format", runtime.ParamLocationQuery, *params.Format); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
 		queryURL.RawQuery = queryValues.Encode()
 	}
 
@@ -16575,8 +16609,7 @@ type GetApiSlosOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *SloDefinition
-
-	JSONDefault *ErrorResponse
+	JSONDefault  *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
