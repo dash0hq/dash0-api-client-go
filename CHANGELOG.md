@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.16.0
+
+
+### Features
+- add APIs to retrieve failed checks
+
 ## v1.15.0
 
 

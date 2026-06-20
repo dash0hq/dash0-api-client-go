@@ -64,7 +64,7 @@ package dash0
 // Update read and write call sites accordingly; there is no in-package
 // shim because struct fields cannot be aliased.
 //
-// # Migration guide (v1.15.x to <NEXT_RELEASE>)
+// # Migration guide (v1.15.x to v1.16.0)
 //
 // The upstream OpenAPI spec reverted the [HttpRequestBodyKind] constant
 // rename: the canonical names are once again the short forms ([Form],
@@ -182,20 +182,20 @@ const Dash0SpamFilter = SpamFilterDefinitionKindDash0SpamFilter
 
 // HttpRequestBodyKindForm is a deprecated alias for [Form].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [Form] instead.
+// Deprecated: since v1.16.0. Use [Form] instead.
 const HttpRequestBodyKindForm = Form
 
 // HttpRequestBodyKindGraphql is a deprecated alias for [Graphql].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [Graphql] instead.
+// Deprecated: since v1.16.0. Use [Graphql] instead.
 const HttpRequestBodyKindGraphql = Graphql
 
 // HttpRequestBodyKindJson is a deprecated alias for [Json].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [Json] instead.
+// Deprecated: since v1.16.0. Use [Json] instead.
 const HttpRequestBodyKindJson = Json
 
 // HttpRequestBodyKindRaw is a deprecated alias for [Raw].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [Raw] instead.
+// Deprecated: since v1.16.0. Use [Raw] instead.
 const HttpRequestBodyKindRaw = Raw
