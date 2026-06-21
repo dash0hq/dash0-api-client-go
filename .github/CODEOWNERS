@@ -1,0 +1,12 @@
+# Code owners for dash0-api-client-go.
+#
+# Each line maps a path pattern to one or more owners.
+# Owners are automatically requested for review on pull requests that
+# modify matching files. When the repository's branch protection enables
+# "Require review from Code Owners", an approving review from an owner is
+# required before a pull request can be merged.
+#
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners.
+
+# Default owner for everything in the repository.
+* @mmanciop
