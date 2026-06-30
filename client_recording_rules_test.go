@@ -19,11 +19,13 @@ func TestStripRecordingRuleServerFields(t *testing.T) {
 		"team":              "sre",
 	}
 	annotations := map[string]string{
-		"dash0.com/created-at":          "2025-01-01T00:00:00Z",
-		"dash0.com/updated-at":          "2025-01-02T00:00:00Z",
-		"dash0.com/deleted-at":          "2025-01-03T00:00:00Z",
-		"dash0.com/first-evaluation-at": "2025-01-01T00:01:00Z",
-		"dash0.com/enabled":             "true",
+		"dash0.com/created-at":              "2025-01-01T00:00:00Z",
+		"dash0.com/updated-at":              "2025-01-02T00:00:00Z",
+		"dash0.com/deleted-at":              "2025-01-03T00:00:00Z",
+		"dash0.com/first-evaluation-at":     "2025-01-01T00:01:00Z",
+		"dash0.com/runtime-disabled-at":     "2025-01-04T00:00:00Z",
+		"dash0.com/runtime-disabled-reason": "many-to-many vector match",
+		"dash0.com/enabled":                 "true",
 	}
 	rule := &RecordingRule{
 		Metadata: PrometheusRuleMetadata{
@@ -64,6 +66,12 @@ func TestStripRecordingRuleServerFields(t *testing.T) {
 	}
 	if _, ok := (*rule.Metadata.Annotations)["dash0.com/first-evaluation-at"]; ok {
 		t.Error("dash0.com/first-evaluation-at annotation should be removed")
+	}
+	if _, ok := (*rule.Metadata.Annotations)["dash0.com/runtime-disabled-at"]; ok {
+		t.Error("dash0.com/runtime-disabled-at annotation should be removed")
+	}
+	if _, ok := (*rule.Metadata.Annotations)["dash0.com/runtime-disabled-reason"]; ok {
+		t.Error("dash0.com/runtime-disabled-reason annotation should be removed")
 	}
 	if (*rule.Metadata.Annotations)["dash0.com/enabled"] != "true" {
 		t.Error("other annotations should be preserved")

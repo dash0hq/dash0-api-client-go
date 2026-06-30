@@ -144,6 +144,8 @@ func StripRecordingRuleServerFields(rule *RecordingRule) {
 		delete(*rule.Metadata.Annotations, "dash0.com/updated-at")
 		delete(*rule.Metadata.Annotations, "dash0.com/deleted-at")
 		delete(*rule.Metadata.Annotations, "dash0.com/first-evaluation-at")
+		delete(*rule.Metadata.Annotations, "dash0.com/runtime-disabled-at")
+		delete(*rule.Metadata.Annotations, "dash0.com/runtime-disabled-reason")
 	}
 }
 
