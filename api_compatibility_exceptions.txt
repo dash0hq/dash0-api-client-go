@@ -110,3 +110,115 @@ ResponseFormat
 ResponseFormatJson
 ResponseFormatYaml
 GetApiSlosOriginOrIdParams.Format
+
+# <NEXT_RELEASE>: The team CRD envelope is now exposed as
+# TeamDefinitionV1Alpha1 (renamed in postprocess) so the API-version
+# suffix is visible in every call site. `TeamDefinition` remains as a
+# deprecated type alias in client_teams.go so v1.x consumers can migrate
+# incrementally, but the generated struct is exported under the versioned
+# name and downstream generated symbols (JSON200 fields, request bodies,
+# and so on) point at the new type identity.
+TeamDefinitionKind
+PostApiTeamsJSONRequestBody
+PostApiTeamsResponse.JSON200
+GetApiTeamsResponse.JSON200
+
+# <NEXT_RELEASE>: The upstream spec now exposes SpamFilterApiVersion as
+# a top-level union type covering both v1alpha1 and v1alpha2, and
+# SpamFilterApiVersionV1Alpha1 stays generated as the narrower type. The
+# deprecated `V1alpha1` alias in compat.go now points at the wider
+# enum's `SpamFilterApiVersionV1alpha1` value.
+V1alpha1
+
+# <NEXT_RELEASE>: Client.GetTeam now returns *TeamDefinitionV1Alpha1
+# instead of *GetTeamResponse; the CRD envelope replaces the enriched
+# UI-only response. The client extracts the envelope from the server's
+# enriched response under the hood so callers work with the canonical
+# type. GetTeamResponse itself remains generated for callers that need
+# the raw enriched shape, and is exposed via the new GetTeamWithAssets
+# method.
+Client.GetTeam
+(*MockClient).GetTeam
+MockClient.GetTeamFunc
+Client.CreateTeam
+(*MockClient).CreateTeam
+MockClient.CreateTeamFunc
+
+# <NEXT_RELEASE>: TeamLabels gained an AdditionalProperties map so that
+# arbitrary user-supplied keys survive JSON round-trips (the server
+# accepts them on write but silently drops any key outside dash0.com/*).
+# Adding the map field makes the struct non-comparable, which is a wire
+# non-issue but shows up as a gorelease flag.
+TeamLabels
+
+# <NEXT_RELEASE>: The team GET response schema on the public /api/ surface
+# now returns the enriched GetTeamResponse (envelope under .Team plus
+# accessible-asset arrays and enriched member records). Fields on
+# GetTeamResponse are re-typed accordingly (Team is TeamDefinitionV1Alpha1
+# rather than TeamDefinition).
+GetTeamResponse
+GetTeamResponse.Team
+GetTeamResponse.Members
+GetTeamResponse.Dashboards
+GetTeamResponse.CheckRules
+GetTeamResponse.SyntheticChecks
+GetTeamResponse.Views
+GetTeamResponse.Datasets
+GetApiTeamsOriginOrIdResponse.JSON200
+
+# <NEXT_RELEASE>: NotificationChannelType, SamplingMode, and the retention
+# duration enums were renamed by oapi-codegen from short forms (Slack,
+# Webhook, SamplingModeAdaptive, N1d, N7d, ...) to fully-qualified type-
+# prefixed names (NotificationChannelTypeSlack, SamplingModeAdaptive
+# remains but the bare Adaptive alias is gone, RetentionPeriodN1d, ...).
+# Every downstream Dash0 IaC tool references these enums through the
+# type-prefixed names already, so no shims are needed. The bare short
+# names remained as accidental exports until the upstream spec regen
+# tightened the schema.
+AllQuiet
+Betterstack
+DiscordWebhook
+Email
+EmailV2
+GoogleChatWebhook
+Ilert
+Incidentio
+JiraServiceManagementOps
+Opsgenie
+Pagerduty
+PrometheusAlertmanager
+PrometheusWebhook
+Slack
+SlackBot
+TeamsWebhook
+Webhook
+SamplingModeAdaptive
+SamplingModeDisabled
+Default
+Forever
+N0
+N1
+N2
+N1d
+N1w
+N2w
+N4w
+N13M
+N3M
+N6M
+
+# <NEXT_RELEASE>: Upstream OpenAPI spec removed the EdgeLog* types
+# (log parser patterns and log templates were dataset settings that have
+# since been reworked). No in-package shim is possible.
+EdgeLogParserPattern
+EdgeLogTemplate
+EdgeLogTemplateFieldType
+SettingsPerOrganizationAndDatasetInfo.LogParserPatterns
+SettingsPerOrganizationAndDatasetInfo.LogTemplates
+
+# <NEXT_RELEASE>: Upstream spec change on
+# TimeSeriesAggregationMetricNameMatch.OtherFilters — from a
+# []AttributeFilter list to a *FilterCriteria pointer (unifies on the
+# richer criteria shape used elsewhere).
+TimeSeriesAggregationMetricNameMatch.OtherFilters
+
