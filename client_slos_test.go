@@ -263,18 +263,6 @@ func TestGetSLOName(t *testing.T) {
 	}
 }
 
-func newTestClient(t *testing.T, serverURL string) Client {
-	t.Helper()
-	c, err := NewClient(
-		WithApiUrl(serverURL),
-		WithAuthToken("auth_test123"),
-	)
-	if err != nil {
-		t.Fatalf("failed to create client: %v", err)
-	}
-	return c
-}
-
 func TestListSLOs(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
