@@ -224,15 +224,25 @@ func (c *client) ResolveMemberIDsToEmails(ctx context.Context, ids []string) ([]
 	if err != nil {
 		return nil, fmt.Errorf("dash0: resolve member IDs to emails failed: %w", err)
 	}
-	byID := make(map[string]string, len(members))
+	// Members are indexed by both metadata.name (the canonical, required
+	// identifier) and metadata.labels["dash0.com/id"] (an optional duplicate
+	// label). The public /api/members endpoint currently populates
+	// metadata.name for every member but leaves the dash0.com/id label unset,
+	// so a resolver that keyed only on the label produced an empty map and
+	// silently passed every ID through as an ID. Indexing on both fields
+	// tolerates either shape.
+	byID := make(map[string]string, len(members)*2)
 	for _, m := range members {
-		if m == nil || m.Metadata.Labels == nil || m.Metadata.Labels.Dash0Comid == nil {
+		if m == nil || m.Spec.Display.Email == nil || *m.Spec.Display.Email == "" {
 			continue
 		}
-		if m.Spec.Display.Email == nil || *m.Spec.Display.Email == "" {
-			continue
+		email := *m.Spec.Display.Email
+		if m.Metadata.Name != "" {
+			byID[m.Metadata.Name] = email
 		}
-		byID[*m.Metadata.Labels.Dash0Comid] = *m.Spec.Display.Email
+		if m.Metadata.Labels != nil && m.Metadata.Labels.Dash0Comid != nil && *m.Metadata.Labels.Dash0Comid != "" {
+			byID[*m.Metadata.Labels.Dash0Comid] = email
+		}
 	}
 	out := make([]string, len(ids))
 	for i, id := range ids {
