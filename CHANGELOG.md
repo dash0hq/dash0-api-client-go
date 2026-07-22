@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.17.1
+
+
+### Bug Fixes
+- index members by metadata.name in ResolveMemberIDsToEmails
+
 ## v1.17.0
 
 
