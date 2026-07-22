@@ -429,6 +429,93 @@ func ExampleSetSyntheticCheckID() {
 	// Output: sc-7
 }
 
+// SLO helpers
+
+func ExampleGetSLOName() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Name: "checkout-availability",
+			Annotations: &dash0.SloAnnotations{
+				AdditionalProperties: map[string]string{"dash0.com/display-name": "Checkout availability"},
+			},
+		},
+	}
+	fmt.Println(dash0.GetSLOName(slo))
+	// Output: Checkout availability
+}
+
+func ExampleGetSLOID() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+		},
+	}
+	fmt.Println(dash0.GetSLOID(slo))
+	// Output: 00000000-0000-0000-0000-000000000001
+}
+
+func ExampleGetSLODataset() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Labels: &dash0.SloLabels{Dash0Comdataset: dash0.Ptr("default")},
+		},
+	}
+	fmt.Println(dash0.GetSLODataset(slo))
+	// Output: default
+}
+
+func ExampleSetSLODataset() {
+	slo := &dash0.SloDefinition{}
+	dash0.SetSLODataset(slo, "default")
+	fmt.Println(*slo.Metadata.Labels.Dash0Comdataset)
+	// Output: default
+}
+
+func ExampleSetSLOID() {
+	slo := &dash0.SloDefinition{}
+	dash0.SetSLOID(slo, "00000000-0000-0000-0000-000000000001")
+	fmt.Println(*slo.Metadata.Labels.Dash0Comid)
+	// Output: 00000000-0000-0000-0000-000000000001
+}
+
+func ExampleSetSLOIDIfAbsent() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("existing-id")},
+		},
+	}
+	dash0.SetSLOIDIfAbsent(slo, "new-id")
+	fmt.Println(*slo.Metadata.Labels.Dash0Comid)
+	// Output: existing-id
+}
+
+func ExampleClearSLOID() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+		},
+	}
+	dash0.ClearSLOID(slo)
+	fmt.Println(slo.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleStripSLOServerFields() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Labels: &dash0.SloLabels{
+				Dash0Comid:      dash0.Ptr("00000000-0000-0000-0000-000000000001"),
+				Dash0Comversion: dash0.Ptr("2"),
+				Dash0Comdataset: dash0.Ptr("default"),
+				Dash0Comorigin:  dash0.Ptr("my-origin"),
+			},
+		},
+	}
+	dash0.StripSLOServerFields(slo)
+	fmt.Println(dash0.GetSLOID(slo), slo.Metadata.Labels.Dash0Comversion == nil)
+	// Output: 00000000-0000-0000-0000-000000000001 true
+}
+
 // Prometheus rule helpers
 
 func ExampleGetPrometheusRuleName() {

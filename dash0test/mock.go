@@ -45,6 +45,14 @@ type MockClient struct {
 	DeleteSyntheticCheckFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSyntheticChecksIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SyntheticChecksApiListItem]
 
+	// SLOs
+	ListSLOsFunc     func(ctx context.Context, dataset *string) ([]*dash0.SloDefinition, error)
+	GetSLOFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.SloDefinition, error)
+	CreateSLOFunc    func(ctx context.Context, slo *dash0.SloDefinition, dataset *string) (*dash0.SloDefinition, error)
+	UpdateSLOFunc    func(ctx context.Context, originOrID string, slo *dash0.SloDefinition, dataset *string) (*dash0.SloDefinition, error)
+	DeleteSLOFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListSLOsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SloDefinition]
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -263,6 +271,50 @@ func (m *MockClient) DeleteSyntheticCheck(ctx context.Context, originOrID string
 func (m *MockClient) ListSyntheticChecksIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SyntheticChecksApiListItem] {
 	if m.ListSyntheticChecksIterFunc != nil {
 		return m.ListSyntheticChecksIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// SLOs
+
+func (m *MockClient) ListSLOs(ctx context.Context, dataset *string) ([]*dash0.SloDefinition, error) {
+	if m.ListSLOsFunc != nil {
+		return m.ListSLOsFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetSLO(ctx context.Context, originOrID string, dataset *string) (*dash0.SloDefinition, error) {
+	if m.GetSLOFunc != nil {
+		return m.GetSLOFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateSLO(ctx context.Context, slo *dash0.SloDefinition, dataset *string) (*dash0.SloDefinition, error) {
+	if m.CreateSLOFunc != nil {
+		return m.CreateSLOFunc(ctx, slo, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateSLO(ctx context.Context, originOrID string, slo *dash0.SloDefinition, dataset *string) (*dash0.SloDefinition, error) {
+	if m.UpdateSLOFunc != nil {
+		return m.UpdateSLOFunc(ctx, originOrID, slo, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteSLO(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteSLOFunc != nil {
+		return m.DeleteSLOFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListSLOsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SloDefinition] {
+	if m.ListSLOsIterFunc != nil {
+		return m.ListSLOsIterFunc(ctx, dataset)
 	}
 	return nil
 }
