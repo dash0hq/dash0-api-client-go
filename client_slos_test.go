@@ -54,6 +54,7 @@ func TestStripSLOServerFields(t *testing.T) {
 				Dash0Comversion: &version,
 				Dash0Comdataset: &dataset,
 				Dash0Comorigin:  &origin,
+				Dash0Comsource:  Ptr(Api),
 				Dash0Comid:      Ptr("keep-this"),
 			},
 		},
@@ -78,6 +79,9 @@ func TestStripSLOServerFields(t *testing.T) {
 	}
 	if slo.Metadata.Labels.Dash0Comorigin != nil {
 		t.Error("Dash0Comorigin should be nil")
+	}
+	if slo.Metadata.Labels.Dash0Comsource != nil {
+		t.Error("Dash0Comsource should be nil")
 	}
 	if slo.Metadata.Labels.Dash0Comid == nil || *slo.Metadata.Labels.Dash0Comid != "keep-this" {
 		t.Error("Dash0Comid should be preserved")

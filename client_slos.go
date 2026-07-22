@@ -136,6 +136,7 @@ func StripSLOServerFields(slo *SloDefinition) {
 		slo.Metadata.Labels.Dash0Comversion = nil
 		slo.Metadata.Labels.Dash0Comorigin = nil
 		slo.Metadata.Labels.Dash0Comdataset = nil
+		slo.Metadata.Labels.Dash0Comsource = nil
 	}
 }
 
