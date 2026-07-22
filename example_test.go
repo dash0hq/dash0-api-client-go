@@ -1068,3 +1068,138 @@ func ExampleGenerateOAuthState() {
 	fmt.Println(len(state))
 	// Output: 43
 }
+
+// Teams
+
+func ExampleGetTeamName() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{Name: "backend-team"},
+	}
+	fmt.Println(dash0.GetTeamName(team))
+	// Output: backend-team
+}
+
+func ExampleGetTeamDisplayName() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Spec: dash0.TeamSpec{Display: dash0.TeamDisplay{Name: "Backend Team"}},
+	}
+	fmt.Println(dash0.GetTeamDisplayName(team))
+	// Output: Backend Team
+}
+
+func ExampleGetTeamID() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{
+			Labels: &dash0.TeamLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+		},
+	}
+	fmt.Println(dash0.GetTeamID(team))
+	// Output: 00000000-0000-0000-0000-000000000001
+}
+
+func ExampleGetTeamOrigin() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{
+			Labels: &dash0.TeamLabels{Dash0Comorigin: dash0.Ptr("tf_backend")},
+		},
+	}
+	fmt.Println(dash0.GetTeamOrigin(team))
+	// Output: tf_backend
+}
+
+func ExampleSetTeamID() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{Name: "backend-team"},
+	}
+	dash0.SetTeamID(team, "00000000-0000-0000-0000-000000000001")
+	fmt.Println(*team.Metadata.Labels.Dash0Comid)
+	// Output: 00000000-0000-0000-0000-000000000001
+}
+
+func ExampleSetTeamIDIfAbsent() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{
+			Labels: &dash0.TeamLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetTeamIDIfAbsent(team, "new-id")
+	fmt.Println(*team.Metadata.Labels.Dash0Comid)
+	// Output: existing
+}
+
+func ExampleClearTeamID() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{
+			Labels: &dash0.TeamLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+		},
+	}
+	dash0.ClearTeamID(team)
+	fmt.Println(team.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleStripTeamServerFields() {
+	team := &dash0.TeamDefinitionV1Alpha1{
+		Metadata: dash0.TeamMetadata{
+			Name: "backend-team",
+			Labels: &dash0.TeamLabels{
+				Dash0Comid:     dash0.Ptr("00000000-0000-0000-0000-000000000001"),
+				Dash0Comorigin: dash0.Ptr("00000000-0000-0000-0000-000000000001"),
+			},
+		},
+	}
+	dash0.StripTeamServerFields(team)
+	// dash0.com/origin is preserved because it is client-settable on create
+	// and immutable after; IaC callers rely on it for PUT-by-origin idempotency.
+	fmt.Println(team.Metadata.Labels.Dash0Comid == nil)
+	fmt.Println(*team.Metadata.Labels.Dash0Comorigin)
+	fmt.Println(team.Metadata.Name)
+	// Output:
+	// true
+	// 00000000-0000-0000-0000-000000000001
+	// backend-team
+}
+
+// ExampleClient_ResolveMemberIDsToEmails demonstrates the read-path
+// helper that translates the internal member IDs echoed by the server
+// back to email addresses for display. IDs that do not resolve to an
+// email are passed through as-is.
+func ExampleClient_ResolveMemberIDsToEmails() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		members := []dash0.MemberDefinition{
+			{
+				Metadata: dash0.MemberMetadata{
+					Name:   "alice",
+					Labels: &dash0.MemberLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-0000000000A1")},
+				},
+				Spec: dash0.MemberSpec{Display: dash0.MemberDisplay{Email: dash0.Ptr("alice@example.com")}},
+			},
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(members)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	ids := []string{"00000000-0000-0000-0000-0000000000A1", "user_orphaned"}
+	emails, err := client.ResolveMemberIDsToEmails(context.Background(), ids)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, email := range emails {
+		fmt.Println(email)
+	}
+	// Output:
+	// alice@example.com
+	// user_orphaned
+}

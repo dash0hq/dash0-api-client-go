@@ -4,8 +4,11 @@
 // Transformations applied:
 //  1. Rename symbols that conflict with the public API of this package
 //     (ClientOption, NewClient, WithHTTPClient, WithBaseURL, PrometheusRule,
-//     and the PrometheusResultType "string" enum value, which oapi-codegen
-//     names String and would clash with the hand-written String helper).
+//     the PrometheusResultType "string" enum value which oapi-codegen names
+//     String and would clash with the hand-written String helper, and the
+//     unversioned team CRD types TeamDefinition and TeamDefinitionKind which
+//     are stabilised as TeamDefinitionV1Alpha1 and TeamDefinitionV1Alpha1Kind
+//     to keep the CRD envelope's API-version suffix in the public surface).
 //     oapi-codegen does not provide a configuration option to rename these.
 //     Selector members (e.g. url.URL.String()) are left untouched so the
 //     rename never rewrites a method or field access on a different type.
@@ -42,6 +45,12 @@ var symbolRenames = map[string]string{
 	// The PrometheusResultType "string" value is generated as the const String,
 	// which clashes with the hand-written String helper in util.go.
 	"String": "PrometheusResultTypeString",
+	// The team CRD envelope is exposed as TeamDefinitionV1Alpha1 in the
+	// public API so the version suffix is visible in every call site. The
+	// unversioned name TeamDefinition survives as a deprecated alias in
+	// client_teams.go for existing consumers.
+	"TeamDefinition":     "TeamDefinitionV1Alpha1",
+	"TeamDefinitionKind": "TeamDefinitionV1Alpha1Kind",
 }
 
 // constRenames maps short constant names to prefixed replacements. Unlike

@@ -68,13 +68,16 @@ type Client interface {
 
 	// Teams
 	ListTeams(ctx context.Context) ([]*TeamsListItem, error)
-	CreateTeam(ctx context.Context, team *TeamDefinition) (*TeamDefinition, error)
-	GetTeam(ctx context.Context, originOrID string) (*GetTeamResponse, error)
+	CreateTeam(ctx context.Context, team *TeamDefinitionV1Alpha1) (*TeamDefinitionV1Alpha1, error)
+	UpsertTeam(ctx context.Context, originOrID string, team *TeamDefinitionV1Alpha1) (*TeamDefinitionV1Alpha1, error)
+	GetTeam(ctx context.Context, originOrID string) (*TeamDefinitionV1Alpha1, error)
+	GetTeamWithAssets(ctx context.Context, originOrID string) (*GetTeamResponse, error)
 	DeleteTeam(ctx context.Context, originOrID string) error
 	UpdateTeamDisplay(ctx context.Context, originOrID string, display *TeamDisplay) error
 	AddTeamMembers(ctx context.Context, originOrID string, request *AddTeamMembersRequest) error
 	RemoveTeamMember(ctx context.Context, originOrID string, memberID string) error
 	ListTeamsIter(ctx context.Context) *Iter[TeamsListItem]
+	ResolveMemberIDsToEmails(ctx context.Context, ids []string) ([]string, error)
 
 	// Recording Rules
 	ListRecordingRules(ctx context.Context, dataset *string) ([]*RecordingRule, error)

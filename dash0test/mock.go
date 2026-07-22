@@ -68,14 +68,17 @@ type MockClient struct {
 	ListMembersIterFunc func(ctx context.Context) *dash0.Iter[dash0.MemberDefinition]
 
 	// Teams
-	ListTeamsFunc         func(ctx context.Context) ([]*dash0.TeamsListItem, error)
-	CreateTeamFunc        func(ctx context.Context, team *dash0.TeamDefinition) (*dash0.TeamDefinition, error)
-	GetTeamFunc           func(ctx context.Context, originOrID string) (*dash0.GetTeamResponse, error)
-	DeleteTeamFunc        func(ctx context.Context, originOrID string) error
-	UpdateTeamDisplayFunc func(ctx context.Context, originOrID string, display *dash0.TeamDisplay) error
-	AddTeamMembersFunc    func(ctx context.Context, originOrID string, request *dash0.AddTeamMembersRequest) error
-	RemoveTeamMemberFunc  func(ctx context.Context, originOrID string, memberID string) error
-	ListTeamsIterFunc     func(ctx context.Context) *dash0.Iter[dash0.TeamsListItem]
+	ListTeamsFunc                func(ctx context.Context) ([]*dash0.TeamsListItem, error)
+	CreateTeamFunc               func(ctx context.Context, team *dash0.TeamDefinitionV1Alpha1) (*dash0.TeamDefinitionV1Alpha1, error)
+	UpsertTeamFunc               func(ctx context.Context, originOrID string, team *dash0.TeamDefinitionV1Alpha1) (*dash0.TeamDefinitionV1Alpha1, error)
+	GetTeamFunc                  func(ctx context.Context, originOrID string) (*dash0.TeamDefinitionV1Alpha1, error)
+	GetTeamWithAssetsFunc        func(ctx context.Context, originOrID string) (*dash0.GetTeamResponse, error)
+	DeleteTeamFunc               func(ctx context.Context, originOrID string) error
+	UpdateTeamDisplayFunc        func(ctx context.Context, originOrID string, display *dash0.TeamDisplay) error
+	AddTeamMembersFunc           func(ctx context.Context, originOrID string, request *dash0.AddTeamMembersRequest) error
+	RemoveTeamMemberFunc         func(ctx context.Context, originOrID string, memberID string) error
+	ListTeamsIterFunc            func(ctx context.Context) *dash0.Iter[dash0.TeamsListItem]
+	ResolveMemberIDsToEmailsFunc func(ctx context.Context, ids []string) ([]string, error)
 
 	// Recording Rules
 	ListRecordingRulesFunc     func(ctx context.Context, dataset *string) ([]*dash0.RecordingRule, error)
@@ -391,16 +394,30 @@ func (m *MockClient) ListTeams(ctx context.Context) ([]*dash0.TeamsListItem, err
 	return nil, nil
 }
 
-func (m *MockClient) CreateTeam(ctx context.Context, team *dash0.TeamDefinition) (*dash0.TeamDefinition, error) {
+func (m *MockClient) CreateTeam(ctx context.Context, team *dash0.TeamDefinitionV1Alpha1) (*dash0.TeamDefinitionV1Alpha1, error) {
 	if m.CreateTeamFunc != nil {
 		return m.CreateTeamFunc(ctx, team)
 	}
 	return nil, nil
 }
 
-func (m *MockClient) GetTeam(ctx context.Context, originOrID string) (*dash0.GetTeamResponse, error) {
+func (m *MockClient) UpsertTeam(ctx context.Context, originOrID string, team *dash0.TeamDefinitionV1Alpha1) (*dash0.TeamDefinitionV1Alpha1, error) {
+	if m.UpsertTeamFunc != nil {
+		return m.UpsertTeamFunc(ctx, originOrID, team)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetTeam(ctx context.Context, originOrID string) (*dash0.TeamDefinitionV1Alpha1, error) {
 	if m.GetTeamFunc != nil {
 		return m.GetTeamFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetTeamWithAssets(ctx context.Context, originOrID string) (*dash0.GetTeamResponse, error) {
+	if m.GetTeamWithAssetsFunc != nil {
+		return m.GetTeamWithAssetsFunc(ctx, originOrID)
 	}
 	return nil, nil
 }
@@ -438,6 +455,13 @@ func (m *MockClient) ListTeamsIter(ctx context.Context) *dash0.Iter[dash0.TeamsL
 		return m.ListTeamsIterFunc(ctx)
 	}
 	return nil
+}
+
+func (m *MockClient) ResolveMemberIDsToEmails(ctx context.Context, ids []string) ([]string, error) {
+	if m.ResolveMemberIDsToEmailsFunc != nil {
+		return m.ResolveMemberIDsToEmailsFunc(ctx, ids)
+	}
+	return nil, nil
 }
 
 // Recording Rules
