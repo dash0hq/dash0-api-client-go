@@ -866,6 +866,40 @@ func TestResolveMemberIDsToEmails(t *testing.T) {
 			t.Errorf("expected passthrough of raw ID, got %v", got)
 		}
 	})
+
+	t.Run("resolves via metadata.name when the dash0.com/id label is absent", func(t *testing.T) {
+		// The /api/members response on the public API populates metadata.name
+		// with the canonical member id but leaves labels["dash0.com/id"] unset
+		// (the field is `omitempty` on the wire). The resolver must key on
+		// metadata.name as the primary lookup and only use the label as a
+		// fallback — otherwise every id passes through as-is because the map
+		// keyed on the missing label is empty.
+		members := []MemberDefinition{
+			{
+				Metadata: MemberMetadata{Name: testMemberID1}, // no Labels
+				Spec:     MemberSpec{Display: MemberDisplay{Email: Ptr("alice@example.com")}},
+			},
+			{
+				Metadata: MemberMetadata{Name: testMemberID2}, // no Labels
+				Spec:     MemberSpec{Display: MemberDisplay{Email: Ptr("bob@example.com")}},
+			},
+		}
+		server := newMembersServer(members)
+		defer server.Close()
+
+		client, err := NewClient(WithApiUrl(server.URL), WithAuthToken("auth_test123"))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+		got, err := client.ResolveMemberIDsToEmails(context.Background(), []string{testMemberID1, testMemberID2})
+		if err != nil {
+			t.Fatalf("ResolveMemberIDsToEmails failed: %v", err)
+		}
+		want := []string{"alice@example.com", "bob@example.com"}
+		if len(got) != len(want) || got[0] != want[0] || got[1] != want[1] {
+			t.Errorf("expected %v, got %v", want, got)
+		}
+	})
 }
 
 // Compile-time proof that TeamDefinition is a compat alias for
