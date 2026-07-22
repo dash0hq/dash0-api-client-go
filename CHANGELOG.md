@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.17.0
+
+
+### Features
+- declarative CRD support for the Dash0 Teams API (#21)
+
 ## v1.16.0
 
 

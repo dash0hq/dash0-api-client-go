@@ -80,7 +80,7 @@ package dash0
 // There is no in-package shim because the type, constants, and field were
 // removed wholesale by the upstream spec.
 //
-// # Migration guide (v1.16.x to <NEXT_RELEASE>)
+// # Migration guide (v1.16.x to v1.17.0)
 //
 // The team CRD envelope is now exposed as [TeamDefinitionV1Alpha1] so the
 // API-version suffix is visible in every call site. The unversioned
