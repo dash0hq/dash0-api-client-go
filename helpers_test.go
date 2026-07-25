@@ -19,3 +19,15 @@ func assertPtrEqual[T comparable](t *testing.T, field string, got *T, want T) {
 		t.Errorf("%s = %v, want %v", field, *got, want)
 	}
 }
+
+func newTestClient(t *testing.T, serverURL string) Client {
+	t.Helper()
+	c, err := NewClient(
+		WithApiUrl(serverURL),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+	return c
+}

@@ -16,6 +16,7 @@ const (
 	DeeplinkAssetTypeDashboard           DeeplinkAssetType = "dashboard"
 	DeeplinkAssetTypeCheckRule           DeeplinkAssetType = "check-rule"
 	DeeplinkAssetTypeSyntheticCheck      DeeplinkAssetType = "synthetic-check"
+	DeeplinkAssetTypeSLO                 DeeplinkAssetType = "slo"
 	DeeplinkAssetTypeView                DeeplinkAssetType = "view"
 	DeeplinkAssetTypeTeam                DeeplinkAssetType = "team"
 	DeeplinkAssetTypeMember              DeeplinkAssetType = "member"
@@ -27,6 +28,7 @@ const (
 	deeplinkPathDashboard           = "/goto/dashboards"
 	deeplinkPathCheckRule           = "/goto/alerting/check-rules"
 	deeplinkPathSyntheticCheck      = "/goto/alerting/synthetics"
+	deeplinkPathSLO                 = "/goto/alerting/slos/details"
 	deeplinkPathView                = "/goto/logs"
 	deeplinkPathTeam                = "/goto/settings/teams"
 	deeplinkPathMember              = "/goto/settings/members"
@@ -45,6 +47,7 @@ const (
 	deeplinkQueryDashboard           = "dashboard_id"
 	deeplinkQueryCheckRule           = "check_rule_id"
 	deeplinkQuerySyntheticCheck      = "check_id"
+	deeplinkQuerySLO                 = "slo_id"
 	deeplinkQueryView                = "view_id"
 	deeplinkQueryTeam                = "team_id"
 	deeplinkQueryMember              = "member_id"
@@ -177,6 +180,8 @@ func deeplinkPathAndQuery(assetType DeeplinkAssetType) (string, string) {
 		return deeplinkPathCheckRule, deeplinkQueryCheckRule
 	case DeeplinkAssetTypeSyntheticCheck:
 		return deeplinkPathSyntheticCheck, deeplinkQuerySyntheticCheck
+	case DeeplinkAssetTypeSLO:
+		return deeplinkPathSLO, deeplinkQuerySLO
 	case DeeplinkAssetTypeView:
 		return deeplinkPathView, deeplinkQueryView
 	case DeeplinkAssetTypeTeam:

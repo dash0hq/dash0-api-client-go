@@ -50,6 +50,7 @@ func TestDeeplinkURL(t *testing.T) {
 		{"dashboard", DeeplinkAssetTypeDashboard, "abc-123", "/goto/dashboards", "dashboard_id"},
 		{"check rule", DeeplinkAssetTypeCheckRule, "r1", "/goto/alerting/check-rules", "check_rule_id"},
 		{"synthetic check", DeeplinkAssetTypeSyntheticCheck, "s1", "/goto/alerting/synthetics", "check_id"},
+		{"slo", DeeplinkAssetTypeSLO, "slo1", "/goto/alerting/slos/details", "slo_id"},
 		{"view default", DeeplinkAssetTypeView, "v1", "/goto/logs", "view_id"},
 		{"team", DeeplinkAssetTypeTeam, "t1", "/goto/settings/teams", "team_id"},
 		{"member", DeeplinkAssetTypeMember, "m1", "/goto/settings/members", "member_id"},

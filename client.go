@@ -44,6 +44,14 @@ type Client interface {
 	DeleteSyntheticCheck(ctx context.Context, originOrID string, dataset *string) error
 	ListSyntheticChecksIter(ctx context.Context, dataset *string) *Iter[SyntheticChecksApiListItem]
 
+	// SLOs
+	ListSLOs(ctx context.Context, dataset *string) ([]*SloDefinition, error)
+	GetSLO(ctx context.Context, originOrID string, dataset *string) (*SloDefinition, error)
+	CreateSLO(ctx context.Context, slo *SloDefinition, dataset *string) (*SloDefinition, error)
+	UpdateSLO(ctx context.Context, originOrID string, slo *SloDefinition, dataset *string) (*SloDefinition, error)
+	DeleteSLO(ctx context.Context, originOrID string, dataset *string) error
+	ListSLOsIter(ctx context.Context, dataset *string) *Iter[SloDefinition]
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)
