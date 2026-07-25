@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.18.0
+
+
+### Features
+- declarative CRD support for the Dash0 SLO API (#20)
+
 ## v1.17.1
 
 
