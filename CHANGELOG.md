@@ -7,6 +7,13 @@
 - merge env vars over the active profile per field (#26)
 - strip read-only spec.routing.assets on write (#25)
 
+## v1.18.1
+
+
+### Bug Fixes
+- merge env vars over the active profile per field (#26)
+- strip read-only spec.routing.assets on write (#25)
+
 ## v1.18.0
 
 
