@@ -154,7 +154,12 @@ func resolveConfigDir(opts []StoreOption) (string, error) {
 }
 
 // GetActiveConfiguration returns the currently active configuration.
-// Environment variables take precedence over the active profile.
+// Environment variables take precedence over the active profile on a
+// per-field basis: each of DASH0_API_URL, DASH0_AUTH_TOKEN, DASH0_OTLP_URL,
+// and DASH0_DATASET overrides only the field it names, and the remaining
+// fields keep the active profile's values.
+// When there is no active profile, a DASH0_AUTH_TOKEN plus at least one of
+// DASH0_API_URL or DASH0_OTLP_URL is a complete configuration on its own.
 // If the active profile uses OAuth, the access token is refreshed when close
 // to expiry, using [context.Background] for the refresh request.
 // Use [Store.GetActiveConfigurationContext] to plumb a cancellable context
@@ -182,20 +187,26 @@ func (s *Store) getActiveConfigurationContext(ctx context.Context, refreshOAuth 
 	envOtlpUrl := os.Getenv(EnvOtlpUrl)
 	envDataset := os.Getenv(EnvDataset)
 
-	// If auth token and at least one URL are set via env vars, use them
-	// directly without requiring a profile.
-	if envAuthToken != "" && (envApiUrl != "" || envOtlpUrl != "") {
-		return &Configuration{
-			ApiUrl:    envApiUrl,
-			AuthToken: envAuthToken,
-			OtlpUrl:   envOtlpUrl,
-			Dataset:   envDataset,
-		}, nil
-	}
-
-	// Otherwise, start with the active profile.
+	// Start with the active profile, then layer the env vars on top field by
+	// field. Env vars must not discard the fields they do not carry: setting
+	// DASH0_AUTH_TOKEN and DASH0_API_URL used to short-circuit the profile
+	// entirely, which silently dropped the profile's Dataset and OtlpUrl and
+	// sent requests to the default dataset.
 	activeProfile, err := s.GetActiveProfile()
-	if err != nil {
+	if err != nil || activeProfile == nil {
+		// No usable profile. Env vars alone are sufficient when the auth token
+		// and at least one URL are set; otherwise surface the profile error.
+		if envAuthToken != "" && (envApiUrl != "" || envOtlpUrl != "") {
+			return &Configuration{
+				ApiUrl:    envApiUrl,
+				AuthToken: envAuthToken,
+				OtlpUrl:   envOtlpUrl,
+				Dataset:   envDataset,
+			}, nil
+		}
+		if err == nil {
+			err = ErrNoActiveProfile
+		}
 		return nil, err
 	}
 
