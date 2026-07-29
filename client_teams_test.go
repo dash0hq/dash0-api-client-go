@@ -65,7 +65,6 @@ func newCreateResponseFixtureTeam() *TeamDefinitionV1Alpha1 {
 	}
 }
 
-
 // Helpers
 
 func TestGetTeamID(t *testing.T) {

@@ -103,7 +103,13 @@ func (c *client) ListNotificationChannelsIter(ctx context.Context) *Iter[Notific
 }
 
 // StripNotificationChannelServerFields removes server-generated fields from a
-// notification channel definition.
+// notification channel definition. It clears the created-at/updated-at annotations, the
+// dash0.com/id label, and spec.routing.assets. The assets list is a read-only back-reference the
+// server derives from the check rules and synthetic checks bound to the channel — the API silently
+// ignores any value supplied on write, so stripping it keeps write payloads honest and stops
+// derived server state from churning IaC diffs. Bindings are managed on the other resource: the
+// check rule's dash0.com/notification-channel-ids annotation, or the synthetic check's
+// spec.notifications.channels. spec.routing.filters is user-managed and preserved.
 func StripNotificationChannelServerFields(channel *NotificationChannelDefinition) {
 	if channel == nil {
 		return
@@ -114,6 +120,9 @@ func StripNotificationChannelServerFields(channel *NotificationChannelDefinition
 	}
 	if channel.Metadata.Labels != nil {
 		channel.Metadata.Labels.Dash0Comid = nil
+	}
+	if channel.Spec.Routing != nil {
+		channel.Spec.Routing.Assets = nil
 	}
 }
 

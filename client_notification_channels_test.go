@@ -25,6 +25,16 @@ func TestStripNotificationChannelServerFields(t *testing.T) {
 				Dash0Comorigin: Ptr("my-origin"),
 			},
 		},
+		Spec: NotificationChannelSpec{
+			Routing: &NotificationChannelRouting{
+				Assets: []NotificationChannelRoutingAsset{{
+					Kind: CheckRule,
+					Id:   "462a0f31-28fd-4a20-b610-b75c6868b141",
+					Name: "some check rule",
+				}},
+				Filters: []FilterCriteria{{}},
+			},
+		},
 	}
 
 	StripNotificationChannelServerFields(c)
@@ -41,6 +51,12 @@ func TestStripNotificationChannelServerFields(t *testing.T) {
 	if c.Metadata.Labels.Dash0Comorigin == nil || *c.Metadata.Labels.Dash0Comorigin != "my-origin" {
 		t.Error("Dash0Comorigin should be preserved")
 	}
+	if c.Spec.Routing.Assets != nil {
+		t.Error("Spec.Routing.Assets should be nil: it is a server-derived, read-only back-reference")
+	}
+	if len(c.Spec.Routing.Filters) != 1 {
+		t.Error("Spec.Routing.Filters should be preserved: filters are user-managed")
+	}
 }
 
 func TestStripNotificationChannelServerFields_NilLabels(t *testing.T) {
@@ -48,6 +64,9 @@ func TestStripNotificationChannelServerFields_NilLabels(t *testing.T) {
 	StripNotificationChannelServerFields(c) // should not panic
 	if c.Metadata.Labels != nil {
 		t.Error("Labels should remain nil")
+	}
+	if c.Spec.Routing != nil {
+		t.Error("Spec.Routing should remain nil")
 	}
 }
 

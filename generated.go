@@ -436,6 +436,14 @@ const (
 	LinearLabelAddedTriggerVariableNameLinearLabelName     LinearLabelAddedTriggerVariableName = "linear.label.name"
 )
 
+// Defines values for LogRecordExportFormat.
+const (
+	LogRecordExportFormatCsv    LogRecordExportFormat = "csv"
+	LogRecordExportFormatNdjson LogRecordExportFormat = "ndjson"
+	LogRecordExportFormatTxt    LogRecordExportFormat = "txt"
+	LogRecordExportFormatYaml   LogRecordExportFormat = "yaml"
+)
+
 // Defines values for ManualAgenticWorkflowTriggerKind.
 const (
 	ManualAgenticWorkflowTriggerKindFailedCheckNew                 ManualAgenticWorkflowTriggerKind = "failed_check.new"
@@ -752,7 +760,8 @@ const (
 
 // Defines values for SloDefinitionApiVersion.
 const (
-	Openslov1 SloDefinitionApiVersion = "openslo/v1"
+	OpensloComv1 SloDefinitionApiVersion = "openslo.com/v1"
+	Openslov1    SloDefinitionApiVersion = "openslo/v1"
 )
 
 // Defines values for SloDefinitionKind.
@@ -801,6 +810,14 @@ const (
 // Defines values for SpamFilterDefinitionV1Alpha2Kind.
 const (
 	SpamFilterDefinitionV1Alpha2KindDash0SpamFilter SpamFilterDefinitionV1Alpha2Kind = "Dash0SpamFilter"
+)
+
+// Defines values for SpanExportFormat.
+const (
+	SpanExportFormatCsv    SpanExportFormat = "csv"
+	SpanExportFormatNdjson SpanExportFormat = "ndjson"
+	SpanExportFormatTxt    SpanExportFormat = "txt"
+	SpanExportFormatYaml   SpanExportFormat = "yaml"
 )
 
 // Defines values for SslCertificateAssertionKind.
@@ -1052,6 +1069,14 @@ const (
 	ResourcestableTree                   ViewVisualizationRenderer = "resources/*/table-tree"
 	TracesExploreroutliers               ViewVisualizationRenderer = "traces-explorer/*/outliers"
 	TracesExplorerred                    ViewVisualizationRenderer = "traces-explorer/*/red"
+)
+
+// Defines values for WebEventExportFormat.
+const (
+	Csv    WebEventExportFormat = "csv"
+	Ndjson WebEventExportFormat = "ndjson"
+	Txt    WebEventExportFormat = "txt"
+	Yaml   WebEventExportFormat = "yaml"
 )
 
 // Defines values for WebhookAgenticWorkflowTriggerKind.
@@ -1346,8 +1371,11 @@ type AgenticWorkflowSpec struct {
 	// this is going to be set by the automation engine when one automation is deciding to create another.
 	Parent      *AgenticWorkflowParent       `json:"parent,omitempty"`
 	Permissions *[]AgenticWorkflowPermission `json:"permissions,omitempty"`
-	Prompt      AgenticWorkflowPrompt        `json:"prompt"`
-	Triggers    []AgenticWorkflowTrigger     `json:"triggers"`
+
+	// PermittedActions Computed, read-only. The set of actions the requesting user is permitted to perform on this automation, derived from their org role, dataset permissions, team memberships, and explicit permission entries. Ignored on write.
+	PermittedActions *[]AgenticWorkflowAction `json:"permittedActions,omitempty"`
+	Prompt           AgenticWorkflowPrompt    `json:"prompt"`
+	Triggers         []AgenticWorkflowTrigger `json:"triggers"`
 }
 
 // AgenticWorkflowToolParameterOverride Key-value pairs merged into tool arguments at invocation time. Keys are parameter
@@ -2893,6 +2921,57 @@ type LogRecord struct {
 	SpanId         *[]byte         `json:"spanId,omitempty"`
 	TimeUnixNano   string          `json:"timeUnixNano"`
 	TraceId        *[]byte         `json:"traceId,omitempty"`
+}
+
+// LogRecordExportFormat The serialization format of the exported file.
+//   - `txt`: One rendered log line per record, carrying a fixed field set of timestamp,
+//     severity, resource, body and trace ID. Ignores `columns`.
+//   - `ndjson`: One OTLP JSON payload per line, each carrying a single log record inside
+//     the same `resourceLogs` envelope `GetLogRecords` returns, so each line is
+//     independently parseable by any OTLP JSON consumer.
+//   - `yaml`: The same per-record OTLP payloads as `ndjson`, as a multi-document YAML
+//     stream with documents separated by `---`.
+//   - `csv`: A header row plus one row per record, flattened to the requested `columns`.
+type LogRecordExportFormat string
+
+// LogRecordsDownloadRequest Request for the `LogRecordsDownload` API. Accepts the same query as `GetLogRecords`
+// (`filter`, `timeRange`, `dataset`, `ordering`) and returns the matching records
+// serialized as a downloadable file rather than as a JSON page.
+//
+// The response is streamed, so the export is not paginated: a single request returns up
+// to `limit` records, capped at 5000. Adaptive sampling is always disabled for exports,
+// so an exported file is never a sample.
+type LogRecordsDownloadRequest struct {
+	// Columns Attribute keys to emit as columns, in order, for the `csv` format — resource,
+	// scope, or log record attributes (e.g. `service.name`, `otel.log.body`). Ignored by
+	// the other formats, which have a fixed field set.
+	Columns *[]string `json:"columns,omitempty"`
+
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset        `json:"dataset,omitempty"`
+	Filter  *FilterCriteria `json:"filter,omitempty"`
+
+	// Format The serialization format of the exported file.
+	// - `txt`: One rendered log line per record, carrying a fixed field set of timestamp,
+	//   severity, resource, body and trace ID. Ignores `columns`.
+	// - `ndjson`: One OTLP JSON payload per line, each carrying a single log record inside
+	//   the same `resourceLogs` envelope `GetLogRecords` returns, so each line is
+	//   independently parseable by any OTLP JSON consumer.
+	// - `yaml`: The same per-record OTLP payloads as `ndjson`, as a multi-document YAML
+	//   stream with documents separated by `---`.
+	// - `csv`: A header row plus one row per record, flattened to the requested `columns`.
+	Format LogRecordExportFormat `json:"format"`
+
+	// Limit The maximum number of log records to export. Defaults to, and is capped at, 5000.
+	// A larger value is rejected rather than silently clamped. Use the Dash0 CLI
+	// (`dash0 logs query`) to export volumes beyond this cap.
+	Limit *int64 `json:"limit,omitempty"`
+
+	// Ordering Any supported attribute keys to order by.
+	Ordering *OrderingCriteria `json:"ordering,omitempty"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange TimeReferenceRange `json:"timeRange"`
 }
 
 // ManualAgenticWorkflowTrigger defines model for ManualAgenticWorkflowTrigger.
@@ -4873,6 +4952,12 @@ type SloComparisonOperator string
 // Implements a subset of the OpenSLO v1 specification (https://openslo.com/) with
 // Dash0-specific extensions for access control, dataset scoping, and UI organization.
 //
+// The API group accepts both the bare `openslo/v1` (upstream OpenSLO v1) and the
+// domain-qualified `openslo.com/v1` on write; reads always return the domain-qualified
+// `openslo.com/v1`. The domain-qualified form (a Dash0 drift from upstream OpenSLO v1's
+// `openslo/v1`) is required so the same document is installable as a Kubernetes
+// CustomResourceDefinition, whose API group must contain a dot.
+//
 // Currently supported: a single objective with an inline `ratioMetric` indicator,
 // `Occurrences` budgeting, and a rolling `4w` (28d) time window.
 //
@@ -5324,6 +5409,18 @@ type SpanEvent struct {
 	TimeUnixNano           string     `json:"timeUnixNano"`
 }
 
+// SpanExportFormat The serialization format of the exported file.
+//   - `txt`: One rendered span line per record, carrying a fixed field set of start
+//     timestamp, service, span name, duration, kind, status code, trace ID and span ID.
+//     Ignores `columns`.
+//   - `ndjson`: One OTLP JSON payload per line, each carrying a single span inside the
+//     same `resourceSpans` envelope `GetSpans` returns, so each line is independently
+//     parseable by any OTLP JSON consumer.
+//   - `yaml`: The same per-span OTLP payloads as `ndjson`, as a multi-document YAML
+//     stream with documents separated by `---`.
+//   - `csv`: A header row plus one row per span, flattened to the requested `columns`.
+type SpanExportFormat string
+
 // SpanKind // Unspecified. Do NOT use as default.
 // // Implementations MAY assume SpanKind to be INTERNAL when receiving UNSPECIFIED.
 // SPAN_KIND_UNSPECIFIED = 0;
@@ -5384,6 +5481,50 @@ type SpanStatus struct {
 // // The Span contains an error.
 // STATUS_CODE_ERROR               = 2;
 type SpanStatusCode = int32
+
+// SpansDownloadRequest Request for the `SpansDownload` API. Accepts the same query as `GetSpans`
+// (`filter`, `timeRange`, `dataset`, `ordering`) and returns the matching spans
+// serialized as a downloadable file rather than as a JSON page.
+//
+// The response is streamed, so the export is not paginated: a single request returns up
+// to `limit` spans, capped at 5000. Adaptive sampling is always disabled for exports,
+// so an exported file is never a sample. Unlike `GetSpans` this request therefore takes
+// no `sampling`, and one sent anyway is ignored: the sampling path can substitute a
+// duration-percentile filter and quietly change which spans the file contains, so
+// exports never take it.
+type SpansDownloadRequest struct {
+	// Columns Attribute keys to emit as columns, in order, for the `csv` format — resource,
+	// scope, or span attributes (e.g. `service.name`, `otel.span.duration`). Ignored by
+	// the other formats, which have a fixed field set.
+	Columns *[]string `json:"columns,omitempty"`
+
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset        `json:"dataset,omitempty"`
+	Filter  *FilterCriteria `json:"filter,omitempty"`
+
+	// Format The serialization format of the exported file.
+	// - `txt`: One rendered span line per record, carrying a fixed field set of start
+	//   timestamp, service, span name, duration, kind, status code, trace ID and span ID.
+	//   Ignores `columns`.
+	// - `ndjson`: One OTLP JSON payload per line, each carrying a single span inside the
+	//   same `resourceSpans` envelope `GetSpans` returns, so each line is independently
+	//   parseable by any OTLP JSON consumer.
+	// - `yaml`: The same per-span OTLP payloads as `ndjson`, as a multi-document YAML
+	//   stream with documents separated by `---`.
+	// - `csv`: A header row plus one row per span, flattened to the requested `columns`.
+	Format SpanExportFormat `json:"format"`
+
+	// Limit The maximum number of spans to export. Defaults to, and is capped at, 5000.
+	// A larger value is rejected rather than silently clamped. Use the Dash0 CLI
+	// (`dash0 spans query`) to export volumes beyond this cap.
+	Limit *int64 `json:"limit,omitempty"`
+
+	// Ordering Any supported attribute keys to order by.
+	Ordering *OrderingCriteria `json:"ordering,omitempty"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange TimeReferenceRange `json:"timeRange"`
+}
 
 // SslCertificateAssertion defines model for SslCertificateAssertion.
 type SslCertificateAssertion struct {
@@ -6404,6 +6545,66 @@ type ViewVisualizationMetric string
 // If there are multiple renderers, select buttons will be added to allow toggling between the renderers.
 type ViewVisualizationRenderer string
 
+// WebEventExportFormat The serialization format of the exported file.
+//   - `txt`: One rendered line per web event, carrying a fixed field set of timestamp,
+//     service, event name, title, duration and trace ID. Ignores `columns`.
+//   - `ndjson`: One OTLP JSON payload per line, each carrying a single web event inside
+//     the same `resourceLogs` envelope `GetWebEvents` returns — web events are stored as
+//     OTLP log records — so each line is independently parseable by any OTLP JSON
+//     consumer.
+//   - `yaml`: The same per-event OTLP payloads as `ndjson`, as a multi-document YAML
+//     stream with documents separated by `---`.
+//   - `csv`: A header row plus one row per web event, flattened to the requested `columns`.
+type WebEventExportFormat string
+
+// WebEventsDownloadRequest Request for the `WebEventsDownload` API. Accepts the same query as `GetWebEvents`
+// (`serviceName`, `eventNames`, `filter`, `timeRange`, `dataset`, `ordering`) and
+// returns the matching web events serialized as a downloadable file rather than as a
+// JSON page.
+//
+// The response is streamed, so the export is not paginated: a single request returns up
+// to `limit` events, capped at 5000. Unlike the log and span exports there is no
+// adaptive sampling to disable — web-event retrieval does not sample — so an exported
+// file is the query's whole result set up to the cap.
+//
+// There is no Dash0 CLI command for web events, so the cap is the only limit; a query
+// matching more than 5000 events has to be narrowed to be exported in full.
+type WebEventsDownloadRequest struct {
+	// Columns Attribute keys to emit as columns, in order, for the `csv` format — resource,
+	// scope, or event attributes (e.g. `service.name`, `event.name`,
+	// `dash0.web.event.duration`). Ignored by the other formats, which have a fixed
+	// field set.
+	Columns *[]string `json:"columns,omitempty"`
+
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset    *Dataset        `json:"dataset,omitempty"`
+	EventNames *[]string       `json:"eventNames,omitempty"`
+	Filter     *FilterCriteria `json:"filter,omitempty"`
+
+	// Format The serialization format of the exported file.
+	// - `txt`: One rendered line per web event, carrying a fixed field set of timestamp,
+	//   service, event name, title, duration and trace ID. Ignores `columns`.
+	// - `ndjson`: One OTLP JSON payload per line, each carrying a single web event inside
+	//   the same `resourceLogs` envelope `GetWebEvents` returns — web events are stored as
+	//   OTLP log records — so each line is independently parseable by any OTLP JSON
+	//   consumer.
+	// - `yaml`: The same per-event OTLP payloads as `ndjson`, as a multi-document YAML
+	//   stream with documents separated by `---`.
+	// - `csv`: A header row plus one row per web event, flattened to the requested `columns`.
+	Format WebEventExportFormat `json:"format"`
+
+	// Limit The maximum number of web events to export. Defaults to, and is capped at, 5000.
+	// A larger value is rejected rather than silently clamped.
+	Limit *int64 `json:"limit,omitempty"`
+
+	// Ordering Any supported attribute keys to order by.
+	Ordering    *OrderingCriteria `json:"ordering,omitempty"`
+	ServiceName *string           `json:"serviceName,omitempty"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange TimeReferenceRange `json:"timeRange"`
+}
+
 // WebhookAgenticWorkflowTrigger defines model for WebhookAgenticWorkflowTrigger.
 type WebhookAgenticWorkflowTrigger struct {
 	Kind WebhookAgenticWorkflowTriggerKind `json:"kind"`
@@ -6989,6 +7190,9 @@ type PostApiImportViewJSONRequestBody = ViewDefinition
 // PostApiLogsJSONRequestBody defines body for PostApiLogs for application/json ContentType.
 type PostApiLogsJSONRequestBody = GetLogRecordsRequest
 
+// PostApiLogsDownloadJSONRequestBody defines body for PostApiLogsDownload for application/json ContentType.
+type PostApiLogsDownloadJSONRequestBody = LogRecordsDownloadRequest
+
 // PostApiMembersJSONRequestBody defines body for PostApiMembers for application/json ContentType.
 type PostApiMembersJSONRequestBody = InviteMemberRequest
 
@@ -7055,6 +7259,9 @@ type PutApiSpamFiltersOriginOrIdJSONRequestBody = SpamFilterResponse
 // PostApiSpansJSONRequestBody defines body for PostApiSpans for application/json ContentType.
 type PostApiSpansJSONRequestBody = GetSpansRequest
 
+// PostApiSpansDownloadJSONRequestBody defines body for PostApiSpansDownload for application/json ContentType.
+type PostApiSpansDownloadJSONRequestBody = SpansDownloadRequest
+
 // PostApiSqlJSONRequestBody defines body for PostApiSql for application/json ContentType.
 type PostApiSqlJSONRequestBody = ExecuteSqlRequest
 
@@ -7096,6 +7303,9 @@ type PostApiViewsJSONRequestBody = ViewDefinition
 
 // PutApiViewsOriginOrIdJSONRequestBody defines body for PutApiViewsOriginOrId for application/json ContentType.
 type PutApiViewsOriginOrIdJSONRequestBody = ViewDefinition
+
+// PostApiWebEventsDownloadJSONRequestBody defines body for PostApiWebEventsDownload for application/json ContentType.
+type PostApiWebEventsDownloadJSONRequestBody = WebEventsDownloadRequest
 
 // PostOauthRegisterJSONRequestBody defines body for PostOauthRegister for application/json ContentType.
 type PostOauthRegisterJSONRequestBody = OAuthClientRegistrationRequest
@@ -9628,6 +9838,11 @@ type ClientInterface interface {
 
 	PostApiLogs(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiLogsDownloadWithBody request with any body
+	PostApiLogsDownloadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiLogsDownload(ctx context.Context, body PostApiLogsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiMembers request
 	GetApiMembers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -9825,6 +10040,11 @@ type ClientInterface interface {
 
 	PostApiSpans(ctx context.Context, body PostApiSpansJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiSpansDownloadWithBody request with any body
+	PostApiSpansDownloadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiSpansDownload(ctx context.Context, body PostApiSpansDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostApiSqlWithBody request with any body
 	PostApiSqlWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -9936,6 +10156,11 @@ type ClientInterface interface {
 	PutApiViewsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiViewsOriginOrId(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, body PutApiViewsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiWebEventsDownloadWithBody request with any body
+	PostApiWebEventsDownloadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiWebEventsDownload(ctx context.Context, body PostApiWebEventsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetOauthAuthorize request
 	GetOauthAuthorize(ctx context.Context, params *GetOauthAuthorizeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -10426,6 +10651,30 @@ func (c *generatedClient) PostApiLogsWithBody(ctx context.Context, contentType s
 
 func (c *generatedClient) PostApiLogs(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiLogsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiLogsDownloadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiLogsDownloadRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiLogsDownload(ctx context.Context, body PostApiLogsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiLogsDownloadRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -11312,6 +11561,30 @@ func (c *generatedClient) PostApiSpans(ctx context.Context, body PostApiSpansJSO
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) PostApiSpansDownloadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSpansDownloadRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSpansDownload(ctx context.Context, body PostApiSpansDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSpansDownloadRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) PostApiSqlWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiSqlRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -11806,6 +12079,30 @@ func (c *generatedClient) PutApiViewsOriginOrIdWithBody(ctx context.Context, ori
 
 func (c *generatedClient) PutApiViewsOriginOrId(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, body PutApiViewsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiViewsOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiWebEventsDownloadWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiWebEventsDownloadRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiWebEventsDownload(ctx context.Context, body PostApiWebEventsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiWebEventsDownloadRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -13352,6 +13649,46 @@ func NewPostApiLogsRequestWithBody(server string, contentType string, body io.Re
 	}
 
 	operationPath := fmt.Sprintf("/api/logs")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostApiLogsDownloadRequest calls the generic PostApiLogsDownload builder with application/json body
+func NewPostApiLogsDownloadRequest(server string, body PostApiLogsDownloadJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiLogsDownloadRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiLogsDownloadRequestWithBody generates requests for PostApiLogsDownload with any type of body
+func NewPostApiLogsDownloadRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/logs/download")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -16451,6 +16788,46 @@ func NewPostApiSpansRequestWithBody(server string, contentType string, body io.R
 	return req, nil
 }
 
+// NewPostApiSpansDownloadRequest calls the generic PostApiSpansDownload builder with application/json body
+func NewPostApiSpansDownloadRequest(server string, body PostApiSpansDownloadJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiSpansDownloadRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiSpansDownloadRequestWithBody generates requests for PostApiSpansDownload with any type of body
+func NewPostApiSpansDownloadRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/spans/download")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewPostApiSqlRequest calls the generic PostApiSql builder with application/json body
 func NewPostApiSqlRequest(server string, body PostApiSqlJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -17831,6 +18208,46 @@ func NewPutApiViewsOriginOrIdRequestWithBody(server string, originOrId string, p
 	return req, nil
 }
 
+// NewPostApiWebEventsDownloadRequest calls the generic PostApiWebEventsDownload builder with application/json body
+func NewPostApiWebEventsDownloadRequest(server string, body PostApiWebEventsDownloadJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiWebEventsDownloadRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiWebEventsDownloadRequestWithBody generates requests for PostApiWebEventsDownload with any type of body
+func NewPostApiWebEventsDownloadRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/web-events/download")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetOauthAuthorizeRequest generates requests for GetOauthAuthorize
 func NewGetOauthAuthorizeRequest(server string, params *GetOauthAuthorizeParams) (*http.Request, error) {
 	var err error
@@ -18241,6 +18658,11 @@ type ClientWithResponsesInterface interface {
 
 	PostApiLogsWithResponse(ctx context.Context, body PostApiLogsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLogsResponse, error)
 
+	// PostApiLogsDownloadWithBodyWithResponse request with any body
+	PostApiLogsDownloadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiLogsDownloadResponse, error)
+
+	PostApiLogsDownloadWithResponse(ctx context.Context, body PostApiLogsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLogsDownloadResponse, error)
+
 	// GetApiMembersWithResponse request
 	GetApiMembersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMembersResponse, error)
 
@@ -18438,6 +18860,11 @@ type ClientWithResponsesInterface interface {
 
 	PostApiSpansWithResponse(ctx context.Context, body PostApiSpansJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSpansResponse, error)
 
+	// PostApiSpansDownloadWithBodyWithResponse request with any body
+	PostApiSpansDownloadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpansDownloadResponse, error)
+
+	PostApiSpansDownloadWithResponse(ctx context.Context, body PostApiSpansDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSpansDownloadResponse, error)
+
 	// PostApiSqlWithBodyWithResponse request with any body
 	PostApiSqlWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSqlResponse, error)
 
@@ -18549,6 +18976,11 @@ type ClientWithResponsesInterface interface {
 	PutApiViewsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiViewsOriginOrIdResponse, error)
 
 	PutApiViewsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiViewsOriginOrIdParams, body PutApiViewsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiViewsOriginOrIdResponse, error)
+
+	// PostApiWebEventsDownloadWithBodyWithResponse request with any body
+	PostApiWebEventsDownloadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiWebEventsDownloadResponse, error)
+
+	PostApiWebEventsDownloadWithResponse(ctx context.Context, body PostApiWebEventsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiWebEventsDownloadResponse, error)
 
 	// GetOauthAuthorizeWithResponse request
 	GetOauthAuthorizeWithResponse(ctx context.Context, params *GetOauthAuthorizeParams, reqEditors ...RequestEditorFn) (*GetOauthAuthorizeResponse, error)
@@ -19161,6 +19593,30 @@ func (r PostApiLogsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiLogsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiLogsDownloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ErrorResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiLogsDownloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiLogsDownloadResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -20346,6 +20802,30 @@ func (r PostApiSpansResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiSpansDownloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ErrorResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSpansDownloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSpansDownloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostApiSqlResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -20986,6 +21466,30 @@ func (r PutApiViewsOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiWebEventsDownloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON400      *ErrorResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiWebEventsDownloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiWebEventsDownloadResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetOauthAuthorizeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -21421,6 +21925,23 @@ func (c *ClientWithResponses) PostApiLogsWithResponse(ctx context.Context, body 
 		return nil, err
 	}
 	return ParsePostApiLogsResponse(rsp)
+}
+
+// PostApiLogsDownloadWithBodyWithResponse request with arbitrary body returning *PostApiLogsDownloadResponse
+func (c *ClientWithResponses) PostApiLogsDownloadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiLogsDownloadResponse, error) {
+	rsp, err := c.PostApiLogsDownloadWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiLogsDownloadResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiLogsDownloadWithResponse(ctx context.Context, body PostApiLogsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiLogsDownloadResponse, error) {
+	rsp, err := c.PostApiLogsDownload(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiLogsDownloadResponse(rsp)
 }
 
 // GetApiMembersWithResponse request returning *GetApiMembersResponse
@@ -22058,6 +22579,23 @@ func (c *ClientWithResponses) PostApiSpansWithResponse(ctx context.Context, body
 	return ParsePostApiSpansResponse(rsp)
 }
 
+// PostApiSpansDownloadWithBodyWithResponse request with arbitrary body returning *PostApiSpansDownloadResponse
+func (c *ClientWithResponses) PostApiSpansDownloadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSpansDownloadResponse, error) {
+	rsp, err := c.PostApiSpansDownloadWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSpansDownloadResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiSpansDownloadWithResponse(ctx context.Context, body PostApiSpansDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSpansDownloadResponse, error) {
+	rsp, err := c.PostApiSpansDownload(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSpansDownloadResponse(rsp)
+}
+
 // PostApiSqlWithBodyWithResponse request with arbitrary body returning *PostApiSqlResponse
 func (c *ClientWithResponses) PostApiSqlWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSqlResponse, error) {
 	rsp, err := c.PostApiSqlWithBody(ctx, contentType, body, reqEditors...)
@@ -22420,6 +22958,23 @@ func (c *ClientWithResponses) PutApiViewsOriginOrIdWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParsePutApiViewsOriginOrIdResponse(rsp)
+}
+
+// PostApiWebEventsDownloadWithBodyWithResponse request with arbitrary body returning *PostApiWebEventsDownloadResponse
+func (c *ClientWithResponses) PostApiWebEventsDownloadWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiWebEventsDownloadResponse, error) {
+	rsp, err := c.PostApiWebEventsDownloadWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiWebEventsDownloadResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiWebEventsDownloadWithResponse(ctx context.Context, body PostApiWebEventsDownloadJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiWebEventsDownloadResponse, error) {
+	rsp, err := c.PostApiWebEventsDownload(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiWebEventsDownloadResponse(rsp)
 }
 
 // GetOauthAuthorizeWithResponse request returning *GetOauthAuthorizeResponse
@@ -23327,6 +23882,46 @@ func ParsePostApiLogsResponse(rsp *http.Response) (*PostApiLogsResponse, error) 
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiLogsDownloadResponse parses an HTTP response from a PostApiLogsDownloadWithResponse call
+func ParsePostApiLogsDownloadResponse(rsp *http.Response) (*PostApiLogsDownloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiLogsDownloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
@@ -25065,6 +25660,46 @@ func ParsePostApiSpansResponse(rsp *http.Response) (*PostApiSpansResponse, error
 	return response, nil
 }
 
+// ParsePostApiSpansDownloadResponse parses an HTTP response from a PostApiSpansDownloadWithResponse call
+func ParsePostApiSpansDownloadResponse(rsp *http.Response) (*PostApiSpansDownloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSpansDownloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostApiSqlResponse parses an HTTP response from a PostApiSqlWithResponse call
 func ParsePostApiSqlResponse(rsp *http.Response) (*PostApiSqlResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -25948,6 +26583,46 @@ func ParsePutApiViewsOriginOrIdResponse(rsp *http.Response) (*PutApiViewsOriginO
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiWebEventsDownloadResponse parses an HTTP response from a PostApiWebEventsDownloadWithResponse call
+func ParsePostApiWebEventsDownloadResponse(rsp *http.Response) (*PostApiWebEventsDownloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiWebEventsDownloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
