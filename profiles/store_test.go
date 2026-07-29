@@ -714,6 +714,136 @@ func TestGetActiveConfiguration(t *testing.T) {
 		}
 	})
 
+	t.Run("auth token and API URL env vars keep the profile's other fields", func(t *testing.T) {
+		// Regression test: setting DASH0_AUTH_TOKEN together with
+		// DASH0_API_URL used to bypass the active profile entirely, which
+		// dropped the profile's Dataset and OtlpUrl. Requests then went to the
+		// default dataset while `dash0 config show` still reported the
+		// profile's value.
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl:    "https://profile.example.com",
+				AuthToken: "profile-token",
+				OtlpUrl:   "https://otlp-profile.example.com",
+				Dataset:   "production",
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+		t.Setenv(EnvApiUrl, "https://env.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://env.example.com" {
+			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl)
+		}
+		if cfg.AuthToken != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		}
+		if cfg.Dataset != "production" {
+			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset)
+		}
+		if cfg.OtlpUrl != "https://otlp-profile.example.com" {
+			t.Errorf("expected OTLP URL from the profile, got %q", cfg.OtlpUrl)
+		}
+	})
+
+	t.Run("OTLP URL and auth token env vars keep the profile's other fields", func(t *testing.T) {
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl:    "https://profile.example.com",
+				AuthToken: "profile-token",
+				Dataset:   "production",
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+		t.Setenv(EnvOtlpUrl, "https://otlp-env.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://profile.example.com" {
+			t.Errorf("expected API URL from the profile, got %q", cfg.ApiUrl)
+		}
+		if cfg.Dataset != "production" {
+			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset)
+		}
+	})
+
+	t.Run("env auth token suppresses the OAuth refresh on the merge path", func(t *testing.T) {
+		// The profile's token is near expiry, but DASH0_AUTH_TOKEN replaces it,
+		// so no refresh round-trip must be attempted. The OAuth URL points at a
+		// server that is already closed, so a refresh attempt would fail.
+		server := newTokenServer(t, tokenServerResponse{AccessToken: "unused", ExpiresIn: 3600}, nil)
+		serverURL := server.URL
+		server.Close()
+
+		svc, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "test1", Configuration: Configuration{
+				ApiUrl:    serverURL,
+				AuthToken: "dash0_at_old-token",
+				Dataset:   "production",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(2 * time.Minute),
+				},
+			}},
+		})
+		setActiveProfile(t, dir, "test1")
+		t.Setenv(EnvApiUrl, "https://env.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		}
+		if cfg.OAuth != nil {
+			t.Error("expected OAuth state to be cleared by the env auth token")
+		}
+		if cfg.Dataset != "production" {
+			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset)
+		}
+	})
+
+	t.Run("env vars alone without a profile", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+		t.Setenv(EnvApiUrl, "https://env.example.com")
+		t.Setenv(EnvAuthToken, "env-token")
+		t.Setenv(EnvDataset, "env-dataset")
+
+		cfg, err := svc.GetActiveConfiguration()
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ApiUrl != "https://env.example.com" || cfg.AuthToken != "env-token" {
+			t.Errorf("expected env credentials, got %+v", cfg)
+		}
+		if cfg.Dataset != "env-dataset" {
+			t.Errorf("expected dataset env-dataset, got %q", cfg.Dataset)
+		}
+	})
+
+	t.Run("no profile and incomplete env vars returns ErrNoActiveProfile", func(t *testing.T) {
+		svc, _ := newTestStore(t)
+		t.Setenv(EnvAuthToken, "env-token")
+
+		_, err := svc.GetActiveConfiguration()
+		if !errors.Is(err, ErrNoActiveProfile) {
+			t.Errorf("expected ErrNoActiveProfile, got %v", err)
+		}
+	})
+
 	t.Run("OTLP URL from env var", func(t *testing.T) {
 		svc, _ := newTestStore(t)
 		t.Setenv(EnvAuthToken, "env-token")
