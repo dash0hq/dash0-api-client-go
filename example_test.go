@@ -447,11 +447,11 @@ func ExampleGetSLOName() {
 func ExampleGetSLOID() {
 	slo := &dash0.SloDefinition{
 		Metadata: dash0.SloMetadata{
-			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("slo_01k5vpx97efdnrkqan15b41k84")},
 		},
 	}
 	fmt.Println(dash0.GetSLOID(slo))
-	// Output: 00000000-0000-0000-0000-000000000001
+	// Output: slo_01k5vpx97efdnrkqan15b41k84
 }
 
 func ExampleGetSLODataset() {
@@ -473,9 +473,9 @@ func ExampleSetSLODataset() {
 
 func ExampleSetSLOID() {
 	slo := &dash0.SloDefinition{}
-	dash0.SetSLOID(slo, "00000000-0000-0000-0000-000000000001")
+	dash0.SetSLOID(slo, "slo_01k5vpx97efdnrkqan15b41k84")
 	fmt.Println(*slo.Metadata.Labels.Dash0Comid)
-	// Output: 00000000-0000-0000-0000-000000000001
+	// Output: slo_01k5vpx97efdnrkqan15b41k84
 }
 
 func ExampleSetSLOIDIfAbsent() {
@@ -492,7 +492,7 @@ func ExampleSetSLOIDIfAbsent() {
 func ExampleClearSLOID() {
 	slo := &dash0.SloDefinition{
 		Metadata: dash0.SloMetadata{
-			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+			Labels: &dash0.SloLabels{Dash0Comid: dash0.Ptr("slo_01k5vpx97efdnrkqan15b41k84")},
 		},
 	}
 	dash0.ClearSLOID(slo)
@@ -504,16 +504,20 @@ func ExampleStripSLOServerFields() {
 	slo := &dash0.SloDefinition{
 		Metadata: dash0.SloMetadata{
 			Labels: &dash0.SloLabels{
-				Dash0Comid:      dash0.Ptr("00000000-0000-0000-0000-000000000001"),
+				Dash0Comid:      dash0.Ptr("slo_01k5vpx97efdnrkqan15b41k84"),
 				Dash0Comversion: dash0.Ptr("2"),
 				Dash0Comdataset: dash0.Ptr("default"),
 				Dash0Comorigin:  dash0.Ptr("my-origin"),
 			},
 		},
 	}
+	// Read any identifier you still need before stripping — the id is
+	// server-assigned for SLOs, so it is removed along with the other
+	// server-managed labels.
+	id := dash0.GetSLOID(slo)
 	dash0.StripSLOServerFields(slo)
-	fmt.Println(dash0.GetSLOID(slo), slo.Metadata.Labels.Dash0Comversion == nil)
-	// Output: 00000000-0000-0000-0000-000000000001 true
+	fmt.Println(id, dash0.GetSLOID(slo) == "", slo.Metadata.Labels.Dash0Comversion == nil)
+	// Output: slo_01k5vpx97efdnrkqan15b41k84 true true
 }
 
 // Prometheus rule helpers
