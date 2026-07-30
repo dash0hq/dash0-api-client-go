@@ -55,7 +55,9 @@ func TestStripSLOServerFields(t *testing.T) {
 				Dash0Comdataset: &dataset,
 				Dash0Comorigin:  &origin,
 				Dash0Comsource:  Ptr(Api),
-				Dash0Comid:      Ptr("keep-this"),
+				Dash0Comid:      Ptr("slo_01k5vpx97efdnrkqan15b41k84"),
+				// User-defined (non-dash0.com/*) keys must survive the strip.
+				AdditionalProperties: map[string]string{"team": "platform"},
 			},
 		},
 	}
@@ -83,8 +85,16 @@ func TestStripSLOServerFields(t *testing.T) {
 	if slo.Metadata.Labels.Dash0Comsource != nil {
 		t.Error("Dash0Comsource should be nil")
 	}
-	if slo.Metadata.Labels.Dash0Comid == nil || *slo.Metadata.Labels.Dash0Comid != "keep-this" {
-		t.Error("Dash0Comid should be preserved")
+	// SLO ids are server-assigned (`slo_<ulid>`), not client-settable, so the id
+	// is server-managed metadata and is stripped — matching spam filters,
+	// notification channels, recording rules, and teams. Callers that need it
+	// read it via GetSLOID before stripping.
+	if slo.Metadata.Labels.Dash0Comid != nil {
+		t.Error("Dash0Comid should be nil")
+	}
+	// The strip must stay narrow: only reserved dash0.com/* keys are removed.
+	if got := slo.Metadata.Labels.AdditionalProperties["team"]; got != "platform" {
+		t.Errorf("user-defined label = %q, want %q (strip must not remove user keys)", got, "platform")
 	}
 }
 

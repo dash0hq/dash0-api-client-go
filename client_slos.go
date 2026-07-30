@@ -123,6 +123,28 @@ func (c *client) ListSLOsIter(ctx context.Context, dataset *string) *Iter[SloDef
 }
 
 // StripSLOServerFields removes server-generated fields from an SLO definition.
+//
+// This includes dash0.com/id: unlike dashboards, views, check rules, and
+// synthetic checks — whose ids are client-settable upsert keys and therefore
+// user intent — SLO ids are assigned by the server (`slo_<ulid>`) and cannot be
+// chosen by a caller. The id is server-managed metadata, so it is stripped here
+// alongside version/origin/dataset/source, matching StripSpamFilterServerFields,
+// StripNotificationChannelServerFields, StripRecordingRuleServerFields, and
+// StripTeamServerFields, which all clear their (likewise non-client-settable)
+// ids.
+//
+// Note that dash0.com/origin is stripped here even though
+// [StripTeamServerFields] deliberately preserves a team's origin. The two are
+// not equivalent: a team's origin is client-settable on create, so it must
+// survive into the request body, whereas every reserved dash0.com/* label on an
+// SLO — origin included — is ignored when supplied by a caller (an SLO's origin
+// is populated through the internal API used by the operator and the Terraform
+// provider, which carry it in the request path rather than the body). Stripping
+// it is therefore a no-op for public writes, not a loss of user intent.
+//
+// User-defined (non-dash0.com/*) labels and annotations are preserved.
+//
+// Callers that need the id must read it (via [GetSLOID]) before calling this.
 func StripSLOServerFields(slo *SloDefinition) {
 	if slo == nil {
 		return
@@ -133,6 +155,7 @@ func StripSLOServerFields(slo *SloDefinition) {
 		slo.Metadata.Annotations.Dash0ComdeletedAt = nil
 	}
 	if slo.Metadata.Labels != nil {
+		slo.Metadata.Labels.Dash0Comid = nil
 		slo.Metadata.Labels.Dash0Comversion = nil
 		slo.Metadata.Labels.Dash0Comorigin = nil
 		slo.Metadata.Labels.Dash0Comdataset = nil
