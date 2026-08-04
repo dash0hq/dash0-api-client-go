@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.18.2
+
+
+### Bug Fixes
+- strip dash0.com/id in StripSLOServerFields
+
+### CI
+- drop Go proxy indexing step
+
 ## v1.18.1
 
 
