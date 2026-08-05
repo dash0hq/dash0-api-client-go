@@ -454,6 +454,16 @@ func ExampleGetSLOID() {
 	// Output: slo_01k5vpx97efdnrkqan15b41k84
 }
 
+func ExampleGetSLOOrigin() {
+	slo := &dash0.SloDefinition{
+		Metadata: dash0.SloMetadata{
+			Labels: &dash0.SloLabels{Dash0Comorigin: dash0.Ptr("tf_6f2a1c8e-3b47-4d90-a1e5-9c73b0d84f21")},
+		},
+	}
+	fmt.Println(dash0.GetSLOOrigin(slo))
+	// Output: tf_6f2a1c8e-3b47-4d90-a1e5-9c73b0d84f21
+}
+
 func ExampleGetSLODataset() {
 	slo := &dash0.SloDefinition{
 		Metadata: dash0.SloMetadata{
