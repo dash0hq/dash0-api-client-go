@@ -235,6 +235,30 @@ func TestSetSLOIDIfAbsent_Nil(t *testing.T) {
 	SetSLOIDIfAbsent(nil, "new-id") // should not panic
 }
 
+func TestGetSLOOrigin(t *testing.T) {
+	tests := []struct {
+		name string
+		slo  *SloDefinition
+		want string
+	}{
+		{
+			"with origin",
+			&SloDefinition{Metadata: SloMetadata{Labels: &SloLabels{Dash0Comorigin: Ptr("tf_6f2a1c8e-3b47-4d90-a1e5-9c73b0d84f21")}}},
+			"tf_6f2a1c8e-3b47-4d90-a1e5-9c73b0d84f21",
+		},
+		{"nil slo", nil, ""},
+		{"nil labels", &SloDefinition{}, ""},
+		{"nil origin", &SloDefinition{Metadata: SloMetadata{Labels: &SloLabels{}}}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetSLOOrigin(tt.slo); got != tt.want {
+				t.Errorf("GetSLOOrigin() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestGetSLOName(t *testing.T) {
 	tests := []struct {
 		name string

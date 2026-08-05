@@ -201,6 +201,19 @@ func GetSLOID(slo *SloDefinition) string {
 	return *slo.Metadata.Labels.Dash0Comid
 }
 
+// GetSLOOrigin extracts the dash0.com/origin label from an SLO definition.
+// Returns the empty string when the SLO is nil, has no labels, or the label
+// is unset.
+//
+// SLO ids are server-assigned, so origin is the only identifier a
+// hand-authored document can pin, and it doubles as the upsert key.
+func GetSLOOrigin(slo *SloDefinition) string {
+	if slo == nil || slo.Metadata.Labels == nil || slo.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *slo.Metadata.Labels.Dash0Comorigin
+}
+
 // GetSLOName extracts the display name from an SLO definition, reading the
 // dash0.com/display-name annotation and falling back to metadata.name when it
 // is not set.
