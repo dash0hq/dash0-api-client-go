@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.19.0
+
+
+### Features
+- add GetSLOOrigin helper (#28)
+
 ## v1.18.2
 
 
