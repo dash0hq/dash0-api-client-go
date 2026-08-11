@@ -4,7 +4,21 @@ import (
 	"fmt"
 	"maps"
 	"strconv"
+	"strings"
 	"time"
+)
+
+// Recognized threshold-annotation keys.
+// These mirror the Dash0 Operator's constants
+// (dash0-operator/internal/controller/prometheus_rules_controller.go:76-84):
+// the "dash0-" prefixed names are current, the unprefixed names are legacy
+// aliases kept for a grace period.
+const (
+	thresholdReference                = "$__threshold"
+	thresholdDegradedAnnotation       = "dash0-threshold-degraded"
+	thresholdDegradedAnnotationLegacy = "threshold-degraded"
+	thresholdCriticalAnnotation       = "dash0-threshold-critical"
+	thresholdCriticalAnnotationLegacy = "threshold-critical"
 )
 
 // GetPrometheusRuleDataset extracts the dataset from a PrometheusRules definition.
@@ -83,6 +97,10 @@ func SetPrometheusRuleIDIfAbsent(rule *PrometheusRules, id string) {
 // to a Dash0 CheckRule.
 // It extracts Dash0-specific annotations (thresholds, enabled flag) from the
 // rule annotations and maps them to dedicated fields on the returned rule.
+// It returns an error if a threshold annotation value is non-numeric, or if
+// the rule's expression references the "$__threshold" token but declares
+// neither a current nor legacy threshold annotation, mirroring the Dash0
+// Operator's validation.
 func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInterval time.Duration, ruleID string) (*PrometheusAlertRule, error) {
 	checkRule := &PrometheusAlertRule{
 		Name:       rule.Alert,
@@ -100,6 +118,10 @@ func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInter
 
 	// Copy annotations before mutating (threshold/enabled extraction removes keys).
 	annotations := maps.Clone(rule.Annotations)
+
+	if err := validateThresholdAnnotationPresence(rule.Expr, annotations); err != nil {
+		return nil, err
+	}
 
 	if rule.For != 0 {
 		s := Duration(FormatDuration(rule.For))
@@ -153,9 +175,44 @@ func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInter
 	return checkRule, nil
 }
 
+// validateThresholdAnnotationPresence returns an error if expr references the
+// "$__threshold" token but annotations declares neither a current
+// ("dash0-threshold-degraded"/"dash0-threshold-critical") nor legacy
+// ("threshold-degraded"/"threshold-critical") threshold annotation.
+// A rule in this state would silently create an unresolved/broken check rule
+// on the platform, so it is rejected here at parse/conversion time instead.
+// This mirrors the Dash0 Operator's validateThreshold check
+// (dash0-operator/internal/controller/prometheus_rules_controller.go:1089-1152).
+func validateThresholdAnnotationPresence(expr string, annotations map[string]string) error {
+	if !strings.Contains(expr, thresholdReference) {
+		return nil
+	}
+
+	_, hasDegraded := annotations[thresholdDegradedAnnotation]
+	if !hasDegraded {
+		_, hasDegraded = annotations[thresholdDegradedAnnotationLegacy]
+	}
+	_, hasCritical := annotations[thresholdCriticalAnnotation]
+	if !hasCritical {
+		_, hasCritical = annotations[thresholdCriticalAnnotationLegacy]
+	}
+
+	if !hasDegraded && !hasCritical {
+		return fmt.Errorf(
+			"the rule uses the token %s in its expression, but has neither the %s nor the %s annotation",
+			thresholdReference, thresholdDegradedAnnotation, thresholdCriticalAnnotation,
+		)
+	}
+	return nil
+}
+
 // extractThresholdsFromAnnotations extracts dash0-threshold-critical and
 // dash0-threshold-degraded from annotations, removing them from the map.
 // Returns nil if no thresholds are present.
+// Callers must invoke [validateThresholdAnnotationPresence] first to reject
+// rules whose expression references "$__threshold" without any threshold
+// annotation at all; this function only validates the numeric format of
+// values that are present.
 func extractThresholdsFromAnnotations(annotations map[string]string) (*CheckThresholds, error) {
 	if annotations == nil {
 		return nil, nil

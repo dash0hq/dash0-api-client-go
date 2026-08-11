@@ -427,3 +427,166 @@ func TestMarshalPrometheusRule_InvalidIntervalDuration(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 	}
 }
+
+// --- mergeAnnotations ---
+//
+// These cases derive from
+// fixtures/check-rule-annotation-parity/multi-rule-with-top-level-annotations.yaml
+// and its expected-check-rules.yaml counterpart in dash0-iac-maintainer-skills.
+
+func TestMergeAnnotations_RuleWinsOnConflict(t *testing.T) {
+	metadataAnnotations := map[string]string{
+		"dash0.com/notification-channel-ids": "3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222",
+	}
+	ruleAnnotations := map[string]string{
+		"summary":                            "Checkout error rate is elevated",
+		"dash0.com/notification-channel-ids": "3fa42d0c-6b8e-4c1a-9f2d-333333333333",
+		"runbook_url":                        "https://runbooks.example.com/checkout-error-rate",
+	}
+
+	merged := mergeAnnotations(metadataAnnotations, ruleAnnotations)
+
+	assertEqual(t, "notification-channel-ids", merged["dash0.com/notification-channel-ids"], "3fa42d0c-6b8e-4c1a-9f2d-333333333333")
+	assertEqual(t, "summary", merged["summary"], "Checkout error rate is elevated")
+	assertEqual(t, "runbook_url", merged["runbook_url"], "https://runbooks.example.com/checkout-error-rate")
+	if len(merged) != 3 {
+		t.Errorf("got %d merged entries, want 3", len(merged))
+	}
+}
+
+func TestMergeAnnotations_TopLevelOnlyPreserved(t *testing.T) {
+	metadataAnnotations := map[string]string{
+		"dash0.com/notification-channel-ids": "3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222",
+	}
+
+	merged := mergeAnnotations(metadataAnnotations, nil)
+
+	assertEqual(t, "notification-channel-ids", merged["dash0.com/notification-channel-ids"], "3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222")
+	if len(merged) != 1 {
+		t.Errorf("got %d merged entries, want 1", len(merged))
+	}
+}
+
+func TestMergeAnnotations_NoTopLevelAnnotations_NoOp(t *testing.T) {
+	ruleAnnotations := map[string]string{"summary": "Sum"}
+
+	merged := mergeAnnotations(nil, ruleAnnotations)
+
+	if len(merged) != 1 || merged["summary"] != "Sum" {
+		t.Errorf("expected merge with no top-level annotations to be a no-op, got %v", merged)
+	}
+	if len(merged) != len(ruleAnnotations) {
+		t.Errorf("got %d entries, want %d (no-op)", len(merged), len(ruleAnnotations))
+	}
+}
+
+func TestMergeAnnotations_NilSafe(t *testing.T) {
+	if merged := mergeAnnotations(nil, nil); len(merged) != 0 {
+		t.Errorf("mergeAnnotations(nil, nil) = %v, want empty", merged)
+	}
+	if merged := mergeAnnotations(map[string]string{}, nil); len(merged) != 0 {
+		t.Errorf("mergeAnnotations(empty, nil) = %v, want empty", merged)
+	}
+	if merged := mergeAnnotations(nil, map[string]string{}); len(merged) != 0 {
+		t.Errorf("mergeAnnotations(nil, empty) = %v, want empty", merged)
+	}
+}
+
+// --- ParseAsPrometheusAlertRules: top-level annotation merge ---
+//
+// Adapted from
+// fixtures/check-rule-annotation-parity/multi-rule-with-top-level-annotations.yaml.
+
+func TestParseAsPrometheusAlertRules_MergesTopLevelAnnotations(t *testing.T) {
+	data := []byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: checkout-check-rules
+  namespace: monitoring
+  labels:
+    prometheus: example
+    dash0.com/dataset: default
+  annotations:
+    dash0.com/notification-channel-ids: "3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222"
+spec:
+  groups:
+    - name: Alerting
+      interval: 1m
+      rules:
+        - alert: CheckoutHighLatency
+          expr: histogram_quantile(0.99, sum(rate(http_request_duration[5m]))) > 1.5
+          labels:
+            team: checkout
+            severity: high
+        - alert: CheckoutHighErrorRate
+          expr: sum(rate(http_requests_errors[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5
+          for: 5m
+          annotations:
+            summary: "Checkout error rate is elevated"
+            description: "More than 5 percent of checkout requests are failing with 5xx responses."
+            dash0.com/notification-channel-ids: "3fa42d0c-6b8e-4c1a-9f2d-333333333333"
+            runbook_url: "https://runbooks.example.com/checkout-error-rate"
+          labels:
+            team: checkout
+            severity: critical
+`)
+
+	rules, err := ParseAsPrometheusAlertRules(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rules) != 2 {
+		t.Fatalf("got %d rules, want 2", len(rules))
+	}
+
+	// Rule 1 had no annotations of its own: it must inherit the top-level
+	// notification-channel-ids value in full.
+	rule1 := rules[0]
+	if rule1.Annotations == nil {
+		t.Fatal("rule 1 Annotations is nil")
+	}
+	assertEqual(t, "rule1 notification-channel-ids",
+		rule1.Annotations.AdditionalProperties["dash0.com/notification-channel-ids"],
+		"3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222")
+
+	// Rule 2 overrides notification-channel-ids and keeps its own
+	// runbook_url; the top-level value must not leak in alongside the override.
+	rule2 := rules[1]
+	if rule2.Annotations == nil {
+		t.Fatal("rule 2 Annotations is nil")
+	}
+	assertEqual(t, "rule2 notification-channel-ids",
+		rule2.Annotations.AdditionalProperties["dash0.com/notification-channel-ids"],
+		"3fa42d0c-6b8e-4c1a-9f2d-333333333333")
+	assertEqual(t, "rule2 runbook_url",
+		rule2.Annotations.AdditionalProperties["runbook_url"],
+		"https://runbooks.example.com/checkout-error-rate")
+}
+
+func TestUnmarshalPrometheusRule_MergesTopLevelAnnotations(t *testing.T) {
+	yamlDoc := `apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: single-rule
+  annotations:
+    dash0.com/notification-channel-ids: "top-level-channel"
+spec:
+  groups:
+    - name: my-group
+      rules:
+        - alert: HighErrors
+          expr: up == 0
+          annotations:
+            summary: "High error rate"
+`
+	rule, err := UnmarshalPrometheusRule([]byte(yamlDoc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rule.Annotations == nil {
+		t.Fatal("Annotations is nil")
+	}
+	assertEqual(t, "notification-channel-ids",
+		rule.Annotations.AdditionalProperties["dash0.com/notification-channel-ids"], "top-level-channel")
+	assertPtrEqual(t, "Summary", rule.Annotations.Summary, "High error rate")
+}

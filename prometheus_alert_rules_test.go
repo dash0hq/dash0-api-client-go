@@ -1,6 +1,7 @@
 package dash0
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -293,6 +294,74 @@ func TestConvertPrometheusRuleToPrometheusAlertRule_Thresholds(t *testing.T) {
 		t.Error("dash0-threshold-degraded should be removed from annotations")
 	}
 	assertPtrEqual(t, "Summary", result.Annotations.Summary, "Sum")
+}
+
+// --- Threshold-annotation presence validation ---
+//
+// Adapted from
+// fixtures/check-rule-annotation-parity/threshold-missing-annotation.yaml and
+// its multi-rule-with-top-level-annotations.yaml sibling.
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_ThresholdTokenWithoutAnnotation(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "AdserviceErrorBudgetBurn",
+		Expr:  "sum(rate(http_requests_errors[5m])) / sum(rate(http_requests_total[5m])) * 100 > $__threshold",
+		Annotations: map[string]string{
+			"summary":     "Adservice error budget burn is high",
+			"description": "Adservice's 5xx error rate has crossed the (undeclared) threshold.",
+		},
+	}
+
+	_, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, "")
+	if err == nil {
+		t.Fatal("expected error for $__threshold token with no threshold annotation")
+	}
+	if !strings.Contains(err.Error(), "$__threshold") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_ThresholdTokenWithAnnotation_Succeeds(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "AdserviceErrorBudgetBurn",
+		Expr:  "sum(rate(http_requests_errors[5m])) / sum(rate(http_requests_total[5m])) * 100 > $__threshold",
+		Annotations: map[string]string{
+			"dash0-threshold-critical": "5",
+		},
+	}
+
+	result, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, "")
+	if err != nil {
+		t.Fatalf("expected success, got error: %v", err)
+	}
+	if result.Thresholds == nil || result.Thresholds.Failed == nil || *result.Thresholds.Failed != 5 {
+		t.Errorf("Thresholds.Failed = %v, want 5", result.Thresholds)
+	}
+}
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_ThresholdTokenWithLegacyAnnotation_Succeeds(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "AdserviceErrorBudgetBurn",
+		Expr:  "sum(rate(http_requests_errors[5m])) > $__threshold",
+		Annotations: map[string]string{
+			"threshold-degraded": "0.5",
+		},
+	}
+
+	if _, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, ""); err != nil {
+		t.Fatalf("expected success with legacy threshold-degraded annotation, got error: %v", err)
+	}
+}
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_NoThresholdTokenNoAnnotation_Succeeds(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "SimpleAlert",
+		Expr:  "up == 0",
+	}
+
+	if _, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, ""); err != nil {
+		t.Fatalf("expected success for rule without $__threshold token, got error: %v", err)
+	}
 }
 
 func TestConvertPrometheusRuleToPrometheusAlertRule_EnabledFalse(t *testing.T) {

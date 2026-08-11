@@ -10,10 +10,35 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
+// mergeAnnotations merges a PrometheusRule document's top-level
+// metadata.annotations into a rule's own annotations.
+// Rule-level annotations win on key conflict, mirroring the Dash0 Operator's
+// behavior (dash0-operator/internal/controller/prometheus_rules_controller.go,
+// mergeAnnotations).
+// Nil-safe: either or both inputs may be nil.
+func mergeAnnotations(metadataAnnotations, ruleAnnotations map[string]string) map[string]string {
+	if len(metadataAnnotations) == 0 {
+		return ruleAnnotations
+	}
+
+	merged := make(map[string]string, len(metadataAnnotations)+len(ruleAnnotations))
+	for k, v := range metadataAnnotations {
+		merged[k] = v
+	}
+	// Rule-level annotations are copied last, so they win on key conflict.
+	for k, v := range ruleAnnotations {
+		merged[k] = v
+	}
+	return merged
+}
+
 // UnmarshalPrometheusRule converts a Prometheus rule YAML document to a
 // PrometheusAlertRule (Dash0 API format).
 // The YAML must contain exactly one group with one rule.
 // The check rule name is composed as "groupName - alertName".
+// The document's top-level metadata.annotations are merged into the rule's
+// own annotations before conversion, with rule-level annotations winning on
+// key conflict.
 func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 	var wire prometheusRulesWire
 	if err := sigsyaml.Unmarshal(data, &wire); err != nil {
@@ -29,6 +54,8 @@ func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 	if len(group.Rules) != 1 {
 		return nil, fmt.Errorf("currently only one rule per group is supported")
 	}
+
+	group.Rules[0].Annotations = mergeAnnotations(promRules.Metadata.Annotations, group.Rules[0].Annotations)
 
 	ruleID := dash0.GetPrometheusRuleID(promRules)
 	alertRule, err := dash0.ConvertPrometheusRuleToPrometheusAlertRule(&group.Rules[0], group.Interval, ruleID)
@@ -156,6 +183,9 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 // A plain CheckRule returns a slice of length 1.
 // A PrometheusRule CRD returns one entry per alerting rule (recording rules are
 // skipped).
+// For a PrometheusRule CRD, the document's top-level metadata.annotations are
+// merged into each rule's own annotations before conversion, with rule-level
+// annotations winning on key conflict.
 func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, error) {
 	detectedKind, err := DetectKind(data)
 	if err != nil {
@@ -182,6 +212,7 @@ func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, err
 				if rule.Alert == "" {
 					continue
 				}
+				rule.Annotations = mergeAnnotations(promRules.Metadata.Annotations, rule.Annotations)
 				checkRule, err := dash0.ConvertPrometheusRuleToPrometheusAlertRule(rule, group.Interval, ruleID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to convert rule %q: %w", rule.Alert, err)
