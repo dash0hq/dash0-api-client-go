@@ -7,6 +7,18 @@ import (
 	"time"
 )
 
+// Recognized threshold-annotation keys.
+// These mirror the Dash0 Operator's constants
+// (dash0-operator/internal/controller/prometheus_rules_controller.go:76-84):
+// the "dash0-" prefixed names are current, the unprefixed names are legacy
+// aliases kept for a grace period.
+const (
+	thresholdDegradedAnnotation       = "dash0-threshold-degraded"
+	thresholdDegradedAnnotationLegacy = "threshold-degraded"
+	thresholdCriticalAnnotation       = "dash0-threshold-critical"
+	thresholdCriticalAnnotationLegacy = "threshold-critical"
+)
+
 // GetPrometheusRuleDataset extracts the dataset from a PrometheusRules definition.
 func GetPrometheusRuleDataset(rule *PrometheusRules) string {
 	if rule == nil || rule.Metadata.Labels == nil {
@@ -83,6 +95,7 @@ func SetPrometheusRuleIDIfAbsent(rule *PrometheusRules, id string) {
 // to a Dash0 CheckRule.
 // It extracts Dash0-specific annotations (thresholds, enabled flag) from the
 // rule annotations and maps them to dedicated fields on the returned rule.
+// It returns an error if a threshold annotation value is non-numeric.
 func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInterval time.Duration, ruleID string) (*PrometheusAlertRule, error) {
 	checkRule := &PrometheusAlertRule{
 		Name:       rule.Alert,
@@ -154,7 +167,8 @@ func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInter
 }
 
 // extractThresholdsFromAnnotations extracts dash0-threshold-critical and
-// dash0-threshold-degraded from annotations, removing them from the map.
+// dash0-threshold-degraded (or their legacy unprefixed form) from
+// annotations, removing them from the map.
 // Returns nil if no thresholds are present.
 func extractThresholdsFromAnnotations(annotations map[string]string) (*CheckThresholds, error) {
 	if annotations == nil {
@@ -162,24 +176,39 @@ func extractThresholdsFromAnnotations(annotations map[string]string) (*CheckThre
 	}
 	var thresholds CheckThresholds
 	hasThresholds := false
-	if critStr, ok := annotations["dash0-threshold-critical"]; ok {
+
+	critKey := thresholdCriticalAnnotation
+	critStr, ok := annotations[critKey]
+	if !ok {
+		critKey = thresholdCriticalAnnotationLegacy
+		critStr, ok = annotations[critKey]
+	}
+	if ok {
 		critVal, err := strconv.ParseFloat(critStr, 64)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for dash0-threshold-critical: %w", err)
+			return nil, fmt.Errorf("invalid value for %s: %w", critKey, err)
 		}
 		thresholds.Failed = &critVal
 		hasThresholds = true
-		delete(annotations, "dash0-threshold-critical")
+		delete(annotations, critKey)
 	}
-	if degStr, ok := annotations["dash0-threshold-degraded"]; ok {
+
+	degKey := thresholdDegradedAnnotation
+	degStr, ok := annotations[degKey]
+	if !ok {
+		degKey = thresholdDegradedAnnotationLegacy
+		degStr, ok = annotations[degKey]
+	}
+	if ok {
 		degVal, err := strconv.ParseFloat(degStr, 64)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for dash0-threshold-degraded: %w", err)
+			return nil, fmt.Errorf("invalid value for %s: %w", degKey, err)
 		}
 		thresholds.Degraded = &degVal
 		hasThresholds = true
-		delete(annotations, "dash0-threshold-degraded")
+		delete(annotations, degKey)
 	}
+
 	if !hasThresholds {
 		return nil, nil
 	}

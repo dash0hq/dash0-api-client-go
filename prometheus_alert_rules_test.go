@@ -295,6 +295,61 @@ func TestConvertPrometheusRuleToPrometheusAlertRule_Thresholds(t *testing.T) {
 	assertPtrEqual(t, "Summary", result.Annotations.Summary, "Sum")
 }
 
+// --- Legacy threshold-annotation extraction ---
+//
+// extractThresholdsFromAnnotations must fall back to the legacy unprefixed
+// key when the current-form key is absent, not just check the current form.
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_LegacyDegradedAnnotation_Succeeds(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "AdserviceErrorBudgetBurn",
+		Expr:  "sum(rate(http_requests_errors[5m])) > 0",
+		Annotations: map[string]string{
+			"threshold-degraded": "0.5",
+			"summary":            "Sum",
+		},
+	}
+
+	result, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, "")
+	if err != nil {
+		t.Fatalf("expected success with legacy threshold-degraded annotation, got error: %v", err)
+	}
+	if result.Thresholds == nil || result.Thresholds.Degraded == nil || *result.Thresholds.Degraded != 0.5 {
+		t.Errorf("Thresholds.Degraded = %v, want 0.5", result.Thresholds)
+	}
+	if result.Annotations == nil {
+		t.Fatal("Annotations is nil")
+	}
+	if _, ok := result.Annotations.AdditionalProperties["threshold-degraded"]; ok {
+		t.Error("threshold-degraded should be removed from annotations")
+	}
+}
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_LegacyCriticalAnnotation_Succeeds(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "AdserviceErrorBudgetBurn",
+		Expr:  "sum(rate(http_requests_errors[5m])) > 0",
+		Annotations: map[string]string{
+			"threshold-critical": "0.9",
+			"summary":            "Sum",
+		},
+	}
+
+	result, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, "")
+	if err != nil {
+		t.Fatalf("expected success with legacy threshold-critical annotation, got error: %v", err)
+	}
+	if result.Thresholds == nil || result.Thresholds.Failed == nil || *result.Thresholds.Failed != 0.9 {
+		t.Errorf("Thresholds.Failed = %v, want 0.9", result.Thresholds)
+	}
+	if result.Annotations == nil {
+		t.Fatal("Annotations is nil")
+	}
+	if _, ok := result.Annotations.AdditionalProperties["threshold-critical"]; ok {
+		t.Error("threshold-critical should be removed from annotations")
+	}
+}
+
 func TestConvertPrometheusRuleToPrometheusAlertRule_EnabledFalse(t *testing.T) {
 	rule := &PrometheusRule{
 		Alert: "Test",
