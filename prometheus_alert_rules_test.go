@@ -345,11 +345,49 @@ func TestConvertPrometheusRuleToPrometheusAlertRule_ThresholdTokenWithLegacyAnno
 		Expr:  "sum(rate(http_requests_errors[5m])) > $__threshold",
 		Annotations: map[string]string{
 			"threshold-degraded": "0.5",
+			"summary":            "Sum",
 		},
 	}
 
-	if _, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, ""); err != nil {
+	result, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, "")
+	if err != nil {
 		t.Fatalf("expected success with legacy threshold-degraded annotation, got error: %v", err)
+	}
+	// Presence validation accepts the legacy key; extraction must also read it,
+	// not just the current-form key, or Thresholds silently comes back nil.
+	if result.Thresholds == nil || result.Thresholds.Degraded == nil || *result.Thresholds.Degraded != 0.5 {
+		t.Errorf("Thresholds.Degraded = %v, want 0.5", result.Thresholds)
+	}
+	if result.Annotations == nil {
+		t.Fatal("Annotations is nil")
+	}
+	if _, ok := result.Annotations.AdditionalProperties["threshold-degraded"]; ok {
+		t.Error("threshold-degraded should be removed from annotations")
+	}
+}
+
+func TestConvertPrometheusRuleToPrometheusAlertRule_ThresholdTokenWithLegacyCriticalAnnotation_Succeeds(t *testing.T) {
+	rule := &PrometheusRule{
+		Alert: "AdserviceErrorBudgetBurn",
+		Expr:  "sum(rate(http_requests_errors[5m])) > $__threshold",
+		Annotations: map[string]string{
+			"threshold-critical": "0.9",
+			"summary":            "Sum",
+		},
+	}
+
+	result, err := ConvertPrometheusRuleToPrometheusAlertRule(rule, 0, "")
+	if err != nil {
+		t.Fatalf("expected success with legacy threshold-critical annotation, got error: %v", err)
+	}
+	if result.Thresholds == nil || result.Thresholds.Failed == nil || *result.Thresholds.Failed != 0.9 {
+		t.Errorf("Thresholds.Failed = %v, want 0.9", result.Thresholds)
+	}
+	if result.Annotations == nil {
+		t.Fatal("Annotations is nil")
+	}
+	if _, ok := result.Annotations.AdditionalProperties["threshold-critical"]; ok {
+		t.Error("threshold-critical should be removed from annotations")
 	}
 }
 

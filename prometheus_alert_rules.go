@@ -219,24 +219,39 @@ func extractThresholdsFromAnnotations(annotations map[string]string) (*CheckThre
 	}
 	var thresholds CheckThresholds
 	hasThresholds := false
-	if critStr, ok := annotations["dash0-threshold-critical"]; ok {
+
+	critKey := thresholdCriticalAnnotation
+	critStr, ok := annotations[critKey]
+	if !ok {
+		critKey = thresholdCriticalAnnotationLegacy
+		critStr, ok = annotations[critKey]
+	}
+	if ok {
 		critVal, err := strconv.ParseFloat(critStr, 64)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for dash0-threshold-critical: %w", err)
+			return nil, fmt.Errorf("invalid value for %s: %w", critKey, err)
 		}
 		thresholds.Failed = &critVal
 		hasThresholds = true
-		delete(annotations, "dash0-threshold-critical")
+		delete(annotations, critKey)
 	}
-	if degStr, ok := annotations["dash0-threshold-degraded"]; ok {
+
+	degKey := thresholdDegradedAnnotation
+	degStr, ok := annotations[degKey]
+	if !ok {
+		degKey = thresholdDegradedAnnotationLegacy
+		degStr, ok = annotations[degKey]
+	}
+	if ok {
 		degVal, err := strconv.ParseFloat(degStr, 64)
 		if err != nil {
-			return nil, fmt.Errorf("invalid value for dash0-threshold-degraded: %w", err)
+			return nil, fmt.Errorf("invalid value for %s: %w", degKey, err)
 		}
 		thresholds.Degraded = &degVal
 		hasThresholds = true
-		delete(annotations, "dash0-threshold-degraded")
+		delete(annotations, degKey)
 	}
+
 	if !hasThresholds {
 		return nil, nil
 	}
