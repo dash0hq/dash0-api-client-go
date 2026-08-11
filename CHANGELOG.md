@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.19.1
+
+
+### Bug Fixes
+- merge top-level PrometheusRule annotations and validate thresholds (#29)
+
 ## v1.19.0
 
 
