@@ -2,4 +2,4 @@ package dash0
 
 // Version is the version of the dash0-api-client-go library.
 // Updated automatically by the release workflow.
-const Version = "1.19.1"
+const Version = "1.20.0"

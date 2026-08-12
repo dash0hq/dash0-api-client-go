@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.20.0
+
+
+### Features
+- export MergeAnnotations (#30)
+
 ## v1.19.1
 
 
