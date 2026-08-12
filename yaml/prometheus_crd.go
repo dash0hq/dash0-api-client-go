@@ -10,13 +10,21 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-// mergeAnnotations merges a PrometheusRule document's top-level
+// MergeAnnotations merges a PrometheusRule document's top-level
 // metadata.annotations into a rule's own annotations.
 // Rule-level annotations win on key conflict, mirroring the Dash0 Operator's
 // behavior (dash0-operator/internal/controller/prometheus_rules_controller.go,
 // mergeAnnotations).
 // Nil-safe: either or both inputs may be nil.
-func mergeAnnotations(metadataAnnotations, ruleAnnotations map[string]string) map[string]string {
+//
+// UnmarshalPrometheusRule and ParseAsPrometheusAlertRules already apply this
+// on the write path, so callers converting a document for the API do not need
+// to. It is exported for downstream IaC tools that must model the same merge
+// elsewhere: the Terraform provider, for example, compares a user's config
+// against an API response that already reflects the merge, and so has to
+// apply it to its comparison copy. Sharing the precedence rule keeps those
+// consumers from drifting from the client.
+func MergeAnnotations(metadataAnnotations, ruleAnnotations map[string]string) map[string]string {
 	if len(metadataAnnotations) == 0 {
 		return ruleAnnotations
 	}
@@ -55,7 +63,7 @@ func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 		return nil, fmt.Errorf("currently only one rule per group is supported")
 	}
 
-	group.Rules[0].Annotations = mergeAnnotations(promRules.Metadata.Annotations, group.Rules[0].Annotations)
+	group.Rules[0].Annotations = MergeAnnotations(promRules.Metadata.Annotations, group.Rules[0].Annotations)
 
 	ruleID := dash0.GetPrometheusRuleID(promRules)
 	alertRule, err := dash0.ConvertPrometheusRuleToPrometheusAlertRule(&group.Rules[0], group.Interval, ruleID)
@@ -212,7 +220,7 @@ func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, err
 				if rule.Alert == "" {
 					continue
 				}
-				rule.Annotations = mergeAnnotations(promRules.Metadata.Annotations, rule.Annotations)
+				rule.Annotations = MergeAnnotations(promRules.Metadata.Annotations, rule.Annotations)
 				checkRule, err := dash0.ConvertPrometheusRuleToPrometheusAlertRule(rule, group.Interval, ruleID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to convert rule %q: %w", rule.Alert, err)

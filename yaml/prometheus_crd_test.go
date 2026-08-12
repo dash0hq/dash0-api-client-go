@@ -428,7 +428,7 @@ func TestMarshalPrometheusRule_InvalidIntervalDuration(t *testing.T) {
 	}
 }
 
-// --- mergeAnnotations ---
+// --- MergeAnnotations ---
 //
 // These cases derive from
 // fixtures/check-rule-annotation-parity/multi-rule-with-top-level-annotations.yaml
@@ -444,7 +444,7 @@ func TestMergeAnnotations_RuleWinsOnConflict(t *testing.T) {
 		"runbook_url":                        "https://runbooks.example.com/checkout-error-rate",
 	}
 
-	merged := mergeAnnotations(metadataAnnotations, ruleAnnotations)
+	merged := MergeAnnotations(metadataAnnotations, ruleAnnotations)
 
 	assertEqual(t, "notification-channel-ids", merged["dash0.com/notification-channel-ids"], "3fa42d0c-6b8e-4c1a-9f2d-333333333333")
 	assertEqual(t, "summary", merged["summary"], "Checkout error rate is elevated")
@@ -459,7 +459,7 @@ func TestMergeAnnotations_TopLevelOnlyPreserved(t *testing.T) {
 		"dash0.com/notification-channel-ids": "3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222",
 	}
 
-	merged := mergeAnnotations(metadataAnnotations, nil)
+	merged := MergeAnnotations(metadataAnnotations, nil)
 
 	assertEqual(t, "notification-channel-ids", merged["dash0.com/notification-channel-ids"], "3fa42d0c-6b8e-4c1a-9f2d-111111111111,3fa42d0c-6b8e-4c1a-9f2d-222222222222")
 	if len(merged) != 1 {
@@ -470,7 +470,7 @@ func TestMergeAnnotations_TopLevelOnlyPreserved(t *testing.T) {
 func TestMergeAnnotations_NoTopLevelAnnotations_NoOp(t *testing.T) {
 	ruleAnnotations := map[string]string{"summary": "Sum"}
 
-	merged := mergeAnnotations(nil, ruleAnnotations)
+	merged := MergeAnnotations(nil, ruleAnnotations)
 
 	if len(merged) != 1 || merged["summary"] != "Sum" {
 		t.Errorf("expected merge with no top-level annotations to be a no-op, got %v", merged)
@@ -481,14 +481,14 @@ func TestMergeAnnotations_NoTopLevelAnnotations_NoOp(t *testing.T) {
 }
 
 func TestMergeAnnotations_NilSafe(t *testing.T) {
-	if merged := mergeAnnotations(nil, nil); len(merged) != 0 {
-		t.Errorf("mergeAnnotations(nil, nil) = %v, want empty", merged)
+	if merged := MergeAnnotations(nil, nil); len(merged) != 0 {
+		t.Errorf("MergeAnnotations(nil, nil) = %v, want empty", merged)
 	}
-	if merged := mergeAnnotations(map[string]string{}, nil); len(merged) != 0 {
-		t.Errorf("mergeAnnotations(empty, nil) = %v, want empty", merged)
+	if merged := MergeAnnotations(map[string]string{}, nil); len(merged) != 0 {
+		t.Errorf("MergeAnnotations(empty, nil) = %v, want empty", merged)
 	}
-	if merged := mergeAnnotations(nil, map[string]string{}); len(merged) != 0 {
-		t.Errorf("mergeAnnotations(nil, empty) = %v, want empty", merged)
+	if merged := MergeAnnotations(nil, map[string]string{}); len(merged) != 0 {
+		t.Errorf("MergeAnnotations(nil, empty) = %v, want empty", merged)
 	}
 }
 
