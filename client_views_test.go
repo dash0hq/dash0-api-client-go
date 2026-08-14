@@ -12,7 +12,7 @@ import (
 func TestStripViewServerFields(t *testing.T) {
 	deletedAt := time.Now()
 	version := "2"
-	source := ViewLabelsDash0Comsource("terraform")
+	source := CrdSource("terraform")
 	dataset := "ds"
 	origin := "my-origin"
 
