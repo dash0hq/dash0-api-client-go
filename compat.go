@@ -99,6 +99,14 @@ package dash0
 // [Client.ResolveMemberIDsToEmails] is new: it translates the internal
 // member IDs echoed by the server back to email addresses for display.
 // Use it on the read path when rendering team membership to users.
+//
+// # Migration guide (v1.20.x to v1.21.0)
+//
+// [SamplingMode] constants were renamed from short forms ([Adaptive],
+// [Disabled]) to prefixed names ([SamplingModeAdaptive],
+// [SamplingModeDisabled]) because the upstream spec added a second
+// `disabled`/`adaptive` enum, and oapi-codegen disambiguated both.
+// The old names still work but are deprecated.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -221,3 +229,13 @@ const HttpRequestBodyKindJson = Json
 //
 // Deprecated: since v1.16.0. Use [Raw] instead.
 const HttpRequestBodyKindRaw = Raw
+
+// Adaptive is a deprecated alias for [SamplingModeAdaptive].
+//
+// Deprecated: since v1.21.0. Use [SamplingModeAdaptive] instead.
+const Adaptive = SamplingModeAdaptive
+
+// Disabled is a deprecated alias for [SamplingModeDisabled].
+//
+// Deprecated: since v1.21.0. Use [SamplingModeDisabled] instead.
+const Disabled = SamplingModeDisabled

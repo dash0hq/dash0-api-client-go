@@ -96,7 +96,9 @@ const (
 // Defines values for CrdSource.
 const (
 	Api       CrdSource = "api"
+	Dash0Cli  CrdSource = "dash0-cli"
 	Operator  CrdSource = "operator"
+	Platform  CrdSource = "platform"
 	Terraform CrdSource = "terraform"
 	Ui        CrdSource = "ui"
 )
@@ -151,8 +153,9 @@ const (
 
 // Defines values for FailedCheckTriggerVariableName.
 const (
-	CheckId   FailedCheckTriggerVariableName = "check.id"
-	CheckName FailedCheckTriggerVariableName = "check.name"
+	CheckId         FailedCheckTriggerVariableName = "check.id"
+	CheckName       FailedCheckTriggerVariableName = "check.name"
+	IssueIdentifier FailedCheckTriggerVariableName = "issue.identifier"
 )
 
 // Defines values for GenAIAttributeRedaction.
@@ -582,6 +585,12 @@ const (
 	Kubernetes ResourceOrchestration = "kubernetes"
 )
 
+// Defines values for RespectNativeCodingAgentTelemetry.
+const (
+	RespectNativeCodingAgentTelemetryDisabled RespectNativeCodingAgentTelemetry = "disabled"
+	RespectNativeCodingAgentTelemetryEnabled  RespectNativeCodingAgentTelemetry = "enabled"
+)
+
 // Defines values for RetentionClass.
 const (
 	N120d RetentionClass = "120d"
@@ -619,8 +628,8 @@ const (
 
 // Defines values for SamplingMode.
 const (
-	Adaptive SamplingMode = "adaptive"
-	Disabled SamplingMode = "disabled"
+	SamplingModeAdaptive SamplingMode = "adaptive"
+	SamplingModeDisabled SamplingMode = "disabled"
 )
 
 // Defines values for ScheduleTriggerVariableName.
@@ -983,13 +992,6 @@ const (
 	Dash0View ViewDefinitionKind = "Dash0View"
 )
 
-// Defines values for ViewLabelsDash0Comsource.
-const (
-	Builtin     ViewLabelsDash0Comsource = "builtin"
-	External    ViewLabelsDash0Comsource = "external"
-	Userdefined ViewLabelsDash0Comsource = "userdefined"
-)
-
 // Defines values for ViewSpecServiceMapPropertiesExternalServices.
 const (
 	All   ViewSpecServiceMapPropertiesExternalServices = "all"
@@ -1154,7 +1156,7 @@ type AgenticWorkflowAnnotations struct {
 	// Dash0ComlastUpdatedBy The member ID of the user who created the current version of this automation.
 	Dash0ComlastUpdatedBy *string `json:"dash0.com/last-updated-by,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 
 	// Dash0ComwebhookSecret The plaintext webhook secret, returned exactly once: immediately after the backend
@@ -1276,11 +1278,19 @@ type AgenticWorkflowLabels struct {
 	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource    *CrdSource `json:"dash0.com/source,omitempty"`
 	Dash0Comversion   *string    `json:"dash0.com/version,omitempty"`
 	Dash0ComwebhookId *string    `json:"dash0.com/webhook-id,omitempty"`
@@ -1558,11 +1568,19 @@ type CheckThresholds struct {
 	Failed *float64 `json:"failed,omitempty"`
 }
 
-// CrdSource Origin of a Dash0 resource.
-// - `ui`: created interactively in the Dash0 UI.
-// - `terraform`: managed via the Dash0 Terraform provider.
-// - `operator`: managed via the Dash0 Kubernetes operator.
-// - `api`: created directly through the internal API.
+// CrdSource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+//   - `ui`: created interactively in the Dash0 UI.
+//   - `terraform`: managed via the Dash0 Terraform provider.
+//   - `operator`: managed via the Dash0 Kubernetes operator.
+//   - `dash0-cli`: managed via the Dash0 CLI.
+//   - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+//     resources Dash0 generates from another resource you own (the recording rules an SLO
+//     produces) and resources Dash0 ships with the product (the built-in views).
+//   - `api`: created directly through the API, and the fallback for any origin whose
+//     prefix is not recognized.
+//
+// New values may be added over time. Treat an unrecognized value as `api`
+// rather than rejecting the response.
 type CrdSource string
 
 // Cursor The cursor to another set of results. The value of this field is opaque to the
@@ -1591,6 +1609,16 @@ type CursorPagination struct {
 // D0QLWarnings defines model for D0QLWarnings.
 type D0QLWarnings = []string
 
+// DarkplaneConfig Darkplane-specific opt-ins for this dataset.
+type DarkplaneConfig struct {
+	// RespectNativeCodingAgentTelemetry Controls whether OpenTelemetry telemetry natively emitted by coding agents
+	// (e.g. Claude Code) is processed by Darkplane.
+	//
+	// - `disabled`: Native coding-agent telemetry is not processed by Darkplane.
+	// - `enabled`: Native coding-agent telemetry is processed by Darkplane.
+	RespectNativeCodingAgentTelemetry *RespectNativeCodingAgentTelemetry `json:"respectNativeCodingAgentTelemetry,omitempty"`
+}
+
 // DashboardAnnotations defines model for DashboardAnnotations.
 type DashboardAnnotations struct {
 	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
@@ -1598,7 +1626,7 @@ type DashboardAnnotations struct {
 	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 }
 
@@ -1624,11 +1652,19 @@ type DashboardDefinitionKind string
 
 // DashboardLabels defines model for DashboardLabels.
 type DashboardLabels struct {
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
@@ -1735,9 +1771,12 @@ type DatasetRestriction string
 type DatasetSettings struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 
+	// Darkplane Darkplane-specific opt-ins for this dataset.
+	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
+
 	// GenAiAttributeRedaction Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
-	// Conversation content and tool-call I/O are controlled independently, e.g. to keep conversation
-	// content private while still storing tool input/output.
+	// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
+	// e.g. to keep conversation content private while still storing tool input/output.
 	GenAiAttributeRedaction *GenAIAttributeRedactionSettings `json:"genAiAttributeRedaction,omitempty"`
 	GeoLocation             GeoLocationSettings              `json:"geoLocation"`
 	IpAddresses             IpAddressesSettings              `json:"ipAddresses"`
@@ -1832,9 +1871,20 @@ type EmptyAgenticWorkflowTriggerSpec = interface{}
 
 // Error defines model for Error.
 type Error struct {
-	Code    int     `json:"code"`
-	Message string  `json:"message"`
+	// Code HTTP status code.
+	Code int `json:"code"`
+
+	// Message Human-readable description of the error. Safe to display.
+	Message string `json:"message"`
+
+	// TraceId Trace ID for the request that produced the error, for correlating with logs and traces.
 	TraceId *string `json:"traceId,omitempty"`
+
+	// Type Stable `snake_case` identifier for the kind of error, safe for clients to branch on. Not
+	// an enum: treat an unrecognized value the same as an absent one and fall back to `message`,
+	// so a new error kind never breaks the contract. Optional — absent means unclassified, not
+	// success.
+	Type *string `json:"type,omitempty"`
 }
 
 // ErrorAssertion defines model for ErrorAssertion.
@@ -1923,6 +1973,7 @@ type FailedCheckAgenticWorkflowTriggerSpec struct {
 //
 // - `check.id`: The ID of the check rule that failed.
 // - `check.name`: The name of the check rule that failed.
+// - `issue.identifier`: The specific issue that fired. One rule can have several concurrent issues, so this identifies which one triggered the run. Absent when the dispatching producer predates the field.
 type FailedCheckTriggerVariableName string
 
 // FailedHttpCheckAssertion Information about a failed HTTP check assertion
@@ -1957,14 +2008,20 @@ type FixedTimeUnix = string
 type GenAIAttributeRedaction string
 
 // GenAIAttributeRedactionSettings Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
-// Conversation content and tool-call I/O are controlled independently, e.g. to keep conversation
-// content private while still storing tool input/output.
+// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
+// e.g. to keep conversation content private while still storing tool input/output.
 type GenAIAttributeRedactionSettings struct {
 	// Conversation Controls whether sensitive GenAI attribute values are redacted by the Collector.
 	//
 	// - `disabled`: Preserve GenAI attribute values unchanged.
 	// - `redact`: Replace the affected GenAI attribute content with a redacted value.
 	Conversation *GenAIAttributeRedaction `json:"conversation,omitempty"`
+
+	// Errors Controls whether sensitive GenAI attribute values are redacted by the Collector.
+	//
+	// - `disabled`: Preserve GenAI attribute values unchanged.
+	// - `redact`: Replace the affected GenAI attribute content with a redacted value.
+	Errors *GenAIAttributeRedaction `json:"errors,omitempty"`
 
 	// ToolCalls Controls whether sensitive GenAI attribute values are redacted by the Collector.
 	//
@@ -2048,6 +2105,8 @@ type GetSamplingRulesResponse struct {
 
 // GetSignalToMetricsResponse defines model for GetSignalToMetricsResponse.
 type GetSignalToMetricsResponse struct {
+	Counts *SignalToMetricsCounts `json:"counts,omitempty"`
+
 	// HasMore Whether there are more results beyond the current page. Only present when pagination is used.
 	HasMore         *bool                       `json:"hasMore,omitempty"`
 	SignalToMetrics []SignalToMetricsDefinition `json:"signalToMetrics"`
@@ -3141,11 +3200,19 @@ type NotificationChannelLabels struct {
 	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created channels; non-empty for channels created via the internal API.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
@@ -3160,20 +3227,31 @@ type NotificationChannelMetadata struct {
 
 // NotificationChannelRouting defines model for NotificationChannelRouting.
 type NotificationChannelRouting struct {
-	Assets  []NotificationChannelRoutingAsset `json:"assets"`
-	Filters []FilterCriteria                  `json:"filters"`
+	// Assets **Read-only.** The check rules and synthetic checks that are bound to this channel — a back-reference derived by the server; any value supplied on a write is ignored. To bind a check rule to this channel, set the `dash0.com/notification-channel-ids` annotation on the check rule; to bind a synthetic check, set `spec.notifications.channels` on the synthetic check. A channel bound to a check rule or synthetic check receives every notification for it, regardless of `filters`.
+	Assets []NotificationChannelRoutingAsset `json:"assets"`
+
+	// Filters Routing conditions: the channel is notified for any failed check matching at least one condition (conditions are OR-ed; the criteria within one condition are AND-ed). Conditions are evaluated organization-wide — they are not scoped to the assets listed above, and they do not restrict notifications delivered through a direct binding.
+	Filters []FilterCriteria `json:"filters"`
 }
 
-// NotificationChannelRoutingAsset defines model for NotificationChannelRoutingAsset.
+// NotificationChannelRoutingAsset A check rule or synthetic check that is bound to this notification channel. Populated by the server; see `NotificationChannelRouting.assets`.
 type NotificationChannelRoutingAsset struct {
 	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
-	Dataset Dataset                             `json:"dataset"`
-	Id      string                              `json:"id"`
-	Kind    NotificationChannelRoutingAssetKind `json:"kind"`
-	Name    string                              `json:"name"`
+	Dataset Dataset `json:"dataset"`
+
+	// Id The bound asset's UUID. Populated by the server.
+	Id string `json:"id"`
+
+	// Kind - `check_rule`: the channel is bound to a check rule (via the check rule's `dash0.com/notification-channel-ids` annotation).
+	// - `synthetic_check`: the channel is bound to a synthetic check (via the synthetic check's `spec.notifications.channels`).
+	Kind NotificationChannelRoutingAssetKind `json:"kind"`
+
+	// Name The bound asset's display name. Populated by the server.
+	Name string `json:"name"`
 }
 
-// NotificationChannelRoutingAssetKind defines model for NotificationChannelRoutingAssetKind.
+// NotificationChannelRoutingAssetKind - `check_rule`: the channel is bound to a check rule (via the check rule's `dash0.com/notification-channel-ids` annotation).
+// - `synthetic_check`: the channel is bound to a synthetic check (via the synthetic check's `spec.notifications.channels`).
 type NotificationChannelRoutingAssetKind string
 
 // NotificationChannelSpec defines model for NotificationChannelSpec.
@@ -3330,6 +3408,11 @@ type OAuthResponseType string
 
 // OAuthRevocationRequest defines model for OAuthRevocationRequest.
 type OAuthRevocationRequest struct {
+	// ClientId The identifier of the client the token was issued to. RFC 7009 section 2.1 requires the
+	// revocation request to be authenticated as that client, so a token issued to a different
+	// client is left untouched (the response is still 200).
+	ClientId string `json:"client_id"`
+
 	// Token The token to be revoked.
 	Token string `json:"token"`
 
@@ -3556,7 +3639,7 @@ type PrometheusAlertRule_Annotations struct {
 	// FolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	FolderPath *string `json:"folderPath,omitempty"`
 
-	// Sharing Comma-separated list of principals to grant read and delete access to for API-managed check rules. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Sharing Comma-separated list of principals to grant read and delete access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on check rules that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on a check rule that declares no dash0.com/origin is rejected with a 400 — manage that rule's access via the UI share dialog instead.
 	Sharing *string `json:"sharing,omitempty"`
 
 	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
@@ -3582,11 +3665,19 @@ type PrometheusAlertRuleApiListItem struct {
 	// Origin User defined origin for getting/updating/deleting the alert rule through the API.
 	Origin *string `json:"origin,omitempty"`
 
-	// Source Origin of a Dash0 resource.
+	// Source Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Source *CrdSource `json:"source,omitempty"`
 }
 
@@ -3604,20 +3695,28 @@ type PrometheusAlertRuleBulkCreateResponse struct {
 // PrometheusAlertRuleMetadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
 type PrometheusAlertRuleMetadata struct {
 	// Labels Server-derived labels that apply to the alert-rule resource itself, not to the
-	// emitted alert. Currently includes `dash0.com/source`
-	// (`ui` / `terraform` / `operator` / `api`) when the origin is known.
+	// emitted alert. Currently includes `dash0.com/source` when the origin is known; see
+	// the `CrdSource` enum for the values it can take.
 	Labels *PrometheusAlertRuleMetadataLabels `json:"labels,omitempty"`
 }
 
 // PrometheusAlertRuleMetadataLabels Server-derived labels that apply to the alert-rule resource itself, not to the
-// emitted alert. Currently includes `dash0.com/source`
-// (`ui` / `terraform` / `operator` / `api`) when the origin is known.
+// emitted alert. Currently includes `dash0.com/source` when the origin is known; see
+// the `CrdSource` enum for the values it can take.
 type PrometheusAlertRuleMetadataLabels struct {
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
@@ -3941,7 +4040,7 @@ type PrometheusRuleMetadata struct {
 	//
 	// - `dash0.com/enabled`: Set to "false" to disable evaluation. Defaults to "true" when absent.
 	// - `dash0.com/folder-path`: UI folder path for organising resources (e.g., "/infrastructure/hosts"). Nesting is expressed with "/" separators.
-	// - `dash0.com/sharing`: Comma-separated list of principals to grant read access to. Supported formats: "team:<team_id>" and "user:<email>".
+	// - `dash0.com/sharing`: Comma-separated list of principals to grant read access to. Supported formats: "team:<team_id>" and "user:<email>". Honored only on rules that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API); setting it on a rule that declares no dash0.com/origin is rejected with a 400.
 	// - `dash0.com/created-at`: Creation timestamp (read-only, server-set).
 	// - `dash0.com/updated-at`: Last update timestamp (read-only, server-set).
 	// - `dash0.com/deleted-at`: Soft-delete timestamp (read-only, server-set).
@@ -3956,7 +4055,7 @@ type PrometheusRuleMetadata struct {
 	// - `dash0.com/origin`: External identifier for API-managed resources.
 	// - `dash0.com/version`: Version for optimistic concurrency (required on update, server-set on create).
 	// - `dash0.com/dataset`: Dataset this resource belongs to (defaults to the default dataset).
-	// - `dash0.com/source`: Origin source — "ui", "terraform", "operator", or "api" (read-only, derived from origin).
+	// - `dash0.com/source`: Origin source — "ui", "terraform", "operator", "dash0-cli", "platform", or "api" (read-only, derived from origin).
 	Labels *map[string]string `json:"labels,omitempty"`
 
 	// Name Resource name.
@@ -4158,6 +4257,13 @@ type ResourceSpans struct {
 	ScopeSpans []ScopeSpans `json:"scopeSpans"`
 }
 
+// RespectNativeCodingAgentTelemetry Controls whether OpenTelemetry telemetry natively emitted by coding agents
+// (e.g. Claude Code) is processed by Darkplane.
+//
+// - `disabled`: Native coding-agent telemetry is not processed by Darkplane.
+// - `enabled`: Native coding-agent telemetry is processed by Darkplane.
+type RespectNativeCodingAgentTelemetry string
+
 // ResultRow defines model for ResultRow.
 type ResultRow struct {
 	Values []KeyValue `json:"values"`
@@ -4273,11 +4379,19 @@ type SamplingLabels struct {
 	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
 	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
@@ -4426,7 +4540,16 @@ type SettingsPerOrganizationAndDatasetInfo struct {
 	// Extensible — additional edge sub-settings will be added here over time. Other facets
 	// (e.g. SaaS-side) are modelled as their own schemas under sibling endpoints, not as
 	// fields here.
-	SignalControlEdge                   SignalControlEdgeSettings               `json:"signalControlEdge"`
+	SignalControlEdge SignalControlEdgeSettings `json:"signalControlEdge"`
+
+	// SignalControlMetering Per-organization control over edge billing metering enforcement. Set centrally by Dash0
+	// and not customer-configurable.
+	//
+	// Deliberately a sibling of `signalControlEdge` rather than a field inside it: that object
+	// is a pre-release entitlement gate that goes away at GA, and enforcement has to outlive it.
+	//
+	// Every field is optional, and absence is meaningful — see `enforce`.
+	SignalControlMetering               *SignalControlMeteringSettings          `json:"signalControlMetering,omitempty"`
 	SignalToMetricsSettings             []SignalToMetricsDefinition             `json:"signalToMetricsSettings"`
 	SourceMapSettings                   []SourceMapIntegration                  `json:"sourceMapSettings"`
 	TechnicalID                         string                                  `json:"technicalID"`
@@ -4470,6 +4593,31 @@ type SignalControlEdgeSettings struct {
 	Enabled bool `json:"enabled"`
 }
 
+// SignalControlMeteringSettings Per-organization control over edge billing metering enforcement. Set centrally by Dash0
+// and not customer-configurable.
+//
+// Deliberately a sibling of `signalControlEdge` rather than a field inside it: that object
+// is a pre-release entitlement gate that goes away at GA, and enforcement has to outlive it.
+//
+// Every field is optional, and absence is meaningful — see `enforce`.
+type SignalControlMeteringSettings struct {
+	// Enforce Whether edge collectors enforce billing metering for this organization.
+	//
+	// `true` enforces: Signal Control components on edge stop acting on telemetry that no
+	// metering processor marked, so a capability cannot run on usage nothing metered.
+	//
+	// `false` and an absent field both mean warn mode: the capabilities keep working on
+	// unmarked telemetry and the misconfiguration is only logged and reported. The two
+	// negatives are collapsed on purpose, so an organization can be returned to warn mode by
+	// writing `false` rather than by deleting a key, and an organization nobody has touched
+	// behaves identically to one explicitly parked.
+	//
+	// The collector's compiled-in default is warn, permanently — enforcement is only ever
+	// something the server turns on. A collector that has never synced never enforces, but
+	// one that has been told to enforce keeps enforcing if it later loses contact.
+	Enforce *bool `json:"enforce,omitempty"`
+}
+
 // SignalToMetricsBulkUpsertRequest defines model for SignalToMetricsBulkUpsertRequest.
 type SignalToMetricsBulkUpsertRequest struct {
 	Items []SignalToMetricsDefinition `json:"items"`
@@ -4482,6 +4630,12 @@ type SignalToMetricsBulkUpsertResponse struct {
 
 	// Updated Number of rules that were updated.
 	Updated int `json:"updated"`
+}
+
+// SignalToMetricsCounts defines model for SignalToMetricsCounts.
+type SignalToMetricsCounts struct {
+	Logs  SignalToMetricsSignalCounts `json:"logs"`
+	Spans SignalToMetricsSignalCounts `json:"spans"`
 }
 
 // SignalToMetricsCreateRequest defines model for SignalToMetricsCreateRequest.
@@ -4513,7 +4667,7 @@ type SignalToMetricsGroupAnnotations struct {
 	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Note: this resource type does not currently enforce sharing; the field is accepted but has no effect on access.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 
 	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
@@ -4531,11 +4685,19 @@ type SignalToMetricsLabels struct {
 	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 
 	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
@@ -4581,6 +4743,15 @@ type SignalToMetricsOutput struct {
 
 // SignalToMetricsResponse defines model for SignalToMetricsResponse.
 type SignalToMetricsResponse = SignalToMetricsDefinition
+
+// SignalToMetricsSignalCounts defines model for SignalToMetricsSignalCounts.
+type SignalToMetricsSignalCounts struct {
+	// Enabled The subset that is enabled. Disabled rules are `total - enabled`.
+	Enabled int `json:"enabled"`
+
+	// Total Rules with this source signal, enabled and disabled alike.
+	Total int `json:"total"`
+}
 
 // SignalToMetricsSignalType defines model for SignalToMetricsSignalType.
 type SignalToMetricsSignalType string
@@ -4663,8 +4834,9 @@ type SlackBotFailedCheckAgenticWorkflowTriggerSpec struct {
 	AnnotationFilters *FilterCriteria `json:"annotationFilters,omitempty"`
 
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
-	// This is in addition to the built-in variables that are always available.
-	AvailableVariables *[]SlackTriggerVariableName `json:"availableVariables,omitempty"`
+	// This is in addition to the built-in variables that are always available. The dispatch
+	// payload carries the Slack event's variables and the failed check's.
+	AvailableVariables *[]SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item `json:"availableVariables,omitempty"`
 
 	// ChannelNames Optional list of Slack channel names (e.g., `general`, `alerts`). When
 	// specified, only failed checks reported in these channels trigger the automation.
@@ -4679,6 +4851,11 @@ type SlackBotFailedCheckAgenticWorkflowTriggerSpec struct {
 	// case-insensitive substring match (e.g., `investigate` matches any message
 	// containing "investigate").
 	Message *string `json:"message,omitempty"`
+}
+
+// SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item defines model for SlackBotFailedCheckAgenticWorkflowTriggerSpec.availableVariables.Item.
+type SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item struct {
+	union json.RawMessage
 }
 
 // SlackBotMessageAgenticWorkflowTrigger defines model for SlackBotMessageAgenticWorkflowTrigger.
@@ -4922,7 +5099,7 @@ type SloAnnotations struct {
 	// Dash0ComfolderPath Optional UI folder path for organising SLOs (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 
 	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
@@ -5033,11 +5210,19 @@ type SloLabels struct {
 	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created SLOs; non-empty for SLOs created via the internal API. SLOs with a non-empty origin have write access controlled exclusively through explicit permission entries rather than by the admin role.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 
 	// Dash0Comversion Current version of the SLO. Needs to be set when updating an SLO to prevent conflicting writes.
@@ -5297,11 +5482,19 @@ type SpamFilterLabels struct {
 	// `api-<uuid>` on POST if not provided.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 }
 
@@ -5553,7 +5746,7 @@ type SyntheticCheckAnnotations struct {
 	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 }
 
@@ -5704,11 +5897,19 @@ type SyntheticCheckLabels struct {
 	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
 	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
@@ -5842,11 +6043,19 @@ type SyntheticChecksApiListItem struct {
 	Name    *string `json:"name,omitempty"`
 	Origin  *string `json:"origin,omitempty"`
 
-	// Source Origin of a Dash0 resource.
+	// Source Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Source *CrdSource `json:"source,omitempty"`
 }
 
@@ -5940,11 +6149,19 @@ type TeamLabels struct {
 	// organization when present.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource       *CrdSource        `json:"dash0.com/source,omitempty"`
 	AdditionalProperties map[string]string `json:"-"`
 }
@@ -6001,11 +6218,19 @@ type TeamsListItem struct {
 	Name    string             `json:"name"`
 	Origin  *string            `json:"origin,omitempty"`
 
-	// Source Origin of a Dash0 resource.
+	// Source Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Source           *CrdSource `json:"source,omitempty"`
 	TotalMemberCount int        `json:"totalMemberCount"`
 }
@@ -6052,11 +6277,19 @@ type TelemetryFilter struct {
 	// When set, the filter is read-only in the UI.
 	Origin *string `json:"origin,omitempty"`
 
-	// Source Origin of a Dash0 resource.
+	// Source Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Source *CrdSource `json:"source,omitempty"`
 }
 
@@ -6133,11 +6366,19 @@ type TelemetryTransformationRuleLabels struct {
 	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 
 	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
@@ -6299,11 +6540,19 @@ type TimeSeriesAggregationLabels struct {
 	Dash0Comid      *string            `json:"dash0.com/id,omitempty"`
 	Dash0Comorigin  *string            `json:"dash0.com/origin,omitempty"`
 
-	// Dash0Comsource Origin of a Dash0 resource.
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
 	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `api`: created directly through the internal API.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
 	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
 	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
@@ -6386,7 +6635,7 @@ type ViewAnnotations struct {
 	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to for API-managed resources. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'.
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 }
 
@@ -6424,15 +6673,26 @@ type ViewDisplay struct {
 
 // ViewLabels defines model for ViewLabels.
 type ViewLabels struct {
-	Dash0Comdataset *string                   `json:"dash0.com/dataset,omitempty"`
-	Dash0Comid      *string                   `json:"dash0.com/id,omitempty"`
-	Dash0Comorigin  *string                   `json:"dash0.com/origin,omitempty"`
-	Dash0Comsource  *ViewLabelsDash0Comsource `json:"dash0.com/source,omitempty"`
-	Dash0Comversion *string                   `json:"dash0.com/version,omitempty"`
-}
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
 
-// ViewLabelsDash0Comsource defines model for ViewLabels.Dash0Comsource.
-type ViewLabelsDash0Comsource string
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+}
 
 // ViewMetadata defines model for ViewMetadata.
 type ViewMetadata struct {
@@ -9319,6 +9579,68 @@ func (t SamplingCondition) MarshalJSON() ([]byte, error) {
 }
 
 func (t *SamplingCondition) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsSlackTriggerVariableName returns the union data inside the SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as a SlackTriggerVariableName
+func (t SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) AsSlackTriggerVariableName() (SlackTriggerVariableName, error) {
+	var body SlackTriggerVariableName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSlackTriggerVariableName overwrites any union data inside the SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as the provided SlackTriggerVariableName
+func (t *SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) FromSlackTriggerVariableName(v SlackTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSlackTriggerVariableName performs a merge with any union data inside the SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item, using the provided SlackTriggerVariableName
+func (t *SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MergeSlackTriggerVariableName(v SlackTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFailedCheckTriggerVariableName returns the union data inside the SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as a FailedCheckTriggerVariableName
+func (t SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) AsFailedCheckTriggerVariableName() (FailedCheckTriggerVariableName, error) {
+	var body FailedCheckTriggerVariableName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedCheckTriggerVariableName overwrites any union data inside the SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as the provided FailedCheckTriggerVariableName
+func (t *SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) FromFailedCheckTriggerVariableName(v FailedCheckTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedCheckTriggerVariableName performs a merge with any union data inside the SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item, using the provided FailedCheckTriggerVariableName
+func (t *SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MergeFailedCheckTriggerVariableName(v FailedCheckTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *SlackBotFailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -21538,6 +21860,7 @@ func (r PostOauthRegisterResponse) StatusCode() int {
 type PostOauthRevokeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON400      *OAuthTokenErrorResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -26709,6 +27032,13 @@ func ParsePostOauthRevokeResponse(rsp *http.Response) (*PostOauthRevokeResponse,
 	}
 
 	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest OAuthTokenErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
