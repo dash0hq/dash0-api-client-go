@@ -907,6 +907,9 @@ func TestOAuthClient_RevokeToken(t *testing.T) {
 			if got := r.PostFormValue("token_type_hint"); got != "access_token" {
 				t.Errorf("token_type_hint = %q, want %q", got, "access_token")
 			}
+			if _, ok := r.PostForm["client_id"]; ok {
+				t.Errorf("expected client_id to be omitted, got %q", r.PostFormValue("client_id"))
+			}
 
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -967,6 +970,32 @@ func TestOAuthClient_RevokeToken(t *testing.T) {
 		})
 		if err != nil {
 			t.Errorf("expected nil error for 204, got: %v", err)
+		}
+	})
+
+	t.Run("includes client_id when set", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if err := r.ParseForm(); err != nil {
+				t.Fatalf("failed to parse form: %v", err)
+			}
+			if got := r.PostFormValue("client_id"); got != "cid" {
+				t.Errorf("client_id = %q, want %q", got, "cid")
+			}
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer server.Close()
+
+		client, err := NewOAuthClient(WithApiUrl(server.URL))
+		if err != nil {
+			t.Fatalf("failed to create client: %v", err)
+		}
+
+		err = client.RevokeToken(context.Background(), &OAuthRevocationRequest{
+			Token:    "token-to-revoke",
+			ClientId: "cid",
+		})
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
 		}
 	})
 }

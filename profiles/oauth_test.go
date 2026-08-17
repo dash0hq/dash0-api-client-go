@@ -710,12 +710,63 @@ func TestRefreshOAuthToken(t *testing.T) {
 			t.Errorf("expected dash0_at_fresh-token, got %s", cfg.AuthToken)
 		}
 	})
+
+	t.Run("backfills empty client_id from DCR cache", func(t *testing.T) {
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_fresh-token",
+			ExpiresIn:   3600,
+		}, nil)
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		clientStore, err := NewOAuthClientStore(WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("client store: %v", err)
+		}
+		if err := clientStore.Put(server.URL, OAuthClientRecord{ClientID: "cached-cid", RedirectURI: "http://localhost/cb"}); err != nil {
+			t.Fatalf("put cached client: %v", err)
+		}
+		profile := Profile{
+			Name: "test",
+			Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_expired-token",
+				OAuth: &OAuthState{
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(-10 * time.Minute),
+				},
+			},
+		}
+		createTestProfilesFile(t, dir, []Profile{profile})
+
+		cfg := &profile.Configuration
+		if err := refreshOAuthToken(context.Background(), store, "test", cfg); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.OAuth.ClientID != "cached-cid" {
+			t.Errorf("in-memory ClientID = %q, want cached-cid", cfg.OAuth.ClientID)
+		}
+		all, err := store.GetProfiles()
+		if err != nil {
+			t.Fatalf("reload: %v", err)
+		}
+		var persisted *OAuthState
+		for i := range all {
+			if all[i].Name == "test" {
+				persisted = all[i].Configuration.OAuth
+				break
+			}
+		}
+		if persisted == nil || persisted.ClientID != "cached-cid" {
+			t.Errorf("persisted ClientID = %+v, want cached-cid", persisted)
+		}
+	})
 }
 
 func TestRevokeOAuthTokens(t *testing.T) {
 	t.Run("no OAuth state", func(t *testing.T) {
 		cfg := &Configuration{AuthToken: "auth_something"}
-		err := revokeOAuthTokens(context.Background(), cfg)
+		err := revokeOAuthTokens(context.Background(), cfg, "")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -730,7 +781,7 @@ func TestRevokeOAuthTokens(t *testing.T) {
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
 		}
-		err := revokeOAuthTokens(context.Background(), cfg)
+		err := revokeOAuthTokens(context.Background(), cfg, "")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -750,7 +801,7 @@ func TestRevokeOAuthTokens(t *testing.T) {
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
 		}
-		err := revokeOAuthTokens(context.Background(), cfg)
+		err := revokeOAuthTokens(context.Background(), cfg, "")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -759,6 +810,61 @@ func TestRevokeOAuthTokens(t *testing.T) {
 		}
 		if lastReq["token_type_hint"] != "refresh_token" {
 			t.Errorf("expected token_type_hint refresh_token, got %s", lastReq["token_type_hint"])
+		}
+		if lastReq["client_id"] != "cid" {
+			t.Errorf("expected client_id cid, got %s", lastReq["client_id"])
+		}
+	})
+
+	t.Run("omits empty client_id", func(t *testing.T) {
+		var lastReq map[string]string
+		server := newRevokeServer(t, &lastReq)
+		defer server.Close()
+
+		cfg := &Configuration{
+			ApiUrl:    server.URL,
+			AuthToken: "dash0_at_token",
+			OAuth: &OAuthState{
+				RefreshToken: "my-refresh-token",
+				ExpiresAt:    time.Now().Add(1 * time.Hour),
+			},
+		}
+		err := revokeOAuthTokens(context.Background(), cfg, t.TempDir())
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if _, ok := lastReq["client_id"]; ok {
+			t.Errorf("expected client_id to be omitted, got %q", lastReq["client_id"])
+		}
+	})
+
+	t.Run("falls back to DCR cache when profile client_id is empty", func(t *testing.T) {
+		var lastReq map[string]string
+		server := newRevokeServer(t, &lastReq)
+		defer server.Close()
+
+		dir := t.TempDir()
+		clientStore, err := NewOAuthClientStore(WithConfigDir(dir))
+		if err != nil {
+			t.Fatalf("client store: %v", err)
+		}
+		if err := clientStore.Put(server.URL, OAuthClientRecord{ClientID: "cached-cid", RedirectURI: "http://localhost/cb"}); err != nil {
+			t.Fatalf("put cached client: %v", err)
+		}
+
+		cfg := &Configuration{
+			ApiUrl:    server.URL,
+			AuthToken: "dash0_at_token",
+			OAuth: &OAuthState{
+				RefreshToken: "my-refresh-token",
+				ExpiresAt:    time.Now().Add(1 * time.Hour),
+			},
+		}
+		if err := revokeOAuthTokens(context.Background(), cfg, dir); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if lastReq["client_id"] != "cached-cid" {
+			t.Errorf("expected client_id cached-cid, got %s", lastReq["client_id"])
 		}
 	})
 
@@ -779,7 +885,7 @@ func TestRevokeOAuthTokens(t *testing.T) {
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
 		}
-		err := revokeOAuthTokens(context.Background(), cfg)
+		err := revokeOAuthTokens(context.Background(), cfg, "")
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}

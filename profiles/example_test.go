@@ -267,6 +267,32 @@ func ExampleOAuthClientStore_Delete() {
 	// Output: found after delete: false
 }
 
+func ExampleResolveOAuthClientID() {
+	// The profile's stored client ID wins outright; the DCR cache is not consulted.
+	clientID := profiles.ResolveOAuthClientID("https://api.eu-west-1.aws.dash0.com", "client-from-profile")
+	fmt.Println(clientID)
+	// Output: client-from-profile
+}
+
+func ExampleResolveOAuthClientID_dcrCacheFallback() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewOAuthClientStore(profiles.WithConfigDir(configDir))
+	_ = store.Put("https://api.eu-west-1.aws.dash0.com", profiles.OAuthClientRecord{
+		ClientID:    "client-from-dcr-cache",
+		RedirectURI: "http://localhost:8080/callback",
+	})
+
+	// An empty stored value falls back to the DCR cache for apiURL.
+	clientID := profiles.ResolveOAuthClientID(
+		"https://api.eu-west-1.aws.dash0.com", "",
+		profiles.WithConfigDir(configDir),
+	)
+	fmt.Println(clientID)
+	// Output: client-from-dcr-cache
+}
+
 func ExampleStore_GetActiveConfigurationContext() {
 	// The Context variant plumbs cancellation through the OAuth refresh
 	// round-trip so a hung authorization server cannot pin the caller for

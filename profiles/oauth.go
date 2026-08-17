@@ -191,11 +191,15 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 	// token has rotated but the local file still has the old one; better to
 	// surface the error and leave cfg untouched than to leave the in-memory
 	// process holding tokens disk has never seen.
+	clientID := ResolveOAuthClientID(cfg.ApiUrl, cfg.OAuth.ClientID, WithConfigDir(store.configDir))
 	if err := store.updateProfileLocked(profileName, func(persisted *Configuration) {
 		persisted.AuthToken = newAccessToken
 		if persisted.OAuth != nil {
 			persisted.OAuth.ExpiresAt = newExpiresAt
 			persisted.OAuth.RefreshToken = newRefreshToken
+			if persisted.OAuth.ClientID == "" && clientID != "" {
+				persisted.OAuth.ClientID = clientID
+			}
 		}
 	}); err != nil {
 		return fmt.Errorf("OAuth token refresh succeeded but persisting tokens failed: %w", err)
@@ -204,6 +208,9 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 	cfg.AuthToken = newAccessToken
 	cfg.OAuth.ExpiresAt = newExpiresAt
 	cfg.OAuth.RefreshToken = newRefreshToken
+	if cfg.OAuth.ClientID == "" && clientID != "" {
+		cfg.OAuth.ClientID = clientID
+	}
 
 	return nil
 }
@@ -284,13 +291,36 @@ func validateRefreshResponse(resp *dash0.OAuthTokenResponse) (int, error) {
 	return int(expiresIn), nil
 }
 
+// ResolveOAuthClientID returns the client_id to send with token and revoke
+// requests. The profile's stored value wins; if it is empty, the DCR cache
+// for apiURL is consulted. An empty result means the caller must omit
+// client_id rather than send an empty parameter.
+func ResolveOAuthClientID(apiURL, stored string, opts ...StoreOption) string {
+	if stored != "" {
+		return stored
+	}
+	if apiURL == "" {
+		return ""
+	}
+	store, err := NewOAuthClientStore(opts...)
+	if err != nil {
+		return ""
+	}
+	rec, ok, err := store.Get(apiURL)
+	if err != nil || !ok {
+		return ""
+	}
+	return rec.ClientID
+}
+
 // revokeOAuthTokens revokes the OAuth refresh token associated with cfg.
 // Revoking the refresh token transitively revokes all descendant access tokens
 // on the server side.
 //
 // The function is a no-op when cfg.OAuth is nil or cfg.ApiUrl is empty.
 // Errors are returned so callers can decide whether to propagate or ignore them.
-func revokeOAuthTokens(ctx context.Context, cfg *Configuration) error {
+// configDir scopes the DCR-cache fallback used when cfg.OAuth.ClientID is empty.
+func revokeOAuthTokens(ctx context.Context, cfg *Configuration, configDir string) error {
 	if cfg.OAuth == nil {
 		return nil
 	}
@@ -305,10 +335,18 @@ func revokeOAuthTokens(ctx context.Context, cfg *Configuration) error {
 	defer func() { _ = oauthClient.Close(ctx) }()
 
 	hint := dash0.OAuthTokenTypeRefreshToken
-	if err := oauthClient.RevokeToken(ctx, &dash0.OAuthRevocationRequest{
+	req := &dash0.OAuthRevocationRequest{
 		Token:         cfg.OAuth.RefreshToken,
 		TokenTypeHint: &hint,
-	}); err != nil {
+	}
+	var opts []StoreOption
+	if configDir != "" {
+		opts = append(opts, WithConfigDir(configDir))
+	}
+	if clientID := ResolveOAuthClientID(cfg.ApiUrl, cfg.OAuth.ClientID, opts...); clientID != "" {
+		req.ClientId = clientID
+	}
+	if err := oauthClient.RevokeToken(ctx, req); err != nil {
 		return fmt.Errorf("OAuth token revocation failed: %w", err)
 	}
 
