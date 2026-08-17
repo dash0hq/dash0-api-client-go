@@ -49,6 +49,12 @@ type Options struct {
 	// instead of nested under "metadata" -- dash0-cli's native (non-CRD)
 	// CheckRule kind is the one Dash0 asset shaped this way.
 	AnnotationsRoot string
+	// AnnotationsUnfiltered disables preservedAnnotationKeys filtering: every
+	// key in the annotations map at AnnotationsRoot participates in
+	// comparison (still subject to the unconditional stringify/default-value
+	// cleanup cleanupMap always does), instead of being stripped unless
+	// explicitly preserved. See WithAnnotationsUnfiltered.
+	AnnotationsUnfiltered bool
 }
 
 // Option configures Options.
@@ -60,6 +66,26 @@ type Option func(*Options)
 func WithAnnotationsRoot(root string) Option {
 	return func(o *Options) {
 		o.AnnotationsRoot = root
+	}
+}
+
+// WithAnnotationsUnfiltered disables preservedAnnotationKeys filtering
+// entirely, so every key already present in the annotations map at
+// AnnotationsRoot takes part in comparison (the unconditional
+// stringify/default-value cleanup still applies). Without this option, an
+// empty preservedAnnotationKeys means "strip every annotation" -- correct
+// for a metadata.annotations convention that is provenance-only unless a
+// key is explicitly opted back in (Dashboard, View, ...). Use this option
+// for a kind whose annotations map holds genuine user content by
+// convention instead -- dash0-cli's CheckRule kind is the one Dash0 asset
+// shaped this way: its flat top-level "annotations" carries
+// summary/description/sharing directly (the same PrometheusAlertRule type
+// backs both a native CheckRule document and a PrometheusRule CRD's
+// per-alert annotations, which TerraformProvider-dash0 already compares in
+// full, only auto-removing the three known default values).
+func WithAnnotationsUnfiltered() Option {
+	return func(o *Options) {
+		o.AnnotationsUnfiltered = true
 	}
 }
 
@@ -120,7 +146,9 @@ func Normalize(data []byte, additionalIgnoredFields []string, preservedAnnotatio
 	}
 
 	cleanupMap(parsed, prefixedIgnoredFields(o.AnnotationsRoot, additionalIgnoredFields))
-	stripAnnotations(parsed, o.AnnotationsRoot, preservedAnnotationKeys)
+	if !o.AnnotationsUnfiltered {
+		stripAnnotations(parsed, o.AnnotationsRoot, preservedAnnotationKeys)
+	}
 
 	encoded, err := sigsyaml.Marshal(parsed)
 	if err != nil {

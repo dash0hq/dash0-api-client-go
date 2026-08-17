@@ -1672,3 +1672,106 @@ labels:
 	require.NoError(t, err)
 	assert.False(t, equivalent, "a real label change must not be silently ignored under the flat root")
 }
+
+// The following tests cover WithAnnotationsUnfiltered, added for dash0-cli's
+// CheckRule kind specifically: its flat top-level "annotations" carries
+// genuine user content (summary, description, sharing) directly, unlike the
+// server-managed-by-default metadata.annotations convention every other
+// Dash0 asset kind uses (where an empty preservedAnnotationKeys means "strip
+// everything, nothing is real content unless opted in"). Confirmed via the
+// generated PrometheusAlertRule_Annotations type: its "sharing" field has
+// JSON tag "sharing", not "dash0.com/sharing" -- this is the *same*
+// annotations shape terraform-provider-dash0 already fully compares (no
+// preserved-key filtering at all) on a PrometheusRule CRD's per-alert
+// annotations, since both are the same underlying PrometheusAlertRule type.
+
+func TestNormalize_AnnotationsUnfiltered_KeepsNonDefaultContent(t *testing.T) {
+	input := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  summary: Test summary
+  description: Test description
+  sharing: team:team_01abc
+  dash0-threshold-critical: "0"
+  dash0-enabled: "true"
+`
+	result, err := Normalize([]byte(input), nil, nil, WithAnnotationsRoot(""), WithAnnotationsUnfiltered())
+	require.NoError(t, err)
+	// summary/description/sharing survive in full (no preserved-key
+	// filtering); the two known default values are still removed by the
+	// unconditional cleanup cleanupMap always does.
+	assert.Equal(t, `annotations:
+  description: Test description
+  sharing: team:team_01abc
+  summary: Test summary
+expression: up == 0
+id: rule-1
+name: test-rule`, string(result))
+}
+
+func TestEquivalent_AnnotationsUnfiltered_SummaryChangeDetected(t *testing.T) {
+	a := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  summary: Old summary
+`
+	b := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  summary: New summary
+`
+	equivalent, err := Equivalent([]byte(a), []byte(b), nil, nil, WithAnnotationsRoot(""), WithAnnotationsUnfiltered())
+	require.NoError(t, err)
+	assert.False(t, equivalent, "a real annotation content change must be detected when filtering is disabled")
+}
+
+func TestEquivalent_AnnotationsUnfiltered_BareSharingKeyChangeDetected(t *testing.T) {
+	// Confirms the bare "sharing" key (not "dash0.com/sharing") is the
+	// correct key for CheckRule's annotations -- callers must not pass
+	// dash0api.AnnotationSharing here.
+	a := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  sharing: team:team_01abc
+`
+	b := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  sharing: team:team_02xyz
+`
+	equivalent, err := Equivalent([]byte(a), []byte(b), nil, nil, WithAnnotationsRoot(""), WithAnnotationsUnfiltered())
+	require.NoError(t, err)
+	assert.False(t, equivalent, "a real sharing change must be detected when filtering is disabled")
+}
+
+func TestEquivalent_AnnotationsUnfiltered_DefaultValuesStillEquivalent(t *testing.T) {
+	a := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  summary: Test
+  dash0-threshold-critical: "0"
+  dash0-enabled: "true"
+`
+	b := `
+id: rule-1
+name: test-rule
+expression: up == 0
+annotations:
+  summary: Test
+`
+	equivalent, err := Equivalent([]byte(a), []byte(b), nil, nil, WithAnnotationsRoot(""), WithAnnotationsUnfiltered())
+	require.NoError(t, err)
+	assert.True(t, equivalent, "known default annotation values must still be treated as equivalent to their absence")
+}
