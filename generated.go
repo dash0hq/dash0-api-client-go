@@ -3411,7 +3411,7 @@ type OAuthRevocationRequest struct {
 	// ClientId The identifier of the client the token was issued to. RFC 7009 section 2.1 requires the
 	// revocation request to be authenticated as that client, so a token issued to a different
 	// client is left untouched (the response is still 200).
-	ClientId string `json:"client_id"`
+	ClientId string `json:"client_id,omitempty"`
 
 	// Token The token to be revoked.
 	Token string `json:"token"`

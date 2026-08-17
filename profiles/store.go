@@ -531,7 +531,7 @@ func (s *Store) RemoveProfileContext(ctx context.Context, profileName string) er
 
 	// Best-effort revocation outside the locks. A hung IdP only blocks the
 	// caller, not sibling CLI processes.
-	if err := revokeOAuthTokens(ctx, removedConfig); err != nil {
+	if err := revokeOAuthTokens(ctx, removedConfig, s.configDir); err != nil {
 		return fmt.Errorf("%w: %v", ErrRevocationFailed, err)
 	}
 	return nil

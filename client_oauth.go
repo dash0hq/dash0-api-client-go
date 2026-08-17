@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 // OAuthResponseTypeCode is the prefixed alias for the [Code] response type
@@ -322,7 +324,19 @@ func (c *oauthClient) RevokeToken(ctx context.Context, request *OAuthRevocationR
 	if request == nil {
 		return fmt.Errorf("dash0: RevokeToken requires non-nil request")
 	}
-	resp, err := c.inner.PostOauthRevokeWithFormdataBodyWithResponse(ctx, *request)
+	// runtime.MarshalForm emits client_id= for a zero string despite json omitempty.
+	form := url.Values{"token": {request.Token}}
+	if request.ClientId != "" {
+		form.Set("client_id", request.ClientId)
+	}
+	if request.TokenTypeHint != nil {
+		form.Set("token_type_hint", string(*request.TokenTypeHint))
+	}
+	resp, err := c.inner.PostOauthRevokeWithBodyWithResponse(
+		ctx,
+		"application/x-www-form-urlencoded",
+		strings.NewReader(form.Encode()),
+	)
 	if err != nil {
 		return fmt.Errorf("dash0: revoke token failed: %w", err)
 	}
