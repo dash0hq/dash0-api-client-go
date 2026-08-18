@@ -280,7 +280,7 @@ func (s *Store) configurationForProfile(
 	// If the profile uses OAuth and no env var overrides the auth token,
 	// refresh the access token when it is close to expiry.
 	if refreshOAuth && cfg.OAuth != nil && envAuthToken == "" {
-		if err := refreshOAuthToken(ctx, s, profile.Name, cfg); err != nil {
+		if err := refreshOAuthToken(ctx, s, profile.Name, cfg, refreshIfExpiring); err != nil {
 			return nil, err
 		}
 	}

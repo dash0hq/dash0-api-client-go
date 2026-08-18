@@ -65,12 +65,35 @@ var ErrNoAssociatedProfile = errors.New(
 // hint to the user.
 var ErrRevocationFailed = errors.New("OAuth refresh token revocation failed; the token may still be valid on the authorization server")
 
+// refreshMode selects whether [refreshOAuthToken] respects the expiry
+// threshold or replaces the access token regardless.
+type refreshMode int
+
+const (
+	// refreshIfExpiring refreshes only when the access token is within
+	// [OAuthRefreshThreshold] of expiry, and is otherwise a no-op.
+	refreshIfExpiring refreshMode = iota
+	// forceRefresh replaces the access token however much validity it has left.
+	//
+	// It exists for the case where the authorization server rejected a token the
+	// client still considered valid: clock skew against the server, or a
+	// revocation performed elsewhere. The API client reaches it through
+	// [Configuration.AuthTokenProvider]'s ForceRefreshAuthToken after a 401.
+	forceRefresh
+)
+
 // refreshOAuthToken refreshes the OAuth access token in cfg.
-// It is a no-op when cfg carries no OAuth state, or when the token is not yet
-// within [OAuthRefreshThreshold] of expiry.
+// It is a no-op when cfg carries no OAuth state, and, under
+// [refreshIfExpiring], when the token is not yet within
+// [OAuthRefreshThreshold] of expiry.
 //
 // The refresh token is exchanged for a new access token, and the authorization
 // server may rotate the refresh token in the same response.
+//
+// Under [forceRefresh] both expiry checks are skipped, so a token with plenty of
+// validity left is still replaced. If another process rotated the token while
+// this call waited for the refresh locks, the freshly persisted token is adopted
+// and no new one is minted.
 //
 // On success it persists the new tokens via [Store.updateProfileLocked] *before*
 // updating cfg, so a persistence failure leaves the caller's in-memory state
@@ -92,17 +115,29 @@ var ErrRevocationFailed = errors.New("OAuth refresh token revocation failed; the
 // On a server response of invalid_grant the stored OAuth state is cleared from
 // disk and [ErrReauthenticationRequired] is returned, so a subsequent call does
 // not retry the dead credential.
-func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cfg *Configuration) error {
+func refreshOAuthToken(
+	ctx context.Context,
+	store *Store,
+	profileName string,
+	cfg *Configuration,
+	mode refreshMode,
+) error {
 	// Nothing to refresh: the profile authenticates with a static token.
 	if cfg.OAuth == nil {
 		return nil
 	}
-	if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
+	if mode == refreshIfExpiring && time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
 		return nil
 	}
 	if cfg.ApiUrl == "" {
 		return fmt.Errorf("OAuth token refresh requires an API URL")
 	}
+
+	// Past every early return, so a refresh is actually going to be attempted.
+	// Retained so the post-lock re-check can tell "another process already
+	// replaced the token we were unhappy with" from "the token we were unhappy
+	// with is still the current one".
+	staleAccessToken := cfg.AuthToken
 
 	store.refreshMu.Lock()
 	defer store.refreshMu.Unlock()
@@ -152,7 +187,14 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 	// still warranted.
 	cfg.AuthToken = persistedAuthToken
 	*cfg.OAuth = *persistedOAuth
-	if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
+	if mode == forceRefresh {
+		// A sibling goroutine or process rotated the token while we waited for
+		// the locks. Its result is as good as one we would mint ourselves, and
+		// reusing it avoids burning another refresh-token rotation.
+		if cfg.AuthToken != staleAccessToken {
+			return nil
+		}
+	} else if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
 		return nil
 	}
 

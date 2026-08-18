@@ -2,13 +2,15 @@ package dash0
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
 // authTransport sets the Authorization header on every outbound request from
-// an [AuthTokenProvider].
+// an [AuthTokenProvider], and replays a request once when the server rejects
+// the token with 401.
 //
 // It is the outermost layer of the transport stack, above retry and rate
 // limiting, because authentication is a property of the request rather than of
@@ -120,9 +122,75 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 
-	// The caller's body is forwarded as-is, so the layer below closes it and
-	// this transport upholds the RoundTripper contract.
-	return t.base.RoundTrip(signed(req, authToken))
+	// The first attempt forwards the caller's body as-is, so the layer below
+	// closes it and this transport upholds the RoundTripper contract.
+	resp, err := t.base.RoundTrip(signed(req, authToken))
+	if err != nil || resp.StatusCode != http.StatusUnauthorized {
+		return resp, err
+	}
+	return t.replayAfterRefresh(req, resp, authToken)
+}
+
+// replayAfterRefresh handles a 401 by asking the provider for a fresh token and
+// sending the request once more.
+//
+// It gives up and returns the original 401 response — rather than an error —
+// whenever a replay cannot help or cannot be performed: a provider that cannot
+// refresh, a request body that cannot be rewound, or a refresh that hands back
+// the same token the server just rejected.
+// A refresh that fails outright is the one case that returns an error instead,
+// because the failure carries the actionable reason (a revoked refresh token,
+// for instance) and a bare 401 would discard it.
+func (t *authTransport) replayAfterRefresh(
+	req *http.Request,
+	unauthorized *http.Response,
+	staleToken string,
+) (*http.Response, error) {
+	refresher, ok := t.provider.(RefreshingAuthTokenProvider)
+	if !ok {
+		return unauthorized, nil
+	}
+	// A replay has to re-send the body, and only GetBody can produce a second
+	// copy of it. The retry transport below lives with the same constraint.
+	if req.Body != nil && req.GetBody == nil {
+		return unauthorized, nil
+	}
+	// Only replay requests that are safe to send twice, matching the retry
+	// transport below. A write the origin already applied before an
+	// auth-adjacent 401 reached the client would otherwise be duplicated, and
+	// the caller would only ever see the second response. Read-only POSTs opt in
+	// through withIdempotent, the same way they do for retries.
+	if !isIdempotentRequest(req) {
+		return unauthorized, nil
+	}
+
+	ctx := req.Context()
+	freshToken, err := refresher.ForceRefreshAuthToken(ctx, staleToken)
+	if err != nil {
+		discardResponse(unauthorized)
+		return nil, fmt.Errorf("dash0: auth token refresh after 401 failed: %w", err)
+	}
+	if freshToken == staleToken {
+		return unauthorized, nil
+	}
+	if err := validateAuthToken(freshToken); err != nil {
+		discardResponse(unauthorized)
+		return nil, err
+	}
+
+	replay := signed(req, freshToken)
+	if req.Body != nil {
+		body, err := req.GetBody()
+		if err != nil {
+			discardResponse(unauthorized)
+			return nil, fmt.Errorf("dash0: failed to rewind the request body for the retry after 401: %w", err)
+		}
+		replay.Body = body
+	}
+
+	// Release the connection the 401 is holding before issuing the replay.
+	discardResponse(unauthorized)
+	return t.base.RoundTrip(replay)
 }
 
 // signed returns a copy of req carrying the given bearer token.
@@ -146,4 +214,15 @@ func closeRequestBody(req *http.Request) {
 	if req.Body != nil {
 		_ = req.Body.Close()
 	}
+}
+
+// discardResponse drains and closes a response body that will not be handed to
+// the caller, so the underlying connection returns to the pool instead of
+// leaking.
+func discardResponse(resp *http.Response) {
+	if resp == nil || resp.Body == nil {
+		return
+	}
+	_, _ = io.Copy(io.Discard, resp.Body)
+	_ = resp.Body.Close()
 }

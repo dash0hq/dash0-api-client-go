@@ -29,6 +29,14 @@ func TestStaticAuthTokenProvider(t *testing.T) {
 		}
 	})
 
+	t.Run("does not implement RefreshingAuthTokenProvider", func(t *testing.T) {
+		// A fixed token cannot be refreshed, so the client must surface a 401
+		// rather than attempt a replay.
+		if _, ok := StaticAuthTokenProvider("auth_static").(RefreshingAuthTokenProvider); ok {
+			t.Error("StaticAuthTokenProvider must not implement RefreshingAuthTokenProvider")
+		}
+	})
+
 	t.Run("tolerates an empty token", func(t *testing.T) {
 		// Rejecting the shape is validateAuthToken's job, at the point of use.
 		// The provider itself is a plain carrier.

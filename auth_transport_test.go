@@ -20,8 +20,14 @@ import (
 // a test can tell which request carried which token.
 // It records how often it was asked to force a refresh.
 type scriptedTokenProvider struct {
-	tokens []string
-	calls  atomic.Int32
+	tokens      []string
+	calls       atomic.Int32
+	forceCalls  atomic.Int32
+	forcedToken string
+	forceErr    error
+	// replacedToken simulates a concurrent caller having already rotated the
+	// token before this one asked.
+	replacedToken string
 }
 
 func (p *scriptedTokenProvider) AuthToken(context.Context) (string, error) {
@@ -30,6 +36,19 @@ func (p *scriptedTokenProvider) AuthToken(context.Context) (string, error) {
 		i = len(p.tokens) - 1
 	}
 	return p.tokens[i], nil
+}
+
+func (p *scriptedTokenProvider) ForceRefreshAuthToken(_ context.Context, staleAuthToken string) (string, error) {
+	p.forceCalls.Add(1)
+	if p.forceErr != nil {
+		return "", p.forceErr
+	}
+	// Mirror the real provider: a token that no longer matches the rejected one
+	// was already replaced by someone else.
+	if p.replacedToken != "" && p.replacedToken != staleAuthToken {
+		return p.replacedToken, nil
+	}
+	return p.forcedToken, nil
 }
 
 // staticOnlyProvider implements AuthTokenProvider but deliberately not
@@ -104,7 +123,7 @@ func TestAuthTransport(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		drain(resp)
+		discardResponse(resp)
 
 		if len(base.authHeaders) != 1 {
 			t.Fatalf("base saw %d requests, want 1", len(base.authHeaders))
@@ -125,7 +144,7 @@ func TestAuthTransport(t *testing.T) {
 			if err != nil {
 				t.Fatalf("request %d: unexpected error: %v", i, err)
 			}
-			drain(resp)
+			discardResponse(resp)
 		}
 
 		want := []string{"Bearer dash0_at_first", "Bearer dash0_at_second", "Bearer dash0_at_third"}
@@ -146,7 +165,7 @@ func TestAuthTransport(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		drain(resp)
+		discardResponse(resp)
 
 		if got := req.Header.Get("Authorization"); got != "" {
 			t.Errorf("caller's request carries Authorization = %q, want it left unset", got)
@@ -180,6 +199,163 @@ func TestAuthTransport(t *testing.T) {
 		}
 		if len(base.authHeaders) != 0 {
 			t.Errorf("base saw %d requests, want 0", len(base.authHeaders))
+		}
+	})
+}
+
+func TestAuthTransportUnauthorizedRecovery(t *testing.T) {
+	t.Run("refreshes and replays once after a 401", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized, http.StatusOK}}
+		provider := &scriptedTokenProvider{
+			tokens:      []string{"dash0_at_rejected"},
+			forcedToken: "dash0_at_fresh",
+		}
+		transport := newTestAuthTransport(t, base, provider)
+
+		resp, err := transport.RoundTrip(newTestRequest(t, http.MethodGet, ""))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		defer discardResponse(resp)
+
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("status = %d, want 200", resp.StatusCode)
+		}
+		if n := provider.forceCalls.Load(); n != 1 {
+			t.Errorf("ForceRefreshAuthToken called %d times, want 1", n)
+		}
+		if len(base.authHeaders) != 2 {
+			t.Fatalf("base saw %d requests, want 2", len(base.authHeaders))
+		}
+		assertEqual(t, "Authorization on the first attempt", base.authHeaders[0], "Bearer dash0_at_rejected")
+		assertEqual(t, "Authorization on the replay", base.authHeaders[1], "Bearer dash0_at_fresh")
+	})
+
+	t.Run("replays a request body", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized, http.StatusOK}}
+		provider := &scriptedTokenProvider{
+			tokens:      []string{"dash0_at_rejected"},
+			forcedToken: "dash0_at_fresh",
+		}
+		transport := newTestAuthTransport(t, base, provider)
+
+		resp, err := transport.RoundTrip(newTestRequest(t, http.MethodPut, `{"name":"test"}`))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		discardResponse(resp)
+
+		if len(base.bodies) != 2 {
+			t.Fatalf("base saw %d requests, want 2", len(base.bodies))
+		}
+		assertEqual(t, "body on the first attempt", base.bodies[0], `{"name":"test"}`)
+		assertEqual(t, "body on the replay", base.bodies[1], `{"name":"test"}`)
+	})
+
+	t.Run("gives up after one replay", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized, http.StatusUnauthorized}}
+		provider := &scriptedTokenProvider{
+			tokens:      []string{"dash0_at_rejected"},
+			forcedToken: "dash0_at_also-rejected",
+		}
+		transport := newTestAuthTransport(t, base, provider)
+
+		resp, err := transport.RoundTrip(newTestRequest(t, http.MethodGet, ""))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		defer discardResponse(resp)
+
+		if resp.StatusCode != http.StatusUnauthorized {
+			t.Errorf("status = %d, want 401", resp.StatusCode)
+		}
+		if n := provider.forceCalls.Load(); n != 1 {
+			t.Errorf("ForceRefreshAuthToken called %d times, want 1", n)
+		}
+		if len(base.authHeaders) != 2 {
+			t.Errorf("base saw %d requests, want 2", len(base.authHeaders))
+		}
+	})
+
+	t.Run("surfaces the refresh error rather than the 401", func(t *testing.T) {
+		// The refresh failure carries the actionable reason, for example a
+		// revoked refresh token requiring an interactive login. A bare 401
+		// would discard it.
+		sentinel := errors.New("refresh token rejected; re-authentication required")
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized}}
+		provider := &scriptedTokenProvider{tokens: []string{"dash0_at_rejected"}, forceErr: sentinel}
+		transport := newTestAuthTransport(t, base, provider)
+
+		_, err := transport.RoundTrip(newTestRequest(t, http.MethodGet, ""))
+		if !errors.Is(err, sentinel) {
+			t.Fatalf("error = %v, want it to match the refresh error", err)
+		}
+	})
+
+	t.Run("does not replay when the provider cannot refresh", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized}}
+		transport := newTestAuthTransport(t, base, staticOnlyProvider{token: "auth_static"})
+
+		resp, err := transport.RoundTrip(newTestRequest(t, http.MethodGet, ""))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		defer discardResponse(resp)
+
+		if resp.StatusCode != http.StatusUnauthorized {
+			t.Errorf("status = %d, want the 401 surfaced unchanged", resp.StatusCode)
+		}
+		if len(base.authHeaders) != 1 {
+			t.Errorf("base saw %d requests, want 1", len(base.authHeaders))
+		}
+	})
+
+	t.Run("does not replay when the refresh returns the same token", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized}}
+		provider := &scriptedTokenProvider{
+			tokens:      []string{"dash0_at_rejected"},
+			forcedToken: "dash0_at_rejected",
+		}
+		transport := newTestAuthTransport(t, base, provider)
+
+		resp, err := transport.RoundTrip(newTestRequest(t, http.MethodGet, ""))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		defer discardResponse(resp)
+
+		if resp.StatusCode != http.StatusUnauthorized {
+			t.Errorf("status = %d, want the 401 surfaced unchanged", resp.StatusCode)
+		}
+		if len(base.authHeaders) != 1 {
+			t.Errorf("base saw %d requests, want 1 -- replaying the same token cannot help", len(base.authHeaders))
+		}
+	})
+
+	t.Run("does not replay a request whose body cannot be rewound", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized}}
+		provider := &scriptedTokenProvider{
+			tokens:      []string{"dash0_at_rejected"},
+			forcedToken: "dash0_at_fresh",
+		}
+		transport := newTestAuthTransport(t, base, provider)
+
+		req := newTestRequest(t, http.MethodPut, `{"name":"test"}`)
+		// An io.Reader that http.NewRequest cannot type-assert leaves GetBody
+		// nil; simulate that by clearing it.
+		req.GetBody = nil
+
+		resp, err := transport.RoundTrip(req)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		defer discardResponse(resp)
+
+		if resp.StatusCode != http.StatusUnauthorized {
+			t.Errorf("status = %d, want the 401 surfaced unchanged", resp.StatusCode)
+		}
+		if n := provider.forceCalls.Load(); n != 0 {
+			t.Errorf("ForceRefreshAuthToken called %d times, want 0", n)
 		}
 	})
 }
@@ -389,7 +565,7 @@ func TestAuthTransportClosesRequestBody(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		drain(resp)
+		discardResponse(resp)
 
 		if len(base.bodies) != 1 {
 			t.Fatalf("base saw %d requests, want 1", len(base.bodies))
@@ -433,7 +609,7 @@ func TestAuthTransportDoesNotSignOtherHosts(t *testing.T) {
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			drain(resp)
+			discardResponse(resp)
 
 			if len(base.authHeaders) != 1 {
 				t.Fatalf("base saw %d requests, want 1", len(base.authHeaders))
@@ -506,14 +682,86 @@ func TestAuthTransportRedirectDoesNotLeakToken(t *testing.T) {
 	}
 }
 
-// drain closes a response body the test is done with, so the connection is not
-// left dangling.
-func drain(resp *http.Response) {
-	if resp == nil || resp.Body == nil {
-		return
+// TestAuthTransportDoesNotReplayNonIdempotent pins the gate that keeps a write
+// the origin may already have applied from being sent twice.
+func TestAuthTransportDoesNotReplayNonIdempotent(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		method     string
+		idempotent bool
+		wantSent   int
+	}{
+		{name: "GET is replayed", method: http.MethodGet, wantSent: 2},
+		{name: "PUT is replayed", method: http.MethodPut, wantSent: 2},
+		{name: "DELETE is replayed", method: http.MethodDelete, wantSent: 2},
+		{name: "POST is not replayed", method: http.MethodPost, wantSent: 1},
+		{name: "PATCH is not replayed", method: http.MethodPatch, wantSent: 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized, http.StatusOK}}
+			provider := &scriptedTokenProvider{
+				tokens:      []string{"dash0_at_rejected"},
+				forcedToken: "dash0_at_fresh",
+			}
+			transport := newTestAuthTransport(t, base, provider)
+
+			resp, err := transport.RoundTrip(newTestRequest(t, tc.method, `{"name":"x"}`))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			discardResponse(resp)
+
+			if len(base.authHeaders) != tc.wantSent {
+				t.Errorf("base saw %d requests, want %d", len(base.authHeaders), tc.wantSent)
+			}
+		})
 	}
-	_, _ = io.Copy(io.Discard, resp.Body)
-	_ = resp.Body.Close()
+
+	t.Run("a POST marked idempotent is replayed", func(t *testing.T) {
+		base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized, http.StatusOK}}
+		provider := &scriptedTokenProvider{
+			tokens:      []string{"dash0_at_rejected"},
+			forcedToken: "dash0_at_fresh",
+		}
+		transport := newTestAuthTransport(t, base, provider)
+
+		req := newTestRequest(t, http.MethodPost, `{"name":"x"}`)
+		resp, err := transport.RoundTrip(req.WithContext(withIdempotent(req.Context())))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		discardResponse(resp)
+
+		if len(base.authHeaders) != 2 {
+			t.Errorf("base saw %d requests, want 2", len(base.authHeaders))
+		}
+	})
+}
+
+// TestAuthTransportForwardsRejectedToken checks that the transport tells the
+// provider which token was rejected, which is what lets the provider dedup
+// concurrent forced refreshes.
+func TestAuthTransportForwardsRejectedToken(t *testing.T) {
+	base := &recordingRoundTripper{statuses: []int{http.StatusUnauthorized, http.StatusOK}}
+	provider := &scriptedTokenProvider{
+		tokens: []string{"dash0_at_rejected"},
+		// A concurrent caller already replaced the rejected token, so the
+		// provider hands that back instead of minting another.
+		replacedToken: "dash0_at_replaced-elsewhere",
+		forcedToken:   "dash0_at_should-not-be-used",
+	}
+	transport := newTestAuthTransport(t, base, provider)
+
+	resp, err := transport.RoundTrip(newTestRequest(t, http.MethodGet, ""))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	discardResponse(resp)
+
+	if len(base.authHeaders) != 2 {
+		t.Fatalf("base saw %d requests, want 2", len(base.authHeaders))
+	}
+	assertEqual(t, "Authorization on the replay", base.authHeaders[1], "Bearer dash0_at_replaced-elsewhere")
 }
 
 // newTestAuthTransport builds an authTransport scoped to the host the test
@@ -584,7 +832,7 @@ func TestAuthTransportDoesNotSignAHostlessRequest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	drain(resp)
+	discardResponse(resp)
 
 	if len(base.authHeaders) != 1 {
 		t.Fatalf("base saw %d requests, want 1", len(base.authHeaders))
