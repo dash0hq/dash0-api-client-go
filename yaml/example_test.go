@@ -214,3 +214,25 @@ func ExampleMarshalPrometheusRule() {
 	// 5m
 	// High error rate detected
 }
+
+func ExampleWithFlatDocument() {
+	// dash0-cli's native CheckRule kind has no "metadata" nesting, and its
+	// top-level "annotations" carries genuine user content (summary here)
+	// rather than server-managed provenance -- WithFlatDocument() tells
+	// Equivalent both facts at once.
+	reference := []byte("id: rule-1\nname: test-rule\nannotations:\n  summary: High error rate\n")
+	apiResponse := []byte("id: rule-1\nname: test-rule\nannotations:\n  summary: Error rate too high\n")
+
+	equivalent, err := dash0yaml.Equivalent(reference, apiResponse, nil, nil, dash0yaml.WithFlatDocument())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(equivalent)
+	// Output: false
+}
+
+func ExampleConditionallyIgnoredFields() {
+	fields := dash0yaml.ConditionallyIgnoredFields()
+	fmt.Println(fields)
+	// Output: [metadata.name spec.permissions]
+}

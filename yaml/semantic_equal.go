@@ -11,15 +11,26 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-// ConditionallyIgnoredFields are fields ignored during comparison only when
+// conditionallyIgnoredFields are fields ignored during comparison only when
 // absent from the reference document (typically the user's local
 // definition). These are fields the API enriches on retrieval but that
 // users may optionally manage. When present in the user's document, drift
 // detection is preserved. Paths are relative to the document root
-// regardless of AnnotationsRoot.
-var ConditionallyIgnoredFields = []string{
+// regardless of AnnotationsRoot -- both entries are metadata-nested, so a
+// flat-document caller (see WithFlatDocument) has nothing matching either
+// path to ignore.
+var conditionallyIgnoredFields = []string{
 	"metadata.name",    // server-generated when absent, but user-declared intent when present
 	"spec.permissions", // API-managed: stored separately, enriched on retrieval
+}
+
+// ConditionallyIgnoredFields returns a copy of the fields ignored during
+// comparison only when absent from the reference document. See
+// conditionallyIgnoredFields for the full description. Returns a fresh
+// slice on every call so a caller mutating the result cannot shift drift
+// semantics for every other caller in the process.
+func ConditionallyIgnoredFields() []string {
+	return append([]string(nil), conditionallyIgnoredFields...)
 }
 
 // defaultIgnoredFields are always removed when comparing documents, relative
@@ -89,6 +100,22 @@ func WithAnnotationsUnfiltered() Option {
 	}
 }
 
+// WithFlatDocument configures a flat document whose annotations carry
+// genuine user content by convention, the dash0-cli CheckRule shape
+// WithAnnotationsUnfiltered's doc comment describes. Equivalent to
+// WithAnnotationsRoot("") combined with WithAnnotationsUnfiltered(); prefer
+// this over combining the two by hand for that shape. WithAnnotationsRoot("")
+// alone still means what it always has -- a flat document whose
+// non-preserved annotations should still be filtered out, a legitimate and
+// separately supported combination -- so this option does not change or
+// replace it, only names the specific pairing CheckRule-shaped callers need.
+func WithFlatDocument() Option {
+	return func(o *Options) {
+		o.AnnotationsRoot = ""
+		o.AnnotationsUnfiltered = true
+	}
+}
+
 func resolveOptions(opts []Option) Options {
 	o := Options{AnnotationsRoot: "metadata"}
 	for _, opt := range opts {
@@ -138,16 +165,9 @@ func prefixedIgnoredFields(root string, additionalIgnoredFields []string) []stri
 // stripped. If empty, all annotations are stripped. See WithAnnotationsRoot
 // for documents that don't nest annotations/labels under "metadata".
 func Normalize(data []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) ([]byte, error) {
-	o := resolveOptions(opts)
-
-	var parsed map[string]any
-	if err := sigsyaml.Unmarshal(data, &parsed); err != nil {
-		return nil, fmt.Errorf("error parsing document: %w", err)
-	}
-
-	cleanupMap(parsed, prefixedIgnoredFields(o.AnnotationsRoot, additionalIgnoredFields))
-	if !o.AnnotationsUnfiltered {
-		stripAnnotations(parsed, o.AnnotationsRoot, preservedAnnotationKeys)
+	parsed, err := normalizeToMap(data, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	if err != nil {
+		return nil, err
 	}
 
 	encoded, err := sigsyaml.Marshal(parsed)
@@ -158,15 +178,52 @@ func Normalize(data []byte, additionalIgnoredFields []string, preservedAnnotatio
 	return []byte(strings.TrimSuffix(string(encoded), "\n")), nil
 }
 
+// normalizeToMap does Normalize's parsing and field-stripping work but
+// returns the result as a map instead of marshaling it back to bytes.
+// Equivalent uses this directly instead of calling Normalize and
+// immediately re-parsing its marshaled output -- profiling on an 80-panel
+// document showed that round-trip was over half of Equivalent's cost.
+func normalizeToMap(data []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (map[string]any, error) {
+	o := resolveOptions(opts)
+
+	var parsed map[string]any
+	if err := sigsyaml.Unmarshal(data, &parsed); err != nil {
+		return nil, fmt.Errorf("error parsing document: %w", err)
+	}
+	if parsed == nil {
+		// Empty input (or a document that is only "null") unmarshals to a
+		// nil map, which would otherwise marshal back out as the literal
+		// "null" instead of "{}" -- the same document a fully-stripped
+		// non-empty input normalizes to. Two documents that both end up
+		// with nothing left must produce the same normalized form.
+		parsed = map[string]any{}
+	}
+
+	cleanupMap(parsed, prefixedIgnoredFields(o.AnnotationsRoot, additionalIgnoredFields))
+	if !o.AnnotationsUnfiltered {
+		stripAnnotations(parsed, o.AnnotationsRoot, preservedAnnotationKeys)
+	}
+
+	return parsed, nil
+}
+
 // mapAtRoot returns the map at the given dot-separated root path within
-// data, or data itself when root is "". Only used for the single-level
-// "metadata" root Dash0 assets use today; deeper roots are not needed.
+// data, or data itself when root is "". Walks one segment of nesting per
+// dot, matching how prefixedIgnoredFields and cleanupMap treat the same
+// AnnotationsRoot option -- a dotted root is one path, not one literal key.
 func mapAtRoot(data map[string]any, root string) (map[string]any, bool) {
 	if root == "" {
 		return data, true
 	}
-	m, ok := data[root].(map[string]any)
-	return m, ok
+	current := data
+	for segment := range strings.SplitSeq(root, ".") {
+		next, ok := current[segment].(map[string]any)
+		if !ok {
+			return nil, false
+		}
+		current = next
+	}
+	return current, true
 }
 
 // stripAnnotations removes annotation keys not in preservedKeys from the
@@ -201,7 +258,33 @@ func stripAnnotations(data map[string]any, root string, preservedKeys []string) 
 	}
 
 	if root != "" && isEmpty(parent) {
+		deleteAtRoot(data, root)
+	}
+}
+
+// deleteAtRoot removes the final segment of the dot-separated root path from
+// its immediate parent map within data. Mirrors mapAtRoot's own path
+// walking, so a dotted root is deleted from the map that actually holds it
+// rather than as a literal top-level key.
+// Cascades upward: if removing the final segment leaves its parent empty,
+// that parent is itself removed from its own parent, and so on, so a
+// multi-level root doesn't leave a chain of empty shell maps behind (which
+// would then look like added content next to a reference document that
+// never had this root at all).
+func deleteAtRoot(data map[string]any, root string) {
+	idx := strings.LastIndex(root, ".")
+	if idx == -1 {
 		delete(data, root)
+		return
+	}
+	parentPath := root[:idx]
+	parent, ok := mapAtRoot(data, parentPath)
+	if !ok {
+		return
+	}
+	delete(parent, root[idx+1:])
+	if isEmpty(parent) {
+		deleteAtRoot(data, parentPath)
 	}
 }
 
@@ -232,13 +315,22 @@ func removeDefaultAnnotationValues(annotations map[string]any) {
 		if !ok {
 			continue
 		}
-		if (key == "dash0-threshold-critical" || key == "dash0-threshold-degraded") && strVal == "0" {
+		if (key == thresholdCriticalAnnotationKey || key == thresholdDegradedAnnotationKey) && strVal == "0" {
 			delete(annotations, key)
 		}
-		if key == "dash0-enabled" && strVal == "true" {
+		if key == enabledAnnotationKey && strVal == "true" {
 			delete(annotations, key)
 		}
 	}
+}
+
+// zeroOmittedDurationFields are map keys backed by a Duration field with
+// omitempty, so the server drops them from a round-trip when the value is
+// zero. A zero value in these fields is therefore treated as absent, not as
+// explicit drift.
+var zeroOmittedDurationFields = map[string]bool{
+	"for":             true,
+	"keep_firing_for": true,
 }
 
 // cleanupMap removes specified fields by path and empty values from a map in
@@ -285,18 +377,14 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 				delete(data, key)
 			}
 		case []any:
-			for _, item := range v {
-				if m, ok := item.(map[string]any); ok {
-					cleanupMap(m, nil)
-				}
-			}
+			cleanupNestedSlice(v)
 			if len(v) == 0 {
 				delete(data, key)
 			}
 		case string:
 			if v == "" {
 				delete(data, key)
-			} else if key == "for" || key == "keep_firing_for" {
+			} else if zeroOmittedDurationFields[key] {
 				// for and keep_firing_for use Duration with omitempty, so
 				// marshalling drops them when the value is zero. Remove them
 				// here so "for: 0s" in a user document matches the
@@ -306,6 +394,29 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 					delete(data, key)
 				}
 			}
+		case float64:
+			// Hand-written rule YAML often leaves a zero duration unquoted
+			// (for: 0 rather than for: "0s"), which parses as a number, not
+			// a string -- the same omitempty round-trip the string case
+			// handles still applies.
+			if zeroOmittedDurationFields[key] && v == 0 {
+				delete(data, key)
+			}
+		}
+	}
+}
+
+// cleanupNestedSlice applies cleanupMap's emptiness cleanup to every
+// map-shaped element of items, and recurses into slice-shaped elements
+// (e.g. a matrix: [[{a: ""}]]) so nesting depth doesn't hide an empty value
+// from cleanup. Scalar elements are left as-is.
+func cleanupNestedSlice(items []any) {
+	for _, item := range items {
+		switch v := item.(type) {
+		case map[string]any:
+			cleanupMap(v, nil)
+		case []any:
+			cleanupNestedSlice(v)
 		}
 	}
 }
@@ -364,38 +475,56 @@ func canonicalString(v any) string {
 		}
 		sort.Strings(strs)
 		return "[" + strings.Join(strs, ",") + "]"
+	case string:
+		// %q quotes and escapes the value, so a colon or comma inside it
+		// can't be mistaken for a structural separator (e.g. {"a": "b:c"}
+		// and {"a:b": "c"} would otherwise both render as "{a:b:c}", making
+		// a real difference between them look like a reorder). It also
+		// distinguishes a string leaf from a same-looking non-string one
+		// (e.g. "1" from 1).
+		return fmt.Sprintf("%q", val)
 	default:
 		return fmt.Sprint(v)
 	}
 }
 
-// normalizeNumericTypes recursively converts all integer and float types to
-// float64 in a parsed YAML/JSON structure, so the same numeric value
-// appearing as different types (e.g. int from YAML vs. float64 from JSON)
-// compares equal.
-func normalizeNumericTypes(v any) any {
-	switch val := v.(type) {
-	case map[string]any:
-		for k, v := range val {
-			val[k] = normalizeNumericTypes(v)
+// orderInsensitiveKeys are map keys whose slice values represent sets rather
+// than sequences, so reordering them is not drift: permission grants, the
+// actions within a grant, and notification channels.
+var orderInsensitiveKeys = map[string]bool{
+	"permissions": true,
+	"actions":     true,
+	"channels":    true,
+}
+
+// durationComparisonFields are map keys whose string values are Go duration
+// strings, so equal values in different textual forms (e.g. "2m" and "2m0s")
+// must compare equal. Scoped by field name rather than by "does this string
+// happen to parse as a duration," which would otherwise treat unrelated
+// duration-shaped strings (a name, a timestamp) as equal too.
+var durationComparisonFields = map[string]bool{
+	"for":             true,
+	"keep_firing_for": true,
+	"interval":        true,
+}
+
+// pathEndsAtKey reports whether the map key immediately owning the value at
+// the end of p is in keys. Searches backward, skipping the TypeAssertion
+// steps cmp inserts when unwrapping an any-typed map value into its concrete
+// dynamic type, and stops at the first cmp.MapIndex (a real match or
+// mismatch) or cmp.SliceIndex (the value is a slice element, not owned by a
+// map key at all -- never a match).
+func pathEndsAtKey(p cmp.Path, keys map[string]bool) bool {
+	for i := len(p) - 1; i >= 0; i-- {
+		switch step := p[i].(type) {
+		case cmp.MapIndex:
+			key, ok := step.Key().Interface().(string)
+			return ok && keys[key]
+		case cmp.SliceIndex:
+			return false
 		}
-		return val
-	case []any:
-		for i, v := range val {
-			val[i] = normalizeNumericTypes(v)
-		}
-		return val
-	case int:
-		return float64(val)
-	case int32:
-		return float64(val)
-	case int64:
-		return float64(val)
-	case float32:
-		return float64(val)
-	default:
-		return v
 	}
+	return false
 }
 
 // Equivalent reports whether two documents are semantically equivalent for
@@ -412,55 +541,63 @@ func normalizeNumericTypes(v any) any {
 // preservedAnnotationKeys lists annotation keys that participate in drift
 // detection; every other annotation is stripped before comparison.
 func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (bool, error) {
-	normalizedA, err := Normalize(a, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	// sigsyaml.Unmarshal (inside normalizeToMap) decodes through
+	// encoding/json, which always produces float64 for a JSON/YAML number
+	// regardless of its original notation (3, 3.0, 3e0) -- both documents
+	// already agree on numeric type once parsed, so no further cross-type
+	// numeric normalization is needed here. That decode step is also where
+	// precision is lost for an integer beyond 2^53 (float64's exact-integer
+	// limit): two distinct values that large can come out equal. No field
+	// compared by this package needs an exact integer beyond that range
+	// today (Dash0 asset IDs are strings, and the numeric fields here are
+	// thresholds, small counts, and durations) -- if one ever does, this
+	// decode path would need to switch to a precision-preserving number
+	// type end-to-end.
+	parsedA, err := normalizeToMap(a, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
 		return false, fmt.Errorf("error normalizing first document: %w", err)
 	}
-	normalizedB, err := Normalize(b, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	parsedB, err := normalizeToMap(b, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
 		return false, fmt.Errorf("error normalizing second document: %w", err)
 	}
-
-	var parsedA, parsedB any
-	if err := sigsyaml.Unmarshal(normalizedA, &parsedA); err != nil {
-		return false, fmt.Errorf("error parsing first normalized document: %w", err)
-	}
-	if err := sigsyaml.Unmarshal(normalizedB, &parsedB); err != nil {
-		return false, fmt.Errorf("error parsing second normalized document: %w", err)
-	}
-
-	parsedA = normalizeNumericTypes(parsedA)
-	parsedB = normalizeNumericTypes(parsedB)
 
 	// Strip zero-value fields from B that are absent in A. This prevents
 	// API-enriched defaults (e.g. "enabled": false, "retries": null) from
 	// being treated as drift when the reference doesn't set those fields.
 	// If the reference explicitly set a zero value, it will be present in A
 	// and preserved.
-	if mapA, ok := parsedA.(map[string]any); ok {
-		if mapB, ok := parsedB.(map[string]any); ok {
-			stripAbsentZeroValues(mapA, mapB)
-		}
-	}
+	stripAbsentZeroValues(parsedA, parsedB)
 
 	cmpOptions := []cmp.Option{
-		// Ignore slice order deeper in the structure. Uses canonicalString,
-		// which recursively sorts nested structures, so the sort key stays
-		// stable regardless of inner element ordering.
-		cmpopts.SortSlices(func(x, y any) bool {
-			return canonicalString(x) < canonicalString(y)
-		}),
-		// Duration-aware string comparison: treats "2m" and "2m0s" as
-		// equivalent when both strings are valid Go duration strings.
-		cmp.FilterValues(
-			func(x, y string) bool {
-				_, errX := time.ParseDuration(x)
-				_, errY := time.ParseDuration(y)
-				return errX == nil && errY == nil
-			},
+		// Ignore slice order only for fields that are semantically sets
+		// rather than sequences (see orderInsensitiveKeys). Every other
+		// slice -- notably spec.groups[].rules, which Prometheus evaluates
+		// in declaration order and where a recording rule can depend on one
+		// declared above it -- stays order-sensitive by default, so a
+		// meaningful reorder surfaces as drift instead of being silently
+		// discarded. Uses canonicalString, which recursively sorts nested
+		// structures, so the sort key stays stable regardless of inner
+		// element ordering.
+		cmp.FilterPath(
+			func(p cmp.Path) bool { return pathEndsAtKey(p, orderInsensitiveKeys) },
+			cmpopts.SortSlices(func(x, y any) bool {
+				return canonicalString(x) < canonicalString(y)
+			}),
+		),
+		// Duration-aware string comparison for durationComparisonFields:
+		// treats "2m" and "2m0s" as equivalent. Scoped by field name (see
+		// durationComparisonFields) rather than by "do both strings happen
+		// to parse as a duration" -- the latter would also match unrelated
+		// fields, e.g. a name of "1h" against a name of "60m".
+		cmp.FilterPath(
+			func(p cmp.Path) bool { return pathEndsAtKey(p, durationComparisonFields) },
 			cmp.Comparer(func(x, y string) bool {
-				dx, _ := time.ParseDuration(x)
-				dy, _ := time.ParseDuration(y)
+				dx, errX := time.ParseDuration(x)
+				dy, errY := time.ParseDuration(y)
+				if errX != nil || errY != nil {
+					return x == y
+				}
 				return dx == dy
 			}),
 		),
@@ -480,14 +617,39 @@ func stripAbsentZeroValues(reference, target map[string]any) {
 			}
 			continue
 		}
-		if refMap, ok := refVal.(map[string]any); ok {
+		switch refTyped := refVal.(type) {
+		case map[string]any:
 			if targetMap, ok := targetVal.(map[string]any); ok {
-				stripAbsentZeroValues(refMap, targetMap)
+				stripAbsentZeroValues(refTyped, targetMap)
 				if len(targetMap) == 0 {
 					delete(target, key)
 				}
 			}
+		case []any:
+			if targetSlice, ok := targetVal.([]any); ok {
+				stripAbsentZeroValuesInSlices(refTyped, targetSlice)
+			}
 		}
+	}
+}
+
+// stripAbsentZeroValuesInSlices pairs slice elements by index and recurses
+// into map-shaped pairs, mirroring stripAbsentZeroValues for list elements
+// (e.g. spec.groups[].rules[].dash0Enabled, which the API adds per-rule).
+// Elements beyond the shorter slice's length are left untouched -- a genuine
+// length mismatch is real drift, not something to paper over here.
+func stripAbsentZeroValuesInSlices(reference, target []any) {
+	n := min(len(reference), len(target))
+	for i := range n {
+		refMap, ok := reference[i].(map[string]any)
+		if !ok {
+			continue
+		}
+		targetMap, ok := target[i].(map[string]any)
+		if !ok {
+			continue
+		}
+		stripAbsentZeroValues(refMap, targetMap)
 	}
 }
 

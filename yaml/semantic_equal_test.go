@@ -1092,7 +1092,7 @@ spec:
 	}
 }
 
-func TestRemoveYAMLField(t *testing.T) {
+func TestCleanupMap(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    map[string]any
@@ -1176,7 +1176,7 @@ func TestCanonicalString(t *testing.T) {
 		{
 			name:     "string value",
 			input:    "hello",
-			expected: "hello",
+			expected: `"hello"`,
 		},
 		{
 			name:     "int value",
@@ -1191,12 +1191,12 @@ func TestCanonicalString(t *testing.T) {
 		{
 			name:     "map with sorted keys",
 			input:    map[string]any{"b": "2", "a": "1"},
-			expected: "{a:1,b:2}",
+			expected: `{a:"1",b:"2"}`,
 		},
 		{
 			name:     "slice elements are sorted",
 			input:    []any{"cherry", "apple", "banana"},
-			expected: "[apple,banana,cherry]",
+			expected: `["apple","banana","cherry"]`,
 		},
 		{
 			name: "nested map with unsorted inner list produces same canonical form regardless of list order",
@@ -1204,7 +1204,7 @@ func TestCanonicalString(t *testing.T) {
 				"role":    "admin",
 				"actions": []any{"views:read", "views:delete"},
 			},
-			expected: "{actions:[views:delete,views:read],role:admin}",
+			expected: `{actions:["views:delete","views:read"],role:"admin"}`,
 		},
 		{
 			name: "same nested map with different inner list order produces identical canonical form",
@@ -1212,7 +1212,17 @@ func TestCanonicalString(t *testing.T) {
 				"role":    "admin",
 				"actions": []any{"views:delete", "views:read"},
 			},
-			expected: "{actions:[views:delete,views:read],role:admin}",
+			expected: `{actions:["views:delete","views:read"],role:"admin"}`,
+		},
+		{
+			name:     "colon inside a string value cannot be mistaken for the key:value separator",
+			input:    map[string]any{"a": "b:c"},
+			expected: `{a:"b:c"}`,
+		},
+		{
+			name:     "colon inside a key produces a different canonical form than the same colon inside a value",
+			input:    map[string]any{"a:b": "c"},
+			expected: `{a:b:"c"}`,
 		},
 	}
 
@@ -1255,80 +1265,167 @@ spec:
 	assert.True(t, result, "permissions with reordered actions and reordered entries should be equivalent")
 }
 
-func TestNormalizeNumericTypes(t *testing.T) {
+// TestEquivalent_ReorderedPrometheusRulesAreNotEquivalent guards against
+// treating spec.groups[].rules order as insignificant: Prometheus evaluates
+// rules within a group in declaration order, so a recording rule can depend
+// on one declared above it, and reordering them is real drift.
+func TestEquivalent_ReorderedPrometheusRulesAreNotEquivalent(t *testing.T) {
+	yaml1 := `
+spec:
+  groups:
+    - rules:
+        - record: job:a
+          expr: sum(a)
+        - record: job:b
+          expr: sum(job:a)
+`
+	yaml2 := `
+spec:
+  groups:
+    - rules:
+        - record: job:b
+          expr: sum(job:a)
+        - record: job:a
+          expr: sum(a)
+`
+	result, err := Equivalent([]byte(yaml1), []byte(yaml2), nil, nil)
+	require.NoError(t, err)
+	assert.False(t, result, "reordering rules within a group changes evaluation order and must be reported as drift")
+}
+
+// TestEquivalent_DurationComparisonScopedByFieldName guards against
+// comparing arbitrary strings as durations just because both sides happen to
+// parse as one: only for, keep_firing_for, and interval get that treatment.
+func TestEquivalent_DurationComparisonScopedByFieldName(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    any
-		expected any
+		name  string
+		yaml1 string
+		yaml2 string
 	}{
 		{
-			name:     "converts int to float64",
-			input:    int(100),
-			expected: float64(100),
+			name:  "unrelated duration-shaped field",
+			yaml1: "spec:\n  duration: 5m\n",
+			yaml2: "spec:\n  duration: 300s\n",
 		},
 		{
-			name:     "converts int32 to float64",
-			input:    int32(100),
-			expected: float64(100),
+			name:  "name that happens to parse as a duration",
+			yaml1: "metadata:\n  name: 1h\n",
+			yaml2: "metadata:\n  name: 60m\n",
 		},
 		{
-			name:     "converts int64 to float64",
-			input:    int64(100),
-			expected: float64(100),
-		},
-		{
-			name:     "converts float32 to float64",
-			input:    float32(100.5),
-			expected: float64(100.5),
-		},
-		{
-			name:     "keeps float64 as is",
-			input:    float64(100.5),
-			expected: float64(100.5),
-		},
-		{
-			name:     "keeps string as is",
-			input:    "hello",
-			expected: "hello",
-		},
-		{
-			name: "converts various numeric types in nested map",
-			input: map[string]any{
-				"count":   int(3),
-				"count32": int32(4),
-				"count64": int64(5),
-				"name":    "test",
-				"nested": map[string]any{
-					"value":   int(42),
-					"float32": float32(1.5),
-					"float64": float64(2.5),
-				},
-			},
-			expected: map[string]any{
-				"count":   float64(3),
-				"count32": float64(4),
-				"count64": float64(5),
-				"name":    "test",
-				"nested": map[string]any{
-					"value":   float64(42),
-					"float32": float64(1.5),
-					"float64": float64(2.5),
-				},
-			},
-		},
-		{
-			name:     "converts various numeric types in slices",
-			input:    []any{int(1), int32(2), int64(3), float32(4.5), "five"},
-			expected: []any{float64(1), float64(2), float64(3), float64(4.5), "five"},
+			name:  "bare zero against zero seconds on an unrelated field",
+			yaml1: "spec:\n  count: \"0\"\n",
+			yaml2: "spec:\n  count: \"0s\"\n",
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := normalizeNumericTypes(tt.input)
-			assert.Equal(t, tt.expected, result)
+			result, err := Equivalent([]byte(tt.yaml1), []byte(tt.yaml2), nil, nil)
+			require.NoError(t, err)
+			assert.False(t, result, "values differ textually on a non-duration field and must be reported as drift")
 		})
 	}
+}
+
+// TestEquivalent_ZeroValueInsideListElementIsAbsentNotDrift guards against a
+// zero value the API adds inside a list element (e.g. a per-rule enabled
+// flag) surviving comparison on only one side. stripAbsentZeroValues already
+// handles this for map-shaped fields; list elements need the same treatment.
+func TestEquivalent_ZeroValueInsideListElementIsAbsentNotDrift(t *testing.T) {
+	reference := `
+spec:
+  groups:
+    - rules:
+        - record: job:a
+          expr: sum(a)
+`
+	apiResponse := `
+spec:
+  groups:
+    - rules:
+        - record: job:a
+          expr: sum(a)
+          dash0Enabled: false
+`
+	result, err := Equivalent([]byte(reference), []byte(apiResponse), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an API-added zero value inside a list element must not be reported as drift")
+}
+
+// TestNormalizeYAML_EmptyValueInsideNestedSliceIsRemoved guards against an
+// empty string surviving inside a slice nested within another slice (e.g. a
+// matrix: [[{a: ""}]]), which cleanupMap's []any case only cleaned one level
+// deep -- the map case, but not a further-nested slice case.
+func TestNormalizeYAML_EmptyValueInsideNestedSliceIsRemoved(t *testing.T) {
+	input := `
+metadata:
+  name: test
+spec:
+  matrix:
+    - - a: ""
+        b: keep
+`
+	result, err := Normalize([]byte(input), nil, nil)
+	require.NoError(t, err)
+	assert.NotContains(t, string(result), `a: ""`, "an empty value nested two slices deep must still be removed")
+	assert.Contains(t, string(result), "b: keep")
+}
+
+// TestEquivalent_DottedAnnotationsRootStripsAnnotations guards against
+// mapAtRoot treating a dotted AnnotationsRoot as one literal key instead of
+// a nested path: previously "spec.metadata" found nothing, so annotations at
+// that root were never stripped and any difference between them leaked
+// through as spurious drift, even with an empty preservedAnnotationKeys list
+// (which should strip every annotation).
+func TestEquivalent_DottedAnnotationsRootStripsAnnotations(t *testing.T) {
+	yaml1 := `
+spec:
+  metadata:
+    annotations:
+      summary: hello
+`
+	yaml2 := `
+spec:
+  metadata:
+    annotations:
+      summary: CHANGED
+`
+	result, err := Equivalent([]byte(yaml1), []byte(yaml2), nil, nil, WithAnnotationsRoot("spec.metadata"))
+	require.NoError(t, err)
+	assert.True(t, result, "a dotted AnnotationsRoot must strip annotations the same way a single-level root does")
+}
+
+// TestNormalizeYAML_DottedAnnotationsRootCascadesEmptyAncestors guards
+// against a dotted root leaving an empty shell map behind after its
+// annotations are stripped: deleting only the leaf segment left
+// "spec: {}" in the normalized output, an artifact absent from a reference
+// document that never had this root at all.
+func TestNormalizeYAML_DottedAnnotationsRootCascadesEmptyAncestors(t *testing.T) {
+	input := `
+spec:
+  metadata:
+    annotations:
+      summary: hello
+`
+	result, err := Normalize([]byte(input), nil, nil, WithAnnotationsRoot("spec.metadata"))
+	require.NoError(t, err)
+	assert.Equal(t, "{}", string(result), "removing the last field under a dotted root must cascade up through now-empty ancestors")
+}
+
+// TestEquivalent_LargeIntegersBeyondFloat64PrecisionCanFalselyMatch
+// documents a known, accepted limitation rather than a bug to fix:
+// sigsyaml.Unmarshal decodes every number through encoding/json into
+// float64, which cannot represent integers beyond 2^53 exactly, so two
+// distinct large integers can come out equal. No field this package
+// compares needs an exact integer beyond that range today (Dash0 asset IDs
+// are strings, and the numeric fields here are thresholds, small counts,
+// and durations).
+func TestEquivalent_LargeIntegersBeyondFloat64PrecisionCanFalselyMatch(t *testing.T) {
+	a := "spec:\n  id: 9007199254740993\n"
+	b := "spec:\n  id: 9007199254740992\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "documents the float64 precision limit rather than asserting it as correct behavior")
 }
 
 func TestHasFieldPath(t *testing.T) {
@@ -1673,6 +1770,74 @@ labels:
 	assert.False(t, equivalent, "a real label change must not be silently ignored under the flat root")
 }
 
+// TestEquivalent_WithFlatDocument_DetectsContentDrift guards against the
+// footgun WithAnnotationsRoot("") alone creates for a CheckRule-shaped
+// document: with an empty preservedAnnotationKeys list, it strips every
+// annotation -- including genuine content like "summary" -- making real
+// drift invisible unless WithAnnotationsUnfiltered() is also remembered.
+// WithFlatDocument() pairs both in one call so that mistake isn't possible.
+func TestEquivalent_WithFlatDocument_DetectsContentDrift(t *testing.T) {
+	a := `
+id: rule-1
+name: test-rule
+annotations:
+  summary: hello
+`
+	b := `
+id: rule-1
+name: test-rule
+annotations:
+  summary: CHANGED
+`
+	equivalent, err := Equivalent([]byte(a), []byte(b), nil, nil, WithFlatDocument())
+	require.NoError(t, err)
+	assert.False(t, equivalent, "a genuine annotation content change must be reported as drift on a flat document")
+}
+
+// TestEquivalent_UnquotedZeroDurationIsAbsentNotDrift guards against
+// cleanupMap's zero-omitted-duration check only handling the quoted string
+// form ("for: \"0s\""): hand-written rule YAML often leaves it unquoted
+// (for: 0), which parses as a number, not a string.
+func TestEquivalent_UnquotedZeroDurationIsAbsentNotDrift(t *testing.T) {
+	withUnquotedZero := `
+spec:
+  groups:
+    - rules:
+        - alert: x
+          for: 0
+`
+	withoutFor := `
+spec:
+  groups:
+    - rules:
+        - alert: x
+`
+	result, err := Equivalent([]byte(withUnquotedZero), []byte(withoutFor), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an unquoted zero duration must round-trip as absent, the same as its quoted form")
+}
+
+// TestNormalizeYAML_EmptyInputProducesEmptyObjectNotNull guards against an
+// asymmetry between two documents that both end up with nothing left: empty
+// input unmarshals to a nil map, which used to round-trip as the literal
+// "null" instead of "{}", the form a fully-stripped non-empty document
+// normalizes to.
+func TestNormalizeYAML_EmptyInputProducesEmptyObjectNotNull(t *testing.T) {
+	result, err := Normalize([]byte(""), nil, nil)
+	require.NoError(t, err)
+	assert.Equal(t, "{}", string(result))
+}
+
+// TestEquivalent_EmptyInputEquivalentToFullyStrippedDocument guards against
+// the same asymmetry surfacing through Equivalent: empty input and a
+// document that normalizes down to nothing must compare equal.
+func TestEquivalent_EmptyInputEquivalentToFullyStrippedDocument(t *testing.T) {
+	fullyStripped := "metadata:\n  createdAt: \"2024-01-01T00:00:00Z\"\n"
+	result, err := Equivalent([]byte(""), []byte(fullyStripped), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "empty input and a document that strips down to nothing must be equivalent")
+}
+
 // The following tests cover WithAnnotationsUnfiltered, added for dash0-cli's
 // CheckRule kind specifically: its flat top-level "annotations" carries
 // genuine user content (summary, description, sharing) directly, unlike the
@@ -1774,4 +1939,20 @@ annotations:
 	equivalent, err := Equivalent([]byte(a), []byte(b), nil, nil, WithAnnotationsRoot(""), WithAnnotationsUnfiltered())
 	require.NoError(t, err)
 	assert.True(t, equivalent, "known default annotation values must still be treated as equivalent to their absence")
+}
+
+// TestConditionallyIgnoredFields_MutatingResultDoesNotAffectOtherCallers
+// guards against ConditionallyIgnoredFields exposing its backing slice
+// directly: mutating one caller's returned slice must not change what the
+// next caller sees.
+func TestConditionallyIgnoredFields_MutatingResultDoesNotAffectOtherCallers(t *testing.T) {
+	first := ConditionallyIgnoredFields()
+	first[0] = "mutated"
+	extended := append(first, "extra.field")
+	assert.Contains(t, extended, "extra.field")
+
+	second := ConditionallyIgnoredFields()
+	assert.NotContains(t, second, "mutated")
+	assert.NotContains(t, second, "extra.field")
+	assert.Equal(t, []string{"metadata.name", "spec.permissions"}, second)
 }

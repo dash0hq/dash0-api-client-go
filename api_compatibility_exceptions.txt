@@ -222,11 +222,12 @@ SettingsPerOrganizationAndDatasetInfo.LogTemplates
 # richer criteria shape used elsewhere).
 TimeSeriesAggregationMetricNameMatch.OtherFilters
 
-# v1.21.0: SamplingMode's bare Adaptive/Disabled aliases are gone from the
-# regenerated spec, leaving only the type-prefixed SamplingModeAdaptive/
-# SamplingModeDisabled (already generated as of v1.17.0). The v1.17.0 note
-# above anticipated this rename before the upstream spec actually caught
-# up to it; it has now landed.
+# v1.21.0: The same regen added a second disabled/adaptive enum to the
+# spec, so oapi-codegen disambiguated the SamplingMode constants and the
+# bare Adaptive and Disabled constants generated.go used to export are
+# gone. gorelease still flags the removal because it diffs generated.go
+# directly, but compat.go re-declares both names as deprecated aliases for
+# SamplingModeAdaptive/SamplingModeDisabled, so consumers do not break.
 Adaptive
 Disabled
 
