@@ -210,36 +210,97 @@ func (s *Store) getActiveConfigurationContext(ctx context.Context, refreshOAuth 
 		return nil, err
 	}
 
-	activeConfiguration := &activeProfile.Configuration
-	activeConfiguration.ProfileName = activeProfile.Name
-	activeConfiguration.ConfigDir = s.configDir
+	return s.configurationForProfile(ctx, activeProfile, refreshOAuth)
+}
+
+// GetConfigurationForProfile returns the configuration of a named profile, with
+// environment variable overrides layered on top.
+// It is the per-name counterpart to [Store.GetActiveConfigurationContext], and
+// returns [ErrProfileNotFound] when no profile carries the given name so callers
+// can phrase their own message.
+//
+// Prefer this over [Store.GetProfiles] plus a search by name: the returned
+// configuration records the profile and directory it came from, which is what
+// lets [Configuration.AuthTokenProvider] find the profile to write a rotated
+// OAuth token back to. A hand-rolled lookup leaves those fields empty, and the
+// resulting configuration cannot refresh at all.
+//
+// The OAuth access token is not refreshed here. Refreshing happens per request,
+// in the provider returned by [Configuration.AuthTokenProvider], so it only
+// happens for a client that actually goes on to use the profile's credentials.
+// Refreshing at lookup time would spend a token exchange, and rotate the
+// refresh token, even when the caller is about to authenticate with a static
+// token supplied elsewhere.
+//
+// ctx is accepted for symmetry with [Store.GetActiveConfigurationContext] and
+// is currently unused: this call reads the profile store and makes no network
+// request.
+func (s *Store) GetConfigurationForProfile(ctx context.Context, profileName string) (*Configuration, error) {
+	if profileName == "" {
+		return nil, fmt.Errorf("profile name must not be empty")
+	}
+
+	allProfiles, err := s.GetProfiles()
+	if err != nil {
+		return nil, err
+	}
+	for i := range allProfiles {
+		if allProfiles[i].Name == profileName {
+			return s.configurationForProfile(ctx, &allProfiles[i], false)
+		}
+	}
+	return nil, ErrProfileNotFound
+}
+
+// configurationForProfile is the shared tail of every profile-to-configuration
+// path: it records which profile the configuration came from, refreshes an
+// OAuth access token close to expiry, and layers the environment variables on
+// top.
+//
+// Keeping this in one place is deliberate. Recording
+// [Configuration.ProfileName] is easy to forget, and a configuration without
+// it cannot refresh its OAuth token at all.
+//
+// refreshOAuth requests a refresh at lookup time. Callers pass false when the
+// token they return may never be used to authenticate anything, either because
+// they are about to override it or because the caller refreshes per request
+// through [Configuration.AuthTokenProvider]. A refresh that goes unused still
+// rotates the refresh token.
+func (s *Store) configurationForProfile(
+	ctx context.Context,
+	profile *Profile,
+	refreshOAuth bool,
+) (*Configuration, error) {
+	cfg := &profile.Configuration
+	cfg.ProfileName = profile.Name
+	cfg.ConfigDir = s.configDir
+
+	envAuthToken := os.Getenv(EnvAuthToken)
 
 	// If the profile uses OAuth and no env var overrides the auth token,
 	// refresh the access token when it is close to expiry.
-	// Callers that will override the token anyway pass refreshOAuth=false to
-	// skip this.
-	if refreshOAuth && activeConfiguration.OAuth != nil && envAuthToken == "" {
-		if err := refreshOAuthToken(ctx, s, activeProfile.Name, activeConfiguration); err != nil {
+	if refreshOAuth && cfg.OAuth != nil && envAuthToken == "" {
+		if err := refreshOAuthToken(ctx, s, profile.Name, cfg); err != nil {
 			return nil, err
 		}
 	}
 
 	// Override with env vars if set.
-	if envApiUrl != "" {
-		activeConfiguration.ApiUrl = envApiUrl
+	if envApiUrl := os.Getenv(EnvApiUrl); envApiUrl != "" {
+		cfg.ApiUrl = envApiUrl
 	}
 	if envAuthToken != "" {
-		activeConfiguration.AuthToken = envAuthToken
-		activeConfiguration.OAuth = nil
+		cfg.AuthToken = envAuthToken
+		cfg.OAuth = nil
 	}
-	if envOtlpUrl != "" {
-		activeConfiguration.OtlpUrl = envOtlpUrl
+	if envOtlpUrl := os.Getenv(EnvOtlpUrl); envOtlpUrl != "" {
+		cfg.OtlpUrl = envOtlpUrl
 	}
-	if envDataset != "" {
-		activeConfiguration.Dataset = envDataset
+	if envDataset := os.Getenv(EnvDataset); envDataset != "" {
+		cfg.Dataset = envDataset
 	}
 
-	return activeConfiguration, nil
+	return cfg, nil
 }
 
 // ResolveConfiguration loads the active profile, applies environment variable

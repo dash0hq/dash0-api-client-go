@@ -18,6 +18,7 @@ import (
 
 // scriptedTokenProvider hands out a different token on each AuthToken call, so
 // a test can tell which request carried which token.
+// It records how often it was asked to force a refresh.
 type scriptedTokenProvider struct {
 	tokens []string
 	calls  atomic.Int32

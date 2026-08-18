@@ -569,3 +569,36 @@ func ExampleConfiguration_AuthTokenProvider_staticToken() {
 	// Output:
 	// auth_example-token
 }
+
+func ExampleStore_GetConfigurationForProfile() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, err := profiles.NewStore(profiles.WithConfigDir(configDir))
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	if err := store.AddProfile(profiles.Profile{
+		Name: "production",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_example-token",
+		},
+	}); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	// Prefer this over GetProfiles plus a search by name: the returned
+	// configuration is refreshed and records which profile it came from.
+	cfg, err := store.GetConfigurationForProfile(context.Background(), "production")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(cfg.ProfileName)
+
+	// Output:
+	// production
+}
