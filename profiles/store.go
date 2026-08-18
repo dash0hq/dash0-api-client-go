@@ -211,6 +211,8 @@ func (s *Store) getActiveConfigurationContext(ctx context.Context, refreshOAuth 
 	}
 
 	activeConfiguration := &activeProfile.Configuration
+	activeConfiguration.ProfileName = activeProfile.Name
+	activeConfiguration.ConfigDir = s.configDir
 
 	// If the profile uses OAuth and no env var overrides the auth token,
 	// refresh the access token when it is close to expiry.
@@ -292,6 +294,8 @@ func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken,
 			result.OtlpUrl = cfg.OtlpUrl
 			result.Dataset = cfg.Dataset
 			result.OAuth = cfg.OAuth
+			result.ProfileName = cfg.ProfileName
+			result.ConfigDir = cfg.ConfigDir
 		}
 	}
 
@@ -317,6 +321,8 @@ func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken,
 	if authToken != "" {
 		result.AuthToken = authToken
 		result.OAuth = nil
+		result.ProfileName = ""
+		result.ConfigDir = ""
 	}
 	if otlpUrl != "" {
 		result.OtlpUrl = otlpUrl

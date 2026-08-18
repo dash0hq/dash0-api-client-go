@@ -10,7 +10,8 @@ import (
 )
 
 // newTestStore returns a fresh Store rooted at t.TempDir().
-func newTestStore(t *testing.T) (*Store, string) {
+// It takes a [testing.TB] so benchmarks can use it too.
+func newTestStore(t testing.TB) (*Store, string) {
 	t.Helper()
 	dir := t.TempDir()
 	svc, err := NewStore(WithConfigDir(dir))

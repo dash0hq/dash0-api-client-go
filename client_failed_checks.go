@@ -140,7 +140,8 @@ func (c *client) GetFailedChecks(ctx context.Context, request *GetFailedChecksRe
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.config.authToken)
+	// The Authorization header is set by authTransport, which wraps
+	// c.httpClient's transport stack.
 	req.Header.Set("User-Agent", c.config.userAgent)
 
 	resp, err := c.httpClient.Do(req)
