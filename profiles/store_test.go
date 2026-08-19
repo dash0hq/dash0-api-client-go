@@ -1,6 +1,7 @@
 package profiles
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -1210,6 +1211,133 @@ func TestResolveConfiguration(t *testing.T) {
 		}
 		if got := requestCount.Load(); got != 1 {
 			t.Errorf("expected 1 token-endpoint request, got %d", got)
+		}
+	})
+}
+
+func TestGetConfigurationForProfile(t *testing.T) {
+	t.Run("returns a named profile that is not the active one", func(t *testing.T) {
+		store, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "active", Configuration: Configuration{ApiUrl: "https://active.example.com", AuthToken: "auth_active"}},
+			{Name: "other", Configuration: Configuration{ApiUrl: "https://other.example.com", AuthToken: "auth_other"}},
+		})
+		setActiveProfile(t, dir, "active")
+
+		cfg, err := store.GetConfigurationForProfile(context.Background(), "other")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "auth_other" {
+			t.Errorf("AuthToken = %q, want %q", cfg.AuthToken, "auth_other")
+		}
+	})
+
+	t.Run("records the profile name so the token can be refreshed", func(t *testing.T) {
+		// Without ProfileName an OAuth configuration has nothing to refresh
+		// against, which is the defect this accessor exists to prevent.
+		store, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "named", Configuration: Configuration{ApiUrl: "https://api.example.com", AuthToken: "auth_named"}},
+		})
+
+		cfg, err := store.GetConfigurationForProfile(context.Background(), "named")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.ProfileName != "named" {
+			t.Errorf("ProfileName = %q, want %q", cfg.ProfileName, "named")
+		}
+	})
+
+	t.Run("does not exchange a token for an expired OAuth profile", func(t *testing.T) {
+		// Looking a profile up must not spend a token exchange. A caller that
+		// goes on to authenticate with a token from somewhere else, such as the
+		// CLI's --auth-token flag, would discard the result and have rotated
+		// the refresh token for nothing. The refresh belongs to
+		// Configuration.AuthTokenProvider, which only runs for a client that
+		// actually issues a request.
+		var exchanges int
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			exchanges++
+			t.Errorf("unexpected %s %s: the lookup must not talk to the authorization server", r.Method, r.URL.Path)
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		store, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "oauth", Configuration: Configuration{
+				ApiUrl:    server.URL,
+				AuthToken: "dash0_at_stale",
+				OAuth: &OAuthState{
+					ClientID:     "cid",
+					RefreshToken: "rt",
+					ExpiresAt:    time.Now().Add(-1 * time.Hour),
+				},
+			}},
+		})
+
+		cfg, err := store.GetConfigurationForProfile(context.Background(), "oauth")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if exchanges != 0 {
+			t.Errorf("token exchanges = %d, want 0", exchanges)
+		}
+		if cfg.AuthToken != "dash0_at_stale" {
+			t.Errorf("AuthToken = %q, want the stored %q", cfg.AuthToken, "dash0_at_stale")
+		}
+		// The lookup still has to leave the configuration refreshable, or the
+		// provider has nowhere to write the rotated token back to.
+		if cfg.ProfileName != "oauth" {
+			t.Errorf("ProfileName = %q, want %q", cfg.ProfileName, "oauth")
+		}
+		if cfg.ConfigDir != dir {
+			t.Errorf("ConfigDir = %q, want %q", cfg.ConfigDir, dir)
+		}
+	})
+
+	t.Run("layers environment variables on top", func(t *testing.T) {
+		store, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "named", Configuration: Configuration{
+				ApiUrl:    "https://api.example.com",
+				AuthToken: "auth_profile",
+				Dataset:   "from-profile",
+			}},
+		})
+		t.Setenv(EnvAuthToken, "auth_from_env")
+
+		cfg, err := store.GetConfigurationForProfile(context.Background(), "named")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if cfg.AuthToken != "auth_from_env" {
+			t.Errorf("AuthToken = %q, want the env override", cfg.AuthToken)
+		}
+		if cfg.Dataset != "from-profile" {
+			t.Errorf("Dataset = %q, want the profile value retained", cfg.Dataset)
+		}
+	})
+
+	t.Run("returns ErrProfileNotFound for an unknown name", func(t *testing.T) {
+		store, dir := newTestStore(t)
+		createTestProfilesFile(t, dir, []Profile{
+			{Name: "named", Configuration: Configuration{ApiUrl: "https://api.example.com", AuthToken: "auth_named"}},
+		})
+
+		_, err := store.GetConfigurationForProfile(context.Background(), "missing")
+		if !errors.Is(err, ErrProfileNotFound) {
+			t.Errorf("error = %v, want ErrProfileNotFound", err)
+		}
+	})
+
+	t.Run("rejects an empty name", func(t *testing.T) {
+		store, _ := newTestStore(t)
+
+		if _, err := store.GetConfigurationForProfile(context.Background(), ""); err == nil {
+			t.Error("expected an error for an empty profile name")
 		}
 	})
 }

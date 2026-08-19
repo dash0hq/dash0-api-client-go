@@ -33,9 +33,6 @@ func seedOAuthProfile(t *testing.T, apiUrl, accessToken string, expiresAt time.T
 	}
 	persisted := *cfg
 	createTestProfilesFile(t, dir, []Profile{{Name: "test", Configuration: persisted}})
-	// Mark it active so the tests can resolve it through
-	// GetActiveConfigurationContext.
-	setActiveProfile(t, dir, "test")
 	return store, dir, cfg
 }
 
@@ -257,7 +254,7 @@ func TestConfigurationClientOptionsUsesProviderForOAuth(t *testing.T) {
 		t.Setenv(EnvConfigDir, "")
 		_ = dir
 
-		cfg, err := store.GetActiveConfigurationContext(context.Background())
+		cfg, err := store.GetConfigurationForProfile(context.Background(), "test")
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -338,7 +335,7 @@ func TestRefreshSurvivesCallerCancellation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	persisted, err := store.GetActiveConfigurationContext(context.Background())
+	persisted, err := store.GetConfigurationForProfile(context.Background(), "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -373,13 +370,12 @@ func TestAuthTokenProviderUsesTheStoreDirectory(t *testing.T) {
 			ExpiresAt:    time.Now().Add(1 * time.Minute),
 		},
 	}}})
-	setActiveProfile(t, dir, "test")
 
 	// Deliberately unset, so the provider has to learn the directory from the
 	// configuration rather than the environment.
 	t.Setenv(EnvConfigDir, "")
 
-	cfg, err := store.GetActiveConfigurationContext(context.Background())
+	cfg, err := store.GetConfigurationForProfile(context.Background(), "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
