@@ -10,6 +10,16 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
+// Round-trip-conversion annotation keys written here and read back by
+// semantic_equal.go's removeDefaultAnnotationValues, which treats their
+// default values (dash0-enabled: true, thresholds: 0) as semantically
+// absent since this conversion omits them.
+const (
+	enabledAnnotationKey           = "dash0-enabled"
+	thresholdCriticalAnnotationKey = "dash0-threshold-critical"
+	thresholdDegradedAnnotationKey = "dash0-threshold-degraded"
+)
+
 // MergeAnnotations merges a PrometheusRule document's top-level
 // metadata.annotations into a rule's own annotations.
 // Rule-level annotations win on key conflict, mirroring the Dash0 Operator's
@@ -111,16 +121,16 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 
 	// Only add enabled annotation if false (true is the default)
 	if rule.Enabled != nil && !*rule.Enabled {
-		annotations["dash0-enabled"] = strconv.FormatBool(false)
+		annotations[enabledAnnotationKey] = strconv.FormatBool(false)
 	}
 
 	// Only include threshold annotations for non-zero values
 	if rule.Thresholds != nil {
 		if rule.Thresholds.Failed != nil && *rule.Thresholds.Failed != 0 {
-			annotations["dash0-threshold-critical"] = strconv.FormatFloat(*rule.Thresholds.Failed, 'f', -1, 64)
+			annotations[thresholdCriticalAnnotationKey] = strconv.FormatFloat(*rule.Thresholds.Failed, 'f', -1, 64)
 		}
 		if rule.Thresholds.Degraded != nil && *rule.Thresholds.Degraded != 0 {
-			annotations["dash0-threshold-degraded"] = strconv.FormatFloat(*rule.Thresholds.Degraded, 'f', -1, 64)
+			annotations[thresholdDegradedAnnotationKey] = strconv.FormatFloat(*rule.Thresholds.Degraded, 'f', -1, 64)
 		}
 	}
 

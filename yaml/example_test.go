@@ -214,3 +214,103 @@ func ExampleMarshalPrometheusRule() {
 	// 5m
 	// High error rate detected
 }
+
+func ExampleWithFlatDocument() {
+	// dash0-cli's native CheckRule kind has no "metadata" nesting, and its
+	// top-level "annotations" carries genuine user content (summary here)
+	// rather than server-managed provenance -- WithFlatDocument() tells
+	// Equivalent both facts at once.
+	reference := []byte("id: rule-1\nname: test-rule\nannotations:\n  summary: High error rate\n")
+	apiResponse := []byte("id: rule-1\nname: test-rule\nannotations:\n  summary: Error rate too high\n")
+
+	// WithAnnotationsRoot("") alone is the footgun WithFlatDocument exists
+	// to prevent: with an empty preservedAnnotationKeys list, it strips
+	// every annotation -- including this genuine "summary" change -- so
+	// the drift goes undetected.
+	missedDrift, err := dash0yaml.Equivalent(reference, apiResponse, nil, nil, dash0yaml.WithAnnotationsRoot(""))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(missedDrift)
+
+	// WithFlatDocument() pairs WithAnnotationsRoot("") with
+	// WithAnnotationsUnfiltered() so the same content change is detected.
+	detectedDrift, err := dash0yaml.Equivalent(reference, apiResponse, nil, nil, dash0yaml.WithFlatDocument())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(detectedDrift)
+	// Output:
+	// true
+	// false
+}
+
+func ExampleConditionallyIgnoredFields() {
+	fields := dash0yaml.ConditionallyIgnoredFields()
+	fmt.Println(fields)
+	// Output: [metadata.name spec.permissions]
+}
+
+func ExampleEquivalent() {
+	reference := []byte("kind: Dash0View\nmetadata:\n  name: my-view\nspec:\n  type: spans\n")
+	// The API response adds a server-managed timestamp Equivalent ignores.
+	apiResponse := []byte("kind: Dash0View\nmetadata:\n  name: my-view\n  createdAt: \"2024-01-01T00:00:00Z\"\nspec:\n  type: spans\n")
+
+	equivalent, err := dash0yaml.Equivalent(reference, apiResponse, nil, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(equivalent)
+	// Output: true
+}
+
+func ExampleNormalize() {
+	input := []byte("kind: Dash0View\nmetadata:\n  name: my-view\n  createdAt: \"2024-01-01T00:00:00Z\"\nspec:\n  type: spans\n")
+
+	normalized, err := dash0yaml.Normalize(input, nil, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(normalized))
+	// Output:
+	// metadata:
+	//   name: my-view
+	// spec:
+	//   type: spans
+}
+
+func ExampleAbsentFields() {
+	data := []byte("spec:\n  enabled: true\n")
+
+	absent := dash0yaml.AbsentFields(data, []string{"spec.enabled", "spec.permissions"})
+	fmt.Println(absent)
+	// Output: [spec.permissions]
+}
+
+func ExampleWithAnnotationsRoot() {
+	// A CRD nested one level deeper than the usual top-level "metadata".
+	reference := []byte("spec:\n  metadata:\n    annotations:\n      dash0.com/sharing: team:a\n")
+	apiResponse := []byte("spec:\n  metadata:\n    annotations:\n      dash0.com/sharing: team:b\n")
+
+	equivalent, err := dash0yaml.Equivalent(reference, apiResponse, nil, []string{"dash0.com/sharing"}, dash0yaml.WithAnnotationsRoot("spec.metadata"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(equivalent)
+	// Output: false
+}
+
+func ExampleWithAnnotationsUnfiltered() {
+	// dash0-cli's CheckRule kind carries genuine content directly in its
+	// flat top-level "annotations" map, so every key -- not just an
+	// explicitly preserved allow-list -- must participate in comparison.
+	reference := []byte("id: rule-1\nannotations:\n  summary: High error rate\n")
+	apiResponse := []byte("id: rule-1\nannotations:\n  summary: Error rate too high\n")
+
+	equivalent, err := dash0yaml.Equivalent(reference, apiResponse, nil, nil, dash0yaml.WithAnnotationsRoot(""), dash0yaml.WithAnnotationsUnfiltered())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(equivalent)
+	// Output: false
+}
