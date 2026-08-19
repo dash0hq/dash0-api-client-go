@@ -2,7 +2,9 @@ package yaml
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -164,6 +166,9 @@ func prefixedIgnoredFields(root string, additionalIgnoredFields []string) []stri
 // normalization (e.g. "dash0.com/sharing"); every other annotation is
 // stripped. If empty, all annotations are stripped. See WithAnnotationsRoot
 // for documents that don't nest annotations/labels under "metadata".
+// WithAnnotationsUnfiltered (and WithFlatDocument, which implies it) disables
+// this filtering entirely, making preservedAnnotationKeys inert -- every
+// annotation key participates in normalization instead.
 func Normalize(data []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) ([]byte, error) {
 	parsed, err := normalizeToMap(data, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
@@ -327,9 +332,12 @@ func removeDefaultAnnotationValues(annotations map[string]any) {
 // zeroOmittedDurationFields are map keys backed by a Duration field with
 // omitempty, so the server drops them from a round-trip when the value is
 // zero. A zero value in these fields is therefore treated as absent, not as
-// explicit drift.
+// explicit drift. All three sit on the same PrometheusAlertRule struct
+// (generated.go): For, Interval, and KeepFiringFor are each *Duration
+// `json:"...,omitempty"`.
 var zeroOmittedDurationFields = map[string]bool{
 	"for":             true,
+	"interval":        true,
 	"keep_firing_for": true,
 }
 
@@ -377,7 +385,7 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 				delete(data, key)
 			}
 		case []any:
-			cleanupNestedSlice(v)
+			cleanupNestedSlice(v, nestedRemovals[key])
 			if len(v) == 0 {
 				delete(data, key)
 			}
@@ -390,7 +398,7 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 				// here so "for: 0s" in a user document matches the
 				// round-tripped form that omits the field. If parsing fails,
 				// the value is not a duration, so keep it as-is.
-				if d, err := time.ParseDuration(v); err == nil && d == 0 {
+				if d, err := parseDuration(v); err == nil && d == 0 {
 					delete(data, key)
 				}
 			}
@@ -409,19 +417,30 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 // cleanupNestedSlice applies cleanupMap's emptiness cleanup to every
 // map-shaped element of items, and recurses into slice-shaped elements
 // (e.g. a matrix: [[{a: ""}]]) so nesting depth doesn't hide an empty value
-// from cleanup. Scalar elements are left as-is.
-func cleanupNestedSlice(items []any) {
+// from cleanup. Scalar elements are left as-is. fieldsToRemove is the
+// portion of the caller's dotted removal paths rooted one level past this
+// array field (e.g. cleanupMap forwards nestedRemovals[key] here), so an
+// additionalIgnoredFields path whose intermediate segment names an array
+// field reaches the array's own elements instead of being silently dropped.
+func cleanupNestedSlice(items []any, fieldsToRemove []string) {
 	for _, item := range items {
 		switch v := item.(type) {
 		case map[string]any:
-			cleanupMap(v, nil)
+			cleanupMap(v, fieldsToRemove)
 		case []any:
-			cleanupNestedSlice(v)
+			cleanupNestedSlice(v, fieldsToRemove)
 		}
 	}
 }
 
-// isEmpty checks if a map is empty or contains only empty/nil values.
+// isEmpty checks if a map is structurally vacuous: empty, or containing
+// only nil/empty-container/empty-string values. Used by cleanupMap to decide
+// whether a container carries no information worth keeping. Deliberately
+// narrower than isZeroValue's notion of "zero" -- a bool false or number 0
+// is a real, meaningful value a user may have explicitly set (e.g.
+// spec: {enabled: false}), not vacuous content to delete during
+// normalization, even though isZeroValue does treat it as a zero value for
+// the different question stripAbsentZeroValues asks (see isAllZeroValues).
 func isEmpty(m map[string]any) bool {
 	if len(m) == 0 {
 		return true
@@ -488,13 +507,76 @@ func canonicalString(v any) string {
 	}
 }
 
+// promDurationUnit matches one <number><unit> component of a Prometheus-
+// style duration string (e.g. "1d12h30m"). Alternation order matters: "ms"
+// must be tried before "m", or Go's leftmost-first regexp semantics would
+// match the "m" alternative first and leave a dangling "s". The grammar is
+// case-sensitive: "M" (month) and "Q" (quarter) are distinct units from "m"
+// (minute).
+var promDurationUnit = regexp.MustCompile(`^(\d+)(y|w|d|h|ms|m|s|M|Q)`)
+
+// promDurationUnitLength approximates a calendar month as 30 days and a
+// quarter as 3 such months (90 days) -- the OpenAPI spec's Duration schema
+// (pattern `(\d+(ms|s|m|h|d|w|M|Q|y))+`) documents M and Q as valid units
+// but, like every calendar-based duration unit, doesn't give them a fixed
+// length; this matches the common approximation other monitoring tools use
+// for the same units (e.g. Grafana's relative time ranges).
+var promDurationUnitLength = map[string]time.Duration{
+	"y":  365 * 24 * time.Hour,
+	"Q":  90 * 24 * time.Hour,
+	"M":  30 * 24 * time.Hour,
+	"w":  7 * 24 * time.Hour,
+	"d":  24 * time.Hour,
+	"h":  time.Hour,
+	"m":  time.Minute,
+	"s":  time.Second,
+	"ms": time.Millisecond,
+}
+
+// parseDuration parses a duration string, trying Go's time.ParseDuration
+// first and falling back to Prometheus's own duration syntax, which
+// additionally supports y/w/d/M/Q suffixes (1y = 365d, 1Q = 90d, 1M = 30d,
+// 1w = 7d, 1d = 24h) that time.ParseDuration doesn't understand. for,
+// keep_firing_for, and interval
+// are written in Prometheus's format, not Go's, and day/week units are
+// common in hand-written alerting rules ("1d", "2w").
+func parseDuration(s string) (time.Duration, error) {
+	if d, err := time.ParseDuration(s); err == nil {
+		return d, nil
+	}
+	if s == "" {
+		// The loop below would otherwise treat an empty string as a
+		// trivially valid zero duration by never executing at all.
+		return 0, fmt.Errorf("invalid duration %q", s)
+	}
+
+	remaining := s
+	var total time.Duration
+	for remaining != "" {
+		m := promDurationUnit.FindStringSubmatch(remaining)
+		if m == nil {
+			return 0, fmt.Errorf("invalid duration %q", s)
+		}
+		n, err := strconv.Atoi(m[1])
+		if err != nil {
+			return 0, fmt.Errorf("invalid duration %q: %w", s, err)
+		}
+		total += time.Duration(n) * promDurationUnitLength[m[2]]
+		remaining = remaining[len(m[0]):]
+	}
+	return total, nil
+}
+
 // orderInsensitiveKeys are map keys whose slice values represent sets rather
 // than sequences, so reordering them is not drift: permission grants, the
-// actions within a grant, and notification channels.
+// actions within a grant, notification channels, and a SyntheticCheck's
+// execution regions (which run independently -- "all_locations" is a
+// SyntheticCheckSchedulingStrategy, not a sequence).
 var orderInsensitiveKeys = map[string]bool{
 	"permissions": true,
 	"actions":     true,
 	"channels":    true,
+	"locations":   true,
 }
 
 // durationComparisonFields are map keys whose string values are Go duration
@@ -502,10 +584,24 @@ var orderInsensitiveKeys = map[string]bool{
 // must compare equal. Scoped by field name rather than by "does this string
 // happen to parse as a duration," which would otherwise treat unrelated
 // duration-shaped strings (a name, a timestamp) as equal too.
+//
+// Covers every Duration-typed field on the asset kinds this package
+// documents as supported (SyntheticCheck retries/backoff, PrometheusRule,
+// SLO). Deliberately excludes "window", "timeout", and "value" -- real
+// Duration fields too, but on AgenticWorkflow and SslCertificateAssertion,
+// which aren't yet part of this package's supported-kinds list, and generic
+// enough names to risk colliding with an unrelated field elsewhere in the
+// tree (e.g. an assertion's status-code "value").
 var durationComparisonFields = map[string]bool{
 	"for":             true,
 	"keep_firing_for": true,
 	"interval":        true,
+	"delay":           true,
+	"maximumDelay":    true,
+	"alertAfter":      true,
+	"lookbackWindow":  true,
+	"timeSliceWindow": true,
+	"staleAfter":      true,
 }
 
 // pathEndsAtKey reports whether the map key immediately owning the value at
@@ -540,6 +636,9 @@ func pathEndsAtKey(p cmp.Path, keys map[string]bool) bool {
 // kind-specific API-managed field like "spec.routing.assets").
 // preservedAnnotationKeys lists annotation keys that participate in drift
 // detection; every other annotation is stripped before comparison.
+// WithAnnotationsUnfiltered (and WithFlatDocument, which implies it) disables
+// this filtering entirely, making preservedAnnotationKeys inert -- every
+// annotation key participates in the comparison instead.
 func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (bool, error) {
 	// sigsyaml.Unmarshal (inside normalizeToMap) decodes through
 	// encoding/json, which always produces float64 for a JSON/YAML number
@@ -593,8 +692,8 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 		cmp.FilterPath(
 			func(p cmp.Path) bool { return pathEndsAtKey(p, durationComparisonFields) },
 			cmp.Comparer(func(x, y string) bool {
-				dx, errX := time.ParseDuration(x)
-				dy, errY := time.ParseDuration(y)
+				dx, errX := parseDuration(x)
+				dy, errY := parseDuration(y)
 				if errX != nil || errY != nil {
 					return x == y
 				}
@@ -627,10 +726,71 @@ func stripAbsentZeroValues(reference, target map[string]any) {
 			}
 		case []any:
 			if targetSlice, ok := targetVal.([]any); ok {
-				stripAbsentZeroValuesInSlices(refTyped, targetSlice)
+				if orderInsensitiveKeys[key] {
+					// Raw index-pairing assumes matching position, which a
+					// reordered order-insensitive set (e.g. permissions)
+					// violates -- but pairing by sorted canonical form
+					// doesn't work either, because the very zero-value
+					// field being stripped is also part of what the sort
+					// key is computed from, so it can shift an element's
+					// sorted position differently on each side. Match by
+					// shared-field identity instead.
+					stripAbsentZeroValuesByBestMatch(refTyped, targetSlice)
+				} else {
+					stripAbsentZeroValuesInSlices(refTyped, targetSlice)
+				}
 			}
 		}
 	}
+}
+
+// stripAbsentZeroValuesByBestMatch pairs each target map element with the
+// reference map element it shares the most identical (key, value) pairs
+// with, for order-insensitive slices where position doesn't identify an
+// element. Greedily claims the best-scoring available reference element for
+// each target element in turn; a target element with no field in common
+// with any remaining reference element is left unpaired (and unstripped) --
+// a wrong strip is worse than a missed one.
+func stripAbsentZeroValuesByBestMatch(reference, target []any) {
+	refMaps := make([]map[string]any, 0, len(reference))
+	for _, r := range reference {
+		if m, ok := r.(map[string]any); ok {
+			refMaps = append(refMaps, m)
+		}
+	}
+	claimed := make([]bool, len(refMaps))
+	for _, t := range target {
+		targetMap, ok := t.(map[string]any)
+		if !ok {
+			continue
+		}
+		best, bestScore := -1, 0
+		for i, refMap := range refMaps {
+			if claimed[i] {
+				continue
+			}
+			if score := matchingFieldCount(refMap, targetMap); score > bestScore {
+				best, bestScore = i, score
+			}
+		}
+		if best == -1 {
+			continue
+		}
+		claimed[best] = true
+		stripAbsentZeroValues(refMaps[best], targetMap)
+	}
+}
+
+// matchingFieldCount counts keys present in both a and b whose values have
+// the same canonical form.
+func matchingFieldCount(a, b map[string]any) int {
+	count := 0
+	for k, v := range a {
+		if bv, ok := b[k]; ok && canonicalString(v) == canonicalString(bv) {
+			count++
+		}
+	}
+	return count
 }
 
 // stripAbsentZeroValuesInSlices pairs slice elements by index and recurses
@@ -669,12 +829,28 @@ func isZeroValue(v any) bool {
 	case string:
 		return val == ""
 	case map[string]any:
-		return isEmpty(val)
+		return isAllZeroValues(val)
 	case []any:
 		return len(val) == 0
 	default:
 		return false
 	}
+}
+
+// isAllZeroValues reports whether every value in m is itself a zero value
+// per isZeroValue -- e.g. {"enabled": false} -- so a whole API-added default
+// substructure absent from the reference is recognized as equivalent to
+// absence, the same as a single zero-valued field already is. Distinct from
+// isEmpty, which cleanupMap uses for a narrower, unrelated question (is this
+// container structurally vacuous) where a bool false or number 0 is real,
+// meaningful content, not something to delete during normalization.
+func isAllZeroValues(m map[string]any) bool {
+	for _, value := range m {
+		if !isZeroValue(value) {
+			return false
+		}
+	}
+	return true
 }
 
 // AbsentFields returns which of the given dot-separated field paths are
@@ -696,7 +872,11 @@ func AbsentFields(data []byte, fields []string) []string {
 	return absent
 }
 
-// hasFieldPath checks if a dot-separated path exists in a nested map.
+// hasFieldPath checks if a dot-separated path exists in a nested map. A
+// segment that resolves to a slice (e.g. "spec.groups.rules.dash0Enabled",
+// where "groups" and "rules" are both arrays) is present if the remaining
+// path exists on at least one element -- matching how a human would
+// describe "does this document specify the field."
 func hasFieldPath(data map[string]any, path string) bool {
 	parts := strings.SplitN(path, ".", 2)
 	val, exists := data[parts[0]]
@@ -706,9 +886,17 @@ func hasFieldPath(data map[string]any, path string) bool {
 	if len(parts) == 1 {
 		return true
 	}
-	nested, ok := val.(map[string]any)
-	if !ok {
+	switch v := val.(type) {
+	case map[string]any:
+		return hasFieldPath(v, parts[1])
+	case []any:
+		for _, item := range v {
+			if m, ok := item.(map[string]any); ok && hasFieldPath(m, parts[1]) {
+				return true
+			}
+		}
+		return false
+	default:
 		return false
 	}
-	return hasFieldPath(nested, parts[1])
 }

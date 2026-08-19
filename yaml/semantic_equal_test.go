@@ -2,6 +2,7 @@ package yaml
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -476,6 +477,27 @@ spec:
         type: slack
       - id: channel-a
         type: email
+`,
+			equivalent: true,
+			wantErr:    false,
+		},
+		{
+			name: "equivalent with different order in schedule locations",
+			yaml1: `
+kind: Dash0SyntheticCheck
+spec:
+  schedule:
+    locations:
+      - gcp-us-west1
+      - gcp-europe-west3
+`,
+			yaml2: `
+kind: Dash0SyntheticCheck
+spec:
+  schedule:
+    locations:
+      - gcp-europe-west3
+      - gcp-us-west1
 `,
 			equivalent: true,
 			wantErr:    false,
@@ -1327,6 +1349,133 @@ func TestEquivalent_DurationComparisonScopedByFieldName(t *testing.T) {
 	}
 }
 
+// TestEquivalent_DurationComparisonCoversRetryAndSLOFields guards against
+// durationComparisonFields covering only the three Prometheus-rule fields it
+// started with: SyntheticCheck retries/backoff and SLO windows are also
+// Duration-typed (per generated.go) and must get the same unit-agnostic
+// comparison.
+func TestEquivalent_DurationComparisonCoversRetryAndSLOFields(t *testing.T) {
+	tests := []struct {
+		name  string
+		yaml1 string
+		yaml2 string
+	}{
+		{
+			name:  "retries delay",
+			yaml1: "spec:\n  retries:\n    spec:\n      delay: 1s\n",
+			yaml2: "spec:\n  retries:\n    spec:\n      delay: 1000ms\n",
+		},
+		{
+			name:  "retries maximumDelay",
+			yaml1: "spec:\n  retries:\n    spec:\n      maximumDelay: 1m\n",
+			yaml2: "spec:\n  retries:\n    spec:\n      maximumDelay: 60s\n",
+		},
+		{
+			name:  "SLO alertAfter",
+			yaml1: "spec:\n  alertAfter: 1h\n",
+			yaml2: "spec:\n  alertAfter: 60m\n",
+		},
+		{
+			name:  "SLO lookbackWindow",
+			yaml1: "spec:\n  lookbackWindow: 1h\n",
+			yaml2: "spec:\n  lookbackWindow: 60m\n",
+		},
+		{
+			name:  "SLO timeSliceWindow",
+			yaml1: "spec:\n  timeSliceWindow: 5m\n",
+			yaml2: "spec:\n  timeSliceWindow: 300s\n",
+		},
+		{
+			name:  "staleAfter",
+			yaml1: "spec:\n  staleAfter: 1h\n",
+			yaml2: "spec:\n  staleAfter: 60m\n",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := Equivalent([]byte(tt.yaml1), []byte(tt.yaml2), nil, nil)
+			require.NoError(t, err)
+			assert.True(t, result, "the same duration in a different unit notation must not be reported as drift")
+		})
+	}
+}
+
+// TestParseDuration covers parseDuration's fallback to Prometheus's own
+// duration syntax (y/w/d suffixes) for strings time.ParseDuration alone
+// cannot parse, plus the native Go-unit and invalid-input cases it must
+// still handle correctly via that first attempt.
+func TestParseDuration(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected time.Duration
+		wantErr  bool
+	}{
+		{name: "native Go unit", input: "5m", expected: 5 * time.Minute},
+		{name: "native Go compound unit", input: "1h30m", expected: 90 * time.Minute},
+		{name: "day suffix", input: "1d", expected: 24 * time.Hour},
+		{name: "week suffix", input: "2w", expected: 336 * time.Hour},
+		{name: "year suffix", input: "1y", expected: 365 * 24 * time.Hour},
+		{name: "mixed day and hour", input: "1d12h", expected: 36 * time.Hour},
+		{name: "day then Go-native minute", input: "1d30m", expected: 24*time.Hour + 30*time.Minute},
+		{name: "milliseconds not misparsed as minutes", input: "500ms", expected: 500 * time.Millisecond},
+		{name: "month suffix", input: "1M", expected: 30 * 24 * time.Hour},
+		{name: "quarter suffix", input: "1Q", expected: 90 * 24 * time.Hour},
+		{name: "month is case-sensitive, distinct from minute", input: "1m", expected: time.Minute},
+		{name: "bare zero", input: "0", expected: 0},
+		{name: "zero with day suffix", input: "0d", expected: 0},
+		{name: "empty string is invalid", input: "", wantErr: true},
+		{name: "garbage is invalid", input: "not-a-duration", wantErr: true},
+		{name: "trailing garbage is invalid", input: "1d!", wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d, err := parseDuration(tt.input)
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, d)
+		})
+	}
+}
+
+// TestEquivalent_PrometheusDaySuffixDurationsAreEquivalent guards against
+// the duration comparator only understanding Go's units (h/m/s/...), not
+// Prometheus's own d/w/y suffixes used natively in for/keep_firing_for/
+// interval fields -- real alerting rules commonly use day/week units.
+func TestEquivalent_PrometheusDaySuffixDurationsAreEquivalent(t *testing.T) {
+	tests := []struct {
+		name  string
+		yaml1 string
+		yaml2 string
+	}{
+		{
+			name:  "1d equals 24h",
+			yaml1: "spec:\n  groups:\n    - rules:\n        - for: 1d\n",
+			yaml2: "spec:\n  groups:\n    - rules:\n        - for: 24h\n",
+		},
+		{
+			name:  "2w equals 336h",
+			yaml1: "spec:\n  groups:\n    - rules:\n        - for: 2w\n",
+			yaml2: "spec:\n  groups:\n    - rules:\n        - for: 336h\n",
+		},
+		{
+			name:  "mixed day and hour suffix equals pure hours",
+			yaml1: "spec:\n  groups:\n    - rules:\n        - for: 1d12h\n",
+			yaml2: "spec:\n  groups:\n    - rules:\n        - for: 36h\n",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := Equivalent([]byte(tt.yaml1), []byte(tt.yaml2), nil, nil)
+			require.NoError(t, err)
+			assert.True(t, result, "the same duration in Prometheus day/week notation vs Go units must not be reported as drift")
+		})
+	}
+}
+
 // TestEquivalent_ZeroValueInsideListElementIsAbsentNotDrift guards against a
 // zero value the API adds inside a list element (e.g. a per-rule enabled
 // flag) surviving comparison on only one side. stripAbsentZeroValues already
@@ -1352,6 +1501,58 @@ spec:
 	assert.True(t, result, "an API-added zero value inside a list element must not be reported as drift")
 }
 
+// TestEquivalent_ZeroValueInReorderedListElementIsAbsentNotDrift guards
+// against stripAbsentZeroValues pairing order-insensitive slice elements
+// (permissions, channels) by raw index: reordering the set, on top of an
+// API-added zero value on one element, must still resolve to no drift,
+// the same as the ZeroValueInsideListElement case above with matching order.
+func TestEquivalent_ZeroValueInReorderedListElementIsAbsentNotDrift(t *testing.T) {
+	reference := `
+spec:
+  permissions:
+    - role: admin
+      inherited: true
+    - role: viewer
+`
+	apiResponse := `
+spec:
+  permissions:
+    - role: viewer
+      inherited: false
+    - role: admin
+      inherited: true
+`
+	result, err := Equivalent([]byte(reference), []byte(apiResponse), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an API-added zero value on a reordered element must not be reported as drift")
+}
+
+// TestEquivalent_ApiAddedSubstructureOfAllZeroValuesIsAbsentNotDrift guards
+// against isZeroValue's map case (via isEmpty) failing to recognize a
+// substructure made entirely of non-empty-string zero values, e.g.
+// {"enabled": false}, as itself a zero value -- isEmpty's own notion of
+// "empty" only covered nil/empty-container/empty-string, so a bool false or
+// number 0 leaf made the whole substructure look non-empty even though
+// isZeroValue would treat that same value as zero on its own.
+func TestEquivalent_ApiAddedSubstructureOfAllZeroValuesIsAbsentNotDrift(t *testing.T) {
+	reference := "spec:\n  enabled: true\n"
+	apiResponse := "spec:\n  enabled: true\n  retries:\n    enabled: false\n"
+	result, err := Equivalent([]byte(reference), []byte(apiResponse), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an API-added substructure of only zero-valued fields must not be reported as drift")
+}
+
+// TestNormalizeYAML_ExplicitFalseValueIsNotStrippedAsEmpty guards against
+// isEmpty itself being loosened to isZeroValue's broader notion of zero:
+// cleanupMap must keep spec.enabled: false as real, meaningful content, not
+// delete it as if the container were vacuous.
+func TestNormalizeYAML_ExplicitFalseValueIsNotStrippedAsEmpty(t *testing.T) {
+	input := "metadata:\n  name: test\nspec:\n  enabled: false\n"
+	result, err := Normalize([]byte(input), nil, nil)
+	require.NoError(t, err)
+	assert.Contains(t, string(result), "enabled: false", "an explicit false value is real content, not an empty container to delete")
+}
+
 // TestNormalizeYAML_EmptyValueInsideNestedSliceIsRemoved guards against an
 // empty string surviving inside a slice nested within another slice (e.g. a
 // matrix: [[{a: ""}]]), which cleanupMap's []any case only cleaned one level
@@ -1369,6 +1570,25 @@ spec:
 	require.NoError(t, err)
 	assert.NotContains(t, string(result), `a: ""`, "an empty value nested two slices deep must still be removed")
 	assert.Contains(t, string(result), "b: keep")
+}
+
+// TestNormalizeYAML_AdditionalIgnoredFieldPathThroughArrayIsApplied guards
+// against cleanupMap's []any case discarding the removal paths meant for its
+// own elements: an additionalIgnoredFields path whose intermediate segment
+// names an array field (e.g. "spec.groups.dash0Enabled") must still reach
+// and remove that field on every element of the array, not just on a
+// directly-nested map.
+func TestNormalizeYAML_AdditionalIgnoredFieldPathThroughArrayIsApplied(t *testing.T) {
+	input := `
+spec:
+  groups:
+    - name: g1
+      dash0Enabled: true
+`
+	result, err := Normalize([]byte(input), []string{"spec.groups.dash0Enabled"}, nil)
+	require.NoError(t, err)
+	assert.NotContains(t, string(result), "dash0Enabled", "a removal path crossing an array field must reach its elements")
+	assert.Contains(t, string(result), "name: g1")
 }
 
 // TestEquivalent_DottedAnnotationsRootStripsAnnotations guards against
@@ -1490,6 +1710,55 @@ func TestHasFieldPath(t *testing.T) {
 			data:     map[string]any{},
 			path:     "spec.permissions",
 			expected: false,
+		},
+		{
+			name: "path crosses an array and the field is present on an element",
+			data: map[string]any{
+				"spec": map[string]any{
+					"groups": []any{
+						map[string]any{
+							"rules": []any{
+								map[string]any{"dash0Enabled": true},
+							},
+						},
+					},
+				},
+			},
+			path:     "spec.groups.rules.dash0Enabled",
+			expected: true,
+		},
+		{
+			name: "path crosses an array and the field is absent from every element",
+			data: map[string]any{
+				"spec": map[string]any{
+					"groups": []any{
+						map[string]any{
+							"rules": []any{
+								map[string]any{"record": "job:a"},
+							},
+						},
+					},
+				},
+			},
+			path:     "spec.groups.rules.dash0Enabled",
+			expected: false,
+		},
+		{
+			name: "path crosses an array and the field is present on only one of several elements",
+			data: map[string]any{
+				"spec": map[string]any{
+					"groups": []any{
+						map[string]any{
+							"rules": []any{
+								map[string]any{"record": "job:a"},
+								map[string]any{"record": "job:b", "dash0Enabled": false},
+							},
+						},
+					},
+				},
+			},
+			path:     "spec.groups.rules.dash0Enabled",
+			expected: true,
 		},
 	}
 
@@ -1815,6 +2084,19 @@ spec:
 	result, err := Equivalent([]byte(withUnquotedZero), []byte(withoutFor), nil, nil)
 	require.NoError(t, err)
 	assert.True(t, result, "an unquoted zero duration must round-trip as absent, the same as its quoted form")
+}
+
+// TestEquivalent_ZeroIntervalIsAbsentNotDrift guards against
+// zeroOmittedDurationFields covering only "for" and "keep_firing_for":
+// PrometheusAlertRule's Interval field (generated.go) is also
+// *Duration `json:"interval,omitempty"` on the same struct, so an explicit
+// zero interval must round-trip as absent the same way.
+func TestEquivalent_ZeroIntervalIsAbsentNotDrift(t *testing.T) {
+	withZeroInterval := "spec:\n  groups:\n    - rules:\n        - alert: x\n          interval: 0s\n"
+	withoutInterval := "spec:\n  groups:\n    - rules:\n        - alert: x\n"
+	result, err := Equivalent([]byte(withZeroInterval), []byte(withoutInterval), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "a zero interval must round-trip as absent, the same as a zero for/keep_firing_for")
 }
 
 // TestNormalizeYAML_EmptyInputProducesEmptyObjectNotNull guards against an
