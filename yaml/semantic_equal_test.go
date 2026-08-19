@@ -2099,6 +2099,128 @@ func TestEquivalent_ZeroIntervalIsAbsentNotDrift(t *testing.T) {
 	assert.True(t, result, "a zero interval must round-trip as absent, the same as a zero for/keep_firing_for")
 }
 
+func TestEquivalent_DifferentDash0IdLabelIsDrift(t *testing.T) {
+	a := "metadata:\n  name: test\n  labels:\n    dash0.com/id: id-1\n"
+	b := "metadata:\n  name: test\n  labels:\n    dash0.com/id: id-2\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.False(t, result, "a dash0.com/id mismatch when both sides declare it must be reported as drift")
+}
+
+func TestEquivalent_DifferentDash0OriginLabelIsDrift(t *testing.T) {
+	a := "metadata:\n  name: test\n  labels:\n    dash0.com/origin: terraform\n"
+	b := "metadata:\n  name: test\n  labels:\n    dash0.com/origin: ui\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.False(t, result, "a dash0.com/origin mismatch when both sides declare it must be reported as drift")
+}
+
+// TestEquivalent_AbsentDash0IdLabelIsNotDrift guards the common, legitimate
+// case wellKnownLabelKeys exists for: the reference never declares
+// dash0.com/id (often server-assigned on create), and the API adds it --
+// that alone must not be reported as drift.
+func TestEquivalent_AbsentDash0IdLabelIsNotDrift(t *testing.T) {
+	a := "metadata:\n  name: test\n"
+	b := "metadata:\n  name: test\n  labels:\n    dash0.com/id: some-uuid\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an API-assigned dash0.com/id absent from the reference must not be reported as drift")
+}
+
+// TestEquivalent_AbsentDash0OriginLabelIsNotDrift guards the common,
+// legitimate case wellKnownLabelKeys exists for: the CLI strips
+// dash0.com/origin before every write (per dash0-cli's CLAUDE.md), so the
+// reference never declares it, and the API adds it -- that alone must not
+// be reported as drift.
+func TestEquivalent_AbsentDash0OriginLabelIsNotDrift(t *testing.T) {
+	a := "metadata:\n  name: test\n"
+	b := "metadata:\n  name: test\n  labels:\n    dash0.com/origin: dash0-cli\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an API-derived dash0.com/origin absent from the reference must not be reported as drift")
+}
+
+// TestNormalizeYAML_Dash0VersionLabelIsAlwaysStripped guards against
+// dash0.com/version (optimistic-concurrency bookkeeping that changes on
+// every write, per the OpenAPI spec) being compared at all, unlike
+// dash0.com/id/origin/dataset which must match when both sides declare
+// them.
+func TestNormalizeYAML_Dash0VersionLabelIsAlwaysStripped(t *testing.T) {
+	input := "metadata:\n  name: test\n  labels:\n    dash0.com/version: \"3\"\n"
+	result, err := Normalize([]byte(input), nil, nil)
+	require.NoError(t, err)
+	assert.NotContains(t, string(result), "dash0.com/version", "dash0.com/version must never survive normalization")
+}
+
+// TestEquivalent_LegacyUnprefixedThresholdDefaultIsAbsentNotDrift guards
+// against removeDefaultAnnotationValues only recognizing the current
+// dash0-prefixed threshold annotation spelling: the root package's
+// extractThresholdsFromAnnotations still accepts the legacy unprefixed
+// threshold-critical/threshold-degraded spelling too, and hand-written rule
+// YAML may use either.
+func TestEquivalent_LegacyUnprefixedThresholdDefaultIsAbsentNotDrift(t *testing.T) {
+	tests := []struct {
+		name  string
+		yaml1 string
+	}{
+		{
+			name:  "legacy threshold-critical",
+			yaml1: "spec:\n  groups:\n    - rules:\n        - alert: x\n          annotations:\n            threshold-critical: \"0\"\n",
+		},
+		{
+			name:  "legacy threshold-degraded",
+			yaml1: "spec:\n  groups:\n    - rules:\n        - alert: x\n          annotations:\n            threshold-degraded: \"0\"\n",
+		},
+	}
+	yaml2 := "spec:\n  groups:\n    - rules:\n        - alert: x\n"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := Equivalent([]byte(tt.yaml1), []byte(yaml2), nil, nil)
+			require.NoError(t, err)
+			assert.True(t, result, "a zero-value legacy threshold annotation must round-trip as absent, the same as its dash0-prefixed form")
+		})
+	}
+}
+
+// TestEquivalent_DifferentDash0SourceLabelIsDrift guards against silently
+// ignoring a dash0.com/source mismatch when both documents declare it:
+// source records which system last wrote a View or Recording Rule, so a
+// change is meaningful ownership drift, not noise -- wellKnownLabelKeys
+// only excuses its absence from the reference, never a genuine mismatch.
+func TestEquivalent_DifferentDash0SourceLabelIsDrift(t *testing.T) {
+	a := "metadata:\n  name: test\n  labels:\n    dash0.com/source: terraform\n"
+	b := "metadata:\n  name: test\n  labels:\n    dash0.com/source: ui\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.False(t, result, "a dash0.com/source mismatch when both sides declare it must be reported as drift")
+}
+
+// TestEquivalent_AbsentDash0SourceLabelIsNotDrift guards the common,
+// legitimate case wellKnownLabelKeys exists for: the reference never
+// declares dash0.com/source (server-derived from the write path), and the
+// API adds it -- that alone must not be reported as drift.
+func TestEquivalent_AbsentDash0SourceLabelIsNotDrift(t *testing.T) {
+	a := "metadata:\n  name: test\n"
+	b := "metadata:\n  name: test\n  labels:\n    dash0.com/source: ui\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.True(t, result, "an API-derived dash0.com/source absent from the reference must not be reported as drift")
+}
+
+// TestEquivalent_Dash0EnabledAnnotationIsAlwaysCompared guards against
+// dash0.com/enabled (whether a spam filter is active at all -- real,
+// user-controlled content per the OpenAPI spec) being silently discarded by
+// the default "strip every annotation unless preserved" behavior, the same
+// way the API client's own StripSpamFilterServerFields discards it for a
+// different purpose (fields to omit from a write request).
+func TestEquivalent_Dash0EnabledAnnotationIsAlwaysCompared(t *testing.T) {
+	a := "id: filter-1\nannotations:\n  dash0.com/enabled: \"true\"\n"
+	b := "id: filter-1\nannotations:\n  dash0.com/enabled: \"false\"\n"
+	result, err := Equivalent([]byte(a), []byte(b), nil, nil)
+	require.NoError(t, err)
+	assert.False(t, result, "a dash0.com/enabled mismatch must be reported as drift even with no preservedAnnotationKeys")
+}
+
 // TestNormalizeYAML_EmptyInputProducesEmptyObjectNotNull guards against an
 // asymmetry between two documents that both end up with nothing left: empty
 // input unmarshals to a nil map, which used to round-trip as the literal

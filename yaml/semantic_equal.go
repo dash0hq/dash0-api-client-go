@@ -37,12 +37,31 @@ func ConditionallyIgnoredFields() []string {
 
 // defaultIgnoredFields are always removed when comparing documents, relative
 // to the configured annotations root (see Option/WithAnnotationsRoot).
+// "labels" is deliberately not here: unlike these fields, it can hold
+// dash0.com/id and dash0.com/origin, which can each be the upsert key for
+// some asset kinds (see dash0-cli's CLAUDE.md, "Origin vs ID") -- blanket-
+// ignoring them could mask comparing against the wrong resource entirely.
+// See wellKnownLabelKeys and cleanupMap's "labels" case instead.
 var defaultIgnoredFields = []string{
-	"labels",
 	"createdAt",
 	"updatedAt",
 	"version",
 	"dash0Extensions",
+}
+
+// wellKnownLabelKeys are label keys the server derives or manages rather
+// than the caller declaring, so their absence from the reference document
+// does not count as drift -- but unlike defaultIgnoredFields, a value
+// present in both documents must still match. A mismatch here often means
+// the resource's identity or ownership actually changed (dash0.com/id and
+// dash0.com/origin can each be the upsert key for some asset kinds;
+// dash0.com/source records which system last wrote a View or Recording
+// Rule), not noise to discard. See stripAbsentWellKnownLabels.
+var wellKnownLabelKeys = map[string]bool{
+	"dash0.com/id":      true,
+	"dash0.com/origin":  true,
+	"dash0.com/dataset": true,
+	"dash0.com/source":  true,
 }
 
 // rootLevelIgnoredFields are always removed regardless of AnnotationsRoot.
@@ -53,8 +72,8 @@ var rootLevelIgnoredFields = []string{
 
 // Options configure Equivalent and Normalize.
 type Options struct {
-	// AnnotationsRoot is the dot-separated path under which "annotations"
-	// and "labels" (and the rest of defaultIgnoredFields) live. Defaults to
+	// AnnotationsRoot is the dot-separated path under which "annotations",
+	// "labels", and the rest of defaultIgnoredFields live. Defaults to
 	// "metadata", matching every Kubernetes-CRD-shaped Dash0 asset
 	// (Dashboard, View, SyntheticCheck, PrometheusRule, Dash0SpamFilter,
 	// Dash0NotificationChannel, Dash0Team). Set to "" via WithAnnotationsRoot
@@ -129,25 +148,11 @@ func resolveOptions(opts []Option) Options {
 // prefixedIgnoredFields returns defaultIgnoredFields joined onto root (dot-
 // separated), plus rootLevelIgnoredFields, plus any additionalIgnoredFields
 // passed by the caller.
-//
-// "labels" is skipped entirely at the flat root (root == ""): on every
-// metadata-nested Dash0 asset, metadata.labels carries only provenance/id
-// keys (dash0.com/id, dash0.com/origin, ...) with no user-customizable
-// content, so wholesale-stripping it from comparison is safe. dash0-cli's
-// flat CheckRule kind is different -- its top-level labels map can carry
-// genuine user-set custom labels (e.g. "team: platform") alongside
-// dash0.com/origin, and the caller's own server-field stripping (done
-// before this engine ever sees the document) has already removed the
-// provenance-only keys -- so at the flat root there is nothing left in
-// "labels" that should be blanket-ignored.
 func prefixedIgnoredFields(root string, additionalIgnoredFields []string) []string {
 	all := make([]string, 0, len(defaultIgnoredFields)+len(rootLevelIgnoredFields)+len(additionalIgnoredFields))
 	all = append(all, rootLevelIgnoredFields...)
 	for _, f := range defaultIgnoredFields {
 		if root == "" {
-			if f == "labels" {
-				continue
-			}
 			all = append(all, f)
 		} else {
 			all = append(all, root+"."+f)
@@ -231,10 +236,23 @@ func mapAtRoot(data map[string]any, root string) (map[string]any, bool) {
 	return current, true
 }
 
+// alwaysPreservedAnnotationKeys survive stripAnnotations regardless of the
+// caller's preservedAnnotationKeys, even when that list is empty (which
+// otherwise means "strip every annotation"). dash0.com/enabled toggles
+// whether a spam filter is active at all: real, user-controlled content per
+// the OpenAPI spec, not provenance noise -- even though the API client's own
+// StripSpamFilterServerFields (a different concern: fields to omit from a
+// write request, not fields to ignore for drift) discards it, and neither
+// dash0-cli nor terraform-provider-dash0 currently compare it either.
+var alwaysPreservedAnnotationKeys = map[string]bool{
+	"dash0.com/enabled": true,
+}
+
 // stripAnnotations removes annotation keys not in preservedKeys from the
 // annotations map found at root (or the document root when root == "").
-// If preservedKeys is empty, all annotations are removed. The annotations
-// map is deleted from its parent when it becomes empty.
+// If preservedKeys is empty, all annotations except
+// alwaysPreservedAnnotationKeys are removed. The annotations map is deleted
+// from its parent when it becomes empty.
 func stripAnnotations(data map[string]any, root string, preservedKeys []string) {
 	parent, ok := mapAtRoot(data, root)
 	if !ok {
@@ -245,21 +263,20 @@ func stripAnnotations(data map[string]any, root string, preservedKeys []string) 
 		return
 	}
 
-	if len(preservedKeys) == 0 {
+	preserved := make(map[string]bool, len(preservedKeys)+len(alwaysPreservedAnnotationKeys))
+	for _, k := range preservedKeys {
+		preserved[k] = true
+	}
+	for k := range alwaysPreservedAnnotationKeys {
+		preserved[k] = true
+	}
+	for key := range annotations {
+		if !preserved[key] {
+			delete(annotations, key)
+		}
+	}
+	if len(annotations) == 0 {
 		delete(parent, "annotations")
-	} else {
-		preserved := make(map[string]bool, len(preservedKeys))
-		for _, k := range preservedKeys {
-			preserved[k] = true
-		}
-		for key := range annotations {
-			if !preserved[key] {
-				delete(annotations, key)
-			}
-		}
-		if len(annotations) == 0 {
-			delete(parent, "annotations")
-		}
 	}
 
 	if root != "" && isEmpty(parent) {
@@ -320,13 +337,30 @@ func removeDefaultAnnotationValues(annotations map[string]any) {
 		if !ok {
 			continue
 		}
-		if (key == thresholdCriticalAnnotationKey || key == thresholdDegradedAnnotationKey) && strVal == "0" {
-			delete(annotations, key)
+		if isThresholdCriticalAnnotationKey(key) || isThresholdDegradedAnnotationKey(key) {
+			if strVal == "0" {
+				delete(annotations, key)
+			}
+			continue
 		}
 		if key == enabledAnnotationKey && strVal == "true" {
 			delete(annotations, key)
 		}
 	}
+}
+
+// isThresholdCriticalAnnotationKey and isThresholdDegradedAnnotationKey also
+// match the legacy unprefixed spellings (threshold-critical/
+// threshold-degraded) the root package's extractThresholdsFromAnnotations
+// still accepts (prometheus_alert_rules.go) -- hand-written rule YAML using
+// the legacy spelling with a default value must round-trip the same way as
+// the current dash0-prefixed one.
+func isThresholdCriticalAnnotationKey(key string) bool {
+	return key == thresholdCriticalAnnotationKey || key == "threshold-critical"
+}
+
+func isThresholdDegradedAnnotationKey(key string) bool {
+	return key == thresholdDegradedAnnotationKey || key == "threshold-degraded"
 }
 
 // zeroOmittedDurationFields are map keys backed by a Duration field with
@@ -380,6 +414,15 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 			if key == "annotations" {
 				// Must run after stringifyMapValues, which it expects string values from.
 				removeDefaultAnnotationValues(v)
+			}
+			if key == "labels" {
+				// dash0.com/version is optimistic-concurrency bookkeeping
+				// (server-set on create, required on update per the
+				// OpenAPI spec) that changes on every write -- unlike
+				// dash0.com/id/origin/dataset (see wellKnownLabelKeys),
+				// it is never meaningful for drift and has no "must match
+				// if both sides declare it" case worth preserving.
+				delete(v, "dash0.com/version")
 			}
 			if isEmpty(v) {
 				delete(data, key)
@@ -667,6 +710,7 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 	// If the reference explicitly set a zero value, it will be present in A
 	// and preserved.
 	stripAbsentZeroValues(parsedA, parsedB)
+	stripAbsentWellKnownLabels(parsedA, parsedB, resolveOptions(opts).AnnotationsRoot)
 
 	cmpOptions := []cmp.Option{
 		// Ignore slice order only for fields that are semantically sets
@@ -702,6 +746,40 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 		),
 	}
 	return cmp.Equal(parsedA, parsedB, cmpOptions...), nil
+}
+
+// stripAbsentWellKnownLabels removes, from target's labels map (found at
+// root, or the document root when root == ""), any wellKnownLabelKeys key
+// that reference's labels map doesn't declare. Unlike stripAbsentZeroValues,
+// this is not limited to zero values: a non-empty dash0.com/id or
+// dash0.com/origin the reference simply never set is the common case (the
+// CLI strips origin before every write; id is often server-assigned on
+// create), not something that needs an exact match to avoid being reported
+// as drift. A key present in both maps is left untouched and compared
+// normally -- a mismatch there is exactly the case this function must not
+// hide, since it can mean the resource's identity or ownership changed.
+func stripAbsentWellKnownLabels(reference, target map[string]any, root string) {
+	refParent, ok := mapAtRoot(reference, root)
+	if !ok {
+		return
+	}
+	targetParent, ok := mapAtRoot(target, root)
+	if !ok {
+		return
+	}
+	refLabels, _ := refParent["labels"].(map[string]any)
+	targetLabels, ok := targetParent["labels"].(map[string]any)
+	if !ok {
+		return
+	}
+	for key := range wellKnownLabelKeys {
+		if _, existsInRef := refLabels[key]; !existsInRef {
+			delete(targetLabels, key)
+		}
+	}
+	if len(targetLabels) == 0 {
+		delete(targetParent, "labels")
+	}
 }
 
 // stripAbsentZeroValues removes keys from target that don't exist in
