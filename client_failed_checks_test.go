@@ -241,3 +241,37 @@ func TestGetFailedChecksIter_Pagination(t *testing.T) {
 		t.Errorf("calls = %d, want 2", calls)
 	}
 }
+
+// TestGetFailedChecksUsesTheProviderToken guards against a hand-built request
+// setting its own Authorization header.
+//
+// authTransport owns the header; this endpoint builds its request by hand, and
+// for a client created with WithAuthTokenProvider the config's static token is
+// empty, so any local Header.Set here would put "Bearer " on the wire if the
+// signing layer ever stopped overwriting it.
+func TestGetFailedChecksUsesTheProviderToken(t *testing.T) {
+	var gotAuth string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotAuth = r.Header.Get("Authorization")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"failedChecks":[]}`))
+	}))
+	defer server.Close()
+
+	client, err := NewClient(
+		WithApiUrl(server.URL),
+		WithAuthTokenProvider(StaticAuthTokenProvider("dash0_at_from-provider")),
+	)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	if _, err := client.GetFailedChecks(context.Background(), &GetFailedChecksRequest{
+		TimeRange: TimeReferenceRange{From: "now-1h", To: "now"},
+	}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	assertEqual(t, "Authorization", gotAuth, "Bearer dash0_at_from-provider")
+}

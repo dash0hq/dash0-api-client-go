@@ -130,7 +130,7 @@ func TestNewClient(t *testing.T) {
 		impl := c.(*client)
 		innerClient := impl.inner.ClientInterface.(*generatedClient)
 		httpClient := innerClient.Client.(*http.Client)
-		retry, isRetry := httpClient.Transport.(*retryTransport)
+		retry, isRetry := beneathAuthTransport(t, httpClient.Transport).(*retryTransport)
 		if !isRetry {
 			t.Fatal("expected retry transport to be applied")
 		}
@@ -212,7 +212,7 @@ func TestNewClient(t *testing.T) {
 		httpClient := innerClient.Client.(*http.Client)
 
 		// Verify the transport's RoundTripper is used
-		if httpClient.Transport != tr.RoundTripper() {
+		if beneathAuthTransport(t, httpClient.Transport) != tr.RoundTripper() {
 			t.Error("expected client to use the Transport's RoundTripper")
 		}
 		// Verify the transport's timeout is used
@@ -374,7 +374,7 @@ func TestNewClient(t *testing.T) {
 		innerClient := impl.inner.ClientInterface.(*generatedClient)
 		typedClient := innerClient.Client.(*http.Client)
 
-		if rawClient.Transport != typedClient.Transport {
+		if rawClient.Transport != beneathAuthTransport(t, typedClient.Transport) {
 			t.Error("expected raw and typed clients to share the same RoundTripper")
 		}
 	})

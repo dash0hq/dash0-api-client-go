@@ -41,6 +41,7 @@ client struct (client_*.go)           <- High-level method implementations
 ClientWithResponses (generated.go)    <- oapi-codegen generated client
     |
 Transport stack:
+  authTransport (auth_transport.go)   <- Per-request bearer token, 401 replay
   retryTransport (transport.go)       <- Exponential backoff retry
   rateLimitedTransport (transport.go) <- Semaphore-based concurrency limit
   http.DefaultTransport
@@ -53,6 +54,11 @@ This enables mocking via `dash0test.MockClient`.
 
 **Idempotent POST marking**: POST endpoints that are read-only (GetSpans, GetLogRecords) use `withIdempotent(ctx)` to enable retry logic.
 See `context.go`.
+
+**Per-request authentication**: the bearer token is resolved by an `AuthTokenProvider` on every request, in `authTransport`, not captured once in `NewClient`.
+A client built with `WithAuthToken` wraps the fixed token in a `StaticAuthTokenProvider` so both paths are identical below that point.
+This is what lets an operation outlive a short-lived credential: an OAuth access token is valid for 15 minutes, and `profiles.Configuration.AuthTokenProvider` refreshes it as it nears expiry.
+Never set the `Authorization` header in a request editor or a hand-built request -- `authTransport` owns it, and bypassing it reintroduces the frozen-token bug.
 
 **Generic iterator**: `Iter[T]` in `iterator.go` handles cursor-based pagination.
 Methods like `GetSpansIter` return iterators that auto-fetch pages.
@@ -75,6 +81,8 @@ Keep helpers co-located with their domain's CRUD methods.
 | `generated.go` | oapi-codegen generated client (do not edit manually) |
 | `tools/postprocess/` | AST-based post-processing of `generated.go` |
 | `transport.go` | HTTP middleware: rate limiting, retry with backoff |
+| `auth_token_provider.go` | `AuthTokenProvider` / `RefreshingAuthTokenProvider` interfaces, `StaticAuthTokenProvider`, token shape validation |
+| `auth_transport.go` | HTTP middleware: sets the bearer token per request and replays once after a 401 |
 | `iterator.go` | Generic pagination iterator |
 | `context.go` | Context helpers (idempotent POST marking) |
 | `errors.go` | `APIError` type and helpers (`IsNotFound`, `IsUnauthorized`, etc.) |

@@ -14,6 +14,14 @@ import (
 // OAuthRefreshThreshold is how far before expiry a token refresh is attempted.
 const OAuthRefreshThreshold = 5 * time.Minute
 
+// OAuthRefreshTimeout bounds a single token refresh, including the wait for the
+// cross-process .profile-lock.
+// A refresh runs on its own deadline rather than the caller's, so this is what
+// stops a hung authorization server from blocking a request forever.
+// Exported alongside [OAuthRefreshThreshold] so callers can reason about how
+// long a request may block on a refresh.
+const OAuthRefreshTimeout = 30 * time.Second
+
 // OAuthRefreshMaxExpiresIn caps the trusted lifetime of an OAuth access token.
 // A token endpoint that returns expires_in beyond this ceiling is treated as
 // untrustworthy and the response is rejected before the caller can adopt it.
@@ -28,6 +36,26 @@ const OAuthRefreshMaxExpiresIn = 24 * time.Hour
 // returned, so a subsequent call no longer retries the dead credential.
 var ErrReauthenticationRequired = errors.New("OAuth refresh token rejected; re-authentication required")
 
+// ErrNoAssociatedProfile is returned when an OAuth access token needs
+// refreshing but the credentials it belongs to are not associated with a stored
+// profile, so there is nowhere to save the new tokens.
+//
+// It means the configuration was built directly instead of being returned by a
+// [Store], so nothing recorded which profile the new tokens belong to. Obtain
+// the configuration from [Store.GetActiveConfigurationContext] or one of the
+// ResolveConfiguration functions, or populate [Configuration.ProfileName].
+//
+// No front end can currently produce this state, so the message carries no
+// remedy: any advice aimed at an end user would be wrong, since only the calling
+// code can fix it. It is a sentinel so a command-line or provider front end can
+// match it and decide how to present it, the way it already does for
+// [ErrReauthenticationRequired], rather than printing it verbatim. That is also
+// why the wording holds no Go identifiers.
+var ErrNoAssociatedProfile = errors.New(
+	"the credentials are not associated with a Dash0 profile, so the OAuth access token " +
+		"cannot be refreshed",
+)
+
 // ErrRevocationFailed is wrapped into the result of [Store.RemoveProfile]
 // (and equivalents) when the local profile was successfully removed but the
 // best-effort revocation of the OAuth refresh token failed.
@@ -37,14 +65,16 @@ var ErrReauthenticationRequired = errors.New("OAuth refresh token rejected; re-a
 // hint to the user.
 var ErrRevocationFailed = errors.New("OAuth refresh token revocation failed; the token may still be valid on the authorization server")
 
-// refreshOAuthToken checks whether the OAuth access token in cfg needs
-// refreshing and, if so, performs a token refresh using the Dash0 OAuth API.
-// On success it persists the new tokens via [Store.UpdateProfile] *before*
+// refreshOAuthToken refreshes the OAuth access token in cfg.
+// It is a no-op when cfg carries no OAuth state, or when the token is not yet
+// within [OAuthRefreshThreshold] of expiry.
+//
+// The refresh token is exchanged for a new access token, and the authorization
+// server may rotate the refresh token in the same response.
+//
+// On success it persists the new tokens via [Store.updateProfileLocked] *before*
 // updating cfg, so a persistence failure leaves the caller's in-memory state
 // unchanged rather than diverging from disk.
-//
-// The function is a no-op when cfg.OAuth is nil or the token is not close to
-// expiry.
 //
 // Concurrent calls are serialized at two levels:
 //   - Within a single process, [Store.refreshMu] guards the refresh + persist
@@ -55,22 +85,21 @@ var ErrRevocationFailed = errors.New("OAuth refresh token revocation failed; the
 //     prevents two CLI invocations from concurrently rotating the same
 //     refresh-token family.
 //
-// After acquiring the locks the profile is re-read from disk so a process
-// that lost the race picks up the freshly persisted tokens instead of
-// refreshing again with a stale refresh token.
+// After acquiring the locks the profile is re-read from disk so a process that
+// lost the race picks up the freshly persisted tokens instead of refreshing
+// again with a stale refresh token.
 //
-// On a server response of invalid_grant the stored OAuth state is cleared
-// from disk and [ErrReauthenticationRequired] is returned, so a subsequent
-// call does not retry the dead credential.
+// On a server response of invalid_grant the stored OAuth state is cleared from
+// disk and [ErrReauthenticationRequired] is returned, so a subsequent call does
+// not retry the dead credential.
 func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cfg *Configuration) error {
+	// Nothing to refresh: the profile authenticates with a static token.
 	if cfg.OAuth == nil {
 		return nil
 	}
-
 	if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
 		return nil
 	}
-
 	if cfg.ApiUrl == "" {
 		return fmt.Errorf("OAuth token refresh requires an API URL")
 	}
@@ -119,7 +148,8 @@ func refreshOAuthToken(ctx context.Context, store *Store, profileName string, cf
 		return nil
 	}
 
-	// Adopt the latest persisted state, then re-check expiry.
+	// Adopt the latest persisted state, then re-check whether a refresh is
+	// still warranted.
 	cfg.AuthToken = persistedAuthToken
 	*cfg.OAuth = *persistedOAuth
 	if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {

@@ -1304,3 +1304,36 @@ func ExampleClient_ResolveMemberIDsToEmails() {
 	// alice@example.com
 	// user_orphaned
 }
+
+// Auth token providers
+
+func ExampleStaticAuthTokenProvider() {
+	provider := dash0.StaticAuthTokenProvider("auth_yourtoken")
+
+	authToken, err := provider.AuthToken(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(authToken)
+	// Output: auth_yourtoken
+}
+
+func ExampleWithAuthTokenProvider() {
+	// A provider is consulted before every request, so a short-lived credential
+	// can be renewed while the client is in use. Use this instead of
+	// dash0.WithAuthToken whenever an operation may outlive its access token,
+	// for example a long telemetry export driven by an OAuth login.
+	provider := dash0.StaticAuthTokenProvider("dash0_at_yourtoken")
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+		dash0.WithAuthTokenProvider(provider),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	fmt.Println(client != nil)
+	// Output: true
+}

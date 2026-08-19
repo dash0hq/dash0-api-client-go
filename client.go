@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -181,11 +180,18 @@ func NewClient(opts ...ClientOption) (Client, error) {
 	if cfg.apiUrl == "" && cfg.otlpEndpoint == "" {
 		return nil, fmt.Errorf("dash0: at least one of API URL or OTLP endpoint is required (use WithApiUrl and/or WithOtlpEndpoint)")
 	}
-	if cfg.authToken == "" {
-		return nil, fmt.Errorf("dash0: auth token is required (use WithAuthToken)")
+	if cfg.authToken == "" && cfg.authTokenProvider == nil {
+		return nil, fmt.Errorf("dash0: auth token is required (use WithAuthToken or WithAuthTokenProvider)")
 	}
-	if !strings.HasPrefix(cfg.authToken, "auth_") && !strings.HasPrefix(cfg.authToken, "dash0_at_") {
-		return nil, fmt.Errorf("dash0: auth token must start with 'auth_' or 'dash0_at_'")
+	if cfg.authToken != "" {
+		// Validate a caller-supplied token up front so a typo fails at
+		// construction rather than on the first request. Provider-supplied
+		// tokens are validated per request in authTransport instead, because
+		// the provider may not have one to hand yet.
+		if err := validateAuthToken(cfg.authToken); err != nil {
+			return nil, err
+		}
+		cfg.authTokenProvider = StaticAuthTokenProvider(cfg.authToken)
 	}
 
 	// Validate that WithTransport does not conflict with transport-level options.
@@ -250,11 +256,28 @@ func NewClient(opts ...ClientOption) (Client, error) {
 		}
 	}
 
+	// Authenticate every request from the resolved provider. This wraps
+	// whichever transport stack was assembled above -- the one built from the
+	// individual options, or a caller-supplied Transport -- so both paths are
+	// covered by exactly one insertion point.
+	authTransport, err := newAuthTransport(
+		httpClient.Transport,
+		cfg.authTokenProvider,
+		cfg.apiUrl,
+		cfg.otlpEndpoint,
+	)
+	if err != nil {
+		return nil, err
+	}
+	httpClient.Transport = authTransport
+
 	// Create generated REST API client only when API URL is configured
 	var inner *ClientWithResponses
 	if cfg.apiUrl != "" {
-		authEditor := func(ctx context.Context, req *http.Request) error {
-			req.Header.Set("Authorization", "Bearer "+cfg.authToken)
+		// The Authorization header is set by authTransport rather than here,
+		// so the REST and OTLP paths share one implementation and a 401 can be
+		// recovered from below this layer.
+		userAgentEditor := func(_ context.Context, req *http.Request) error {
 			req.Header.Set("User-Agent", cfg.userAgent)
 			return nil
 		}
@@ -262,7 +285,7 @@ func NewClient(opts ...ClientOption) (Client, error) {
 		inner, err = NewClientWithResponses(
 			cfg.apiUrl,
 			withGeneratedHTTPClient(httpClient),
-			WithRequestEditorFn(authEditor),
+			WithRequestEditorFn(userAgentEditor),
 		)
 		if err != nil {
 			return nil, fmt.Errorf("dash0: failed to create client: %w", err)

@@ -516,3 +516,56 @@ func ExampleResolveConfigurationWithOtlpContext() {
 	fmt.Println(cfg.OtlpUrl, cfg.Dataset)
 	// Output: https://ingress.eu-west-1.aws.dash0.com production
 }
+
+func ExampleConfiguration_AuthTokenProvider() {
+	// Point the store at a scratch directory so the example does not touch the
+	// real ~/.dash0.
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	// An OAuth-backed configuration yields a provider that refreshes the access
+	// token as it approaches expiry, so a client built from it keeps working for
+	// operations longer than a single token's 15-minute lifetime.
+	cfg := &profiles.Configuration{
+		ApiUrl:      "https://api.eu-west-1.aws.dash0.com",
+		AuthToken:   "dash0_at_example-token",
+		ProfileName: "production",
+		OAuth: &profiles.OAuthState{
+			ClientID:     "example-client-id",
+			RefreshToken: "example-refresh-token",
+			ExpiresAt:    time.Now().Add(1 * time.Hour),
+		},
+	}
+
+	provider := cfg.AuthTokenProvider(profiles.WithConfigDir(configDir))
+
+	// The token is nowhere near expiry, so it is served without a network call.
+	authToken, err := provider.AuthToken(context.Background())
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(authToken)
+
+	// Output:
+	// dash0_at_example-token
+}
+
+func ExampleConfiguration_AuthTokenProvider_staticToken() {
+	// A configuration with no OAuth state serves its static token unchanged, so
+	// callers do not need to branch on the profile's auth kind.
+	cfg := &profiles.Configuration{
+		ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+		AuthToken: "auth_example-token",
+	}
+
+	authToken, err := cfg.AuthTokenProvider().AuthToken(context.Background())
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(authToken)
+
+	// Output:
+	// auth_example-token
+}

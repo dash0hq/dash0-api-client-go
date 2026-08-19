@@ -36,7 +36,8 @@ func (c *client) sendOTLP(ctx context.Context, path string, body []byte, dataset
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.config.authToken)
+	// The Authorization header is set by authTransport, which wraps
+	// c.httpClient's transport stack.
 	req.Header.Set("User-Agent", c.config.userAgent)
 	if dataset != nil && *dataset != "" {
 		req.Header.Set("Dash0-Dataset", *dataset)

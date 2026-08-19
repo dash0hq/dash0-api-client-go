@@ -46,3 +46,31 @@ func TestOAuthState_PopulatedRoundTrip(t *testing.T) {
 		t.Errorf("round-trip produced %+v, want %+v", round, original)
 	}
 }
+
+func TestConfigurationHasCredentials(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		cfg  Configuration
+		want bool
+	}{
+		{name: "nothing set", cfg: Configuration{}, want: false},
+		{name: "static token", cfg: Configuration{AuthToken: "auth_x"}, want: true},
+		{name: "OAuth state only", cfg: Configuration{OAuth: &OAuthState{}}, want: true},
+		{
+			name: "OAuth state with an access token",
+			cfg:  Configuration{AuthToken: "dash0_at_x", OAuth: &OAuthState{}},
+			want: true,
+		},
+		{
+			name: "empty token is not a credential",
+			cfg:  Configuration{ApiUrl: "https://api.example.com"},
+			want: false,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.cfg.HasCredentials(); got != tc.want {
+				t.Errorf("HasCredentials() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}

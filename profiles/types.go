@@ -28,6 +28,23 @@ type Configuration struct {
 	// Potentially refreshed when close to the expiry.
 	// The actual OAuth access token is located within the AuthToken field.
 	OAuth *OAuthState `json:"oauth,omitempty"`
+
+	// ProfileName and ConfigDir record where this configuration was resolved
+	// from, and are both empty when it came from environment variables or
+	// explicit parameters alone.
+	//
+	// Refreshing an OAuth access token needs both: ProfileName locates the
+	// profile the rotated tokens are written back to, and ConfigDir says which
+	// profiles.json holds it. The store sets them when it resolves a
+	// configuration, so callers normally do not.
+	// Set them together or not at all; a name without a directory refreshes
+	// against whichever profiles.json the environment happens to point at. See
+	// [Configuration.AuthTokenProvider].
+	//
+	// Neither is serialized. ProfileName would duplicate the key its [Profile]
+	// is stored under, and ConfigDir is the directory the file itself lives in.
+	ProfileName string `json:"-"`
+	ConfigDir   string `json:"-"`
 }
 
 // OAuthState carries the OAuth-specific state that must survive across CLI
@@ -40,6 +57,19 @@ type OAuthState struct {
 	ClientID     string    `json:"clientId,omitempty"`
 	RefreshToken string    `json:"refreshToken,omitempty"`
 	ExpiresAt    time.Time `json:"expiresAt,omitzero"`
+}
+
+// HasCredentials reports whether the configuration carries a credential of any
+// kind, static or OAuth.
+//
+// It exists so callers do not have to know that an absent static token is an
+// empty string while absent OAuth state is a nil pointer. Both representations
+// are right for what they hold: encoding/json needs a pointer to tell an absent
+// nested object from a zero one, and a string needs no such indirection. Asking
+// one question keeps that difference in a single place instead of spreading a
+// mixed `!= ""` and `!= nil` test across every caller.
+func (cfg *Configuration) HasCredentials() bool {
+	return cfg.AuthToken != "" || cfg.OAuth != nil
 }
 
 // DatasetPtr returns the dataset as a *string suitable for Dash0 API calls.

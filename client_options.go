@@ -42,18 +42,19 @@ const (
 type ClientOption func(*clientConfig)
 
 type clientConfig struct {
-	httpClient    *http.Client
-	apiUrl        string
-	authToken     string
-	maxConcurrent int64
-	timeout       time.Duration
-	userAgent     string
-	maxRetries    int
-	retryWaitMin  time.Duration
-	retryWaitMax  time.Duration
-	otlpEncoding  OtlpEncoding
-	otlpEndpoint  string
-	transport     *Transport
+	httpClient        *http.Client
+	apiUrl            string
+	authToken         string
+	authTokenProvider AuthTokenProvider
+	maxConcurrent     int64
+	timeout           time.Duration
+	userAgent         string
+	maxRetries        int
+	retryWaitMin      time.Duration
+	retryWaitMax      time.Duration
+	otlpEncoding      OtlpEncoding
+	otlpEndpoint      string
+	transport         *Transport
 
 	// Flags that track whether transport-level options were explicitly set.
 	// Used to detect conflicts with WithTransport.
@@ -90,10 +91,32 @@ func WithApiUrl(url string) ClientOption {
 }
 
 // WithAuthToken sets the auth token for authentication.
-// This is required for all API requests.
+// Either this or [WithAuthTokenProvider] is required for all API requests.
+//
+// The two are alternatives rather than a conflict: whichever is applied last
+// wins, so appending either to an existing option slice overrides the other.
 func WithAuthToken(authToken string) ClientOption {
 	return func(c *clientConfig) {
 		c.authToken = authToken
+		c.authTokenProvider = nil
+	}
+}
+
+// WithAuthTokenProvider sets a provider consulted for an auth token before
+// every request, instead of the fixed token [WithAuthToken] supplies.
+// Either this or [WithAuthToken] is required for all API requests; whichever is
+// applied last wins.
+//
+// Use this when the credential is short-lived and has to be renewed while the
+// client is in use, most notably an OAuth access token: a client built with
+// [WithAuthToken] holds that token for its whole lifetime, so any operation
+// outliving the token's validity starts failing partway through.
+// Configuration.AuthTokenProvider in the profiles subpackage returns a provider
+// that refreshes a Dash0 CLI profile's OAuth access token.
+func WithAuthTokenProvider(provider AuthTokenProvider) ClientOption {
+	return func(c *clientConfig) {
+		c.authTokenProvider = provider
+		c.authToken = ""
 	}
 }
 
@@ -274,6 +297,9 @@ func validateOAuthOptions(cfg *clientConfig) error {
 	rejected := transportOptionsSet(cfg, false)
 	if cfg.authToken != "" {
 		rejected = append(rejected, "WithAuthToken")
+	}
+	if cfg.authTokenProvider != nil {
+		rejected = append(rejected, "WithAuthTokenProvider")
 	}
 	if cfg.transport != nil {
 		rejected = append(rejected, "WithTransport")
