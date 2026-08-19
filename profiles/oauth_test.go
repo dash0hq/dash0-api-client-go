@@ -21,7 +21,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 	t.Run("no OAuth state", func(t *testing.T) {
 		store, _ := newTestStore(t)
 		cfg := &Configuration{AuthToken: "auth_something"}
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -45,7 +45,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 			{Name: "test", Configuration: *cfg},
 		})
 
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -78,7 +78,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -143,7 +143,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -189,7 +189,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if !errors.Is(err, ErrReauthenticationRequired) {
 			t.Fatalf("expected ErrReauthenticationRequired, got: %v", err)
 		}
@@ -240,7 +240,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if !errors.Is(err, ErrReauthenticationRequired) {
 			t.Fatalf("expected ErrReauthenticationRequired for unauthorized_client, got: %v", err)
 		}
@@ -282,7 +282,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if !errors.Is(err, ErrReauthenticationRequired) {
 			t.Fatalf("expected ErrReauthenticationRequired, got: %v", err)
 		}
@@ -326,7 +326,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		if err := refreshOAuthToken(context.Background(), store, "test", cfg); err != nil {
+		if err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring); err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 		if cfg.AuthToken != "dash0_at_new" {
@@ -368,7 +368,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if !errors.Is(err, ErrReauthenticationRequired) {
 			t.Fatalf("expected ErrReauthenticationRequired for invalid_client, got: %v", err)
 		}
@@ -411,7 +411,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 				ExpiresAt:    time.Now().Add(-1 * time.Minute),
 			},
 		}
-		if err := refreshOAuthToken(context.Background(), store, "test", cfg); err != nil {
+		if err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring); err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 		if cfg.OAuth != nil {
@@ -438,7 +438,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err == nil {
 			t.Fatal("expected error for missing API URL, got nil")
 		}
@@ -500,7 +500,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 					},
 				}
 				start.Wait()
-				errs[i] = refreshOAuthToken(context.Background(), store, "test", cfgs[i])
+				errs[i] = refreshOAuthToken(context.Background(), store, "test", cfgs[i], refreshIfExpiring)
 			}()
 		}
 		start.Done()
@@ -601,7 +601,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 						ExpiresAt:    time.Now().Add(1 * time.Minute),
 					},
 				}
-				errs[i] = refreshOAuthToken(context.Background(), storeI, "test", cfg)
+				errs[i] = refreshOAuthToken(context.Background(), storeI, "test", cfg, refreshIfExpiring)
 			}()
 		}
 		// Give every goroutine a chance to enter the locked section before
@@ -648,7 +648,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 				ExpiresAt:    time.Now().Add(-1 * time.Minute),
 			},
 		}
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err == nil {
 			t.Fatal("expected error from corrupted profile, got nil")
 		}
@@ -670,7 +670,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 				ExpiresAt:    time.Now().Add(-1 * time.Minute),
 			},
 		}
-		err := refreshOAuthToken(context.Background(), store, "missing-profile", cfg)
+		err := refreshOAuthToken(context.Background(), store, "missing-profile", cfg, refreshIfExpiring)
 		if err == nil {
 			t.Fatal("expected error for missing profile, got nil")
 		}
@@ -702,7 +702,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		err := refreshOAuthToken(context.Background(), store, "test", cfg)
+		err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -740,7 +740,7 @@ func TestRefreshOAuthToken(t *testing.T) {
 		createTestProfilesFile(t, dir, []Profile{profile})
 
 		cfg := &profile.Configuration
-		if err := refreshOAuthToken(context.Background(), store, "test", cfg); err != nil {
+		if err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring); err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
 		if cfg.OAuth.ClientID != "cached-cid" {

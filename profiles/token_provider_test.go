@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -47,6 +48,9 @@ func TestConfigurationAuthTokenProvider(t *testing.T) {
 		}
 		if got != "auth_static" {
 			t.Errorf("AuthToken = %q, want %q", got, "auth_static")
+		}
+		if _, ok := provider.(dash0.RefreshingAuthTokenProvider); ok {
+			t.Error("a static provider must not implement RefreshingAuthTokenProvider")
 		}
 	})
 
@@ -245,6 +249,75 @@ func TestConfigurationAuthTokenProvider(t *testing.T) {
 	})
 }
 
+func TestAuthTokenProviderForceRefresh(t *testing.T) {
+	t.Run("replaces a token that is nowhere near expiry", func(t *testing.T) {
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_forced",
+			ExpiresIn:   int64((15 * time.Minute).Seconds()),
+		}, nil)
+		defer server.Close()
+
+		_, dir, cfg := seedOAuthProfile(t, server.URL, "dash0_at_rejected", time.Now().Add(1*time.Hour))
+		provider := cfg.AuthTokenProvider(WithConfigDir(dir))
+
+		refresher, ok := provider.(dash0.RefreshingAuthTokenProvider)
+		if !ok {
+			t.Fatal("an OAuth-backed provider must implement RefreshingAuthTokenProvider")
+		}
+
+		// A plain AuthToken call leaves the healthy-looking token in place.
+		got, err := refresher.AuthToken(context.Background())
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got != "dash0_at_rejected" {
+			t.Fatalf("AuthToken = %q, want the unrefreshed %q", got, "dash0_at_rejected")
+		}
+
+		got, err = refresher.ForceRefreshAuthToken(context.Background(), "dash0_at_rejected")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got != "dash0_at_forced" {
+			t.Errorf("ForceRefreshAuthToken = %q, want %q", got, "dash0_at_forced")
+		}
+	})
+
+	t.Run("adopts a token another process persisted instead of minting one", func(t *testing.T) {
+		var calls atomic.Int32
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			calls.Add(1)
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer server.Close()
+
+		_, dir, cfg := seedOAuthProfile(t, server.URL, "dash0_at_rejected", time.Now().Add(1*time.Hour))
+		provider := cfg.AuthTokenProvider(WithConfigDir(dir))
+		refresher := provider.(dash0.RefreshingAuthTokenProvider)
+
+		// Simulate a sibling process having rotated the token already.
+		rotated := *cfg
+		rotated.AuthToken = "dash0_at_rotated-elsewhere"
+		rotated.OAuth = &OAuthState{
+			ClientID:     "cid",
+			RefreshToken: "rt2",
+			ExpiresAt:    time.Now().Add(15 * time.Minute),
+		}
+		createTestProfilesFile(t, dir, []Profile{{Name: "test", Configuration: rotated}})
+
+		got, err := refresher.ForceRefreshAuthToken(context.Background(), "dash0_at_rejected")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got != "dash0_at_rotated-elsewhere" {
+			t.Errorf("ForceRefreshAuthToken = %q, want the already-persisted %q", got, "dash0_at_rotated-elsewhere")
+		}
+		if n := calls.Load(); n != 0 {
+			t.Errorf("token endpoint called %d times, want 0 -- the persisted token should have been adopted", n)
+		}
+	})
+}
+
 func TestConfigurationClientOptionsUsesProviderForOAuth(t *testing.T) {
 	t.Run("OAuth configuration yields a client that builds without a static token", func(t *testing.T) {
 		// No t.Setenv(EnvConfigDir, ...) here on purpose: the configuration
@@ -275,6 +348,66 @@ func TestConfigurationClientOptionsUsesProviderForOAuth(t *testing.T) {
 		}
 		defer func() { _ = client.Close(context.Background()) }()
 	})
+}
+
+// TestForceRefreshDedupsAcrossGoroutines is the regression test for the case
+// where one revocation 401s every request in flight.
+//
+// Before the provider was told which token had been rejected, each caller read
+// p.cfg.AuthToken after a sibling had already overwritten it, compared the fresh
+// token against itself, and minted again: ten in-flight requests produced ten
+// token-endpoint exchanges and ten refresh-token rotations, each one another
+// chance to land on invalid_grant and wipe the login.
+func TestForceRefreshDedupsAcrossGoroutines(t *testing.T) {
+	var exchanges atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/oauth/token" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		n := exchanges.Add(1)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"access_token":  fmt.Sprintf("dash0_at_rotated-%d", n),
+			"refresh_token": fmt.Sprintf("rt-%d", n),
+			"token_type":    "Bearer",
+			"expires_in":    int64((15 * time.Minute).Seconds()),
+		})
+	}))
+	defer server.Close()
+
+	_, dir, cfg := seedOAuthProfile(t, server.URL, "dash0_at_rejected", time.Now().Add(1*time.Hour))
+	refresher := cfg.AuthTokenProvider(WithConfigDir(dir)).(dash0.RefreshingAuthTokenProvider)
+
+	const inFlight = 10
+	var start sync.WaitGroup
+	start.Add(1)
+	var done sync.WaitGroup
+	tokens := make([]string, inFlight)
+	errs := make([]error, inFlight)
+	for i := range inFlight {
+		done.Add(1)
+		go func() {
+			defer done.Done()
+			start.Wait()
+			// Every caller was rejected holding the same token.
+			tokens[i], errs[i] = refresher.ForceRefreshAuthToken(context.Background(), "dash0_at_rejected")
+		}()
+	}
+	start.Done()
+	done.Wait()
+
+	if n := exchanges.Load(); n != 1 {
+		t.Errorf("token endpoint called %d times for one revocation, want 1", n)
+	}
+	for i := range inFlight {
+		if errs[i] != nil {
+			t.Fatalf("goroutine %d: unexpected error: %v", i, errs[i])
+		}
+		if tokens[i] != "dash0_at_rotated-1" {
+			t.Errorf("goroutine %d: token = %q, want every caller to share the one rotation", i, tokens[i])
+		}
+	}
 }
 
 // TestRefreshSurvivesCallerCancellation covers the hazard exchangeRefreshToken's

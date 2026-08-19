@@ -21,9 +21,40 @@ type AuthTokenProvider interface {
 	AuthToken(ctx context.Context) (string, error)
 }
 
+// RefreshingAuthTokenProvider is an [AuthTokenProvider] that can discard its
+// current token and mint a replacement on demand.
+//
+// The client calls [RefreshingAuthTokenProvider.ForceRefreshAuthToken] after a
+// request comes back 401, which recovers from a token the server stopped
+// accepting earlier than its stated expiry — clock skew between the client and
+// the authorization server, or a revocation performed elsewhere.
+// Providers that hold an immutable token (see [StaticAuthTokenProvider]) do not
+// implement this interface, and the client then surfaces the 401 unchanged.
+type RefreshingAuthTokenProvider interface {
+	AuthTokenProvider
+
+	// ForceRefreshAuthToken returns a token to replace staleAuthToken, which the
+	// server has just rejected.
+	//
+	// staleAuthToken lets an implementation tell "nobody has replaced this yet,
+	// mint a new one" from "a concurrent caller already replaced it, hand that
+	// result back". Without it, a single revocation 401s every request in
+	// flight and each one mints again; for an OAuth provider that means one
+	// refresh-token rotation per in-flight request, and every extra rotation is
+	// another chance to land on invalid_grant and force an interactive login.
+	//
+	// Returning staleAuthToken unchanged is allowed and signals that no fresher
+	// credential is available.
+	ForceRefreshAuthToken(ctx context.Context, staleAuthToken string) (string, error)
+}
+
 // StaticAuthTokenProvider adapts a fixed auth token to [AuthTokenProvider].
 // It exists so the request path has a single code path for authentication
 // regardless of whether the caller supplied a static token or a renewing one.
+//
+// The returned provider deliberately does not implement
+// [RefreshingAuthTokenProvider]: a static token cannot be refreshed, so a 401
+// is surfaced to the caller instead of being retried.
 func StaticAuthTokenProvider(authToken string) AuthTokenProvider {
 	return staticAuthTokenProvider(authToken)
 }

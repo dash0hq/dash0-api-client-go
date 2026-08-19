@@ -236,7 +236,7 @@ func (t *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	// Only retry idempotent requests
-	if !t.isIdempotent(req) {
+	if !isIdempotentRequest(req) {
 		return t.base.RoundTrip(req)
 	}
 
@@ -289,14 +289,21 @@ func (t *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 // isIdempotent returns true if the request is safe to retry.
-// GET, PUT, DELETE are always idempotent. POST requests marked with
-// withIdempotent context are also retried.
-func (t *retryTransport) isIdempotent(req *http.Request) bool {
+// isIdempotentRequest reports whether req is safe to send more than once.
+//
+// GET, PUT, DELETE, HEAD, and OPTIONS always are. POST requests marked with
+// withIdempotent context are treated as safe too.
+//
+// Both replay mechanisms consult this: the retry transport for transient
+// failures, and authTransport for the single replay after a 401. Keeping the
+// rule in one place is what stops the two from disagreeing about which requests
+// may be duplicated.
+// Read-only POST endpoints opt in via withIdempotent.
+func isIdempotentRequest(req *http.Request) bool {
 	switch req.Method {
 	case http.MethodGet, http.MethodPut, http.MethodDelete, http.MethodHead, http.MethodOptions:
 		return true
 	default:
-		// Check if context marks this as idempotent
 		return isIdempotent(req.Context())
 	}
 }

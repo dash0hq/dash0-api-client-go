@@ -59,6 +59,12 @@ func (cfg *Configuration) AuthTokenProvider(opts ...StoreOption) dash0.AuthToken
 	return provider
 }
 
+// Satisfying the interface is checked here rather than left to a runtime type
+// assertion. Interface methods are matched by exact name, so renaming
+// ForceRefreshAuthToken would otherwise still compile and only surface as a
+// failed assertion once the API client hit a 401.
+var _ dash0.RefreshingAuthTokenProvider = (*authTokenProvider)(nil)
+
 // authTokenProvider serves a profile's OAuth access token, refreshing it as it
 // approaches expiry.
 //
@@ -106,7 +112,7 @@ func (p *authTokenProvider) AuthToken(ctx context.Context) (string, error) {
 	if p.servableWithoutRefresh() {
 		return p.cfg.AuthToken, nil
 	}
-	if err := p.refreshLocked(ctx); err != nil {
+	if err := p.refresh(ctx, refreshIfExpiring); err != nil {
 		return "", err
 	}
 	return p.cfg.AuthToken, nil
@@ -129,9 +135,37 @@ func (p *authTokenProvider) servableWithoutRefresh() bool {
 	return time.Until(p.cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold
 }
 
-// refreshLocked refreshes the provider's own configuration copy.
-// Callers must hold p.mu for writing.
-func (p *authTokenProvider) refreshLocked(ctx context.Context) error {
+// ForceRefreshAuthToken implements [dash0.RefreshingAuthTokenProvider].
+// It replaces staleAuthToken regardless of how much validity it had left,
+// unless something already replaced it.
+//
+// The staleAuthToken comparison is what keeps one revocation from rotating the
+// refresh token once per in-flight request. Every caller serializes on p.mu, so
+// the first one through mints a replacement and the rest find a token that no
+// longer matches the one they were rejected with and return it as-is.
+// [refreshOAuthToken] handles the same race across processes, by re-reading
+// the profile after taking the file lock.
+//
+// The name is exported because a cross-package interface can only be satisfied
+// by exported methods. It is not part of this package's public surface: the
+// authTokenProvider type is unexported, so the only way to reach this method is
+// through the interface.
+func (p *authTokenProvider) ForceRefreshAuthToken(ctx context.Context, staleAuthToken string) (string, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if p.cfg.AuthToken != "" && p.cfg.AuthToken != staleAuthToken {
+		return p.cfg.AuthToken, nil
+	}
+	if err := p.refresh(ctx, forceRefresh); err != nil {
+		return "", err
+	}
+	return p.cfg.AuthToken, nil
+}
+
+// refresh refreshes the provider's own configuration copy.
+// Callers must hold p.mu.
+func (p *authTokenProvider) refresh(ctx context.Context, mode refreshMode) error {
 	if p.storeErr != nil {
 		return p.storeErr
 	}
@@ -155,7 +189,7 @@ func (p *authTokenProvider) refreshLocked(ctx context.Context) error {
 	refreshCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), OAuthRefreshTimeout)
 	defer cancel()
 
-	if err := refreshOAuthToken(refreshCtx, p.store, p.cfg.ProfileName, &p.cfg); err != nil {
+	if err := refreshOAuthToken(refreshCtx, p.store, p.cfg.ProfileName, &p.cfg, mode); err != nil {
 		return err
 	}
 	if p.cfg.OAuth == nil && p.cfg.AuthToken == "" {
