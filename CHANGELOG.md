@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.21.0
+
+
+### Bug Fixes
+- resolve the auth token per request via an AuthTokenProvider (#33)
+- backfills empty client_id from DCR cache if not persisted in profile, best effort
+
+### Features
+- add semantic YAML/JSON comparison engine (#32)
+- recover from a 401 by forcing a token refresh and replaying once (#35)
+- add a per-name profile accessor (#34)
+
 ## v1.20.0
 
 
