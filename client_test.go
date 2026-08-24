@@ -140,6 +140,32 @@ func TestNewClient(t *testing.T) {
 		}
 	})
 
+	t.Run("WithRetryOnConflict reaches the retry transport", func(t *testing.T) {
+		for _, enabled := range []bool{false, true} {
+			opts := []ClientOption{
+				WithApiUrl("https://api.example.com"),
+				WithAuthToken("auth_test"),
+			}
+			if enabled {
+				opts = append(opts, WithRetryOnConflict(true))
+			}
+			c, err := NewClient(opts...)
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			impl := c.(*client)
+			innerClient := impl.inner.ClientInterface.(*generatedClient)
+			httpClient := innerClient.Client.(*http.Client)
+			retry, isRetry := beneathAuthTransport(t, httpClient.Transport).(*retryTransport)
+			if !isRetry {
+				t.Fatal("expected retry transport to be applied")
+			}
+			if retry.retryOnConflict != enabled {
+				t.Errorf("retryOnConflict = %v, want %v", retry.retryOnConflict, enabled)
+			}
+		}
+	})
+
 	t.Run("REST API methods return ErrAPINotConfigured without WithApiUrl", func(t *testing.T) {
 		c, err := NewClient(
 			WithAuthToken("auth_test123"),
@@ -287,6 +313,22 @@ func TestNewClient(t *testing.T) {
 		}
 		if !strings.Contains(err.Error(), "WithRetryWaitMax") {
 			t.Errorf("error should mention WithRetryWaitMax: %v", err)
+		}
+	})
+
+	t.Run("WithTransport conflicts with WithRetryOnConflict", func(t *testing.T) {
+		tr := NewTransport()
+		_, err := NewClient(
+			WithApiUrl("https://api.example.com"),
+			WithAuthToken("auth_test"),
+			WithTransport(tr),
+			WithRetryOnConflict(true),
+		)
+		if err == nil {
+			t.Fatal("expected error for conflicting options")
+		}
+		if !strings.Contains(err.Error(), "WithRetryOnConflict") {
+			t.Errorf("error should mention WithRetryOnConflict: %v", err)
 		}
 	})
 

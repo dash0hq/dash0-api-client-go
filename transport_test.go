@@ -2,7 +2,11 @@ package dash0
 
 import (
 	"context"
+	"errors"
+	"io"
 	"net/http"
+	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -28,6 +32,9 @@ func TestNewTransport(t *testing.T) {
 		if tr.timeout != DefaultTimeout {
 			t.Errorf("timeout = %v, want %v", tr.timeout, DefaultTimeout)
 		}
+		if retry, ok := tr.roundTripper.(*retryTransport); ok && retry.retryOnConflict {
+			t.Error("retryOnConflict = true, want false by default")
+		}
 
 		// Verify transport stack: retry wrapping rate-limit
 		retry, ok := tr.roundTripper.(*retryTransport)
@@ -49,6 +56,7 @@ func TestNewTransport(t *testing.T) {
 			WithTransportRetryWaitMax(10*time.Second),
 			WithTransportMaxConcurrentRequests(5),
 			WithTransportTimeout(15*time.Second),
+			WithTransportRetryOnConflict(true),
 		)
 
 		if tr.timeout != 15*time.Second {
@@ -67,6 +75,9 @@ func TestNewTransport(t *testing.T) {
 		}
 		if retry.waitMax != 10*time.Second {
 			t.Errorf("waitMax = %v, want 10s", retry.waitMax)
+		}
+		if !retry.retryOnConflict {
+			t.Error("retryOnConflict = false, want true")
 		}
 
 		rl, ok := retry.base.(*rateLimitedTransport)
@@ -324,8 +335,226 @@ func TestRateLimitedTransport_RoundTrip(t *testing.T) {
 	})
 }
 
+// statusResponse builds a response the retry loop can drain and close.
+func statusResponse(status int) *http.Response {
+	return &http.Response{StatusCode: status, Header: http.Header{}, Body: http.NoBody}
+}
+
+func TestRetryTransport_RetryOnConflict(t *testing.T) {
+	// newConflictTransport returns a retry transport whose base replies with the
+	// given statuses in order, repeating the last one once they run out, plus a
+	// pointer to the bodies each attempt sent.
+	newConflictTransport := func(retryOnConflict bool, statuses ...int) (*retryTransport, *[]string) {
+		var bodies []string
+		attempt := 0
+		base := &mockTransport{
+			handler: func(req *http.Request) (*http.Response, error) {
+				body := ""
+				if req.Body != nil {
+					b, err := io.ReadAll(req.Body)
+					if err != nil {
+						return nil, err
+					}
+					body = string(b)
+				}
+				bodies = append(bodies, body)
+				status := statuses[len(statuses)-1]
+				if attempt < len(statuses) {
+					status = statuses[attempt]
+				}
+				attempt++
+				return statusResponse(status), nil
+			},
+		}
+		return newRetryTransport(base, 2, 10*time.Millisecond, 50*time.Millisecond, retryOnConflict), &bodies
+	}
+
+	postRequest := func(t *testing.T) *http.Request {
+		t.Helper()
+		req, err := http.NewRequestWithContext(
+			context.Background(), http.MethodPost, "http://example.com", strings.NewReader("payload"))
+		if err != nil {
+			t.Fatalf("failed to build request: %v", err)
+		}
+		return req
+	}
+
+	t.Run("retries a 409 on a POST and replays the body", func(t *testing.T) {
+		tr, bodies := newConflictTransport(true, http.StatusConflict, http.StatusConflict, http.StatusOK)
+
+		resp, err := tr.RoundTrip(postRequest(t))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusOK)
+		}
+		if want := []string{"payload", "payload", "payload"}; !slices.Equal(*bodies, want) {
+			t.Errorf("bodies sent = %q, want %q", *bodies, want)
+		}
+	})
+
+	t.Run("returns the last 409 once the retry budget is spent", func(t *testing.T) {
+		tr, bodies := newConflictTransport(true, http.StatusConflict)
+
+		resp, err := tr.RoundTrip(postRequest(t))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if resp.StatusCode != http.StatusConflict {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusConflict)
+		}
+		// maxRetries is 2, so the initial attempt plus two retries.
+		if len(*bodies) != 3 {
+			t.Errorf("attempts = %d, want 3", len(*bodies))
+		}
+	})
+
+	t.Run("does not retry a 409 when the option is off", func(t *testing.T) {
+		tr, bodies := newConflictTransport(false, http.StatusConflict)
+
+		resp, err := tr.RoundTrip(postRequest(t))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if resp.StatusCode != http.StatusConflict {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusConflict)
+		}
+		if len(*bodies) != 1 {
+			t.Errorf("attempts = %d, want 1", len(*bodies))
+		}
+	})
+
+	t.Run("does not retry a 5xx on a POST", func(t *testing.T) {
+		tr, bodies := newConflictTransport(true, http.StatusInternalServerError)
+
+		resp, err := tr.RoundTrip(postRequest(t))
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if resp.StatusCode != http.StatusInternalServerError {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusInternalServerError)
+		}
+		if len(*bodies) != 1 {
+			t.Errorf("attempts = %d, want 1; a 5xx POST may have been applied and must not be replayed", len(*bodies))
+		}
+	})
+
+	t.Run("still retries a 5xx on a GET", func(t *testing.T) {
+		tr, bodies := newConflictTransport(true, http.StatusInternalServerError, http.StatusOK)
+
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "http://example.com", nil)
+		if err != nil {
+			t.Fatalf("failed to build request: %v", err)
+		}
+		resp, err := tr.RoundTrip(req)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("status = %d, want %d", resp.StatusCode, http.StatusOK)
+		}
+		if len(*bodies) != 2 {
+			t.Errorf("attempts = %d, want 2", len(*bodies))
+		}
+	})
+
+	t.Run("does not replay a POST after a transport error", func(t *testing.T) {
+		attempts := 0
+		base := &mockTransport{
+			handler: func(req *http.Request) (*http.Response, error) {
+				attempts++
+				return nil, errors.New("connection reset")
+			},
+		}
+		tr := newRetryTransport(base, 2, 10*time.Millisecond, 50*time.Millisecond, true)
+
+		if _, err := tr.RoundTrip(postRequest(t)); err == nil {
+			t.Fatal("expected the transport error to surface")
+		}
+		if attempts != 1 {
+			t.Errorf("attempts = %d, want 1; the server may have applied the request", attempts)
+		}
+	})
+
+	t.Run("does not retry a body that cannot be rewound", func(t *testing.T) {
+		tr, bodies := newConflictTransport(true, http.StatusConflict)
+
+		// A reader the net/http package cannot snapshot leaves GetBody nil.
+		req, err := http.NewRequestWithContext(
+			context.Background(), http.MethodPost, "http://example.com",
+			io.NopCloser(strings.NewReader("payload")))
+		if err != nil {
+			t.Fatalf("failed to build request: %v", err)
+		}
+		if req.GetBody != nil {
+			t.Fatal("test precondition failed: expected GetBody to be nil")
+		}
+
+		if _, err := tr.RoundTrip(req); err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(*bodies) != 1 {
+			t.Errorf("attempts = %d, want 1; the body cannot be sent twice", len(*bodies))
+		}
+	})
+
+	t.Run("stops retrying when the context is cancelled", func(t *testing.T) {
+		attempts := 0
+		base := &mockTransport{
+			handler: func(req *http.Request) (*http.Response, error) {
+				attempts++
+				return statusResponse(http.StatusConflict), nil
+			},
+		}
+		// A long conflict backoff is not reachable here, so cancel during the
+		// first wait instead.
+		tr := newRetryTransport(base, 5, 10*time.Millisecond, 50*time.Millisecond, true)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://example.com", strings.NewReader("payload"))
+		if err != nil {
+			t.Fatalf("failed to build request: %v", err)
+		}
+		cancel()
+
+		if _, err := tr.RoundTrip(req); !errors.Is(err, context.Canceled) {
+			t.Errorf("error = %v, want context.Canceled", err)
+		}
+		if attempts != 1 {
+			t.Errorf("attempts = %d, want 1", attempts)
+		}
+	})
+}
+
+func TestConflictBackoff(t *testing.T) {
+	t.Run("stays within the exponential ceiling", func(t *testing.T) {
+		for attempt := range 4 {
+			ceiling := conflictRetryWaitMin * time.Duration(1<<attempt)
+			if ceiling > conflictRetryWaitMax {
+				ceiling = conflictRetryWaitMax
+			}
+			for range 50 {
+				wait := conflictBackoff(attempt)
+				if wait < 0 || wait >= ceiling {
+					t.Fatalf("conflictBackoff(%d) = %v, want within [0, %v)", attempt, wait, ceiling)
+				}
+			}
+		}
+	})
+
+	t.Run("saturates at the maximum instead of overflowing", func(t *testing.T) {
+		for _, attempt := range []int{10, 62, 63, 64} {
+			wait := conflictBackoff(attempt)
+			if wait < 0 || wait >= conflictRetryWaitMax {
+				t.Errorf("conflictBackoff(%d) = %v, want within [0, %v)", attempt, wait, conflictRetryWaitMax)
+			}
+		}
+	})
+}
+
 func TestRetryTransport_Backoff(t *testing.T) {
-	tr := newRetryTransport(nil, 3, 500*time.Millisecond, 10*time.Second)
+	tr := newRetryTransport(nil, 3, 500*time.Millisecond, 10*time.Second, false)
 
 	t.Run("no Retry-After header returns ok", func(t *testing.T) {
 		resp := &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}
@@ -340,6 +569,31 @@ func TestRetryTransport_Backoff(t *testing.T) {
 
 	t.Run("Retry-After below waitMax returns ok", func(t *testing.T) {
 		resp := &http.Response{StatusCode: http.StatusTooManyRequests, Header: http.Header{}}
+		resp.Header.Set("Retry-After", "5")
+		wait, ok := tr.backoff(0, resp)
+		if !ok {
+			t.Fatal("expected ok = true when Retry-After is below waitMax")
+		}
+		if want := 5 * time.Second; wait != want {
+			t.Errorf("wait = %v, want %v", wait, want)
+		}
+	})
+
+	t.Run("a 409 uses the conflict window, not waitMin", func(t *testing.T) {
+		resp := &http.Response{StatusCode: http.StatusConflict, Header: http.Header{}}
+		for range 50 {
+			wait, ok := tr.backoff(0, resp)
+			if !ok {
+				t.Fatal("expected ok = true for a conflict")
+			}
+			if wait < 0 || wait >= conflictRetryWaitMin {
+				t.Fatalf("wait = %v, want within [0, %v)", wait, conflictRetryWaitMin)
+			}
+		}
+	})
+
+	t.Run("a 409 still honors Retry-After", func(t *testing.T) {
+		resp := &http.Response{StatusCode: http.StatusConflict, Header: http.Header{}}
 		resp.Header.Set("Retry-After", "5")
 		wait, ok := tr.backoff(0, resp)
 		if !ok {

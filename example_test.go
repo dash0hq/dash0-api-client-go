@@ -54,6 +54,32 @@ func ExampleWithTransport() {
 	// Output: true
 }
 
+func ExampleWithRetryOnConflict() {
+	// Concurrent writes to one dataset race its optimistic-concurrency version
+	// check, and the loser comes back as a 409. Retrying converges instead of
+	// failing the write.
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+		dash0.WithAuthToken("auth_yourtoken"),
+		dash0.WithRetryOnConflict(true),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+	fmt.Println(client != nil)
+	// Output: true
+}
+
+func ExampleWithTransportRetryOnConflict() {
+	t := dash0.NewTransport(
+		dash0.WithTransportMaxRetries(3),
+		dash0.WithTransportRetryOnConflict(true),
+	)
+	fmt.Println(t.RoundTripper() != nil)
+	// Output: true
+}
+
 // Client construction
 
 func ExampleNewClient_apiOnly() {

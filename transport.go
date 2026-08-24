@@ -10,14 +10,27 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
+const (
+	// conflictRetryWaitMin is the starting point for the exponential backoff
+	// between 409 conflict retries.
+	// It is shorter than [DefaultRetryWaitMin] because a dataset version race
+	// resolves almost immediately: the wait is on another writer that already
+	// won, not on a rate limiter or an overloaded server.
+	conflictRetryWaitMin = 100 * time.Millisecond
+
+	// conflictRetryWaitMax caps the backoff between 409 conflict retries.
+	conflictRetryWaitMax = 2 * time.Second
+)
+
 // transportConfig holds configuration for building a [Transport].
 type transportConfig struct {
-	base          http.RoundTripper
-	maxConcurrent int64
-	maxRetries    int
-	retryWaitMin  time.Duration
-	retryWaitMax  time.Duration
-	timeout       time.Duration
+	base            http.RoundTripper
+	maxConcurrent   int64
+	maxRetries      int
+	retryWaitMin    time.Duration
+	retryWaitMax    time.Duration
+	retryOnConflict bool
+	timeout         time.Duration
 }
 
 func defaultTransportConfig() *transportConfig {
@@ -67,6 +80,18 @@ func WithTransportRetryWaitMin(d time.Duration) TransportOption {
 func WithTransportRetryWaitMax(d time.Duration) TransportOption {
 	return func(c *transportConfig) {
 		c.retryWaitMax = d
+	}
+}
+
+// WithTransportRetryOnConflict enables retrying requests that fail with
+// 409 Conflict.
+// Default is false.
+//
+// See [WithRetryOnConflict] for what the 409 means and why replaying the
+// request is safe.
+func WithTransportRetryOnConflict(enabled bool) TransportOption {
+	return func(c *transportConfig) {
+		c.retryOnConflict = enabled
 	}
 }
 
@@ -136,7 +161,7 @@ func NewTransport(opts ...TransportOption) *Transport {
 	}
 
 	rl := newRateLimitedTransport(base, cfg.maxConcurrent)
-	rt := newRetryTransport(rl, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax)
+	rt := newRetryTransport(rl, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax, cfg.retryOnConflict)
 
 	return &Transport{
 		roundTripper: rt,
@@ -197,14 +222,15 @@ func (t *rateLimitedTransport) RoundTrip(req *http.Request) (*http.Response, err
 // retryTransport wraps an http.RoundTripper and retries failed requests
 // with exponential backoff. Only idempotent requests are retried.
 type retryTransport struct {
-	base       http.RoundTripper
-	maxRetries int
-	waitMin    time.Duration
-	waitMax    time.Duration
+	base            http.RoundTripper
+	maxRetries      int
+	waitMin         time.Duration
+	waitMax         time.Duration
+	retryOnConflict bool
 }
 
 // newRetryTransport creates a transport that retries failed requests.
-func newRetryTransport(base http.RoundTripper, maxRetries int, waitMin, waitMax time.Duration) *retryTransport {
+func newRetryTransport(base http.RoundTripper, maxRetries int, waitMin, waitMax time.Duration, retryOnConflict bool) *retryTransport {
 	if base == nil {
 		base = http.DefaultTransport
 	}
@@ -221,10 +247,11 @@ func newRetryTransport(base http.RoundTripper, maxRetries int, waitMin, waitMax 
 		waitMax = 30 * time.Second
 	}
 	return &retryTransport{
-		base:       base,
-		maxRetries: maxRetries,
-		waitMin:    waitMin,
-		waitMax:    waitMax,
+		base:            base,
+		maxRetries:      maxRetries,
+		waitMin:         waitMin,
+		waitMax:         waitMax,
+		retryOnConflict: retryOnConflict,
 	}
 }
 
@@ -235,8 +262,16 @@ func (t *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		return t.base.RoundTrip(req)
 	}
 
-	// Only retry idempotent requests
-	if !isIdempotentRequest(req) {
+	// Idempotent requests are replayable for any retryable status. A
+	// non-idempotent request enters the loop only to retry a 409, which the
+	// server rejected without applying it; see shouldRetry.
+	idempotent := isIdempotentRequest(req)
+	if !idempotent && !t.retryOnConflict {
+		return t.base.RoundTrip(req)
+	}
+
+	// A body that cannot be rewound can only be sent once.
+	if req.Body != nil && req.GetBody == nil {
 		return t.base.RoundTrip(req)
 	}
 
@@ -256,8 +291,14 @@ func (t *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		resp, err = t.base.RoundTrip(req)
 
 		// Don't retry if successful or non-retryable
-		if err == nil && !t.shouldRetry(resp) {
+		if err == nil && !t.shouldRetry(resp, idempotent) {
 			return resp, nil
+		}
+
+		// A transport error leaves it unknown whether the server applied the
+		// request, so only an idempotent one may be replayed.
+		if err != nil && !idempotent {
+			return resp, err
 		}
 
 		// Don't retry on last attempt
@@ -309,9 +350,24 @@ func isIdempotentRequest(req *http.Request) bool {
 }
 
 // shouldRetry returns true if the response indicates a retryable error.
-func (t *retryTransport) shouldRetry(resp *http.Response) bool {
+// idempotent reports whether the request itself is safe to send more than once,
+// as [isIdempotentRequest] decides.
+//
+// A 409 is retryable for any request, idempotent or not, when the caller opted
+// in via [WithRetryOnConflict]: the Dash0 API returns it when a write loses the
+// dataset's optimistic-concurrency check, which means the server rejected that
+// write without applying it. Sending it again is therefore not a duplicate
+// write. Every other retryable status leaves the outcome unknown, so it is
+// retried only for an idempotent request.
+func (t *retryTransport) shouldRetry(resp *http.Response, idempotent bool) bool {
 	if resp == nil {
 		return true
+	}
+	if t.retryOnConflict && resp.StatusCode == http.StatusConflict {
+		return true
+	}
+	if !idempotent {
+		return false
 	}
 	// Retry on 429 (rate limited) and 5xx (server errors)
 	return resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500
@@ -333,6 +389,13 @@ func (t *retryTransport) backoff(attempt int, resp *http.Response) (time.Duratio
 		}
 	}
 
+	// A conflict gets its own, much shorter window, and full jitter rather
+	// than the 25 percent jitter below: racing writers that all back off by
+	// nearly the same amount just collide again on the next attempt.
+	if resp != nil && resp.StatusCode == http.StatusConflict {
+		return conflictBackoff(attempt), true
+	}
+
 	// Exponential backoff: waitMin * 2^attempt
 	wait := t.waitMin * time.Duration(1<<attempt)
 	if wait > t.waitMax {
@@ -346,4 +409,21 @@ func (t *retryTransport) backoff(attempt int, resp *http.Response) (time.Duratio
 	}
 
 	return wait, true
+}
+
+// conflictBackoff returns the wait before the given zero-based conflict retry
+// attempt: full jitter, meaning a random duration in [0, ceiling), over an
+// exponential ceiling that doubles from conflictRetryWaitMin and saturates at
+// conflictRetryWaitMax.
+// The ceiling saturates at conflictRetryWaitMax, which also keeps an attempt
+// number high enough to overflow the shift or the multiplication from
+// producing a nonsensical wait.
+func conflictBackoff(attempt int) time.Duration {
+	ceiling := conflictRetryWaitMax
+	if attempt >= 0 && attempt < 63 {
+		if scaled := conflictRetryWaitMin * time.Duration(1<<attempt); scaled > 0 && scaled < ceiling {
+			ceiling = scaled
+		}
+	}
+	return time.Duration(rand.Int63n(int64(ceiling)))
 }

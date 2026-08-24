@@ -241,7 +241,7 @@ func NewClient(opts ...ClientOption) (Client, error) {
 		// Stack transports: base -> rate limit -> retry
 		// Rate limiting is applied first, then retry wraps it
 		rateLimited := newRateLimitedTransport(transport, cfg.maxConcurrent)
-		retrying := newRetryTransport(rateLimited, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax)
+		retrying := newRetryTransport(rateLimited, cfg.maxRetries, cfg.retryWaitMin, cfg.retryWaitMax, cfg.retryOnConflict)
 
 		// Build HTTP client
 		httpClient = &http.Client{

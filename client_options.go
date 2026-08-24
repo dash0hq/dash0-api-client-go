@@ -52,18 +52,20 @@ type clientConfig struct {
 	maxRetries        int
 	retryWaitMin      time.Duration
 	retryWaitMax      time.Duration
+	retryOnConflict   bool
 	otlpEncoding      OtlpEncoding
 	otlpEndpoint      string
 	transport         *Transport
 
 	// Flags that track whether transport-level options were explicitly set.
 	// Used to detect conflicts with WithTransport.
-	httpClientSet    bool
-	maxConcurrentSet bool
-	maxRetriesSet    bool
-	retryWaitMinSet  bool
-	retryWaitMaxSet  bool
-	timeoutSet       bool
+	httpClientSet      bool
+	maxConcurrentSet   bool
+	maxRetriesSet      bool
+	retryWaitMinSet    bool
+	retryWaitMaxSet    bool
+	retryOnConflictSet bool
+	timeoutSet         bool
 }
 
 func defaultConfig() *clientConfig {
@@ -209,11 +211,51 @@ func WithRetryWaitMax(d time.Duration) ClientOption {
 	}
 }
 
+// WithRetryOnConflict enables retrying requests that fail with 409 Conflict.
+// Default is false.
+//
+// A Dash0 dataset is guarded by an optimistic-concurrency dataset version: when
+// two writes to the same dataset race, exactly one wins and the other comes
+// back as a 409 asking the caller to retry.
+// Nothing retries that by default, so the losing write surfaces as a fatal
+// error even though repeating it converges.
+// This happens whenever writes to one dataset are issued concurrently, whether
+// from goroutines in one process or from separate processes, such as a CI
+// matrix running `dash0 apply` in parallel.
+//
+// Unlike the 429 and 5xx retries [WithMaxRetries] governs, a 409 retry also
+// applies to non-idempotent requests, including the Import methods, which are
+// POSTs.
+// That is safe because a 409 means the server rejected the write without
+// applying it, so sending it again does not duplicate anything.
+//
+// The retry budget is the one [WithMaxRetries] sets. The backoff is not the
+// [WithRetryWaitMin] window: a conflict retry uses full jitter from 100ms up to
+// 2s, because the wait is on a writer that has already won rather than on an
+// overloaded server.
+//
+// This option conflicts with [WithTransport]; configure
+// [WithTransportRetryOnConflict] on the [Transport] instead.
+//
+// Example:
+//
+//	client, _ := dash0.NewClient(
+//	    dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
+//	    dash0.WithAuthToken("auth_yourtoken"),
+//	    dash0.WithRetryOnConflict(true),
+//	)
+func WithRetryOnConflict(enabled bool) ClientOption {
+	return func(c *clientConfig) {
+		c.retryOnConflict = enabled
+		c.retryOnConflictSet = true
+	}
+}
+
 // WithTransport configures the client to use a pre-built [Transport] for rate
 // limiting and retry.
 // When set, transport-level [ClientOption] functions ([WithMaxRetries],
-// [WithRetryWaitMin], [WithRetryWaitMax], [WithMaxConcurrentRequests], and
-// [WithHTTPClient]) must not be used.
+// [WithRetryWaitMin], [WithRetryWaitMax], [WithRetryOnConflict],
+// [WithMaxConcurrentRequests], and [WithHTTPClient]) must not be used.
 // [NewClient] returns an error if both [WithTransport] and any of these
 // options are provided.
 //
@@ -283,6 +325,9 @@ func transportOptionsSet(cfg *clientConfig, includeHTTPClient bool) []string {
 	}
 	if cfg.retryWaitMaxSet {
 		names = append(names, "WithRetryWaitMax")
+	}
+	if cfg.retryOnConflictSet {
+		names = append(names, "WithRetryOnConflict")
 	}
 	return names
 }
