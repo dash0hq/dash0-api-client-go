@@ -55,7 +55,7 @@ func TestImportDashboard_RetryOnConflict(t *testing.T) {
 		c, err := NewClient(
 			WithApiUrl(server.URL),
 			WithAuthToken("auth_test123"),
-			WithRetryOnConflict(true),
+			WithRetryOnConflict(),
 			WithMaxRetries(3),
 		)
 		if err != nil {
@@ -97,7 +97,7 @@ func TestImportDashboard_RetryOnConflict(t *testing.T) {
 		c, err := NewClient(
 			WithApiUrl(server.URL),
 			WithAuthToken("auth_test123"),
-			WithRetryOnConflict(true),
+			WithRetryOnConflict(),
 			WithMaxRetries(2),
 		)
 		if err != nil {

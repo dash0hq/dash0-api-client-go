@@ -100,7 +100,7 @@ OTLP requests use the same HTTP client, retry logic, and rate limiting as the RE
 | `WithMaxRetries(n)`            | Maximum retries for failed requests (0-5)| 1                           |
 | `WithRetryWaitMin(duration)`   | Minimum wait between retries             | 500ms                       |
 | `WithRetryWaitMax(duration)`   | Maximum wait between retries             | 30s                         |
-| `WithRetryOnConflict(enabled)` | Retry requests that fail with 409 Conflict | `false`                   |
+| `WithRetryOnConflict()`        | Retry requests that fail with 409 Conflict | Off unless passed         |
 
 `NewClient` requires `WithAuthToken` and at least one of `WithApiUrl` or `WithOtlpEndpoint`. REST API methods (dashboards, check rules, etc.) require `WithApiUrl`; OTLP methods (`SendTraces`, `SendMetrics`, `SendLogs`) require `WithOtlpEndpoint`. Calling a method whose endpoint was not configured returns an error.
 
@@ -121,13 +121,13 @@ A Dash0 dataset is guarded by an optimistic-concurrency dataset version.
 When two writes to the same dataset race, exactly one wins and the other returns a 409 that asks the caller to retry.
 This happens whenever writes to one dataset are issued concurrently, whether from goroutines in one process or from separate processes, such as a CI matrix that runs `dash0 apply` in parallel.
 
-`WithRetryOnConflict(true)` retries those writes instead of failing them:
+`WithRetryOnConflict()` retries those writes instead of failing them:
 
 ```go
 client, err := dash0.NewClient(
     dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
     dash0.WithAuthToken("auth_yourtoken"),
-    dash0.WithRetryOnConflict(true),
+    dash0.WithRetryOnConflict(),
 )
 ```
 
@@ -138,7 +138,7 @@ client, err := dash0.NewClient(
   This is deliberately shorter than the 429 and 5xx window, because the wait is on a writer that has already won rather than on an overloaded server.
 - **Retry-After**: still respected when the response carries it.
 
-The `Transport` equivalent is `WithTransportRetryOnConflict(true)`.
+The `Transport` equivalent is `WithTransportRetryOnConflict()`.
 
 ## Pagination with Iterators
 
