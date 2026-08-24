@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.21.1
+
+
+### Features
+- add an option to retry 409 dataset version conflicts
+
+### Refactoring
+- drop the boolean from the conflict retry options
+
 ## v1.21.0
 
 
