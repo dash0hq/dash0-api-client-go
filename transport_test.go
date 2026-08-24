@@ -56,7 +56,7 @@ func TestNewTransport(t *testing.T) {
 			WithTransportRetryWaitMax(10*time.Second),
 			WithTransportMaxConcurrentRequests(5),
 			WithTransportTimeout(15*time.Second),
-			WithTransportRetryOnConflict(true),
+			WithTransportRetryOnConflict(),
 		)
 
 		if tr.timeout != 15*time.Second {

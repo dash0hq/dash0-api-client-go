@@ -85,13 +85,14 @@ func WithTransportRetryWaitMax(d time.Duration) TransportOption {
 
 // WithTransportRetryOnConflict enables retrying requests that fail with
 // 409 Conflict.
-// Default is false.
+// Retrying a conflict is off unless this option is passed, so the option takes
+// no argument.
 //
 // See [WithRetryOnConflict] for what the 409 means and why replaying the
 // request is safe.
-func WithTransportRetryOnConflict(enabled bool) TransportOption {
+func WithTransportRetryOnConflict() TransportOption {
 	return func(c *transportConfig) {
-		c.retryOnConflict = enabled
+		c.retryOnConflict = true
 	}
 }
 

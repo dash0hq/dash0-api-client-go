@@ -147,7 +147,7 @@ func TestNewClient(t *testing.T) {
 				WithAuthToken("auth_test"),
 			}
 			if enabled {
-				opts = append(opts, WithRetryOnConflict(true))
+				opts = append(opts, WithRetryOnConflict())
 			}
 			c, err := NewClient(opts...)
 			if err != nil {
@@ -322,7 +322,7 @@ func TestNewClient(t *testing.T) {
 			WithApiUrl("https://api.example.com"),
 			WithAuthToken("auth_test"),
 			WithTransport(tr),
-			WithRetryOnConflict(true),
+			WithRetryOnConflict(),
 		)
 		if err == nil {
 			t.Fatal("expected error for conflicting options")

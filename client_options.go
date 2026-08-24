@@ -212,7 +212,8 @@ func WithRetryWaitMax(d time.Duration) ClientOption {
 }
 
 // WithRetryOnConflict enables retrying requests that fail with 409 Conflict.
-// Default is false.
+// Retrying a conflict is off unless this option is passed, so the option takes
+// no argument.
 //
 // A Dash0 dataset is guarded by an optimistic-concurrency dataset version: when
 // two writes to the same dataset race, exactly one wins and the other comes
@@ -242,11 +243,11 @@ func WithRetryWaitMax(d time.Duration) ClientOption {
 //	client, _ := dash0.NewClient(
 //	    dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
 //	    dash0.WithAuthToken("auth_yourtoken"),
-//	    dash0.WithRetryOnConflict(true),
+//	    dash0.WithRetryOnConflict(),
 //	)
-func WithRetryOnConflict(enabled bool) ClientOption {
+func WithRetryOnConflict() ClientOption {
 	return func(c *clientConfig) {
-		c.retryOnConflict = enabled
+		c.retryOnConflict = true
 		c.retryOnConflictSet = true
 	}
 }

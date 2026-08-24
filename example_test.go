@@ -61,7 +61,7 @@ func ExampleWithRetryOnConflict() {
 	client, err := dash0.NewClient(
 		dash0.WithApiUrl("https://api.eu-west-1.aws.dash0.com"),
 		dash0.WithAuthToken("auth_yourtoken"),
-		dash0.WithRetryOnConflict(true),
+		dash0.WithRetryOnConflict(),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -74,7 +74,7 @@ func ExampleWithRetryOnConflict() {
 func ExampleWithTransportRetryOnConflict() {
 	t := dash0.NewTransport(
 		dash0.WithTransportMaxRetries(3),
-		dash0.WithTransportRetryOnConflict(true),
+		dash0.WithTransportRetryOnConflict(),
 	)
 	fmt.Println(t.RoundTripper() != nil)
 	// Output: true
