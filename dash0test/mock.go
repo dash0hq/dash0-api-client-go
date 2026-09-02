@@ -69,6 +69,14 @@ type MockClient struct {
 	DeleteSamplingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
 
+	// Time Series Aggregations
+	ListTimeSeriesAggregationsFunc     func(ctx context.Context, dataset *string) ([]*dash0.TimeSeriesAggregationDefinition, error)
+	GetTimeSeriesAggregationFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error)
+	CreateTimeSeriesAggregationFunc    func(ctx context.Context, aggregation *dash0.TimeSeriesAggregationDefinition, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error)
+	UpdateTimeSeriesAggregationFunc    func(ctx context.Context, originOrID string, aggregation *dash0.TimeSeriesAggregationDefinition, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error)
+	DeleteTimeSeriesAggregationFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListTimeSeriesAggregationsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.TimeSeriesAggregationDefinition]
+
 	// Members
 	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
 	InviteMemberFunc    func(ctx context.Context, request *dash0.InviteMemberRequest) error
@@ -403,6 +411,50 @@ func (m *MockClient) DeleteSamplingRule(ctx context.Context, originOrID string, 
 func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition] {
 	if m.ListSamplingRulesIterFunc != nil {
 		return m.ListSamplingRulesIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Time Series Aggregations
+
+func (m *MockClient) ListTimeSeriesAggregations(ctx context.Context, dataset *string) ([]*dash0.TimeSeriesAggregationDefinition, error) {
+	if m.ListTimeSeriesAggregationsFunc != nil {
+		return m.ListTimeSeriesAggregationsFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error) {
+	if m.GetTimeSeriesAggregationFunc != nil {
+		return m.GetTimeSeriesAggregationFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateTimeSeriesAggregation(ctx context.Context, aggregation *dash0.TimeSeriesAggregationDefinition, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error) {
+	if m.CreateTimeSeriesAggregationFunc != nil {
+		return m.CreateTimeSeriesAggregationFunc(ctx, aggregation, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateTimeSeriesAggregation(ctx context.Context, originOrID string, aggregation *dash0.TimeSeriesAggregationDefinition, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error) {
+	if m.UpdateTimeSeriesAggregationFunc != nil {
+		return m.UpdateTimeSeriesAggregationFunc(ctx, originOrID, aggregation, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteTimeSeriesAggregationFunc != nil {
+		return m.DeleteTimeSeriesAggregationFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListTimeSeriesAggregationsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.TimeSeriesAggregationDefinition] {
+	if m.ListTimeSeriesAggregationsIterFunc != nil {
+		return m.ListTimeSeriesAggregationsIterFunc(ctx, dataset)
 	}
 	return nil
 }
