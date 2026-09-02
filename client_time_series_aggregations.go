@@ -43,6 +43,9 @@ func (c *client) GetTimeSeriesAggregation(ctx context.Context, originOrID string
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
+	if resp.JSON200 == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
 	return resp.JSON200, nil
 }
 
@@ -86,6 +89,9 @@ func (c *client) UpdateTimeSeriesAggregation(ctx context.Context, originOrID str
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
+	if resp.JSON200 == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
 	return resp.JSON200, nil
 }
 
@@ -108,8 +114,7 @@ func (c *client) DeleteTimeSeriesAggregation(ctx context.Context, originOrID str
 }
 
 // ListTimeSeriesAggregationsIter returns an iterator over all time series aggregations.
-// This is a convenience wrapper around ListTimeSeriesAggregations for consistent
-// iteration patterns.
+// This is a convenience wrapper around ListTimeSeriesAggregations for consistent iteration patterns.
 func (c *client) ListTimeSeriesAggregationsIter(ctx context.Context, dataset *string) *Iter[TimeSeriesAggregationDefinition] {
 	items, err := c.ListTimeSeriesAggregations(ctx, dataset)
 	if err != nil {
@@ -118,13 +123,11 @@ func (c *client) ListTimeSeriesAggregationsIter(ctx context.Context, dataset *st
 	return newIter(items, false, nil, nil)
 }
 
-// StripTimeSeriesAggregationServerFields removes server-generated fields from a
-// time series aggregation definition.
+// StripTimeSeriesAggregationServerFields removes server-generated fields from a time series aggregation definition.
 //
-// All three annotation timestamps are server-assigned and are cleared. The
-// dash0.com/id label is preserved, so a stripped definition still addresses the
-// same aggregation on update. Callers that want a definition suitable for
-// creating a new aggregation should also call [ClearTimeSeriesAggregationID].
+// All three annotation timestamps are server-assigned and are cleared.
+// The dash0.com/id label is preserved, so a stripped definition still addresses the same aggregation on update.
+// Callers that want a definition suitable for creating a new aggregation should also call [ClearTimeSeriesAggregationID].
 func StripTimeSeriesAggregationServerFields(aggregation *TimeSeriesAggregationDefinition) {
 	if aggregation == nil {
 		return
@@ -142,8 +145,7 @@ func StripTimeSeriesAggregationServerFields(aggregation *TimeSeriesAggregationDe
 	}
 }
 
-// ClearTimeSeriesAggregationID removes the ID from a time series aggregation
-// definition.
+// ClearTimeSeriesAggregationID removes the ID from a time series aggregation definition.
 func ClearTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition) {
 	if aggregation == nil {
 		return
@@ -153,8 +155,7 @@ func ClearTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition) 
 	}
 }
 
-// GetTimeSeriesAggregationDataset extracts the dataset from a time series
-// aggregation definition.
+// GetTimeSeriesAggregationDataset extracts the dataset from a time series aggregation definition.
 func GetTimeSeriesAggregationDataset(aggregation *TimeSeriesAggregationDefinition) string {
 	if aggregation == nil || aggregation.Metadata.Labels == nil || aggregation.Metadata.Labels.Dash0Comdataset == nil {
 		return ""
@@ -162,8 +163,7 @@ func GetTimeSeriesAggregationDataset(aggregation *TimeSeriesAggregationDefinitio
 	return *aggregation.Metadata.Labels.Dash0Comdataset
 }
 
-// SetTimeSeriesAggregationDataset sets the dash0.com/dataset label on a time
-// series aggregation definition, initializing the labels struct if needed.
+// SetTimeSeriesAggregationDataset sets the dash0.com/dataset label on a time series aggregation definition, initializing the labels struct if needed.
 func SetTimeSeriesAggregationDataset(aggregation *TimeSeriesAggregationDefinition, dataset string) {
 	if aggregation == nil {
 		return
@@ -174,8 +174,7 @@ func SetTimeSeriesAggregationDataset(aggregation *TimeSeriesAggregationDefinitio
 	aggregation.Metadata.Labels.Dash0Comdataset = &dataset
 }
 
-// GetTimeSeriesAggregationID extracts the ID from a time series aggregation
-// definition.
+// GetTimeSeriesAggregationID extracts the ID from a time series aggregation definition.
 func GetTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition) string {
 	if aggregation == nil || aggregation.Metadata.Labels == nil || aggregation.Metadata.Labels.Dash0Comid == nil {
 		return ""
@@ -183,9 +182,8 @@ func GetTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition) st
 	return *aggregation.Metadata.Labels.Dash0Comid
 }
 
-// GetTimeSeriesAggregationName extracts the display name from a time series
-// aggregation definition, falling back to metadata.name when the display block
-// is absent or its name is empty.
+// GetTimeSeriesAggregationName extracts the display name from a time series aggregation definition.
+// It falls back to metadata.name when the display block is absent or its name is empty.
 func GetTimeSeriesAggregationName(aggregation *TimeSeriesAggregationDefinition) string {
 	if aggregation == nil {
 		return ""
@@ -196,8 +194,7 @@ func GetTimeSeriesAggregationName(aggregation *TimeSeriesAggregationDefinition) 
 	return aggregation.Metadata.Name
 }
 
-// SetTimeSeriesAggregationID sets the dash0.com/id label on a time series
-// aggregation definition, initializing the labels struct if needed.
+// SetTimeSeriesAggregationID sets the dash0.com/id label on a time series aggregation definition, initializing the labels struct if needed.
 func SetTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition, id string) {
 	if aggregation == nil {
 		return
@@ -208,9 +205,8 @@ func SetTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition, id
 	aggregation.Metadata.Labels.Dash0Comid = &id
 }
 
-// SetTimeSeriesAggregationIDIfAbsent sets the dash0.com/id label on a time
-// series aggregation definition only if it is not already set, initializing the
-// labels struct if needed.
+// SetTimeSeriesAggregationIDIfAbsent sets the dash0.com/id label on a time series aggregation definition only if it is not already set.
+// It initializes the labels struct if needed.
 func SetTimeSeriesAggregationIDIfAbsent(aggregation *TimeSeriesAggregationDefinition, id string) {
 	if aggregation == nil {
 		return
