@@ -1,6 +1,7 @@
 package dash0
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 )
@@ -21,6 +22,16 @@ func assertPtrEqual[T comparable](t *testing.T, field string, got *T, want T) {
 	if *got != want {
 		t.Errorf("%s = %v, want %v", field, *got, want)
 	}
+}
+
+// writeAPIError writes an [ErrorResponse]-shaped body with a JSON content type.
+// The generated parsers only populate their typed error fields on a JSON content type, so a test server that skips it produces an error the [IsNotFound] family cannot classify.
+func writeAPIError(w http.ResponseWriter, status int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(ErrorResponse{
+		Error: Error{Code: status, Message: message},
+	})
 }
 
 func newTestClient(t *testing.T, serverURL string) Client {

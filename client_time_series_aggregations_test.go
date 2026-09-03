@@ -3,6 +3,7 @@ package dash0
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -32,17 +33,6 @@ func newTestTimeSeriesAggregation() TimeSeriesAggregationDefinition {
 			},
 		},
 	}
-}
-
-// writeAPIError writes an ErrorResponse-shaped body with a JSON content type, so
-// the generated parser populates the typed error field and the errors.go
-// classification helpers recognize the result as an APIError.
-func writeAPIError(w http.ResponseWriter, status int, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(ErrorResponse{
-		Error: Error{Code: status, Message: message},
-	})
 }
 
 func TestTimeSeriesAggregations_Integration(t *testing.T) {
@@ -360,6 +350,32 @@ func TestTimeSeriesAggregations_Integration(t *testing.T) {
 		}
 	})
 
+	t.Run("CreateTimeSeriesAggregation rejects a nil aggregation", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("the request should not reach the server")
+		}))
+		defer server.Close()
+
+		_, err := newTestClient(t, server.URL).CreateTimeSeriesAggregation(context.Background(), nil, nil)
+		if err == nil {
+			t.Fatal("expected an error for a nil aggregation")
+		}
+		assertEqual(t, "error", err.Error(), "dash0: create time series aggregation requires a non-nil aggregation")
+	})
+
+	t.Run("UpdateTimeSeriesAggregation rejects a nil aggregation", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("the request should not reach the server")
+		}))
+		defer server.Close()
+
+		_, err := newTestClient(t, server.URL).UpdateTimeSeriesAggregation(context.Background(), "tsa-123", nil, nil)
+		if err == nil {
+			t.Fatal("expected an error for a nil aggregation")
+		}
+		assertEqual(t, "error", err.Error(), "dash0: update time series aggregation requires a non-nil aggregation")
+	})
+
 	t.Run("UpdateTimeSeriesAggregation puts the definition", func(t *testing.T) {
 		aggregation := newTestTimeSeriesAggregation()
 		var gotURL *url.URL
@@ -551,23 +567,23 @@ func TestTimeSeriesAggregations_APINotConfigured(t *testing.T) {
 	aggregation := newTestTimeSeriesAggregation()
 	ctx := context.Background()
 
-	if _, err := c.ListTimeSeriesAggregations(ctx, nil); err != ErrAPINotConfigured {
+	if _, err := c.ListTimeSeriesAggregations(ctx, nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("ListTimeSeriesAggregations error = %v, want ErrAPINotConfigured", err)
 	}
-	if _, err := c.GetTimeSeriesAggregation(ctx, "tsa-123", nil); err != ErrAPINotConfigured {
+	if _, err := c.GetTimeSeriesAggregation(ctx, "tsa-123", nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("GetTimeSeriesAggregation error = %v, want ErrAPINotConfigured", err)
 	}
-	if _, err := c.CreateTimeSeriesAggregation(ctx, &aggregation, nil); err != ErrAPINotConfigured {
+	if _, err := c.CreateTimeSeriesAggregation(ctx, &aggregation, nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("CreateTimeSeriesAggregation error = %v, want ErrAPINotConfigured", err)
 	}
-	if _, err := c.UpdateTimeSeriesAggregation(ctx, "tsa-123", &aggregation, nil); err != ErrAPINotConfigured {
+	if _, err := c.UpdateTimeSeriesAggregation(ctx, "tsa-123", &aggregation, nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("UpdateTimeSeriesAggregation error = %v, want ErrAPINotConfigured", err)
 	}
-	if err := c.DeleteTimeSeriesAggregation(ctx, "tsa-123", nil); err != ErrAPINotConfigured {
+	if err := c.DeleteTimeSeriesAggregation(ctx, "tsa-123", nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("DeleteTimeSeriesAggregation error = %v, want ErrAPINotConfigured", err)
 	}
 	iter := c.ListTimeSeriesAggregationsIter(ctx, nil)
-	if iter.Err() != ErrAPINotConfigured {
+	if !errors.Is(iter.Err(), ErrAPINotConfigured) {
 		t.Errorf("ListTimeSeriesAggregationsIter error = %v, want ErrAPINotConfigured", iter.Err())
 	}
 }
