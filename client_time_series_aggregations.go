@@ -43,6 +43,7 @@ func (c *client) GetTimeSeriesAggregation(ctx context.Context, originOrID string
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
+	// Deliberate: the generated parser populates JSON200 only on a JSON content type, so without this guard a 200 carrying anything else returns (nil, nil).
 	if resp.JSON200 == nil {
 		return nil, fmt.Errorf("dash0: unexpected nil response")
 	}
@@ -53,6 +54,9 @@ func (c *client) GetTimeSeriesAggregation(ctx context.Context, originOrID string
 func (c *client) CreateTimeSeriesAggregation(ctx context.Context, aggregation *TimeSeriesAggregationDefinition, dataset *string) (*TimeSeriesAggregationDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
+	}
+	if aggregation == nil {
+		return nil, fmt.Errorf("dash0: create time series aggregation requires a non-nil aggregation")
 	}
 	params := &PostApiTimeSeriesAggregationsParams{
 		Dataset: dataset,
@@ -79,6 +83,9 @@ func (c *client) UpdateTimeSeriesAggregation(ctx context.Context, originOrID str
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	if aggregation == nil {
+		return nil, fmt.Errorf("dash0: update time series aggregation requires a non-nil aggregation")
+	}
 	params := &PutApiTimeSeriesAggregationsOriginOrIdParams{
 		Dataset: dataset,
 	}
@@ -89,6 +96,7 @@ func (c *client) UpdateTimeSeriesAggregation(ctx context.Context, originOrID str
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
+	// Deliberate, as in GetTimeSeriesAggregation above.
 	if resp.JSON200 == nil {
 		return nil, fmt.Errorf("dash0: unexpected nil response")
 	}
