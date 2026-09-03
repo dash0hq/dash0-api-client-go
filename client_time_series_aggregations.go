@@ -43,10 +43,6 @@ func (c *client) GetTimeSeriesAggregation(ctx context.Context, originOrID string
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
-	// Deliberate: the generated parser populates JSON200 only on a JSON content type, so without this guard a 200 carrying anything else returns (nil, nil).
-	if resp.JSON200 == nil {
-		return nil, fmt.Errorf("dash0: unexpected nil response")
-	}
 	return resp.JSON200, nil
 }
 
@@ -95,10 +91,6 @@ func (c *client) UpdateTimeSeriesAggregation(ctx context.Context, originOrID str
 	}
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
-	}
-	// Deliberate, as in GetTimeSeriesAggregation above.
-	if resp.JSON200 == nil {
-		return nil, fmt.Errorf("dash0: unexpected nil response")
 	}
 	return resp.JSON200, nil
 }

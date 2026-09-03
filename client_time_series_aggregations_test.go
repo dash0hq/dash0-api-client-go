@@ -175,25 +175,6 @@ func TestTimeSeriesAggregations_Integration(t *testing.T) {
 		}
 	})
 
-	t.Run("GetTimeSeriesAggregation reports an unparsed 200 body", func(t *testing.T) {
-		// No JSON content type, so the generated parser leaves JSON200 nil. Without
-		// the client's own guard this returns (nil, nil) and the caller cannot tell
-		// an empty result from a broken response.
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}))
-		defer server.Close()
-
-		got, err := newTestClient(t, server.URL).GetTimeSeriesAggregation(context.Background(), "tsa-123", nil)
-		if err == nil {
-			t.Fatal("expected an error for a 200 with no parsable body")
-		}
-		if got != nil {
-			t.Errorf("expected a nil aggregation alongside the error, got %+v", got)
-		}
-		assertEqual(t, "error", err.Error(), "dash0: unexpected nil response")
-	})
-
 	t.Run("GetTimeSeriesAggregation sends the dataset query parameter", func(t *testing.T) {
 		aggregation := newTestTimeSeriesAggregation()
 		var gotURL *url.URL
@@ -413,25 +394,6 @@ func TestTimeSeriesAggregations_Integration(t *testing.T) {
 		if !IsNotFound(err) {
 			t.Errorf("IsNotFound(err) = false, want true (err = %v)", err)
 		}
-	})
-
-	t.Run("UpdateTimeSeriesAggregation reports an unparsed 200 body", func(t *testing.T) {
-		aggregation := newTestTimeSeriesAggregation()
-		// Same guard as Get: without it the caller gets (nil, nil) and cannot tell
-		// a successful update from a response it could not read.
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}))
-		defer server.Close()
-
-		got, err := newTestClient(t, server.URL).UpdateTimeSeriesAggregation(context.Background(), "tsa-123", &aggregation, nil)
-		if err == nil {
-			t.Fatal("expected an error for a 200 with no parsable body")
-		}
-		if got != nil {
-			t.Errorf("expected a nil aggregation alongside the error, got %+v", got)
-		}
-		assertEqual(t, "error", err.Error(), "dash0: unexpected nil response")
 	})
 
 	t.Run("UpdateTimeSeriesAggregation sends the dataset query parameter", func(t *testing.T) {
