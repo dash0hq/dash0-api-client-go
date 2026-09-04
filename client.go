@@ -67,6 +67,14 @@ type Client interface {
 	DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIter(ctx context.Context, dataset *string) *Iter[SamplingDefinition]
 
+	// Time Series Aggregations
+	ListTimeSeriesAggregations(ctx context.Context, dataset *string) ([]*TimeSeriesAggregationDefinition, error)
+	GetTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) (*TimeSeriesAggregationDefinition, error)
+	CreateTimeSeriesAggregation(ctx context.Context, aggregation *TimeSeriesAggregationDefinition, dataset *string) (*TimeSeriesAggregationDefinition, error)
+	UpdateTimeSeriesAggregation(ctx context.Context, originOrID string, aggregation *TimeSeriesAggregationDefinition, dataset *string) (*TimeSeriesAggregationDefinition, error)
+	DeleteTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) error
+	ListTimeSeriesAggregationsIter(ctx context.Context, dataset *string) *Iter[TimeSeriesAggregationDefinition]
+
 	// Members
 	ListMembers(ctx context.Context) ([]*MemberDefinition, error)
 	InviteMember(ctx context.Context, request *InviteMemberRequest) error

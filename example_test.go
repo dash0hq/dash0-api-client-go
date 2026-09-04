@@ -409,6 +409,104 @@ func ExampleSetViewID() {
 	// Output: v-99
 }
 
+// Time series aggregation helpers
+
+func ExampleGetTimeSeriesAggregationName() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Spec: dash0.TimeSeriesAggregationSpec{
+			Display: &dash0.TimeSeriesAggregationDisplay{Name: "HTTP request duration rollup"},
+		},
+	}
+	fmt.Println(dash0.GetTimeSeriesAggregationName(aggregation))
+	// Output: HTTP request duration rollup
+}
+
+func ExampleGetTimeSeriesAggregationName_fallback() {
+	// Falls back to metadata.name when the spec carries no display block.
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Metadata: dash0.TimeSeriesAggregationMetadata{Name: "http-request-duration-rollup"},
+	}
+	fmt.Println(dash0.GetTimeSeriesAggregationName(aggregation))
+	// Output: http-request-duration-rollup
+}
+
+func ExampleGetTimeSeriesAggregationID() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Metadata: dash0.TimeSeriesAggregationMetadata{
+			Labels: &dash0.TimeSeriesAggregationLabels{Dash0Comid: dash0.Ptr("tsa-123")},
+		},
+	}
+	fmt.Println(dash0.GetTimeSeriesAggregationID(aggregation))
+	// Output: tsa-123
+}
+
+func ExampleGetTimeSeriesAggregationDataset() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Metadata: dash0.TimeSeriesAggregationMetadata{
+			Labels: &dash0.TimeSeriesAggregationLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetTimeSeriesAggregationDataset(aggregation))
+	// Output: production
+}
+
+func ExampleSetTimeSeriesAggregationDataset() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{}
+	dash0.SetTimeSeriesAggregationDataset(aggregation, "production")
+	fmt.Println(*aggregation.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
+func ExampleSetTimeSeriesAggregationID() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{}
+	dash0.SetTimeSeriesAggregationID(aggregation, "tsa-456")
+	fmt.Println(*aggregation.Metadata.Labels.Dash0Comid)
+	// Output: tsa-456
+}
+
+func ExampleSetTimeSeriesAggregationIDIfAbsent() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Metadata: dash0.TimeSeriesAggregationMetadata{
+			Labels: &dash0.TimeSeriesAggregationLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetTimeSeriesAggregationIDIfAbsent(aggregation, "tsa-456")
+	fmt.Println(*aggregation.Metadata.Labels.Dash0Comid)
+	// Output: existing
+}
+
+func ExampleStripTimeSeriesAggregationServerFields() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Metadata: dash0.TimeSeriesAggregationMetadata{
+			Name: "http-request-duration-rollup",
+			Labels: &dash0.TimeSeriesAggregationLabels{
+				Dash0Comid:      dash0.Ptr("tsa-123"),
+				Dash0Comversion: dash0.Ptr("2"),
+			},
+		},
+	}
+	dash0.StripTimeSeriesAggregationServerFields(aggregation)
+	// The version is server-assigned and is cleared; the ID is preserved so the
+	// definition still addresses the same aggregation on update.
+	fmt.Println(aggregation.Metadata.Labels.Dash0Comversion == nil)
+	fmt.Println(dash0.GetTimeSeriesAggregationID(aggregation))
+	// Output:
+	// true
+	// tsa-123
+}
+
+func ExampleClearTimeSeriesAggregationID() {
+	aggregation := &dash0.TimeSeriesAggregationDefinition{
+		Metadata: dash0.TimeSeriesAggregationMetadata{
+			Labels: &dash0.TimeSeriesAggregationLabels{Dash0Comid: dash0.Ptr("tsa-123")},
+		},
+	}
+	dash0.ClearTimeSeriesAggregationID(aggregation)
+	fmt.Println(aggregation.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
 // Synthetic check helpers
 
 func ExampleGetSyntheticCheckName() {
