@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.22.0
+
+
+### Features
+- add CRUD, iterator, and metadata helpers (#42)
+
 ## v1.21.1
 
 
