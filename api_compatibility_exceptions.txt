@@ -262,3 +262,12 @@ SlackThreadTimestamp
 SlackTriggerVariableName
 SlackUserHandle
 SlackUserId
+
+# <NEXT_RELEASE>: Upstream spec moved networkLevel from the agentic-workflow
+# guardrails to the sandbox, made HTTP check headers and query parameters
+# optional, and replaced the synthetic-check location list of strings with
+# SyntheticCheckLocationEntry objects. No in-package shim is possible.
+AgenticWorkflowGuardrails.NetworkLevel
+HttpRequestSpec.Headers
+HttpRequestSpec.QueryParameters
+GetApiSyntheticChecksLocationsResponse.JSON200

@@ -18,6 +18,58 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for Agent0ModelClassPreference.
+const (
+	Agent0ModelClassPreferenceAdvanced Agent0ModelClassPreference = "advanced"
+	Agent0ModelClassPreferenceLight    Agent0ModelClassPreference = "light"
+	Agent0ModelClassPreferencePremium  Agent0ModelClassPreference = "premium"
+	Agent0ModelClassPreferenceStandard Agent0ModelClassPreference = "standard"
+)
+
+// Defines values for Agent0ModelMaker.
+const (
+	Alibaba   Agent0ModelMaker = "alibaba"
+	Amazon    Agent0ModelMaker = "amazon"
+	Anthropic Agent0ModelMaker = "anthropic"
+	Cohere    Agent0ModelMaker = "cohere"
+	Deepseek  Agent0ModelMaker = "deepseek"
+	Google    Agent0ModelMaker = "google"
+	Meta      Agent0ModelMaker = "meta"
+	Microsoft Agent0ModelMaker = "microsoft"
+	Mistral   Agent0ModelMaker = "mistral"
+	Moonshot  Agent0ModelMaker = "moonshot"
+	Nvidia    Agent0ModelMaker = "nvidia"
+	Openai    Agent0ModelMaker = "openai"
+	Xai       Agent0ModelMaker = "xai"
+	Zhipu     Agent0ModelMaker = "zhipu"
+)
+
+// Defines values for Agent0ModelSpecReasoningSummary.
+const (
+	Auto Agent0ModelSpecReasoningSummary = "auto"
+)
+
+// Defines values for Agent0ModelSpeed.
+const (
+	Fast Agent0ModelSpeed = "fast"
+)
+
+// Defines values for Agent0ReasoningEffort.
+const (
+	High   Agent0ReasoningEffort = "high"
+	Low    Agent0ReasoningEffort = "low"
+	Max    Agent0ReasoningEffort = "max"
+	Medium Agent0ReasoningEffort = "medium"
+	Xhigh  Agent0ReasoningEffort = "xhigh"
+)
+
+// Defines values for Agent0SandboxProfileType.
+const (
+	Catalog Agent0SandboxProfileType = "catalog"
+	Custom  Agent0SandboxProfileType = "custom"
+	Default Agent0SandboxProfileType = "default"
+)
+
 // Defines values for AgenticWorkflowAction.
 const (
 	AgenticWorkflowDelete AgenticWorkflowAction = "agentic_workflow:delete"
@@ -40,13 +92,16 @@ const (
 
 // Defines values for AgenticWorkflowTriggerDelivery.
 const (
-	Continue AgenticWorkflowTriggerDelivery = "continue"
-	Spawn    AgenticWorkflowTriggerDelivery = "spawn"
+	AgenticWorkflowTriggerDeliveryContinue AgenticWorkflowTriggerDelivery = "continue"
+	AgenticWorkflowTriggerDeliverySpawn    AgenticWorkflowTriggerDelivery = "spawn"
 )
 
 // Defines values for AgenticWorkflowTriggerKind.
 const (
+	AgenticWorkflowTriggerKindDarkplanePullRequestEvaluation AgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	AgenticWorkflowTriggerKindFailedCheckNew                 AgenticWorkflowTriggerKind = "failed_check.new"
+	AgenticWorkflowTriggerKindGithubCheckRun                 AgenticWorkflowTriggerKind = "github.check_run"
+	AgenticWorkflowTriggerKindGithubCheckSuite               AgenticWorkflowTriggerKind = "github.check_suite"
 	AgenticWorkflowTriggerKindGithubDeployment               AgenticWorkflowTriggerKind = "github.deployment"
 	AgenticWorkflowTriggerKindGithubDeploymentStatus         AgenticWorkflowTriggerKind = "github.deployment_status"
 	AgenticWorkflowTriggerKindGithubIssueComment             AgenticWorkflowTriggerKind = "github.issue_comment"
@@ -54,6 +109,11 @@ const (
 	AgenticWorkflowTriggerKindGithubPullRequestReview        AgenticWorkflowTriggerKind = "github.pull_request_review"
 	AgenticWorkflowTriggerKindGithubPullRequestReviewComment AgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	AgenticWorkflowTriggerKindGithubRelease                  AgenticWorkflowTriggerKind = "github.release"
+	AgenticWorkflowTriggerKindGithubWorkflowDispatch         AgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	AgenticWorkflowTriggerKindGithubWorkflowJob              AgenticWorkflowTriggerKind = "github.workflow_job"
+	AgenticWorkflowTriggerKindGithubWorkflowRun              AgenticWorkflowTriggerKind = "github.workflow_run"
+	AgenticWorkflowTriggerKindGitlabMergeRequest             AgenticWorkflowTriggerKind = "gitlab.merge_request"
+	AgenticWorkflowTriggerKindGitlabNote                     AgenticWorkflowTriggerKind = "gitlab.note"
 	AgenticWorkflowTriggerKindLinearComment                  AgenticWorkflowTriggerKind = "linear.comment"
 	AgenticWorkflowTriggerKindLinearLabelAdded               AgenticWorkflowTriggerKind = "linear.label_added"
 	AgenticWorkflowTriggerKindManual                         AgenticWorkflowTriggerKind = "manual"
@@ -62,6 +122,13 @@ const (
 	AgenticWorkflowTriggerKindSlackBotMessage                AgenticWorkflowTriggerKind = "slack_bot.message"
 	AgenticWorkflowTriggerKindSlackBotReaction               AgenticWorkflowTriggerKind = "slack_bot.reaction"
 	AgenticWorkflowTriggerKindWebhook                        AgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for AnomalyDirection.
+const (
+	AnomalyDirectionAbove AnomalyDirection = "above"
+	AnomalyDirectionBelow AnomalyDirection = "below"
+	AnomalyDirectionBoth  AnomalyDirection = "both"
 )
 
 // Defines values for AttributeFilterOperator.
@@ -87,20 +154,112 @@ const (
 	AttributeFilterOperatorStartsWith       AttributeFilterOperator = "starts_with"
 )
 
+// Defines values for AttributePatternRuleDefinitionKind.
+const (
+	Dash0AttributePatternRule AttributePatternRuleDefinitionKind = "Dash0AttributePatternRule"
+)
+
+// Defines values for AttributePatternRuleOwnership.
+const (
+	AutoDerived AttributePatternRuleOwnership = "auto_derived"
+	UserDefined AttributePatternRuleOwnership = "user_defined"
+)
+
+// Defines values for AttributePatternRuleStatus.
+const (
+	Active   AttributePatternRuleStatus = "active"
+	Inactive AttributePatternRuleStatus = "inactive"
+)
+
 // Defines values for AxisScale.
 const (
 	AxisScaleLinear AxisScale = "linear"
 	AxisScaleLog10  AxisScale = "log10"
 )
 
+// Defines values for ChangeGateComparison.
+const (
+	AbsoluteDelta  ChangeGateComparison = "absolute_delta"
+	RelativeFactor ChangeGateComparison = "relative_factor"
+)
+
 // Defines values for CrdSource.
 const (
-	Api       CrdSource = "api"
-	Dash0Cli  CrdSource = "dash0-cli"
-	Operator  CrdSource = "operator"
-	Platform  CrdSource = "platform"
-	Terraform CrdSource = "terraform"
-	Ui        CrdSource = "ui"
+	Api              CrdSource = "api"
+	Dash0Cli         CrdSource = "dash0-cli"
+	IdentityProvider CrdSource = "identity-provider"
+	Operator         CrdSource = "operator"
+	Platform         CrdSource = "platform"
+	Terraform        CrdSource = "terraform"
+	Ui               CrdSource = "ui"
+)
+
+// Defines values for DarkplaneAutoApprovalDecision.
+const (
+	Approve DarkplaneAutoApprovalDecision = "approve"
+	Hold    DarkplaneAutoApprovalDecision = "hold"
+)
+
+// Defines values for DarkplaneAutoApprovalMode.
+const (
+	AutoApprove DarkplaneAutoApprovalMode = "auto_approve"
+	AutoMerge   DarkplaneAutoApprovalMode = "auto_merge"
+	DryRun      DarkplaneAutoApprovalMode = "dry_run"
+)
+
+// Defines values for DarkplaneEvaluationTriggerDelivery.
+const (
+	DarkplaneEvaluationTriggerDeliverySpawn DarkplaneEvaluationTriggerDelivery = "spawn"
+)
+
+// Defines values for DarkplaneEvaluationTriggerVariableName.
+const (
+	DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.decision"
+	DarkplaneAutoApprovalEvaluationId                          DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.evaluation_id"
+	DarkplaneEvaluationTriggerVariableNameAutoApprovalMode     DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.mode"
+	DarkplaneAutoApprovalReasoning                             DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.reasoning"
+	DarkplaneAutoApprovalScore                                 DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.score"
+	DarkplaneCommitSha                                         DarkplaneEvaluationTriggerVariableName = "darkplane.commit_sha"
+	DarkplaneEvaluationTriggerVariableNameProvider             DarkplaneEvaluationTriggerVariableName = "darkplane.provider"
+	DarkplanePullRequestId                                     DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_id"
+	DarkplanePullRequestNumber                                 DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_number"
+	DarkplanePullRequestUrl                                    DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_url"
+	DarkplaneRepository                                        DarkplaneEvaluationTriggerVariableName = "darkplane.repository"
+	DarkplaneRepositoryId                                      DarkplaneEvaluationTriggerVariableName = "darkplane.repository_id"
+)
+
+// Defines values for DarkplaneProvider.
+const (
+	Github DarkplaneProvider = "github"
+	Gitlab DarkplaneProvider = "gitlab"
+)
+
+// Defines values for DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind.
+const (
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindFailedCheckNew                 DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "failed_check.new"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubCheckRun                 DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.check_run"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubCheckSuite               DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.check_suite"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubDeployment               DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.deployment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubDeploymentStatus         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.deployment_status"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubIssueComment             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.issue_comment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPullRequest              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.pull_request"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPullRequestReview        DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.pull_request_review"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPullRequestReviewComment DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubRelease                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.release"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubWorkflowDispatch         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubWorkflowJob              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.workflow_job"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubWorkflowRun              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.workflow_run"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabMergeRequest             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabNote                     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "gitlab.note"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearComment                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.comment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearLabelAdded               DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.label_added"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindManual                         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "manual"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSchedule                       DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "schedule"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSlackBotFailedCheckNew         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSlackBotMessage                DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "slack_bot.message"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSlackBotReaction               DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindWebhook                        DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "webhook"
 )
 
 // Defines values for DashboardDefinitionKind.
@@ -133,7 +292,10 @@ const (
 
 // Defines values for FailedCheckAgenticWorkflowTriggerKind.
 const (
+	FailedCheckAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation FailedCheckAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	FailedCheckAgenticWorkflowTriggerKindFailedCheckNew                 FailedCheckAgenticWorkflowTriggerKind = "failed_check.new"
+	FailedCheckAgenticWorkflowTriggerKindGithubCheckRun                 FailedCheckAgenticWorkflowTriggerKind = "github.check_run"
+	FailedCheckAgenticWorkflowTriggerKindGithubCheckSuite               FailedCheckAgenticWorkflowTriggerKind = "github.check_suite"
 	FailedCheckAgenticWorkflowTriggerKindGithubDeployment               FailedCheckAgenticWorkflowTriggerKind = "github.deployment"
 	FailedCheckAgenticWorkflowTriggerKindGithubDeploymentStatus         FailedCheckAgenticWorkflowTriggerKind = "github.deployment_status"
 	FailedCheckAgenticWorkflowTriggerKindGithubIssueComment             FailedCheckAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -141,6 +303,11 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindGithubPullRequestReview        FailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review"
 	FailedCheckAgenticWorkflowTriggerKindGithubPullRequestReviewComment FailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	FailedCheckAgenticWorkflowTriggerKindGithubRelease                  FailedCheckAgenticWorkflowTriggerKind = "github.release"
+	FailedCheckAgenticWorkflowTriggerKindGithubWorkflowDispatch         FailedCheckAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	FailedCheckAgenticWorkflowTriggerKindGithubWorkflowJob              FailedCheckAgenticWorkflowTriggerKind = "github.workflow_job"
+	FailedCheckAgenticWorkflowTriggerKindGithubWorkflowRun              FailedCheckAgenticWorkflowTriggerKind = "github.workflow_run"
+	FailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest             FailedCheckAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	FailedCheckAgenticWorkflowTriggerKindGitlabNote                     FailedCheckAgenticWorkflowTriggerKind = "gitlab.note"
 	FailedCheckAgenticWorkflowTriggerKindLinearComment                  FailedCheckAgenticWorkflowTriggerKind = "linear.comment"
 	FailedCheckAgenticWorkflowTriggerKindLinearLabelAdded               FailedCheckAgenticWorkflowTriggerKind = "linear.label_added"
 	FailedCheckAgenticWorkflowTriggerKindManual                         FailedCheckAgenticWorkflowTriggerKind = "manual"
@@ -164,6 +331,39 @@ const (
 	GenAIAttributeRedactionRedact   GenAIAttributeRedaction = "redact"
 )
 
+// Defines values for GenerativeAiEvaluationDefinitionKind.
+const (
+	Dash0GenerativeAiEvaluation GenerativeAiEvaluationDefinitionKind = "Dash0GenerativeAiEvaluation"
+)
+
+// Defines values for GenerativeAiEvaluationIntent.
+const (
+	GenerativeAiEvaluationIntentNegative GenerativeAiEvaluationIntent = "negative"
+	GenerativeAiEvaluationIntentNeutral  GenerativeAiEvaluationIntent = "neutral"
+	GenerativeAiEvaluationIntentPositive GenerativeAiEvaluationIntent = "positive"
+)
+
+// Defines values for GenerativeAiEvaluationJudgeOutputBooleanKind.
+const (
+	Boolean GenerativeAiEvaluationJudgeOutputBooleanKind = "boolean"
+)
+
+// Defines values for GenerativeAiEvaluationJudgeOutputCategoricalKind.
+const (
+	Categorical GenerativeAiEvaluationJudgeOutputCategoricalKind = "categorical"
+)
+
+// Defines values for GenerativeAiEvaluationJudgeOutputNumericKind.
+const (
+	Numeric GenerativeAiEvaluationJudgeOutputNumericKind = "numeric"
+)
+
+// Defines values for GenerativeAiEvaluationModel.
+const (
+	GenerativeAiEvaluationModelLight    GenerativeAiEvaluationModel = "light"
+	GenerativeAiEvaluationModelStandard GenerativeAiEvaluationModel = "standard"
+)
+
 // Defines values for GeoLocationStorageStrategy.
 const (
 	GeoLocationStorageStrategyDoNotStore  GeoLocationStorageStrategy = "do_not_store"
@@ -171,9 +371,113 @@ const (
 	GeoLocationStorageStrategyUpToCountry GeoLocationStorageStrategy = "up_to_country"
 )
 
+// Defines values for GitHubCheckRunAgenticWorkflowTriggerKind.
+const (
+	GitHubCheckRunAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubCheckRunAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitHubCheckRunAgenticWorkflowTriggerKindFailedCheckNew                 GitHubCheckRunAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubCheckRun                 GitHubCheckRunAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubCheckSuite               GitHubCheckRunAgenticWorkflowTriggerKind = "github.check_suite"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubDeployment               GitHubCheckRunAgenticWorkflowTriggerKind = "github.deployment"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubCheckRunAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubIssueComment             GitHubCheckRunAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubPullRequest              GitHubCheckRunAgenticWorkflowTriggerKind = "github.pull_request"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubCheckRunAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubCheckRunAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubRelease                  GitHubCheckRunAgenticWorkflowTriggerKind = "github.release"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubCheckRunAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubCheckRunAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubCheckRunAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubCheckRunAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubCheckRunAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubCheckRunAgenticWorkflowTriggerKindGitlabNote                     GitHubCheckRunAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubCheckRunAgenticWorkflowTriggerKindLinearComment                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.comment"
+	GitHubCheckRunAgenticWorkflowTriggerKindLinearLabelAdded               GitHubCheckRunAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubCheckRunAgenticWorkflowTriggerKindManual                         GitHubCheckRunAgenticWorkflowTriggerKind = "manual"
+	GitHubCheckRunAgenticWorkflowTriggerKindSchedule                       GitHubCheckRunAgenticWorkflowTriggerKind = "schedule"
+	GitHubCheckRunAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubCheckRunAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitHubCheckRunAgenticWorkflowTriggerKindSlackBotMessage                GitHubCheckRunAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitHubCheckRunAgenticWorkflowTriggerKindSlackBotReaction               GitHubCheckRunAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitHubCheckRunAgenticWorkflowTriggerKindWebhook                        GitHubCheckRunAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitHubCheckRunConclusion.
+const (
+	GitHubCheckRunConclusionActionRequired GitHubCheckRunConclusion = "action_required"
+	GitHubCheckRunConclusionCancelled      GitHubCheckRunConclusion = "cancelled"
+	GitHubCheckRunConclusionFailure        GitHubCheckRunConclusion = "failure"
+	GitHubCheckRunConclusionNeutral        GitHubCheckRunConclusion = "neutral"
+	GitHubCheckRunConclusionPending        GitHubCheckRunConclusion = "pending"
+	GitHubCheckRunConclusionSkipped        GitHubCheckRunConclusion = "skipped"
+	GitHubCheckRunConclusionStale          GitHubCheckRunConclusion = "stale"
+	GitHubCheckRunConclusionStartupFailure GitHubCheckRunConclusion = "startup_failure"
+	GitHubCheckRunConclusionSuccess        GitHubCheckRunConclusion = "success"
+	GitHubCheckRunConclusionTimedOut       GitHubCheckRunConclusion = "timed_out"
+	GitHubCheckRunConclusionWaiting        GitHubCheckRunConclusion = "waiting"
+)
+
+// Defines values for GitHubCheckRunStatus.
+const (
+	GitHubCheckRunStatusCompleted  GitHubCheckRunStatus = "completed"
+	GitHubCheckRunStatusInProgress GitHubCheckRunStatus = "in_progress"
+	GitHubCheckRunStatusPending    GitHubCheckRunStatus = "pending"
+	GitHubCheckRunStatusQueued     GitHubCheckRunStatus = "queued"
+)
+
+// Defines values for GitHubCheckSuiteAgenticWorkflowTriggerKind.
+const (
+	GitHubCheckSuiteAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubCheckSuiteAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindFailedCheckNew                 GitHubCheckSuiteAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubCheckRun                 GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubCheckSuite               GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.check_suite"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubDeployment               GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.deployment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubIssueComment             GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPullRequest              GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.pull_request"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubRelease                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.release"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubCheckSuiteAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabNote                     GitHubCheckSuiteAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearComment                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.comment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearLabelAdded               GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindManual                         GitHubCheckSuiteAgenticWorkflowTriggerKind = "manual"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindSchedule                       GitHubCheckSuiteAgenticWorkflowTriggerKind = "schedule"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubCheckSuiteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindSlackBotMessage                GitHubCheckSuiteAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindSlackBotReaction               GitHubCheckSuiteAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindWebhook                        GitHubCheckSuiteAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitHubCheckSuiteConclusion.
+const (
+	GitHubCheckSuiteConclusionActionRequired GitHubCheckSuiteConclusion = "action_required"
+	GitHubCheckSuiteConclusionCancelled      GitHubCheckSuiteConclusion = "cancelled"
+	GitHubCheckSuiteConclusionFailure        GitHubCheckSuiteConclusion = "failure"
+	GitHubCheckSuiteConclusionNeutral        GitHubCheckSuiteConclusion = "neutral"
+	GitHubCheckSuiteConclusionSkipped        GitHubCheckSuiteConclusion = "skipped"
+	GitHubCheckSuiteConclusionStale          GitHubCheckSuiteConclusion = "stale"
+	GitHubCheckSuiteConclusionStartupFailure GitHubCheckSuiteConclusion = "startup_failure"
+	GitHubCheckSuiteConclusionSuccess        GitHubCheckSuiteConclusion = "success"
+	GitHubCheckSuiteConclusionTimedOut       GitHubCheckSuiteConclusion = "timed_out"
+)
+
+// Defines values for GitHubCheckSuiteStatus.
+const (
+	GitHubCheckSuiteStatusCompleted  GitHubCheckSuiteStatus = "completed"
+	GitHubCheckSuiteStatusInProgress GitHubCheckSuiteStatus = "in_progress"
+	GitHubCheckSuiteStatusPending    GitHubCheckSuiteStatus = "pending"
+	GitHubCheckSuiteStatusQueued     GitHubCheckSuiteStatus = "queued"
+	GitHubCheckSuiteStatusRequested  GitHubCheckSuiteStatus = "requested"
+)
+
 // Defines values for GitHubDeploymentAgenticWorkflowTriggerKind.
 const (
+	GitHubDeploymentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubDeploymentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubDeploymentAgenticWorkflowTriggerKindFailedCheckNew                 GitHubDeploymentAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubDeploymentAgenticWorkflowTriggerKindGithubCheckRun                 GitHubDeploymentAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubDeploymentAgenticWorkflowTriggerKindGithubCheckSuite               GitHubDeploymentAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubDeployment               GitHubDeploymentAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubDeploymentAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubIssueComment             GitHubDeploymentAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -181,6 +485,11 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubDeploymentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubDeploymentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubRelease                  GitHubDeploymentAgenticWorkflowTriggerKind = "github.release"
+	GitHubDeploymentAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubDeploymentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubDeploymentAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubDeploymentAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubDeploymentAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubDeploymentAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubDeploymentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubDeploymentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubDeploymentAgenticWorkflowTriggerKindGitlabNote                     GitHubDeploymentAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearLabelAdded               GitHubDeploymentAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubDeploymentAgenticWorkflowTriggerKindManual                         GitHubDeploymentAgenticWorkflowTriggerKind = "manual"
@@ -193,7 +502,10 @@ const (
 
 // Defines values for GitHubDeploymentStatusAgenticWorkflowTriggerKind.
 const (
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubDeploymentStatusAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindFailedCheckNew                 GitHubDeploymentStatusAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubCheckRun                 GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubCheckSuite               GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubDeployment               GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubIssueComment             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -201,6 +513,11 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubRelease                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.release"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabNote                     GitHubDeploymentStatusAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearLabelAdded               GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindManual                         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "manual"
@@ -213,7 +530,10 @@ const (
 
 // Defines values for GitHubIssueCommentAgenticWorkflowTriggerKind.
 const (
+	GitHubIssueCommentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubIssueCommentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubIssueCommentAgenticWorkflowTriggerKindFailedCheckNew                 GitHubIssueCommentAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGithubCheckRun                 GitHubIssueCommentAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGithubCheckSuite               GitHubIssueCommentAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubDeployment               GitHubIssueCommentAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubIssueCommentAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubIssueComment             GitHubIssueCommentAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -221,6 +541,11 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubIssueCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubIssueCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubRelease                  GitHubIssueCommentAgenticWorkflowTriggerKind = "github.release"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubIssueCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubIssueCommentAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubIssueCommentAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubIssueCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGitlabNote                     GitHubIssueCommentAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearComment                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearLabelAdded               GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubIssueCommentAgenticWorkflowTriggerKindManual                         GitHubIssueCommentAgenticWorkflowTriggerKind = "manual"
@@ -233,7 +558,10 @@ const (
 
 // Defines values for GitHubPullRequestAgenticWorkflowTriggerKind.
 const (
+	GitHubPullRequestAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubPullRequestAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubPullRequestAgenticWorkflowTriggerKindFailedCheckNew                 GitHubPullRequestAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubPullRequestAgenticWorkflowTriggerKindGithubCheckRun                 GitHubPullRequestAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubPullRequestAgenticWorkflowTriggerKindGithubCheckSuite               GitHubPullRequestAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubDeployment               GitHubPullRequestAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubPullRequestAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubIssueComment             GitHubPullRequestAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -241,6 +569,11 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPullRequestAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPullRequestAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubRelease                  GitHubPullRequestAgenticWorkflowTriggerKind = "github.release"
+	GitHubPullRequestAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPullRequestAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubPullRequestAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPullRequestAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubPullRequestAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPullRequestAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubPullRequestAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubPullRequestAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPullRequestAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubPullRequestAgenticWorkflowTriggerKindManual                         GitHubPullRequestAgenticWorkflowTriggerKind = "manual"
@@ -253,7 +586,10 @@ const (
 
 // Defines values for GitHubPullRequestReviewAgenticWorkflowTriggerKind.
 const (
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubPullRequestReviewAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindFailedCheckNew                 GitHubPullRequestReviewAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubCheckRun                 GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubCheckSuite               GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubDeployment               GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubIssueComment             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -261,6 +597,11 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubRelease                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.release"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestReviewAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "manual"
@@ -273,7 +614,10 @@ const (
 
 // Defines values for GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind.
 const (
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindFailedCheckNew                 GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubCheckRun                 GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubCheckSuite               GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubDeployment               GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubIssueComment             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -281,6 +625,11 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubRelease                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.release"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "manual"
@@ -293,7 +642,10 @@ const (
 
 // Defines values for GitHubReleaseAgenticWorkflowTriggerKind.
 const (
+	GitHubReleaseAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubReleaseAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	GitHubReleaseAgenticWorkflowTriggerKindFailedCheckNew                 GitHubReleaseAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubReleaseAgenticWorkflowTriggerKindGithubCheckRun                 GitHubReleaseAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubReleaseAgenticWorkflowTriggerKindGithubCheckSuite               GitHubReleaseAgenticWorkflowTriggerKind = "github.check_suite"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubDeployment               GitHubReleaseAgenticWorkflowTriggerKind = "github.deployment"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubReleaseAgenticWorkflowTriggerKind = "github.deployment_status"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubIssueComment             GitHubReleaseAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -301,6 +653,11 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubReleaseAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubReleaseAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubRelease                  GitHubReleaseAgenticWorkflowTriggerKind = "github.release"
+	GitHubReleaseAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubReleaseAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubReleaseAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubReleaseAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubReleaseAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubReleaseAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubReleaseAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubReleaseAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubReleaseAgenticWorkflowTriggerKindGitlabNote                     GitHubReleaseAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearComment                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearLabelAdded               GitHubReleaseAgenticWorkflowTriggerKind = "linear.label_added"
 	GitHubReleaseAgenticWorkflowTriggerKindManual                         GitHubReleaseAgenticWorkflowTriggerKind = "manual"
@@ -313,17 +670,218 @@ const (
 
 // Defines values for GitHubTriggerVariableName.
 const (
-	GithubAccount               GitHubTriggerVariableName = "github.account"
-	GithubAction                GitHubTriggerVariableName = "github.action"
-	GithubCheckRunStatus        GitHubTriggerVariableName = "github.check_run.status"
-	GithubCommentBody           GitHubTriggerVariableName = "github.comment.body"
-	GithubDeploymentEnvironment GitHubTriggerVariableName = "github.deployment.environment"
-	GithubDeploymentId          GitHubTriggerVariableName = "github.deployment.id"
-	GithubDeploymentStatusState GitHubTriggerVariableName = "github.deployment_status.state"
-	GithubInstallationId        GitHubTriggerVariableName = "github.installation.id"
-	GithubPullRequestNumber     GitHubTriggerVariableName = "github.pull_request.number"
-	GithubReleaseTag            GitHubTriggerVariableName = "github.release.tag"
-	GithubRepository            GitHubTriggerVariableName = "github.repository"
+	GithubAccount                  GitHubTriggerVariableName = "github.account"
+	GithubAction                   GitHubTriggerVariableName = "github.action"
+	GithubCheckRunConclusion       GitHubTriggerVariableName = "github.check_run.conclusion"
+	GithubCheckRunHeadBranch       GitHubTriggerVariableName = "github.check_run.head_branch"
+	GithubCheckRunId               GitHubTriggerVariableName = "github.check_run.id"
+	GithubCheckRunName             GitHubTriggerVariableName = "github.check_run.name"
+	GithubCheckRunStatus           GitHubTriggerVariableName = "github.check_run.status"
+	GithubCheckRunUrl              GitHubTriggerVariableName = "github.check_run.url"
+	GithubCheckSuiteConclusion     GitHubTriggerVariableName = "github.check_suite.conclusion"
+	GithubCheckSuiteHeadBranch     GitHubTriggerVariableName = "github.check_suite.head_branch"
+	GithubCheckSuiteId             GitHubTriggerVariableName = "github.check_suite.id"
+	GithubCheckSuiteStatus         GitHubTriggerVariableName = "github.check_suite.status"
+	GithubCommentBody              GitHubTriggerVariableName = "github.comment.body"
+	GithubDeploymentEnvironment    GitHubTriggerVariableName = "github.deployment.environment"
+	GithubDeploymentId             GitHubTriggerVariableName = "github.deployment.id"
+	GithubDeploymentStatusState    GitHubTriggerVariableName = "github.deployment_status.state"
+	GithubInstallationId           GitHubTriggerVariableName = "github.installation.id"
+	GithubPullRequestNumber        GitHubTriggerVariableName = "github.pull_request.number"
+	GithubReleaseTag               GitHubTriggerVariableName = "github.release.tag"
+	GithubRepository               GitHubTriggerVariableName = "github.repository"
+	GithubWorkflowDispatchInputs   GitHubTriggerVariableName = "github.workflow_dispatch.inputs"
+	GithubWorkflowDispatchRef      GitHubTriggerVariableName = "github.workflow_dispatch.ref"
+	GithubWorkflowDispatchWorkflow GitHubTriggerVariableName = "github.workflow_dispatch.workflow"
+	GithubWorkflowJobConclusion    GitHubTriggerVariableName = "github.workflow_job.conclusion"
+	GithubWorkflowJobHeadBranch    GitHubTriggerVariableName = "github.workflow_job.head_branch"
+	GithubWorkflowJobId            GitHubTriggerVariableName = "github.workflow_job.id"
+	GithubWorkflowJobName          GitHubTriggerVariableName = "github.workflow_job.name"
+	GithubWorkflowJobUrl           GitHubTriggerVariableName = "github.workflow_job.url"
+	GithubWorkflowJobWorkflowName  GitHubTriggerVariableName = "github.workflow_job.workflow_name"
+	GithubWorkflowRunConclusion    GitHubTriggerVariableName = "github.workflow_run.conclusion"
+	GithubWorkflowRunHeadBranch    GitHubTriggerVariableName = "github.workflow_run.head_branch"
+	GithubWorkflowRunId            GitHubTriggerVariableName = "github.workflow_run.id"
+	GithubWorkflowRunName          GitHubTriggerVariableName = "github.workflow_run.name"
+	GithubWorkflowRunUrl           GitHubTriggerVariableName = "github.workflow_run.url"
+)
+
+// Defines values for GitHubWorkflowDispatchAgenticWorkflowTriggerKind.
+const (
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindFailedCheckNew                 GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubCheckRun                 GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubCheckSuite               GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.check_suite"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubDeployment               GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.deployment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubIssueComment             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPullRequest              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.pull_request"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubRelease                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.release"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.comment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearLabelAdded               GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindManual                         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "manual"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "schedule"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSlackBotMessage                GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSlackBotReaction               GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindWebhook                        GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitHubWorkflowJobAgenticWorkflowTriggerKind.
+const (
+	GitHubWorkflowJobAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubWorkflowJobAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindFailedCheckNew                 GitHubWorkflowJobAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubCheckRun                 GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubCheckSuite               GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.check_suite"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubDeployment               GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.deployment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubIssueComment             GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPullRequest              GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.pull_request"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubRelease                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.release"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowJobAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowJobAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.comment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearLabelAdded               GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindManual                         GitHubWorkflowJobAgenticWorkflowTriggerKind = "manual"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowJobAgenticWorkflowTriggerKind = "schedule"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowJobAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindSlackBotMessage                GitHubWorkflowJobAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindSlackBotReaction               GitHubWorkflowJobAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindWebhook                        GitHubWorkflowJobAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitHubWorkflowJobConclusion.
+const (
+	GitHubWorkflowJobConclusionActionRequired GitHubWorkflowJobConclusion = "action_required"
+	GitHubWorkflowJobConclusionCancelled      GitHubWorkflowJobConclusion = "cancelled"
+	GitHubWorkflowJobConclusionFailure        GitHubWorkflowJobConclusion = "failure"
+	GitHubWorkflowJobConclusionNeutral        GitHubWorkflowJobConclusion = "neutral"
+	GitHubWorkflowJobConclusionSkipped        GitHubWorkflowJobConclusion = "skipped"
+	GitHubWorkflowJobConclusionSuccess        GitHubWorkflowJobConclusion = "success"
+	GitHubWorkflowJobConclusionTimedOut       GitHubWorkflowJobConclusion = "timed_out"
+)
+
+// Defines values for GitHubWorkflowRunAgenticWorkflowTriggerKind.
+const (
+	GitHubWorkflowRunAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubWorkflowRunAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindFailedCheckNew                 GitHubWorkflowRunAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubCheckRun                 GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubCheckSuite               GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.check_suite"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubDeployment               GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.deployment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubIssueComment             GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPullRequest              GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.pull_request"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubRelease                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.release"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowRunAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowRunAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.comment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearLabelAdded               GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindManual                         GitHubWorkflowRunAgenticWorkflowTriggerKind = "manual"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowRunAgenticWorkflowTriggerKind = "schedule"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowRunAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindSlackBotMessage                GitHubWorkflowRunAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindSlackBotReaction               GitHubWorkflowRunAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindWebhook                        GitHubWorkflowRunAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitHubWorkflowRunConclusion.
+const (
+	GitHubWorkflowRunConclusionActionRequired GitHubWorkflowRunConclusion = "action_required"
+	GitHubWorkflowRunConclusionCancelled      GitHubWorkflowRunConclusion = "cancelled"
+	GitHubWorkflowRunConclusionFailure        GitHubWorkflowRunConclusion = "failure"
+	GitHubWorkflowRunConclusionNeutral        GitHubWorkflowRunConclusion = "neutral"
+	GitHubWorkflowRunConclusionSkipped        GitHubWorkflowRunConclusion = "skipped"
+	GitHubWorkflowRunConclusionStale          GitHubWorkflowRunConclusion = "stale"
+	GitHubWorkflowRunConclusionStartupFailure GitHubWorkflowRunConclusion = "startup_failure"
+	GitHubWorkflowRunConclusionSuccess        GitHubWorkflowRunConclusion = "success"
+	GitHubWorkflowRunConclusionTimedOut       GitHubWorkflowRunConclusion = "timed_out"
+)
+
+// Defines values for GitLabMergeRequestAgenticWorkflowTriggerKind.
+const (
+	GitLabMergeRequestAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitLabMergeRequestAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitLabMergeRequestAgenticWorkflowTriggerKindFailedCheckNew                 GitLabMergeRequestAgenticWorkflowTriggerKind = "failed_check.new"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubCheckRun                 GitLabMergeRequestAgenticWorkflowTriggerKind = "github.check_run"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubCheckSuite               GitLabMergeRequestAgenticWorkflowTriggerKind = "github.check_suite"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubDeployment               GitLabMergeRequestAgenticWorkflowTriggerKind = "github.deployment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubDeploymentStatus         GitLabMergeRequestAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubIssueComment             GitLabMergeRequestAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPullRequest              GitLabMergeRequestAgenticWorkflowTriggerKind = "github.pull_request"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPullRequestReview        GitLabMergeRequestAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitLabMergeRequestAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubRelease                  GitLabMergeRequestAgenticWorkflowTriggerKind = "github.release"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitLabMergeRequestAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubWorkflowJob              GitLabMergeRequestAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubWorkflowRun              GitLabMergeRequestAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGitlabMergeRequest             GitLabMergeRequestAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGitlabNote                     GitLabMergeRequestAgenticWorkflowTriggerKind = "gitlab.note"
+	GitLabMergeRequestAgenticWorkflowTriggerKindLinearComment                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.comment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindLinearLabelAdded               GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.label_added"
+	GitLabMergeRequestAgenticWorkflowTriggerKindManual                         GitLabMergeRequestAgenticWorkflowTriggerKind = "manual"
+	GitLabMergeRequestAgenticWorkflowTriggerKindSchedule                       GitLabMergeRequestAgenticWorkflowTriggerKind = "schedule"
+	GitLabMergeRequestAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitLabMergeRequestAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitLabMergeRequestAgenticWorkflowTriggerKindSlackBotMessage                GitLabMergeRequestAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitLabMergeRequestAgenticWorkflowTriggerKindSlackBotReaction               GitLabMergeRequestAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitLabMergeRequestAgenticWorkflowTriggerKindWebhook                        GitLabMergeRequestAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitLabNoteAgenticWorkflowTriggerKind.
+const (
+	GitLabNoteAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitLabNoteAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitLabNoteAgenticWorkflowTriggerKindFailedCheckNew                 GitLabNoteAgenticWorkflowTriggerKind = "failed_check.new"
+	GitLabNoteAgenticWorkflowTriggerKindGithubCheckRun                 GitLabNoteAgenticWorkflowTriggerKind = "github.check_run"
+	GitLabNoteAgenticWorkflowTriggerKindGithubCheckSuite               GitLabNoteAgenticWorkflowTriggerKind = "github.check_suite"
+	GitLabNoteAgenticWorkflowTriggerKindGithubDeployment               GitLabNoteAgenticWorkflowTriggerKind = "github.deployment"
+	GitLabNoteAgenticWorkflowTriggerKindGithubDeploymentStatus         GitLabNoteAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitLabNoteAgenticWorkflowTriggerKindGithubIssueComment             GitLabNoteAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitLabNoteAgenticWorkflowTriggerKindGithubPullRequest              GitLabNoteAgenticWorkflowTriggerKind = "github.pull_request"
+	GitLabNoteAgenticWorkflowTriggerKindGithubPullRequestReview        GitLabNoteAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitLabNoteAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitLabNoteAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitLabNoteAgenticWorkflowTriggerKindGithubRelease                  GitLabNoteAgenticWorkflowTriggerKind = "github.release"
+	GitLabNoteAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitLabNoteAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitLabNoteAgenticWorkflowTriggerKindGithubWorkflowJob              GitLabNoteAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitLabNoteAgenticWorkflowTriggerKindGithubWorkflowRun              GitLabNoteAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitLabNoteAgenticWorkflowTriggerKindGitlabMergeRequest             GitLabNoteAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitLabNoteAgenticWorkflowTriggerKindGitlabNote                     GitLabNoteAgenticWorkflowTriggerKind = "gitlab.note"
+	GitLabNoteAgenticWorkflowTriggerKindLinearComment                  GitLabNoteAgenticWorkflowTriggerKind = "linear.comment"
+	GitLabNoteAgenticWorkflowTriggerKindLinearLabelAdded               GitLabNoteAgenticWorkflowTriggerKind = "linear.label_added"
+	GitLabNoteAgenticWorkflowTriggerKindManual                         GitLabNoteAgenticWorkflowTriggerKind = "manual"
+	GitLabNoteAgenticWorkflowTriggerKindSchedule                       GitLabNoteAgenticWorkflowTriggerKind = "schedule"
+	GitLabNoteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitLabNoteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitLabNoteAgenticWorkflowTriggerKindSlackBotMessage                GitLabNoteAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitLabNoteAgenticWorkflowTriggerKindSlackBotReaction               GitLabNoteAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitLabNoteAgenticWorkflowTriggerKindWebhook                        GitLabNoteAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for GitLabTriggerVariableName.
+const (
+	GitlabAction            GitLabTriggerVariableName = "gitlab.action"
+	GitlabCommentBody       GitLabTriggerVariableName = "gitlab.comment.body"
+	GitlabGroup             GitLabTriggerVariableName = "gitlab.group"
+	GitlabInstance          GitLabTriggerVariableName = "gitlab.instance"
+	GitlabMergeRequestIid   GitLabTriggerVariableName = "gitlab.merge_request.iid"
+	GitlabMergeRequestTitle GitLabTriggerVariableName = "gitlab.merge_request.title"
+	GitlabMergeRequestUrl   GitLabTriggerVariableName = "gitlab.merge_request.url"
+	GitlabNoteableType      GitLabTriggerVariableName = "gitlab.noteable_type"
+	GitlabProject           GitLabTriggerVariableName = "gitlab.project"
+	GitlabUser              GitLabTriggerVariableName = "gitlab.user"
 )
 
 // Defines values for HttpRedirects.
@@ -378,7 +936,10 @@ const (
 
 // Defines values for LinearCommentAgenticWorkflowTriggerKind.
 const (
+	LinearCommentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearCommentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	LinearCommentAgenticWorkflowTriggerKindFailedCheckNew                 LinearCommentAgenticWorkflowTriggerKind = "failed_check.new"
+	LinearCommentAgenticWorkflowTriggerKindGithubCheckRun                 LinearCommentAgenticWorkflowTriggerKind = "github.check_run"
+	LinearCommentAgenticWorkflowTriggerKindGithubCheckSuite               LinearCommentAgenticWorkflowTriggerKind = "github.check_suite"
 	LinearCommentAgenticWorkflowTriggerKindGithubDeployment               LinearCommentAgenticWorkflowTriggerKind = "github.deployment"
 	LinearCommentAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearCommentAgenticWorkflowTriggerKind = "github.deployment_status"
 	LinearCommentAgenticWorkflowTriggerKindGithubIssueComment             LinearCommentAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -386,6 +947,11 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindGithubPullRequestReview        LinearCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	LinearCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	LinearCommentAgenticWorkflowTriggerKindGithubRelease                  LinearCommentAgenticWorkflowTriggerKind = "github.release"
+	LinearCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	LinearCommentAgenticWorkflowTriggerKindGithubWorkflowJob              LinearCommentAgenticWorkflowTriggerKind = "github.workflow_job"
+	LinearCommentAgenticWorkflowTriggerKindGithubWorkflowRun              LinearCommentAgenticWorkflowTriggerKind = "github.workflow_run"
+	LinearCommentAgenticWorkflowTriggerKindGitlabMergeRequest             LinearCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	LinearCommentAgenticWorkflowTriggerKindGitlabNote                     LinearCommentAgenticWorkflowTriggerKind = "gitlab.note"
 	LinearCommentAgenticWorkflowTriggerKindLinearComment                  LinearCommentAgenticWorkflowTriggerKind = "linear.comment"
 	LinearCommentAgenticWorkflowTriggerKindLinearLabelAdded               LinearCommentAgenticWorkflowTriggerKind = "linear.label_added"
 	LinearCommentAgenticWorkflowTriggerKindManual                         LinearCommentAgenticWorkflowTriggerKind = "manual"
@@ -407,7 +973,10 @@ const (
 
 // Defines values for LinearLabelAddedAgenticWorkflowTriggerKind.
 const (
+	LinearLabelAddedAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearLabelAddedAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	LinearLabelAddedAgenticWorkflowTriggerKindFailedCheckNew                 LinearLabelAddedAgenticWorkflowTriggerKind = "failed_check.new"
+	LinearLabelAddedAgenticWorkflowTriggerKindGithubCheckRun                 LinearLabelAddedAgenticWorkflowTriggerKind = "github.check_run"
+	LinearLabelAddedAgenticWorkflowTriggerKindGithubCheckSuite               LinearLabelAddedAgenticWorkflowTriggerKind = "github.check_suite"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubDeployment               LinearLabelAddedAgenticWorkflowTriggerKind = "github.deployment"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearLabelAddedAgenticWorkflowTriggerKind = "github.deployment_status"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubIssueComment             LinearLabelAddedAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -415,6 +984,11 @@ const (
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequestReview        LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request_review"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubRelease                  LinearLabelAddedAgenticWorkflowTriggerKind = "github.release"
+	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowJob              LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_job"
+	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowRun              LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_run"
+	LinearLabelAddedAgenticWorkflowTriggerKindGitlabMergeRequest             LinearLabelAddedAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	LinearLabelAddedAgenticWorkflowTriggerKindGitlabNote                     LinearLabelAddedAgenticWorkflowTriggerKind = "gitlab.note"
 	LinearLabelAddedAgenticWorkflowTriggerKindLinearComment                  LinearLabelAddedAgenticWorkflowTriggerKind = "linear.comment"
 	LinearLabelAddedAgenticWorkflowTriggerKindLinearLabelAdded               LinearLabelAddedAgenticWorkflowTriggerKind = "linear.label_added"
 	LinearLabelAddedAgenticWorkflowTriggerKindManual                         LinearLabelAddedAgenticWorkflowTriggerKind = "manual"
@@ -449,7 +1023,10 @@ const (
 
 // Defines values for ManualAgenticWorkflowTriggerKind.
 const (
+	ManualAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation ManualAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	ManualAgenticWorkflowTriggerKindFailedCheckNew                 ManualAgenticWorkflowTriggerKind = "failed_check.new"
+	ManualAgenticWorkflowTriggerKindGithubCheckRun                 ManualAgenticWorkflowTriggerKind = "github.check_run"
+	ManualAgenticWorkflowTriggerKindGithubCheckSuite               ManualAgenticWorkflowTriggerKind = "github.check_suite"
 	ManualAgenticWorkflowTriggerKindGithubDeployment               ManualAgenticWorkflowTriggerKind = "github.deployment"
 	ManualAgenticWorkflowTriggerKindGithubDeploymentStatus         ManualAgenticWorkflowTriggerKind = "github.deployment_status"
 	ManualAgenticWorkflowTriggerKindGithubIssueComment             ManualAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -457,6 +1034,11 @@ const (
 	ManualAgenticWorkflowTriggerKindGithubPullRequestReview        ManualAgenticWorkflowTriggerKind = "github.pull_request_review"
 	ManualAgenticWorkflowTriggerKindGithubPullRequestReviewComment ManualAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	ManualAgenticWorkflowTriggerKindGithubRelease                  ManualAgenticWorkflowTriggerKind = "github.release"
+	ManualAgenticWorkflowTriggerKindGithubWorkflowDispatch         ManualAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	ManualAgenticWorkflowTriggerKindGithubWorkflowJob              ManualAgenticWorkflowTriggerKind = "github.workflow_job"
+	ManualAgenticWorkflowTriggerKindGithubWorkflowRun              ManualAgenticWorkflowTriggerKind = "github.workflow_run"
+	ManualAgenticWorkflowTriggerKindGitlabMergeRequest             ManualAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	ManualAgenticWorkflowTriggerKindGitlabNote                     ManualAgenticWorkflowTriggerKind = "gitlab.note"
 	ManualAgenticWorkflowTriggerKindLinearComment                  ManualAgenticWorkflowTriggerKind = "linear.comment"
 	ManualAgenticWorkflowTriggerKindLinearLabelAdded               ManualAgenticWorkflowTriggerKind = "linear.label_added"
 	ManualAgenticWorkflowTriggerKindManual                         ManualAgenticWorkflowTriggerKind = "manual"
@@ -470,6 +1052,11 @@ const (
 // Defines values for MemberDefinitionKind.
 const (
 	Dash0Member MemberDefinitionKind = "Dash0Member"
+)
+
+// Defines values for MemberInvitationDefinitionKind.
+const (
+	Dash0MemberInvitation MemberInvitationDefinitionKind = "Dash0MemberInvitation"
 )
 
 // Defines values for NetworkLevel.
@@ -501,6 +1088,7 @@ const (
 	NotificationChannelTypeIlert                    NotificationChannelType = "ilert"
 	NotificationChannelTypeIncidentio               NotificationChannelType = "incidentio"
 	NotificationChannelTypeJiraServiceManagementOps NotificationChannelType = "jira_service_management_ops"
+	NotificationChannelTypeMattermostWebhook        NotificationChannelType = "mattermost_webhook"
 	NotificationChannelTypeOpsgenie                 NotificationChannelType = "opsgenie"
 	NotificationChannelTypePagerduty                NotificationChannelType = "pagerduty"
 	NotificationChannelTypePrometheusAlertmanager   NotificationChannelType = "prometheus_alertmanager"
@@ -541,7 +1129,7 @@ const (
 
 // Defines values for OAuthTokenEndpointAuthMethod.
 const (
-	None OAuthTokenEndpointAuthMethod = "none"
+	OAuthTokenEndpointAuthMethodNone OAuthTokenEndpointAuthMethod = "none"
 )
 
 // Defines values for OAuthTokenType.
@@ -639,7 +1227,10 @@ const (
 
 // Defines values for ScheduledAgenticWorkflowTriggerKind.
 const (
+	ScheduledAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation ScheduledAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	ScheduledAgenticWorkflowTriggerKindFailedCheckNew                 ScheduledAgenticWorkflowTriggerKind = "failed_check.new"
+	ScheduledAgenticWorkflowTriggerKindGithubCheckRun                 ScheduledAgenticWorkflowTriggerKind = "github.check_run"
+	ScheduledAgenticWorkflowTriggerKindGithubCheckSuite               ScheduledAgenticWorkflowTriggerKind = "github.check_suite"
 	ScheduledAgenticWorkflowTriggerKindGithubDeployment               ScheduledAgenticWorkflowTriggerKind = "github.deployment"
 	ScheduledAgenticWorkflowTriggerKindGithubDeploymentStatus         ScheduledAgenticWorkflowTriggerKind = "github.deployment_status"
 	ScheduledAgenticWorkflowTriggerKindGithubIssueComment             ScheduledAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -647,6 +1238,11 @@ const (
 	ScheduledAgenticWorkflowTriggerKindGithubPullRequestReview        ScheduledAgenticWorkflowTriggerKind = "github.pull_request_review"
 	ScheduledAgenticWorkflowTriggerKindGithubPullRequestReviewComment ScheduledAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	ScheduledAgenticWorkflowTriggerKindGithubRelease                  ScheduledAgenticWorkflowTriggerKind = "github.release"
+	ScheduledAgenticWorkflowTriggerKindGithubWorkflowDispatch         ScheduledAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	ScheduledAgenticWorkflowTriggerKindGithubWorkflowJob              ScheduledAgenticWorkflowTriggerKind = "github.workflow_job"
+	ScheduledAgenticWorkflowTriggerKindGithubWorkflowRun              ScheduledAgenticWorkflowTriggerKind = "github.workflow_run"
+	ScheduledAgenticWorkflowTriggerKindGitlabMergeRequest             ScheduledAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	ScheduledAgenticWorkflowTriggerKindGitlabNote                     ScheduledAgenticWorkflowTriggerKind = "gitlab.note"
 	ScheduledAgenticWorkflowTriggerKindLinearComment                  ScheduledAgenticWorkflowTriggerKind = "linear.comment"
 	ScheduledAgenticWorkflowTriggerKindLinearLabelAdded               ScheduledAgenticWorkflowTriggerKind = "linear.label_added"
 	ScheduledAgenticWorkflowTriggerKindManual                         ScheduledAgenticWorkflowTriggerKind = "manual"
@@ -670,14 +1266,17 @@ const (
 
 // Defines values for SignalToMetricsTargetDatasetMode.
 const (
-	Alternative SignalToMetricsTargetDatasetMode = "alternative"
-	Both        SignalToMetricsTargetDatasetMode = "both"
-	Original    SignalToMetricsTargetDatasetMode = "original"
+	SignalToMetricsTargetDatasetModeAlternative SignalToMetricsTargetDatasetMode = "alternative"
+	SignalToMetricsTargetDatasetModeBoth        SignalToMetricsTargetDatasetMode = "both"
+	SignalToMetricsTargetDatasetModeOriginal    SignalToMetricsTargetDatasetMode = "original"
 )
 
 // Defines values for SlackBotFailedCheckAgenticWorkflowTriggerKind.
 const (
+	SlackBotFailedCheckAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation SlackBotFailedCheckAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindFailedCheckNew                 SlackBotFailedCheckAgenticWorkflowTriggerKind = "failed_check.new"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubCheckRun                 SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.check_run"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubCheckSuite               SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.check_suite"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubDeployment               SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.deployment"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubDeploymentStatus         SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.deployment_status"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubIssueComment             SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -685,6 +1284,11 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubPullRequestReview        SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubPullRequestReviewComment SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubRelease                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.release"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubWorkflowDispatch         SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubWorkflowJob              SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.workflow_job"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubWorkflowRun              SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.workflow_run"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotFailedCheckAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabNote                     SlackBotFailedCheckAgenticWorkflowTriggerKind = "gitlab.note"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearComment                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.comment"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearLabelAdded               SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.label_added"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindManual                         SlackBotFailedCheckAgenticWorkflowTriggerKind = "manual"
@@ -697,7 +1301,10 @@ const (
 
 // Defines values for SlackBotMessageAgenticWorkflowTriggerKind.
 const (
+	SlackBotMessageAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation SlackBotMessageAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	SlackBotMessageAgenticWorkflowTriggerKindFailedCheckNew                 SlackBotMessageAgenticWorkflowTriggerKind = "failed_check.new"
+	SlackBotMessageAgenticWorkflowTriggerKindGithubCheckRun                 SlackBotMessageAgenticWorkflowTriggerKind = "github.check_run"
+	SlackBotMessageAgenticWorkflowTriggerKindGithubCheckSuite               SlackBotMessageAgenticWorkflowTriggerKind = "github.check_suite"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubDeployment               SlackBotMessageAgenticWorkflowTriggerKind = "github.deployment"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubDeploymentStatus         SlackBotMessageAgenticWorkflowTriggerKind = "github.deployment_status"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubIssueComment             SlackBotMessageAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -705,6 +1312,11 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindGithubPullRequestReview        SlackBotMessageAgenticWorkflowTriggerKind = "github.pull_request_review"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubPullRequestReviewComment SlackBotMessageAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubRelease                  SlackBotMessageAgenticWorkflowTriggerKind = "github.release"
+	SlackBotMessageAgenticWorkflowTriggerKindGithubWorkflowDispatch         SlackBotMessageAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	SlackBotMessageAgenticWorkflowTriggerKindGithubWorkflowJob              SlackBotMessageAgenticWorkflowTriggerKind = "github.workflow_job"
+	SlackBotMessageAgenticWorkflowTriggerKindGithubWorkflowRun              SlackBotMessageAgenticWorkflowTriggerKind = "github.workflow_run"
+	SlackBotMessageAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotMessageAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	SlackBotMessageAgenticWorkflowTriggerKindGitlabNote                     SlackBotMessageAgenticWorkflowTriggerKind = "gitlab.note"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearComment                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.comment"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearLabelAdded               SlackBotMessageAgenticWorkflowTriggerKind = "linear.label_added"
 	SlackBotMessageAgenticWorkflowTriggerKindManual                         SlackBotMessageAgenticWorkflowTriggerKind = "manual"
@@ -717,7 +1329,10 @@ const (
 
 // Defines values for SlackBotReactionAgenticWorkflowTriggerKind.
 const (
+	SlackBotReactionAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation SlackBotReactionAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	SlackBotReactionAgenticWorkflowTriggerKindFailedCheckNew                 SlackBotReactionAgenticWorkflowTriggerKind = "failed_check.new"
+	SlackBotReactionAgenticWorkflowTriggerKindGithubCheckRun                 SlackBotReactionAgenticWorkflowTriggerKind = "github.check_run"
+	SlackBotReactionAgenticWorkflowTriggerKindGithubCheckSuite               SlackBotReactionAgenticWorkflowTriggerKind = "github.check_suite"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubDeployment               SlackBotReactionAgenticWorkflowTriggerKind = "github.deployment"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubDeploymentStatus         SlackBotReactionAgenticWorkflowTriggerKind = "github.deployment_status"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubIssueComment             SlackBotReactionAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -725,6 +1340,11 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindGithubPullRequestReview        SlackBotReactionAgenticWorkflowTriggerKind = "github.pull_request_review"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubPullRequestReviewComment SlackBotReactionAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubRelease                  SlackBotReactionAgenticWorkflowTriggerKind = "github.release"
+	SlackBotReactionAgenticWorkflowTriggerKindGithubWorkflowDispatch         SlackBotReactionAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	SlackBotReactionAgenticWorkflowTriggerKindGithubWorkflowJob              SlackBotReactionAgenticWorkflowTriggerKind = "github.workflow_job"
+	SlackBotReactionAgenticWorkflowTriggerKindGithubWorkflowRun              SlackBotReactionAgenticWorkflowTriggerKind = "github.workflow_run"
+	SlackBotReactionAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotReactionAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	SlackBotReactionAgenticWorkflowTriggerKindGitlabNote                     SlackBotReactionAgenticWorkflowTriggerKind = "gitlab.note"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearComment                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.comment"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearLabelAdded               SlackBotReactionAgenticWorkflowTriggerKind = "linear.label_added"
 	SlackBotReactionAgenticWorkflowTriggerKindManual                         SlackBotReactionAgenticWorkflowTriggerKind = "manual"
@@ -780,13 +1400,20 @@ const (
 
 // Defines values for SloRawType.
 const (
-	Failure SloRawType = "failure"
-	Success SloRawType = "success"
+	SloRawTypeFailure SloRawType = "failure"
+	SloRawTypeSuccess SloRawType = "success"
 )
 
 // Defines values for SourceMapIntegrationKind.
 const (
 	SourceMap SourceMapIntegrationKind = "source_map"
+)
+
+// Defines values for SourceMapIntegrationSpecAuthType.
+const (
+	SourceMapIntegrationSpecAuthTypeBasic  SourceMapIntegrationSpecAuthType = "basic"
+	SourceMapIntegrationSpecAuthTypeBearer SourceMapIntegrationSpecAuthType = "bearer"
+	SourceMapIntegrationSpecAuthTypeNone   SourceMapIntegrationSpecAuthType = "none"
 )
 
 // Defines values for SpamFilterAnnotationsDash0Comenabled.
@@ -864,6 +1491,12 @@ const (
 	Dash0SyntheticCheck SyntheticCheckDefinitionKind = "Dash0SyntheticCheck"
 )
 
+// Defines values for SyntheticCheckLocationKind.
+const (
+	Private SyntheticCheckLocationKind = "private"
+	Public  SyntheticCheckLocationKind = "public"
+)
+
 // Defines values for SyntheticCheckRetriesExponentialKind.
 const (
 	Exponential SyntheticCheckRetriesExponentialKind = "exponential"
@@ -897,11 +1530,19 @@ const (
 
 // Defines values for SyntheticHttpErrorType.
 const (
-	SyntheticHttpErrorTypeDns     SyntheticHttpErrorType = "dns"
-	SyntheticHttpErrorTypeTcp     SyntheticHttpErrorType = "tcp"
-	SyntheticHttpErrorTypeTimeout SyntheticHttpErrorType = "timeout"
-	SyntheticHttpErrorTypeTls     SyntheticHttpErrorType = "tls"
-	SyntheticHttpErrorTypeUnknown SyntheticHttpErrorType = "unknown"
+	SyntheticHttpErrorTypeDns                 SyntheticHttpErrorType = "dns"
+	SyntheticHttpErrorTypeLocationUnavailable SyntheticHttpErrorType = "location_unavailable"
+	SyntheticHttpErrorTypeTcp                 SyntheticHttpErrorType = "tcp"
+	SyntheticHttpErrorTypeTimeout             SyntheticHttpErrorType = "timeout"
+	SyntheticHttpErrorTypeTls                 SyntheticHttpErrorType = "tls"
+	SyntheticHttpErrorTypeUnknown             SyntheticHttpErrorType = "unknown"
+)
+
+// Defines values for SyntheticPrivateLocationHealthStatus.
+const (
+	SyntheticPrivateLocationHealthStatusOffline SyntheticPrivateLocationHealthStatus = "offline"
+	SyntheticPrivateLocationHealthStatusOnline  SyntheticPrivateLocationHealthStatus = "online"
+	SyntheticPrivateLocationHealthStatusUnknown SyntheticPrivateLocationHealthStatus = "unknown"
 )
 
 // Defines values for TeamApiVersion.
@@ -1083,7 +1724,10 @@ const (
 
 // Defines values for WebhookAgenticWorkflowTriggerKind.
 const (
+	WebhookAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation WebhookAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
 	WebhookAgenticWorkflowTriggerKindFailedCheckNew                 WebhookAgenticWorkflowTriggerKind = "failed_check.new"
+	WebhookAgenticWorkflowTriggerKindGithubCheckRun                 WebhookAgenticWorkflowTriggerKind = "github.check_run"
+	WebhookAgenticWorkflowTriggerKindGithubCheckSuite               WebhookAgenticWorkflowTriggerKind = "github.check_suite"
 	WebhookAgenticWorkflowTriggerKindGithubDeployment               WebhookAgenticWorkflowTriggerKind = "github.deployment"
 	WebhookAgenticWorkflowTriggerKindGithubDeploymentStatus         WebhookAgenticWorkflowTriggerKind = "github.deployment_status"
 	WebhookAgenticWorkflowTriggerKindGithubIssueComment             WebhookAgenticWorkflowTriggerKind = "github.issue_comment"
@@ -1091,6 +1735,11 @@ const (
 	WebhookAgenticWorkflowTriggerKindGithubPullRequestReview        WebhookAgenticWorkflowTriggerKind = "github.pull_request_review"
 	WebhookAgenticWorkflowTriggerKindGithubPullRequestReviewComment WebhookAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
 	WebhookAgenticWorkflowTriggerKindGithubRelease                  WebhookAgenticWorkflowTriggerKind = "github.release"
+	WebhookAgenticWorkflowTriggerKindGithubWorkflowDispatch         WebhookAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	WebhookAgenticWorkflowTriggerKindGithubWorkflowJob              WebhookAgenticWorkflowTriggerKind = "github.workflow_job"
+	WebhookAgenticWorkflowTriggerKindGithubWorkflowRun              WebhookAgenticWorkflowTriggerKind = "github.workflow_run"
+	WebhookAgenticWorkflowTriggerKindGitlabMergeRequest             WebhookAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	WebhookAgenticWorkflowTriggerKindGitlabNote                     WebhookAgenticWorkflowTriggerKind = "gitlab.note"
 	WebhookAgenticWorkflowTriggerKindLinearComment                  WebhookAgenticWorkflowTriggerKind = "linear.comment"
 	WebhookAgenticWorkflowTriggerKindLinearLabelAdded               WebhookAgenticWorkflowTriggerKind = "linear.label_added"
 	WebhookAgenticWorkflowTriggerKindManual                         WebhookAgenticWorkflowTriggerKind = "manual"
@@ -1133,6 +1782,198 @@ type Action = string
 type AddTeamMembersRequest struct {
 	// MemberIds Add an existing organization member to this team.
 	MemberIds []string `json:"memberIds"`
+}
+
+// Agent0ModelClassPreference A capability/cost tier for Agent0 investigations. The concrete model each tier resolves to
+// is a deployment-internal implementation detail and is never exposed here.
+// - `light`: Trivial or high-volume questions where speed and cost matter more than depth.
+// - `standard`: Everyday questions and single-signal analysis.
+// - `advanced`: Failed checks and slow services where the cause spans more than one signal.
+// - `premium`: Live incidents and post-mortems, where being right matters more than being fast.
+type Agent0ModelClassPreference string
+
+// Agent0ModelMaker Who trains and owns the model an Agent0 model class runs, independent of the
+// `Agent0ModelProvider` serving it — Claude is made by Anthropic whether Anthropic's own API,
+// Amazon Bedrock, or Google Vertex AI serves it.
+// - `alibaba`: A Qwen model.
+// - `amazon`: An Amazon Nova model.
+// - `anthropic`: A Claude model.
+// - `cohere`: A Cohere Command model.
+// - `deepseek`: A DeepSeek model.
+// - `google`: A Gemini or Gemma model.
+// - `meta`: A Llama model.
+// - `microsoft`: A Phi model.
+// - `mistral`: A Mistral model.
+// - `moonshot`: A Kimi model.
+// - `nvidia`: A Nemotron model.
+// - `openai`: A GPT or o-series model.
+// - `xai`: A Grok model.
+// - `zhipu`: A GLM model.
+type Agent0ModelMaker string
+
+// Agent0ModelSpec What a caller asks a model to be: a model class, the maker it's pinned to, a reasoning
+// effort, and per-invocation knobs. Where the call actually runs is never part of a
+// submitted or stored spec: `provider` and `credentialSource` are resolved fresh at
+// invocation and never written to storage. Model class and maker travel together through
+// the same precedence chain as an inseparable pair: maker cannot be specified without a
+// model class, and when a level names a class without a maker, it resolves from that
+// class's deployment catalog entry rather than inheriting a maker some other level happened
+// to set. On an invocation that chain is request > thread > user > organization >
+// deployment; a stored default
+// (organization, user) or an automation has no request or thread level and so resolves
+// through the last three alone. Reasoning effort cascades independently of class and maker
+// through the same chain, and is not independent of them at the end of it, though — a model
+// class supports only some reasoning-effort levels (e.g. `light` supports none), so an effort
+// the resolved class does not offer is dropped rather than rejected, and the pair that runs
+// is always a combination the class actually serves. The remaining fields are optional,
+// per-invocation-only knobs: they are never resolved through the user > organization >
+// deployment cascade or validated against per-model-class availability today. They are set
+// wherever an `Agent0ModelSpec` is accepted as an override — a single request, or a
+// persisted automation spec that is then resolved on every run of it — and passed straight
+// through (where a target provider understands them) without further interpretation.
+type Agent0ModelSpec struct {
+	// Adaptive Lets the model dynamically decide its own reasoning depth instead of following a fixed
+	// `reasoningEffort` level.
+	Adaptive *bool `json:"adaptive,omitempty"`
+
+	// BudgetTokens An explicit token budget for extended thinking, passed straight through to providers
+	// that support one. Meaningless when `thinking` is `false`. A region declares a ceiling —
+	// a deployment fact, so not expressible here as a `maximum`; a stored spec above it is
+	// rejected on save, while a per-invocation override is clamped to it.
+	BudgetTokens *int `json:"budgetTokens,omitempty"`
+
+	// ModelClass A capability/cost tier for Agent0 investigations. The concrete model each tier resolves to
+	// is a deployment-internal implementation detail and is never exposed here.
+	// - `light`: Trivial or high-volume questions where speed and cost matter more than depth.
+	// - `standard`: Everyday questions and single-signal analysis.
+	// - `advanced`: Failed checks and slow services where the cause spans more than one signal.
+	// - `premium`: Live incidents and post-mortems, where being right matters more than being fast.
+	ModelClass *Agent0ModelClassPreference `json:"modelClass,omitempty"`
+
+	// ModelMaker Who trains and owns the model an Agent0 model class runs, independent of the
+	// `Agent0ModelProvider` serving it — Claude is made by Anthropic whether Anthropic's own API,
+	// Amazon Bedrock, or Google Vertex AI serves it.
+	// - `alibaba`: A Qwen model.
+	// - `amazon`: An Amazon Nova model.
+	// - `anthropic`: A Claude model.
+	// - `cohere`: A Cohere Command model.
+	// - `deepseek`: A DeepSeek model.
+	// - `google`: A Gemini or Gemma model.
+	// - `meta`: A Llama model.
+	// - `microsoft`: A Phi model.
+	// - `mistral`: A Mistral model.
+	// - `moonshot`: A Kimi model.
+	// - `nvidia`: A Nemotron model.
+	// - `openai`: A GPT or o-series model.
+	// - `xai`: A Grok model.
+	// - `zhipu`: A GLM model.
+	ModelMaker *Agent0ModelMaker `json:"modelMaker,omitempty"`
+
+	// ReasoningEffort A reasoning-effort preference for Agent0 investigations, passed straight through to the
+	// underlying model's own reasoning-effort parameter where the model supports one. Not every
+	// model class supports every level (a light-tier model, for example, supports none of them),
+	// so a level is only meaningful paired with a model class; see Agent0ModelSpec.
+	// - `low`: Minimal reasoning — fastest responses, lowest cost.
+	// - `medium`: The default balance of reasoning depth against latency and cost.
+	// - `high`: Deeper reasoning for problems the default balance underserves.
+	// - `xhigh`: Substantially more reasoning for complex, multi-step problems.
+	// - `max`: The deepest reasoning tier, for problems where correctness matters more than speed
+	//   or cost.
+	ReasoningEffort *Agent0ReasoningEffort `json:"reasoningEffort,omitempty"`
+
+	// ReasoningSummary Requests a reasoning summary from providers that support one. Only `auto` is defined
+	// today.
+	ReasoningSummary *Agent0ModelSpecReasoningSummary `json:"reasoningSummary,omitempty"`
+
+	// Speed A latency-optimized processing mode a provider may offer, independent of `modelClass`.
+	// `fast` is the only mode defined today; the field stays an enum so a deployment- or
+	// provider-specific mode can be added later without a breaking shape change.
+	Speed *Agent0ModelSpeed `json:"speed,omitempty"`
+
+	// Thinking Explicitly forces extended thinking on (`true`) or off (`false`), overriding whatever
+	// `reasoningEffort` and the model's own defaults would otherwise do. Omitted leaves
+	// thinking behavior to `reasoningEffort` and the model's own defaults.
+	Thinking *bool `json:"thinking,omitempty"`
+}
+
+// Agent0ModelSpecReasoningSummary Requests a reasoning summary from providers that support one. Only `auto` is defined
+// today.
+type Agent0ModelSpecReasoningSummary string
+
+// Agent0ModelSpeed A latency-optimized processing mode a provider may offer, independent of `modelClass`.
+// `fast` is the only mode defined today; the field stays an enum so a deployment- or
+// provider-specific mode can be added later without a breaking shape change.
+type Agent0ModelSpeed string
+
+// Agent0ReasoningEffort A reasoning-effort preference for Agent0 investigations, passed straight through to the
+// underlying model's own reasoning-effort parameter where the model supports one. Not every
+// model class supports every level (a light-tier model, for example, supports none of them),
+// so a level is only meaningful paired with a model class; see Agent0ModelSpec.
+//   - `low`: Minimal reasoning — fastest responses, lowest cost.
+//   - `medium`: The default balance of reasoning depth against latency and cost.
+//   - `high`: Deeper reasoning for problems the default balance underserves.
+//   - `xhigh`: Substantially more reasoning for complex, multi-step problems.
+//   - `max`: The deepest reasoning tier, for problems where correctness matters more than speed
+//     or cost.
+type Agent0ReasoningEffort string
+
+// Agent0SandboxProfile defines model for Agent0SandboxProfile.
+type Agent0SandboxProfile struct {
+	// CpuLimit Hard limit on physical CPU cores, applied when the sandbox provider supports one. The
+	// sandbox bursts above `cpus` up to this. Never below `cpus`.
+	CpuLimit *float32 `json:"cpuLimit,omitempty"`
+
+	// Cpus Virtual CPUs reserved for the sandbox.
+	Cpus *float32 `json:"cpus,omitempty"`
+
+	// DisplayName Human-readable catalog profile name. Filled by the control plane on write.
+	DisplayName *string `json:"displayName,omitempty"`
+
+	// Id The catalog profile to resolve. Only valid when `type` is `catalog`.
+	Id *string `json:"id,omitempty"`
+
+	// IsWarmPooled Whether a sandbox on this catalog profile is normally served from the deployment's
+	// warm pool and so starts without waiting for one to be provisioned. This is a catalog-only
+	// hint, not a promise. The field is returned by `GET /api/agent0/sandbox-profiles`, omitted
+	// from stored snapshots, and ignored on writes.
+	IsWarmPooled *bool `json:"isWarmPooled,omitempty"`
+
+	// MemoryLimitMiB Hard memory limit in MiB, applied when the sandbox provider supports one. This is the
+	// OOM guard the sandbox bursts up to. Never below `memoryMiB`.
+	MemoryLimitMiB *int `json:"memoryLimitMiB,omitempty"`
+
+	// MemoryMiB Memory reservation (request) for the sandbox, in MiB.
+	MemoryMiB *int `json:"memoryMiB,omitempty"`
+
+	// Type Selects where an Agent0 sandbox gets its resources.
+	// - `default`: Use the agents deployment's configured resources.
+	// - `custom`: Use the four resource values supplied on this object.
+	// - `catalog`: Resolve `id` through the sandbox profile catalog.
+	Type *Agent0SandboxProfileType `json:"type,omitempty"`
+}
+
+// Agent0SandboxProfileType Selects where an Agent0 sandbox gets its resources.
+// - `default`: Use the agents deployment's configured resources.
+// - `custom`: Use the four resource values supplied on this object.
+// - `catalog`: Resolve `id` through the sandbox profile catalog.
+type Agent0SandboxProfileType string
+
+// Agent0SandboxResources The resource shape one Agent0 sandbox is created with. Omitted fields fall back to the
+// agents deployment's own configured defaults.
+type Agent0SandboxResources struct {
+	// CpuLimit Hard limit on physical CPU cores, applied when the sandbox provider supports one. The
+	// sandbox bursts above `cpus` up to this. Never below `cpus`.
+	CpuLimit *float32 `json:"cpuLimit,omitempty"`
+
+	// Cpus Virtual CPUs reserved for the sandbox.
+	Cpus *float32 `json:"cpus,omitempty"`
+
+	// MemoryLimitMiB Hard memory limit in MiB, applied when the sandbox provider supports one. This is the
+	// OOM guard the sandbox bursts up to. Never below `memoryMiB`.
+	MemoryLimitMiB *int `json:"memoryLimitMiB,omitempty"`
+
+	// MemoryMiB Memory reservation (request) for the sandbox, in MiB.
+	MemoryMiB *int `json:"memoryMiB,omitempty"`
 }
 
 // AgenticWorkflowAction defines model for AgenticWorkflowAction.
@@ -1244,12 +2085,6 @@ type AgenticWorkflowGuardrails struct {
 	// settings, or disable a tool that is enabled there, scoped to this automation only.
 	McpTools *[]AgenticWorkflowMcpTool `json:"mcpTools,omitempty"`
 
-	// NetworkLevel Controls outbound network access for the sandbox running this thread.
-	// - `no_network`: Block all outbound network access.
-	// - `trusted_only`: Allow outbound access only to a curated list of trusted addresses.
-	// - `full`: No network restrictions.
-	NetworkLevel NetworkLevel `json:"networkLevel"`
-
 	// RequiredToolCalls Optionally enforce that the Agent0 automation has executed these tool calls. If the agent is concluding is
 	// automation, but hasn't called these tools, the agent receives a follow-up prompt to call these tools. This
 	// auto-correction of the LLM behavior is only attempted once.
@@ -1286,6 +2121,9 @@ type AgenticWorkflowLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -1363,6 +2201,42 @@ type AgenticWorkflowPrompt struct {
 // AgenticWorkflowResponse defines model for AgenticWorkflowResponse.
 type AgenticWorkflowResponse = AgenticWorkflowDefinition
 
+// AgenticWorkflowSandbox The sandbox an automation's runs execute in: what it may reach, and what it is built from.
+type AgenticWorkflowSandbox struct {
+	// EnvVars Environment variables passed to the setup script's own execution only. Not persisted in
+	// the cache key by value (only key names are hashed, so rotating a secret's value does not
+	// force a respecialized sandbox) and not propagated to the agent's later tool calls in this
+	// version.
+	EnvVars *map[string]string `json:"envVars,omitempty"`
+
+	// NetworkLevel Controls outbound network access for the sandbox running this thread.
+	// - `no_network`: Block all outbound network access.
+	// - `trusted_only`: Allow outbound access only to a curated list of trusted addresses.
+	// - `full`: No network restrictions.
+	NetworkLevel NetworkLevel `json:"networkLevel"`
+
+	// Profile The resource source for an Agent0 sandbox. `type` is the discriminator: `default` carries no
+	// id and may carry the deployment resources resolved for a specific thread, `custom` carries all
+	// four resource fields and no id, and `catalog` carries an id that the control plane resolves to
+	// its resource snapshot. For a catalog profile, resource values sent by a client are ignored and
+	// replaced with the current catalog values.
+	//
+	// The resource fields are a snapshot, not a reference. Whatever selects a profile stores the
+	// whole object, so a thread keeps creating the sandbox it was created with even after the catalog
+	// entry behind it changes.
+	//
+	// `type` is temporarily optional for migration. A profile that omits it must carry `id` and is
+	// interpreted as `catalog`. New clients should always send `type`.
+	Profile *Agent0SandboxProfile `json:"profile,omitempty"`
+
+	// SetupScript Optional sandbox preparation: a shell script run once in a claimed sandbox
+	// before the worker attaches OpenCode, e.g. to install a CLI the run's prompt or tool calls
+	// need. Executed via the sandbox's exec facility; absent or empty runs nothing. A failed
+	// setup script degrades (recorded on telemetry) rather than failing the claim. Only takes
+	// effect when `featureFlags.enableAutomationSetupScripts` is enabled.
+	SetupScript *string `json:"setupScript,omitempty"`
+}
+
 // AgenticWorkflowSpec defines model for AgenticWorkflowSpec.
 type AgenticWorkflowSpec struct {
 	// Constants Static key-value pairs available as {{variable.name}} in the prompt and
@@ -1372,6 +2246,15 @@ type AgenticWorkflowSpec struct {
 	Display    AgenticWorkflowDisplay    `json:"display"`
 	Enabled    bool                      `json:"enabled"`
 	Guardrails AgenticWorkflowGuardrails `json:"guardrails"`
+
+	// ModelSpec Optional model spec override, resolved on every run of this automation the same way a
+	// per-invocation override is: `modelClass` and `reasoningEffort` take precedence over the
+	// `automations` surface's user/organization default, each resolving independently; the
+	// remaining fields (`thinking`, `budgetTokens`, `speed`, `adaptive`, `reasoningSummary`)
+	// are passed straight through. When absent, runs resolve through the surface default as
+	// usual. The resolved value is stamped on run telemetry; it does not yet steer which
+	// model actually answers the turn. See Agent0ModelSpec.
+	ModelSpec *Agent0ModelSpec `json:"modelSpec,omitempty"`
 
 	// Notifications Notification channels to notify when an automation run completes, grouped by outcome.
 	// Both lists are optional; omit one to skip notifying on that outcome.
@@ -1385,7 +2268,10 @@ type AgenticWorkflowSpec struct {
 	// PermittedActions Computed, read-only. The set of actions the requesting user is permitted to perform on this automation, derived from their org role, dataset permissions, team memberships, and explicit permission entries. Ignored on write.
 	PermittedActions *[]AgenticWorkflowAction `json:"permittedActions,omitempty"`
 	Prompt           AgenticWorkflowPrompt    `json:"prompt"`
-	Triggers         []AgenticWorkflowTrigger `json:"triggers"`
+
+	// Sandbox The sandbox an automation's runs execute in: what it may reach, and what it is built from.
+	Sandbox  AgenticWorkflowSandbox   `json:"sandbox"`
+	Triggers []AgenticWorkflowTrigger `json:"triggers"`
 }
 
 // AgenticWorkflowToolParameterOverride Key-value pairs merged into tool arguments at invocation time. Keys are parameter
@@ -1424,6 +2310,14 @@ type AgenticWorkflowTriggerDelivery string
 // - `github.pull_request_review_comment`: Triggered when a GitHub pull request review comment event occurs.
 // - `github.issue_comment`: Triggered when a comment is created, edited, or deleted on a GitHub pull request or issue.
 // - `github.release`: Triggered when a GitHub release event occurs.
+// - `github.workflow_run`: Triggered when a GitHub Actions workflow run completes (or is requested / in progress).
+// - `github.workflow_job`: Triggered when a job within a GitHub Actions workflow run is queued, waiting, started, or completed.
+// - `github.workflow_dispatch`: Triggered when a GitHub Actions workflow is manually dispatched via the UI, API, or CLI.
+// - `github.check_run`: Triggered when a GitHub check run (a single check, from any CI system connected via the Checks API) is created, completed, or rerequested.
+// - `github.check_suite`: Triggered when a GitHub check suite (the group of check runs GitHub associates with one commit) is requested, rerequested, or completed.
+// - `gitlab.merge_request`: Triggered when a GitLab merge request event occurs.
+// - `gitlab.note`: Triggered when a comment is created on a GitLab merge request, issue, commit, or snippet.
+// - `darkplane.pull_request.evaluation`: Triggered after a successful terminal, non-experiment Darkplane AutoMerge evaluation run.
 // - `linear.comment`: Triggered when the Dash0 agent is @mentioned or delegated in a Linear comment whose text contains the configured keyword.
 // - `linear.label_added`: Triggered when a specific Linear label is added to an issue, optionally scoped to one or more Linear teams.
 // - `webhook`: Triggered via an external webhook call.
@@ -1443,6 +2337,13 @@ type AgenticWorkflowTriggerTask = string
 type AllQuietConfig struct {
 	Url string `json:"url"`
 }
+
+// AnomalyDirection Which deviations from the prediction are treated as anomalous.
+//
+// - `both`: Deviations in either direction are anomalous.
+// - `above`: Only values above the prediction are anomalous.
+// - `below`: Only values below the prediction are anomalous.
+type AnomalyDirection string
 
 // AnyValue AnyValue is used to represent any type of attribute value. AnyValue may contain a primitive value such as a string or integer or it may contain an arbitrary nested object containing arrays, key-value lists and primitives.
 type AnyValue struct {
@@ -1554,17 +2455,316 @@ type AttributeFilterOperator string
 // AttributeFilterStringValue AttributeFilterStringValue may contain a primitive value such as a regex pattern or string.
 type AttributeFilterStringValue = string
 
+// AttributePatternRuleAnnotations Pattern Rules use hard delete and have no folder/sharing/versions-history concept, so
+// only creation/update/last-matched timestamps are tracked here.
+type AttributePatternRuleAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when this Pattern Rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComlastMatchedAt Read-only: a value supplied on write is always ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't need to strip it back out. Bumped to the current time by every successful `PUT` on this rule (an edit counts as "using" it), and separately by an out-of-band job based on real telemetry-matching activity, writing directly to the database -- the two sources are independent and can disagree. `null` on a freshly created rule that has neither been matched nor edited since.
+	Dash0ComlastMatchedAt *time.Time `json:"dash0.com/last-matched-at,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update to this Pattern Rule. Doubles as the optimistic-concurrency token (truncated to millisecond precision at write time): required on `PUT` for UI (Clerk session token) callers -- a missing or stale value there is rejected with 400 (`SupersededVersion`). Optional for machine-token/OAuth `PUT` callers, which skip the concurrency check entirely when it is omitted.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// AttributePatternRuleCreateRequest A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
+// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
+// `/users/<userId>`), so the collector can collapse matching values together. For
+// `dash0.operation.name` — the default, and the only target attribute mined today —
+// that is the collector's Operation Processor collapsing span operation names. Rows are
+// either authored by a human through this API (`spec.ownership: user_defined`) or
+// inferred by the miner (`spec.ownership: auto_derived`).
+//
+// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
+// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
+// server-computed (see below). They are addressable either by their server-generated
+// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
+// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
+// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
+// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
+// created.
+type AttributePatternRuleCreateRequest = AttributePatternRuleDefinition
+
+// AttributePatternRuleDefinition A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
+// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
+// `/users/<userId>`), so the collector can collapse matching values together. For
+// `dash0.operation.name` — the default, and the only target attribute mined today —
+// that is the collector's Operation Processor collapsing span operation names. Rows are
+// either authored by a human through this API (`spec.ownership: user_defined`) or
+// inferred by the miner (`spec.ownership: auto_derived`).
+//
+// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
+// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
+// server-computed (see below). They are addressable either by their server-generated
+// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
+// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
+// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
+// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
+// created.
+type AttributePatternRuleDefinition struct {
+	Kind     AttributePatternRuleDefinitionKind `json:"kind"`
+	Metadata AttributePatternRuleMetadata       `json:"metadata"`
+	Spec     AttributePatternRuleSpec           `json:"spec"`
+}
+
+// AttributePatternRuleDefinitionKind defines model for AttributePatternRuleDefinition.Kind.
+type AttributePatternRuleDefinitionKind string
+
+// AttributePatternRuleLabels defines model for AttributePatternRuleLabels.
+type AttributePatternRuleLabels struct {
+	// Dash0Comdataset Dataset this Pattern Rule belongs to. On create, the `dataset` query parameter is authoritative over this field whenever both are present -- this field is only consulted as a fallback when the query parameter is absent. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique server-generated ID of this Pattern Rule. Set by the server on creation; must not be provided on create (a `POST` body containing it is rejected with 400).
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin Stable, client-chosen label for idempotent apply-by-name (IaC/Terraform-style) workflows, resolved via `{originOrId}` on every path below. Client-provided value wins if given; a machine-token caller that omits it gets a server-generated `api-<uuid>` fallback so the rule still classifies as API-managed; a UI (Clerk) or OAuth caller that omits it keeps a `null` origin. Immutable after creation: a value supplied on update is silently ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't have to strip it back out first. Must not itself look like a UUID (rejected with 400 on create) -- origins and ids are deliberately disjoint namespaces so `{originOrId}` resolution is never ambiguous.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// AttributePatternRuleListResponse defines model for AttributePatternRuleListResponse.
+type AttributePatternRuleListResponse struct {
+	AttributePatternRules []AttributePatternRuleDefinition `json:"attributePatternRules"`
+
+	// HasMore Whether there are more rules beyond the current page.
+	HasMore *bool `json:"hasMore,omitempty"`
+}
+
+// AttributePatternRuleMetadata defines model for AttributePatternRuleMetadata.
+type AttributePatternRuleMetadata struct {
+	// Annotations Pattern Rules use hard delete and have no folder/sharing/versions-history concept, so
+	// only creation/update/last-matched timestamps are tracked here.
+	Annotations *AttributePatternRuleAnnotations `json:"annotations,omitempty"`
+	Labels      *AttributePatternRuleLabels      `json:"labels,omitempty"`
+
+	// Name Computed by the server from `spec.details` (for a `dash0.operation.name` rule, from its `canonicalOperation`). Pattern Rules have no independent, user-editable display name -- this field exists to conform to this API's standard CRD envelope shape. Always present on a read. A value supplied on write is ignored, and -- unlike the other CRD-enveloped resources this API's standard envelope shape is modeled on -- must not be required on write: the client cannot know it in advance, since the server only computes it after compiling `spec.pattern`. Treated the same as the sibling server-computed, write-ignored spec fields (`details`, `normalizedRegex`, `variableNames`), all of which are similarly absent from their schema's `required` list.
+	Name *string `json:"name,omitempty"`
+}
+
+// AttributePatternRuleOwnership - `user_defined`: created, or promoted from `auto_derived`, by a human through this API.
+// - `auto_derived`: inferred by the Operation Miner.
+type AttributePatternRuleOwnership string
+
+// AttributePatternRuleResponse A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
+// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
+// `/users/<userId>`), so the collector can collapse matching values together. For
+// `dash0.operation.name` — the default, and the only target attribute mined today —
+// that is the collector's Operation Processor collapsing span operation names. Rows are
+// either authored by a human through this API (`spec.ownership: user_defined`) or
+// inferred by the miner (`spec.ownership: auto_derived`).
+//
+// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
+// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
+// server-computed (see below). They are addressable either by their server-generated
+// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
+// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
+// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
+// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
+// created.
+type AttributePatternRuleResponse = AttributePatternRuleDefinition
+
+// AttributePatternRuleSpec defines model for AttributePatternRuleSpec.
+type AttributePatternRuleSpec struct {
+	// Details Computed by the server. Target-attribute-specific side-effect data; for `dash0.operation.name` it carries `canonicalOperation`, the literal value applied to every span this rule matches. A value supplied on write is ignored.
+	Details *AttributePatternRuleSpec_Details `json:"details,omitempty"`
+
+	// NormalizedRegex Computed by the server from `pattern`. The anchored regular expression the collector's Operation Processor compiles to match operation names against this rule. A value supplied on write is ignored.
+	NormalizedRegex *string `json:"normalizedRegex,omitempty"`
+
+	// Ownership - `user_defined`: created, or promoted from `auto_derived`, by a human through this API.
+	// - `auto_derived`: inferred by the Operation Miner.
+	Ownership *AttributePatternRuleOwnership `json:"ownership,omitempty"`
+
+	// Pattern Human-authored operation-name pattern using the placeholder DSL (e.g. `/users/<userId>`; `<<` escapes a literal `<`) -- the `named_pattern` concept defined in the "Pattern Representation and Storage" ADR appendix, whose transformations `internal/operationpatterncompiler` implements. Required on create. Populated on every `GET`/`List` response by reconstructing it from the stored canonical representation -- including for `auto_derived` rows this API never compiled itself -- so it is always present on a read, not only for rows this API wrote.
+	Pattern string `json:"pattern"`
+
+	// Priority Ranks this rule for list ordering: `GET`/`List` responses are always sorted by `priority` descending first, so higher-priority rules (including manually-promoted ones) surface before lower-priority and `auto_derived` ones. `1` (Minor) through `5` (Major) are the user-facing levels, defaulting to `3` (Standard) when omitted on create; an update that omits it preserves the row's current value instead of resetting it. `0` is reserved for `auto_derived` rows the Operation Miner writes -- a client-supplied `0` is rejected with 400.
+	Priority *int `json:"priority,omitempty"`
+
+	// ServiceName OpenTelemetry `service.name` resource attribute this Pattern Rule applies to. Required on create. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Omit when listing to scope the request organization/dataset-wide across every service instead of one.
+	ServiceName string `json:"serviceName"`
+
+	// ServiceNamespace OpenTelemetry `service.namespace` resource attribute this Pattern Rule applies to. Empty string when the target service has no namespace (never omitted/null on a stored row). Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Omit when listing to scope the request organization/dataset-wide across every namespace instead of one.
+	ServiceNamespace *string `json:"serviceNamespace,omitempty"`
+
+	// Status - `active`: applied by the collector's Operation Processor.
+	// - `inactive`: stored but not applied.
+	Status AttributePatternRuleStatus `json:"status"`
+
+	// TargetAttribute The telemetry attribute whose values this rule's patterns match, e.g. `dash0.operation.name`. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Defaults to `dash0.operation.name` when omitted on create, which is what keeps callers written against the pre-generalization API working unchanged.
+	TargetAttribute *string `json:"targetAttribute,omitempty"`
+
+	// VariableNames Computed by the server from `pattern`. Placeholder names, in left-to-right occurrence order. A value supplied on write is ignored.
+	VariableNames *[]string `json:"variableNames,omitempty"`
+}
+
+// AttributePatternRuleSpec_Details Computed by the server. Target-attribute-specific side-effect data; for `dash0.operation.name` it carries `canonicalOperation`, the literal value applied to every span this rule matches. A value supplied on write is ignored.
+type AttributePatternRuleSpec_Details struct {
+	// CanonicalOperation Present when `targetAttribute` is `dash0.operation.name`. The literal value written to that attribute on every span this rule matches.
+	CanonicalOperation   *string                `json:"canonicalOperation,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// AttributePatternRuleStatus - `active`: applied by the collector's Operation Processor.
+// - `inactive`: stored but not applied.
+type AttributePatternRuleStatus string
+
+// AttributePatternRuleUpdateRequest A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
+// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
+// `/users/<userId>`), so the collector can collapse matching values together. For
+// `dash0.operation.name` — the default, and the only target attribute mined today —
+// that is the collector's Operation Processor collapsing span operation names. Rows are
+// either authored by a human through this API (`spec.ownership: user_defined`) or
+// inferred by the miner (`spec.ownership: auto_derived`).
+//
+// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
+// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
+// server-computed (see below). They are addressable either by their server-generated
+// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
+// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
+// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
+// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
+// created.
+type AttributePatternRuleUpdateRequest = AttributePatternRuleDefinition
+
 // AxisScale defines model for AxisScale.
 type AxisScale string
 
+// CardholderDataRedactionSettings Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
+// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
+// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
+// or split card numbers, so filtering at the source remains the primary mechanism.
+// Absent means disabled.
+type CardholderDataRedactionSettings struct {
+	// Enabled Whether cardholder-data redaction is enabled for this dataset.
+	Enabled bool `json:"enabled"`
+}
+
+// ChangeGateComparison How the change gate's `value` is compared against the observed quantity's recent level.
+//
+//   - `absolute_delta`: The observed quantity must differ from its recent level by at least
+//     `value`, in the unit of the observed quantity itself and in the worsening direction defined
+//     by the rule's absolute threshold comparator.
+//   - `relative_factor`: The observed quantity must differ from its recent level by at least
+//     `value` times in the worsening direction defined by the rule's absolute threshold comparator.
+type ChangeGateComparison string
+
+// CheckThresholdBaseline Adaptive baseline detector configuration. Its presence on `CheckThresholds` re-interprets
+// `degraded` and `failed` as z-score cutoffs against the check rule's own predicted value and
+// typical spread.
+type CheckThresholdBaseline struct {
+	// Direction Which deviations from the prediction are treated as anomalous.
+	//
+	// - `both`: Deviations in either direction are anomalous.
+	// - `above`: Only values above the prediction are anomalous.
+	// - `below`: Only values below the prediction are anomalous.
+	Direction AnomalyDirection `json:"direction"`
+
+	// SpreadFloor Optional minimum seasonal spread, expressed as a fraction of the prediction. The server
+	// default is used when omitted. For example, `0.05` makes a sensitivity cutoff of `3`
+	// require at least a 15% deviation when the measured spread is smaller.
+	SpreadFloor *float64 `json:"spreadFloor,omitempty"`
+
+	// VolumeFloor Optional minimum traffic rate required for the detector to evaluate. Supported only
+	// for Services Metrics and Spans Metrics queries, in requests/second and spans/second
+	// respectively. Traffic is derived from the query's authored selections, filters,
+	// grouping, and rate window and evaluated ad hoc at the detector timestamp. Dashboard
+	// variable placeholders are omitted, as in the observed check query.
+	// Other query types, including hand-written PromQL, cannot configure this floor.
+	// No traffic query or volume gate is applied when omitted.
+	VolumeFloor *float64 `json:"volumeFloor,omitempty"`
+}
+
+// CheckThresholdChangeGate Change gate configuration. Its presence on `CheckThresholds` leaves `degraded` and `failed`
+// absolute, but additionally requires the observed quantity to be materially worse than it was
+// over `baselineWindow` before the check fails. The check rule expression must provide the
+// absolute threshold comparator through its parsed expression or a hand-written top-level
+// comparison; otherwise the write is rejected.
+type CheckThresholdChangeGate struct {
+	BaselineWindow Duration `json:"baselineWindow"`
+
+	// Comparison How the change gate's `value` is compared against the observed quantity's recent level.
+	//
+	// - `absolute_delta`: The observed quantity must differ from its recent level by at least
+	//   `value`, in the unit of the observed quantity itself and in the worsening direction defined
+	//   by the rule's absolute threshold comparator.
+	// - `relative_factor`: The observed quantity must differ from its recent level by at least
+	//   `value` times in the worsening direction defined by the rule's absolute threshold comparator.
+	Comparison ChangeGateComparison `json:"comparison"`
+
+	// Value The minimum change required, interpreted according to `comparison`.
+	Value float64 `json:"value"`
+
+	// VolumeFloor Optional minimum average traffic rate over `baselineWindow` required for the detector
+	// to evaluate. Supported only for Services Metrics and Spans Metrics queries, in
+	// requests/second and spans/second respectively. Traffic is derived from the query's
+	// authored selections, filters, grouping, and rate window and evaluated ad hoc. Dashboard
+	// variable placeholders are omitted, as in the observed check query.
+	// Other query types, including hand-written PromQL, cannot configure this floor.
+	// No traffic query or volume gate is applied when omitted.
+	VolumeFloor *float64 `json:"volumeFloor,omitempty"`
+}
+
 // CheckThresholds Thresholds to use for the `$__threshold` variable in the expression field.
+//
+// By default `degraded` and `failed` are absolute values. The optional `baseline` and
+// `changeGate` sub-objects are detector configuration: **the presence of one of them is the
+// discriminator** that changes how `degraded` and `failed` are interpreted.
+//
+//   - Neither present: `degraded` and `failed` are absolute values compared against the
+//     expression's own value, as they always have been.
+//   - `baseline` present: `degraded` and `failed` are re-interpreted as z-score cutoffs —
+//     multiples of the watched entity's own typical spread away from its prediction — rather
+//     than as absolute values. Each configured cutoff must be greater than `0` and less than
+//     `1000000`, the detector score cap.
+//   - `changeGate` present: `degraded` and `failed` stay absolute, but the check additionally
+//     requires the value to have become materially worse than it recently was before it fails.
+//
+// At most one of `baseline` and `changeGate` may be set. A request setting both is rejected
+// with a `400`; the mutual exclusion is enforced by the server rather than by this schema,
+// matching the existing treatment of `metric` versus `servicesMetricQuery`.
 type CheckThresholds struct {
+	// Baseline Adaptive baseline detector configuration. Its presence on `CheckThresholds` re-interprets
+	// `degraded` and `failed` as z-score cutoffs against the check rule's own predicted value and
+	// typical spread.
+	Baseline *CheckThresholdBaseline `json:"baseline,omitempty"`
+
+	// ChangeGate Change gate configuration. Its presence on `CheckThresholds` leaves `degraded` and `failed`
+	// absolute, but additionally requires the observed quantity to be materially worse than it was
+	// over `baselineWindow` before the check fails. The check rule expression must provide the
+	// absolute threshold comparator through its parsed expression or a hand-written top-level
+	// comparison; otherwise the write is rejected.
+	ChangeGate *CheckThresholdChangeGate `json:"changeGate,omitempty"`
+
 	// Degraded The threshold value that defines when the check is in a degraded state. The value will be
 	// interpolated into the expression field as `$__threshold`.
+	//
+	// Interpreted as a z-score cutoff rather than an absolute value when `baseline` is set.
 	Degraded *float64 `json:"degraded,omitempty"`
 
 	// Failed The threshold value that defines when the check is in a failed state. The value will be
 	// interpolated into the expression field as `$__threshold`.
+	//
+	// Interpreted as a z-score cutoff rather than an absolute value when `baseline` is set.
 	Failed *float64 `json:"failed,omitempty"`
 }
 
@@ -1576,6 +2776,9 @@ type CheckThresholds struct {
 //   - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 //     resources Dash0 generates from another resource you own (the recording rules an SLO
 //     produces) and resources Dash0 ships with the product (the built-in views).
+//   - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+//     group from the organization's identity provider. Membership edits made by hand
+//     revert on the next reconcile.
 //   - `api`: created directly through the API, and the fallback for any origin whose
 //     prefix is not recognized.
 //
@@ -1609,6 +2812,12 @@ type CursorPagination struct {
 // D0QLWarnings defines model for D0QLWarnings.
 type D0QLWarnings = []string
 
+// DarkplaneAutoApprovalDecision The Darkplane AutoMerge evaluation decision. In dry-run mode, `approve` means the pull request would be approved.
+type DarkplaneAutoApprovalDecision string
+
+// DarkplaneAutoApprovalMode The effective Darkplane AutoMerge mode after path rules, not necessarily the repository's configured mode.
+type DarkplaneAutoApprovalMode string
+
 // DarkplaneConfig Darkplane-specific opt-ins for this dataset.
 type DarkplaneConfig struct {
 	// RespectNativeCodingAgentTelemetry Controls whether OpenTelemetry telemetry natively emitted by coding agents
@@ -1617,6 +2826,71 @@ type DarkplaneConfig struct {
 	// - `disabled`: Native coding-agent telemetry is not processed by Darkplane.
 	// - `enabled`: Native coding-agent telemetry is processed by Darkplane.
 	RespectNativeCodingAgentTelemetry *RespectNativeCodingAgentTelemetry `json:"respectNativeCodingAgentTelemetry,omitempty"`
+}
+
+// DarkplaneEvaluationTriggerDelivery Starts a new automation run for the Darkplane AutoMerge evaluation.
+type DarkplaneEvaluationTriggerDelivery string
+
+// DarkplaneEvaluationTriggerVariableName Variables provided by the `darkplane.pull_request.evaluation` trigger. Optional evaluation
+// fields are omitted when unavailable.
+//
+//   - `darkplane.auto_approval.decision`: `approve` or `hold`, independent of whether approval
+//     was applied.
+//   - `darkplane.auto_approval.mode`: The effective mode, one of `dry_run`, `auto_approve`, or
+//     `auto_merge`.
+//   - `darkplane.provider`: The source control provider, `github` or `gitlab`.
+//   - `darkplane.repository`: Repository full name, including its owner or GitLab namespace.
+//   - `darkplane.repository_id`: Darkplane's internal repository ID, not the provider's.
+//   - `darkplane.pull_request_id`: Darkplane's internal pull request ID, not the
+//     provider-facing number.
+//   - `darkplane.pull_request_number`: GitHub pull request number or GitLab merge request IID.
+//   - `darkplane.commit_sha`: The commit Darkplane evaluated, which may no longer be the head.
+//   - `darkplane.auto_approval.evaluation_id`: Darkplane's ID for this evaluation run.
+//   - `darkplane.auto_approval.score`: Weighted score from 0 to 100. Omitted when a hard gate
+//     skipped scoring.
+//   - `darkplane.auto_approval.reasoning`: Darkplane's prose explanation of the verdict, in the
+//     wording it writes on its own verdict comment. Branch on the decision, not on this.
+//   - `darkplane.pull_request_url`: Browser URL of the pull request or merge request.
+type DarkplaneEvaluationTriggerVariableName string
+
+// DarkplaneProvider The source control provider evaluated by Darkplane AutoMerge.
+type DarkplaneProvider string
+
+// DarkplanePullRequestEvaluationAgenticWorkflowTrigger defines model for DarkplanePullRequestEvaluationAgenticWorkflowTrigger.
+type DarkplanePullRequestEvaluationAgenticWorkflowTrigger struct {
+	// Delivery Starts a new automation run for the Darkplane AutoMerge evaluation.
+	Delivery *DarkplaneEvaluationTriggerDelivery                      `json:"delivery,omitempty"`
+	Kind     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind defines model for DarkplanePullRequestEvaluationAgenticWorkflowTrigger.Kind.
+type DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind string
+
+// DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec defines model for DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec.
+type DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec struct {
+	AvailableVariables *[]DarkplaneEvaluationTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Decisions Decisions to match. When omitted or empty, all decisions match.
+	Decisions *[]DarkplaneAutoApprovalDecision `json:"decisions,omitempty"`
+
+	// Modes Darkplane AutoMerge modes to match. When omitted or empty, all modes match.
+	Modes *[]DarkplaneAutoApprovalMode `json:"modes,omitempty"`
+
+	// Providers Source control providers to match. When omitted or empty, all providers match.
+	Providers *[]DarkplaneProvider `json:"providers,omitempty"`
+
+	// Repositories Repository full names to match. When omitted or empty, all repositories match.
+	Repositories *[]string `json:"repositories,omitempty"`
 }
 
 // DashboardAnnotations defines model for DashboardAnnotations.
@@ -1660,6 +2934,9 @@ type DashboardLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -1769,7 +3046,13 @@ type DatasetRestriction string
 
 // DatasetSettings defines model for DatasetSettings.
 type DatasetSettings struct {
-	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	// CardholderDataRedaction Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
+	// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
+	// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
+	// or split card numbers, so filtering at the source remains the primary mechanism.
+	// Absent means disabled.
+	CardholderDataRedaction *CardholderDataRedactionSettings `json:"cardholderDataRedaction,omitempty"`
+	CreatedAt               *time.Time                       `json:"createdAt,omitempty"`
 
 	// Darkplane Darkplane-specific opt-ins for this dataset.
 	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
@@ -1898,6 +3181,7 @@ type ErrorAssertionKind string
 
 // ErrorAssertionSpec defines model for ErrorAssertionSpec.
 type ErrorAssertionSpec struct {
+	// Value `location_unavailable` marks a run that was never dispatched because its location could not run it. It is reported on results only and is rejected in error assertions.
 	Value SyntheticHttpErrorType `json:"value"`
 }
 
@@ -2028,6 +3312,195 @@ type GenAIAttributeRedactionSettings struct {
 	// - `disabled`: Preserve GenAI attribute values unchanged.
 	// - `redact`: Replace the affected GenAI attribute content with a redacted value.
 	ToolCalls *GenAIAttributeRedaction `json:"toolCalls,omitempty"`
+}
+
+// GenerativeAiEvaluationDefinition defines model for GenerativeAiEvaluationDefinition.
+type GenerativeAiEvaluationDefinition struct {
+	Kind     GenerativeAiEvaluationDefinitionKind `json:"kind"`
+	Metadata GenerativeAiEvaluationMetadata       `json:"metadata"`
+	Spec     GenerativeAiEvaluationSpec           `json:"spec"`
+}
+
+// GenerativeAiEvaluationDefinitionKind defines model for GenerativeAiEvaluationDefinition.Kind.
+type GenerativeAiEvaluationDefinitionKind string
+
+// GenerativeAiEvaluationDisplay defines model for GenerativeAiEvaluationDisplay.
+type GenerativeAiEvaluationDisplay struct {
+	// Description Optional free-text note on what this evaluation judges and why. It carries no meaning for the judge itself; the rubric the model follows is the judge's prompts.
+	Description *string `json:"description,omitempty"`
+	Name        string  `json:"name"`
+}
+
+// GenerativeAiEvaluationGroupAnnotations defines model for GenerativeAiEvaluationGroupAnnotations.
+type GenerativeAiEvaluationGroupAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComcreatedBy The member ID of the user who originally created the eval. Set by the server; read-only. Absent when no user was behind the create (operator, Terraform, API) or the eval predates this annotation and its first version had no recorded author.
+	Dash0ComcreatedBy *string `json:"dash0.com/created-by,omitempty"`
+
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the rule has been deleted but not yet purged. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
+
+	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Note: this resource type does not currently enforce sharing; the field is accepted but has no effect on access.
+	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// GenerativeAiEvaluationIntent - `positive`: this label represents a desirable outcome.
+// - `neutral`: this label carries no polarity.
+// - `negative`: this label represents an undesirable outcome.
+type GenerativeAiEvaluationIntent string
+
+// GenerativeAiEvaluationJudge defines model for GenerativeAiEvaluationJudge.
+type GenerativeAiEvaluationJudge struct {
+	// Model The model class used to judge an evaluation. Availability depends on the region and
+	// evaluation workload. Dash0 manages the serving model privately.
+	//
+	// - `light`: Fast, low-cost evaluations.
+	// - `standard`: Balanced quality and cost.
+	Model        GenerativeAiEvaluationModel       `json:"model"`
+	Output       GenerativeAiEvaluationJudgeOutput `json:"output"`
+	SystemPrompt string                            `json:"systemPrompt"`
+	UserPrompt   string                            `json:"userPrompt"`
+}
+
+// GenerativeAiEvaluationJudgeOutput defines model for GenerativeAiEvaluationJudgeOutput.
+type GenerativeAiEvaluationJudgeOutput struct {
+	union json.RawMessage
+}
+
+// GenerativeAiEvaluationJudgeOutputBoolean Carries no configuration, so it has no `spec`. `true` is always the desirable outcome,
+// so a verdict is labelled "pass"/"fail" unconditionally. Write the rubric so that `true`
+// means the eval passed.
+type GenerativeAiEvaluationJudgeOutputBoolean struct {
+	Kind GenerativeAiEvaluationJudgeOutputBooleanKind `json:"kind"`
+}
+
+// GenerativeAiEvaluationJudgeOutputBooleanKind defines model for GenerativeAiEvaluationJudgeOutputBoolean.Kind.
+type GenerativeAiEvaluationJudgeOutputBooleanKind string
+
+// GenerativeAiEvaluationJudgeOutputCategorical defines model for GenerativeAiEvaluationJudgeOutputCategorical.
+type GenerativeAiEvaluationJudgeOutputCategorical struct {
+	Kind GenerativeAiEvaluationJudgeOutputCategoricalKind `json:"kind"`
+	Spec GenerativeAiEvaluationJudgeOutputCategoricalSpec `json:"spec"`
+}
+
+// GenerativeAiEvaluationJudgeOutputCategoricalKind defines model for GenerativeAiEvaluationJudgeOutputCategorical.Kind.
+type GenerativeAiEvaluationJudgeOutputCategoricalKind string
+
+// GenerativeAiEvaluationJudgeOutputCategoricalItem defines model for GenerativeAiEvaluationJudgeOutputCategoricalItem.
+type GenerativeAiEvaluationJudgeOutputCategoricalItem struct {
+	// Intent - `positive`: this label represents a desirable outcome.
+	// - `neutral`: this label carries no polarity.
+	// - `negative`: this label represents an undesirable outcome.
+	Intent *GenerativeAiEvaluationIntent `json:"intent,omitempty"`
+	Label  string                        `json:"label"`
+	Value  *float32                      `json:"value,omitempty"`
+}
+
+// GenerativeAiEvaluationJudgeOutputCategoricalSpec defines model for GenerativeAiEvaluationJudgeOutputCategoricalSpec.
+type GenerativeAiEvaluationJudgeOutputCategoricalSpec struct {
+	Options []GenerativeAiEvaluationJudgeOutputCategoricalItem `json:"options"`
+}
+
+// GenerativeAiEvaluationJudgeOutputNumeric defines model for GenerativeAiEvaluationJudgeOutputNumeric.
+type GenerativeAiEvaluationJudgeOutputNumeric struct {
+	Kind GenerativeAiEvaluationJudgeOutputNumericKind `json:"kind"`
+
+	// Spec A higher score is always the desirable outcome. Write the rubric so that `max` is the
+	// best result.
+	Spec GenerativeAiEvaluationJudgeOutputNumericSpec `json:"spec"`
+}
+
+// GenerativeAiEvaluationJudgeOutputNumericKind defines model for GenerativeAiEvaluationJudgeOutputNumeric.Kind.
+type GenerativeAiEvaluationJudgeOutputNumericKind string
+
+// GenerativeAiEvaluationJudgeOutputNumericSpec A higher score is always the desirable outcome. Write the rubric so that `max` is the
+// best result.
+type GenerativeAiEvaluationJudgeOutputNumericSpec struct {
+	Max float32 `json:"max"`
+	Min float32 `json:"min"`
+
+	// Threshold A value between `min` and `max`, inclusive. Absent when the eval declares no
+	// threshold.
+	Threshold *float32 `json:"threshold,omitempty"`
+}
+
+// GenerativeAiEvaluationLabels defines model for GenerativeAiEvaluationLabels.
+type GenerativeAiEvaluationLabels struct {
+	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the eval config. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// GenerativeAiEvaluationMatch defines model for GenerativeAiEvaluationMatch.
+type GenerativeAiEvaluationMatch struct {
+	Filters FilterCriteria `json:"filters"`
+}
+
+// GenerativeAiEvaluationMetadata defines model for GenerativeAiEvaluationMetadata.
+type GenerativeAiEvaluationMetadata struct {
+	Annotations *GenerativeAiEvaluationGroupAnnotations `json:"annotations,omitempty"`
+	Labels      *GenerativeAiEvaluationLabels           `json:"labels,omitempty"`
+	Name        string                                  `json:"name"`
+}
+
+// GenerativeAiEvaluationModel The model class used to judge an evaluation. Availability depends on the region and
+// evaluation workload. Dash0 manages the serving model privately.
+//
+// - `light`: Fast, low-cost evaluations.
+// - `standard`: Balanced quality and cost.
+type GenerativeAiEvaluationModel string
+
+// GenerativeAiEvaluationResponse defines model for GenerativeAiEvaluationResponse.
+type GenerativeAiEvaluationResponse = GenerativeAiEvaluationDefinition
+
+// GenerativeAiEvaluationSampling defines model for GenerativeAiEvaluationSampling.
+type GenerativeAiEvaluationSampling struct {
+	// Rate A value between 0 and 1 reflecting the percentage of traces that should be sampled probabilistically.
+	// This sampling decision is made deterministically by inspecting the trace ID.
+	Rate float32 `json:"rate"`
+}
+
+// GenerativeAiEvaluationSpec defines model for GenerativeAiEvaluationSpec.
+type GenerativeAiEvaluationSpec struct {
+	Display GenerativeAiEvaluationDisplay  `json:"display"`
+	Enabled bool                           `json:"enabled"`
+	Judge   GenerativeAiEvaluationJudge    `json:"judge"`
+	Match   GenerativeAiEvaluationMatch    `json:"match"`
+	Sample  GenerativeAiEvaluationSampling `json:"sample"`
 }
 
 // GeoLocationSettings defines model for GeoLocationSettings.
@@ -2263,7 +3736,7 @@ type GitHubAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment` and `github.deployment_status` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -2271,6 +3744,10 @@ type GitHubAgenticWorkflowTriggerSpec struct {
 	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
 	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
 	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
 	Actions *[]string `json:"actions,omitempty"`
 
 	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
@@ -2335,6 +3812,396 @@ type GitHubAgenticWorkflowTriggerSpec struct {
 	States *[]string `json:"states,omitempty"`
 }
 
+// GitHubCheckActivityAgenticWorkflowTriggerSpec defines model for GitHubCheckActivityAgenticWorkflowTriggerSpec.
+type GitHubCheckActivityAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Branches Optional list of branch names to filter on, matched against the check's associated
+	// commit branch. When omitted, checks on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+}
+
+// GitHubCheckRunAgenticWorkflowTrigger defines model for GitHubCheckRunAgenticWorkflowTrigger.
+type GitHubCheckRunAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery          `json:"delivery,omitempty"`
+	Kind     GitHubCheckRunAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitHubCheckRunAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitHubCheckRunAgenticWorkflowTriggerKind defines model for GitHubCheckRunAgenticWorkflowTrigger.Kind.
+type GitHubCheckRunAgenticWorkflowTriggerKind string
+
+// GitHubCheckRunAgenticWorkflowTriggerSpec defines model for GitHubCheckRunAgenticWorkflowTriggerSpec.
+type GitHubCheckRunAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Branches Optional list of branch names to filter on, matched against the check's associated
+	// commit branch. When omitted, checks on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Conclusions Optional list of conclusions to filter on. Only applies to `completed` events.
+	// When omitted, check runs with any conclusion match.
+	Conclusions *[]GitHubCheckRunConclusion `json:"conclusions,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// Statuses Optional list of statuses to filter on. Applies to check runs at any lifecycle
+	// stage, not only completed ones. When omitted, check runs with any status match.
+	Statuses *[]GitHubCheckRunStatus `json:"statuses,omitempty"`
+}
+
+// GitHubCheckRunConclusion The conclusion of a GitHub check run.
+//
+// - `success`: The check run completed successfully.
+// - `failure`: The check run failed.
+// - `neutral`: The check run completed with a neutral result.
+// - `cancelled`: The check run was cancelled.
+// - `timed_out`: The check run timed out.
+// - `action_required`: The check run requires manual action.
+// - `stale`: The check run went stale (its check suite was superseded by a newer commit).
+// - `skipped`: The check run was skipped.
+// - `startup_failure`: The check run failed to start.
+// - `waiting`: The check run is waiting on an external condition.
+// - `pending`: The check run is pending.
+type GitHubCheckRunConclusion string
+
+// GitHubCheckRunStatus The status of a GitHub check run.
+//
+// - `queued`: The check run is queued.
+// - `in_progress`: The check run is in progress.
+// - `completed`: The check run has completed (see `conclusions` for the outcome).
+// - `pending`: The check run is pending.
+type GitHubCheckRunStatus string
+
+// GitHubCheckSuiteAgenticWorkflowTrigger defines model for GitHubCheckSuiteAgenticWorkflowTrigger.
+type GitHubCheckSuiteAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery            `json:"delivery,omitempty"`
+	Kind     GitHubCheckSuiteAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitHubCheckSuiteAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitHubCheckSuiteAgenticWorkflowTriggerKind defines model for GitHubCheckSuiteAgenticWorkflowTrigger.Kind.
+type GitHubCheckSuiteAgenticWorkflowTriggerKind string
+
+// GitHubCheckSuiteAgenticWorkflowTriggerSpec defines model for GitHubCheckSuiteAgenticWorkflowTriggerSpec.
+type GitHubCheckSuiteAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Branches Optional list of branch names to filter on, matched against the check's associated
+	// commit branch. When omitted, checks on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Conclusions Optional list of conclusions to filter on. Only applies to `completed` events.
+	// When omitted, check suites with any conclusion match.
+	Conclusions *[]GitHubCheckSuiteConclusion `json:"conclusions,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// Statuses Optional list of statuses to filter on. Applies to check suites at any lifecycle
+	// stage, not only completed ones. When omitted, check suites with any status match.
+	Statuses *[]GitHubCheckSuiteStatus `json:"statuses,omitempty"`
+}
+
+// GitHubCheckSuiteConclusion The conclusion of a GitHub check suite.
+//
+// - `success`: Every check run in the suite completed successfully.
+// - `failure`: At least one check run in the suite failed.
+// - `neutral`: The suite completed with a neutral result.
+// - `cancelled`: The suite was cancelled.
+// - `timed_out`: The suite timed out.
+// - `action_required`: The suite requires manual action.
+// - `stale`: The suite went stale (superseded by a newer commit).
+// - `skipped`: The suite was skipped.
+// - `startup_failure`: The suite failed to start.
+type GitHubCheckSuiteConclusion string
+
+// GitHubCheckSuiteStatus The status of a GitHub check suite.
+//
+// - `requested`: The check suite was requested.
+// - `in_progress`: The check suite is in progress.
+// - `completed`: The check suite has completed (see `conclusions` for the outcome).
+// - `queued`: The check suite is queued.
+// - `pending`: The check suite is pending.
+type GitHubCheckSuiteStatus string
+
 // GitHubCommentAgenticWorkflowTriggerSpec defines model for GitHubCommentAgenticWorkflowTriggerSpec.
 type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
@@ -2346,7 +4213,7 @@ type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment` and `github.deployment_status` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -2354,6 +4221,10 @@ type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
 	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
 	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
 	Actions *[]string `json:"actions,omitempty"`
 
 	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
@@ -2636,12 +4507,648 @@ type GitHubReleaseAgenticWorkflowTriggerKind string
 //   - `github.deployment_status.state`: The deployment status state (e.g., `success`, `failure`,
 //     `pending`). Present on deployment-status triggers only.
 //   - `github.check_run.status`: The check run status (e.g., `completed`, `in_progress`). Present
-//     on deployment-status triggers when a check run accompanies the event.
+//     on deployment-status triggers when a check run accompanies the event, and on check_run
+//     triggers directly.
 //   - `github.release.tag`: The release tag name (e.g., `v1.2.3`). Present on release triggers;
 //     routes "continue" triggers back to the agent thread owning the release.
 //   - `github.comment.body`: The body text of the comment. Present on
 //     `github.pull_request_review_comment` and `github.issue_comment` triggers only.
+//   - `github.workflow_run.id`: The workflow run id. Present on workflow_run triggers.
+//   - `github.workflow_run.name`: The name of the workflow (e.g., `CI`). Present on
+//     workflow_run triggers.
+//   - `github.workflow_run.head_branch`: The branch the workflow ran on. Present on
+//     workflow_run triggers.
+//   - `github.workflow_run.conclusion`: The conclusion of the run (e.g., `success`,
+//     `failure`). Present on `completed` workflow_run events; empty otherwise.
+//   - `github.workflow_run.url`: The HTML URL of the workflow run. Present on workflow_run
+//     triggers.
+//   - `github.workflow_job.id`: The workflow job id. Present on workflow_job triggers.
+//   - `github.workflow_job.name`: The job's own name (e.g., `test (3.9)`). Present on
+//     workflow_job triggers.
+//   - `github.workflow_job.workflow_name`: The name of the workflow the job belongs to (e.g.,
+//     `CI`). Present on workflow_job triggers.
+//   - `github.workflow_job.head_branch`: The branch the job ran on, blank when the run came
+//     from a fork. Present on workflow_job triggers.
+//   - `github.workflow_job.conclusion`: The conclusion of the job (e.g., `success`,
+//     `failure`). Present on `completed` workflow_job events; empty otherwise.
+//   - `github.workflow_job.url`: The HTML URL of the workflow job. Present on workflow_job
+//     triggers.
+//   - `github.workflow_dispatch.ref`: The branch or tag the workflow was dispatched against.
+//     Present on workflow_dispatch triggers.
+//   - `github.workflow_dispatch.workflow`: The dispatched workflow's file path relative to
+//     the repository root (e.g., `.github/workflows/ci.yml`), not its display name. Present
+//     on workflow_dispatch triggers.
+//   - `github.workflow_dispatch.inputs`: The caller-supplied `inputs` from a manual dispatch,
+//     as a JSON object string (e.g., `{"environment":"staging"}`). Present on workflow_dispatch
+//     triggers when the dispatch carried inputs; empty otherwise, including when oversized.
+//     Supplied by whoever triggered the workflow run and not sanitized — treat as untrusted
+//     input when writing a task prompt that references this variable.
+//   - `github.check_run.id`: The check run id. Present on check_run triggers.
+//   - `github.check_run.name`: The name of the check (e.g., `lint`). Present on check_run
+//     triggers.
+//   - `github.check_run.head_branch`: The branch the check ran on. Present on check_run
+//     triggers.
+//   - `github.check_run.conclusion`: The conclusion of the check run (e.g., `success`,
+//     `failure`). Present on `completed` check_run events; empty otherwise.
+//   - `github.check_run.url`: The HTML URL of the check run. Present on check_run triggers.
+//   - `github.check_suite.id`: The check suite id. Present on check_suite triggers.
+//   - `github.check_suite.head_branch`: The branch the check suite ran on. Present on
+//     check_suite triggers.
+//   - `github.check_suite.conclusion`: The summary conclusion for all check runs in the
+//     suite (e.g., `success`, `failure`). Present on `completed` check_suite events; empty
+//     otherwise.
+//   - `github.check_suite.status`: The check suite status (e.g., `completed`, `in_progress`).
+//     Present on check_suite triggers.
 type GitHubTriggerVariableName string
+
+// GitHubWorkflowActivityAgenticWorkflowTriggerSpec defines model for GitHubWorkflowActivityAgenticWorkflowTriggerSpec.
+type GitHubWorkflowActivityAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
+	// on. When omitted, events on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// WorkflowNames Optional list of workflow names to filter on. For workflow_run/workflow_job this is
+	// the workflow's display name (e.g., `CI`, `Deploy`); for workflow_dispatch it is the
+	// workflow's file path relative to the repository root (e.g.,
+	// `.github/workflows/ci.yml`). When omitted, events from any workflow match.
+	WorkflowNames *[]string `json:"workflowNames,omitempty"`
+}
+
+// GitHubWorkflowDispatchAgenticWorkflowTrigger defines model for GitHubWorkflowDispatchAgenticWorkflowTrigger.
+type GitHubWorkflowDispatchAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery                  `json:"delivery,omitempty"`
+	Kind     GitHubWorkflowDispatchAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitHubWorkflowDispatchAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitHubWorkflowDispatchAgenticWorkflowTriggerKind defines model for GitHubWorkflowDispatchAgenticWorkflowTrigger.Kind.
+type GitHubWorkflowDispatchAgenticWorkflowTriggerKind string
+
+// GitHubWorkflowDispatchAgenticWorkflowTriggerSpec defines model for GitHubWorkflowDispatchAgenticWorkflowTriggerSpec.
+type GitHubWorkflowDispatchAgenticWorkflowTriggerSpec = GitHubWorkflowActivityAgenticWorkflowTriggerSpec
+
+// GitHubWorkflowJobAgenticWorkflowTrigger defines model for GitHubWorkflowJobAgenticWorkflowTrigger.
+type GitHubWorkflowJobAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery             `json:"delivery,omitempty"`
+	Kind     GitHubWorkflowJobAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitHubWorkflowJobAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitHubWorkflowJobAgenticWorkflowTriggerKind defines model for GitHubWorkflowJobAgenticWorkflowTrigger.Kind.
+type GitHubWorkflowJobAgenticWorkflowTriggerKind string
+
+// GitHubWorkflowJobAgenticWorkflowTriggerSpec defines model for GitHubWorkflowJobAgenticWorkflowTriggerSpec.
+type GitHubWorkflowJobAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
+	// on. When omitted, events on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Conclusions Optional list of conclusions to filter on. Only applies to
+	// `completed` events. When omitted, jobs with any conclusion match.
+	Conclusions *[]GitHubWorkflowJobConclusion `json:"conclusions,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// WorkflowNames Optional list of workflow names to filter on. For workflow_run/workflow_job this is
+	// the workflow's display name (e.g., `CI`, `Deploy`); for workflow_dispatch it is the
+	// workflow's file path relative to the repository root (e.g.,
+	// `.github/workflows/ci.yml`). When omitted, events from any workflow match.
+	WorkflowNames *[]string `json:"workflowNames,omitempty"`
+}
+
+// GitHubWorkflowJobConclusion The conclusion of a GitHub Actions workflow job. GitHub's workflow_job payload carries a
+// narrower set than workflow_run: no `stale`.
+//
+// - `success`: The job completed successfully.
+// - `failure`: The job failed.
+// - `cancelled`: The job was cancelled.
+// - `skipped`: The job was skipped.
+// - `timed_out`: The job timed out.
+// - `action_required`: The job requires manual action.
+// - `neutral`: The job completed with a neutral result.
+type GitHubWorkflowJobConclusion string
+
+// GitHubWorkflowRunAgenticWorkflowTrigger defines model for GitHubWorkflowRunAgenticWorkflowTrigger.
+type GitHubWorkflowRunAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery             `json:"delivery,omitempty"`
+	Kind     GitHubWorkflowRunAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitHubWorkflowRunAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitHubWorkflowRunAgenticWorkflowTriggerKind defines model for GitHubWorkflowRunAgenticWorkflowTrigger.Kind.
+type GitHubWorkflowRunAgenticWorkflowTriggerKind string
+
+// GitHubWorkflowRunAgenticWorkflowTriggerSpec defines model for GitHubWorkflowRunAgenticWorkflowTriggerSpec.
+type GitHubWorkflowRunAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
+	// on. When omitted, events on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Conclusions Optional list of conclusions to filter on. Only applies to
+	// `completed` events. When omitted, runs with any conclusion match.
+	Conclusions *[]GitHubWorkflowRunConclusion `json:"conclusions,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// WorkflowNames Optional list of workflow names to filter on. For workflow_run/workflow_job this is
+	// the workflow's display name (e.g., `CI`, `Deploy`); for workflow_dispatch it is the
+	// workflow's file path relative to the repository root (e.g.,
+	// `.github/workflows/ci.yml`). When omitted, events from any workflow match.
+	WorkflowNames *[]string `json:"workflowNames,omitempty"`
+}
+
+// GitHubWorkflowRunConclusion The conclusion of a GitHub Actions workflow run.
+//
+// - `success`: The workflow run completed successfully.
+// - `failure`: The workflow run failed.
+// - `cancelled`: The workflow run was cancelled.
+// - `skipped`: The workflow run was skipped.
+// - `timed_out`: The workflow run timed out.
+// - `action_required`: The workflow run requires manual action.
+// - `neutral`: The workflow run completed with a neutral result.
+// - `stale`: The workflow run went stale.
+// - `startup_failure`: The workflow run failed to start.
+type GitHubWorkflowRunConclusion string
+
+// GitLabAgenticWorkflowTriggerSpec Scope shared by the GitLab trigger kinds.
+//
+// A GitLab webhook is registered by the customer on a group, and each Dash0 GitLab
+// integration is anchored to one instance — so unlike the GitHub App, Dash0 cannot declare
+// which events it receives. Which of these triggers ever fire depends on the event checkboxes
+// ticked when the webhook was created.
+type GitLabAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of merge request actions to filter on: `open`, `close`, `reopen`,
+	// `update`, `merge`, `approved`, `unapproved`.
+	//
+	// Only `gitlab.merge_request` uses this; a note carries no action, so the filter is
+	// skipped for `gitlab.note` rather than blocking every event.
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllGroups Explicitly match every group on the instance. Required to be set when no `groups` and
+	// no `projects` are given, so that a match-everything trigger is always a deliberate
+	// choice rather than an omission — mirroring `allOrganizations` on GitHub.
+	AllGroups *bool `json:"allGroups,omitempty"`
+
+	// AllProjects Explicitly match every project on the instance. See `allGroups`.
+	AllProjects        *bool                        `json:"allProjects,omitempty"`
+	AvailableVariables *[]GitLabTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Groups Optional list of group full paths to filter on, e.g. `acme/backend`. A group covers every
+	// project beneath it at any depth, so `acme/backend` matches `acme/backend/api` and
+	// `acme/backend/tools/lint`, but not `acme/frontend/web` — nor `acme/backend-legacy/api`,
+	// which is a different group.
+	//
+	// A group given as a numeric id rather than a path matches nothing: ids and paths cannot be
+	// compared, and a filter that quietly matched everything would be worse than one that
+	// visibly matches nothing.
+	Groups *[]string `json:"groups,omitempty"`
+
+	// Instances Optional list of GitLab instance hosts to filter on, e.g. `gitlab.com`,
+	// `gitlab.acme.io`. Omit to match every instance the organization has connected.
+	//
+	// Only worth setting when an organization has more than one GitLab integration: a group or
+	// project path is unique within an instance but not across instances, so `acme/backend` on
+	// gitlab.com and on a self-managed host are different groups that a path filter alone
+	// cannot tell apart.
+	Instances *[]string `json:"instances,omitempty"`
+
+	// Projects Optional list of project full paths to filter on, e.g. `acme/backend/api`.
+	Projects *[]string `json:"projects,omitempty"`
+}
+
+// GitLabMergeRequestAgenticWorkflowTrigger defines model for GitLabMergeRequestAgenticWorkflowTrigger.
+type GitLabMergeRequestAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery              `json:"delivery,omitempty"`
+	Kind     GitLabMergeRequestAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec Scope shared by the GitLab trigger kinds.
+	//
+	// A GitLab webhook is registered by the customer on a group, and each Dash0 GitLab
+	// integration is anchored to one instance — so unlike the GitHub App, Dash0 cannot declare
+	// which events it receives. Which of these triggers ever fire depends on the event checkboxes
+	// ticked when the webhook was created.
+	Spec GitLabAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitLabMergeRequestAgenticWorkflowTriggerKind defines model for GitLabMergeRequestAgenticWorkflowTrigger.Kind.
+type GitLabMergeRequestAgenticWorkflowTriggerKind string
+
+// GitLabNoteAgenticWorkflowTrigger defines model for GitLabNoteAgenticWorkflowTrigger.
+type GitLabNoteAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery      `json:"delivery,omitempty"`
+	Kind     GitLabNoteAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitLabNoteAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitLabNoteAgenticWorkflowTriggerKind defines model for GitLabNoteAgenticWorkflowTrigger.Kind.
+type GitLabNoteAgenticWorkflowTriggerKind string
+
+// GitLabNoteAgenticWorkflowTriggerSpec defines model for GitLabNoteAgenticWorkflowTriggerSpec.
+type GitLabNoteAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of merge request actions to filter on: `open`, `close`, `reopen`,
+	// `update`, `merge`, `approved`, `unapproved`.
+	//
+	// Only `gitlab.merge_request` uses this; a note carries no action, so the filter is
+	// skipped for `gitlab.note` rather than blocking every event.
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllGroups Explicitly match every group on the instance. Required to be set when no `groups` and
+	// no `projects` are given, so that a match-everything trigger is always a deliberate
+	// choice rather than an omission — mirroring `allOrganizations` on GitHub.
+	AllGroups *bool `json:"allGroups,omitempty"`
+
+	// AllProjects Explicitly match every project on the instance. See `allGroups`.
+	AllProjects        *bool                        `json:"allProjects,omitempty"`
+	AvailableVariables *[]GitLabTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// Groups Optional list of group full paths to filter on, e.g. `acme/backend`. A group covers every
+	// project beneath it at any depth, so `acme/backend` matches `acme/backend/api` and
+	// `acme/backend/tools/lint`, but not `acme/frontend/web` — nor `acme/backend-legacy/api`,
+	// which is a different group.
+	//
+	// A group given as a numeric id rather than a path matches nothing: ids and paths cannot be
+	// compared, and a filter that quietly matched everything would be worse than one that
+	// visibly matches nothing.
+	Groups *[]string `json:"groups,omitempty"`
+
+	// Instances Optional list of GitLab instance hosts to filter on, e.g. `gitlab.com`,
+	// `gitlab.acme.io`. Omit to match every instance the organization has connected.
+	//
+	// Only worth setting when an organization has more than one GitLab integration: a group or
+	// project path is unique within an instance but not across instances, so `acme/backend` on
+	// gitlab.com and on a self-managed host are different groups that a path filter alone
+	// cannot tell apart.
+	Instances *[]string `json:"instances,omitempty"`
+
+	// Keyword Optional. Fires only when the note contains this keyword as a whole, isolated word,
+	// case-insensitively — so a keyword of `review` is not matched by `review-agent`.
+	// Leading and trailing punctuation next to the keyword still matches.
+	//
+	// Absent or empty fires on every note, which on a busy project is a great many.
+	Keyword *string `json:"keyword,omitempty"`
+
+	// Projects Optional list of project full paths to filter on, e.g. `acme/backend/api`.
+	Projects *[]string `json:"projects,omitempty"`
+}
+
+// GitLabTriggerVariableName Variables provided by the GitLab triggers.
+//
+//   - `gitlab.instance`: Host of the GitLab instance the event came from (e.g. `gitlab.com`).
+//     Always present, and what makes the rest unambiguous — every other identifier below is
+//     unique only within one GitLab instance.
+//   - `gitlab.project`: The project's full path, e.g. `acme/backend/api`.
+//   - `gitlab.group`: The project's namespace — its full path without the project, e.g.
+//     `acme/backend`. Empty for a project directly under a user or a top-level group.
+//   - `gitlab.user`: Username of the person whose action produced the event.
+//   - `gitlab.action`: The merge request action (`open`, `close`, `reopen`, `update`, `merge`,
+//     `approved`, `unapproved`). Absent for `gitlab.note`, which carries no action.
+//   - `gitlab.merge_request.iid`: The merge request's number within its project — the one people
+//     cite, not the instance-wide id. Present on `gitlab.merge_request`, and on `gitlab.note`
+//     only when the comment was left on a merge request.
+//   - `gitlab.merge_request.title`, `gitlab.merge_request.url`: Present under the same condition
+//     as the IID.
+//   - `gitlab.comment.body`: The comment's text. `gitlab.note` only.
+//   - `gitlab.noteable_type`: What the comment was left on — `MergeRequest`, `Issue`, `Commit`,
+//     or `Snippet`. `gitlab.note` only.
+type GitLabTriggerVariableName string
 
 // GoogleChatWebhookConfig defines model for GoogleChatWebhookConfig.
 type GoogleChatWebhookConfig struct {
@@ -2695,9 +5202,9 @@ type HttpRequestMethod string
 type HttpRequestSpec struct {
 	BasicAuthentication *HttpBasicAuthentication `json:"basicAuthentication,omitempty"`
 	Body                *HttpRequestBody         `json:"body,omitempty"`
-	Headers             HttpHeaders              `json:"headers"`
+	Headers             *HttpHeaders             `json:"headers,omitempty"`
 	Method              HttpRequestMethod        `json:"method"`
-	QueryParameters     HttpQueryParameters      `json:"queryParameters"`
+	QueryParameters     *HttpQueryParameters     `json:"queryParameters,omitempty"`
 	Redirects           HttpRedirects            `json:"redirects"`
 	Tls                 TlsSettings              `json:"tls"`
 	Tracing             TracingSettings          `json:"tracing"`
@@ -2790,8 +5297,15 @@ type InstrumentationScope struct {
 
 // InviteMemberRequest defines model for InviteMemberRequest.
 type InviteMemberRequest struct {
+	// EmailAddress The address the invitation is sent to. An address that the organization's sign-up
+	// restrictions do not permit is rejected with `403`, and an address that already belongs
+	// to the organization, or already has a pending invitation, with `409`.
 	EmailAddress string `json:"emailAddress"`
-	Role         string `json:"role"`
+
+	// Role The role the invited member receives. The built-in roles are `admin` and
+	// `basic_member`; an organization with custom roles configured may use those instead.
+	// An unknown role is rejected with `400`.
+	Role string `json:"role"`
 }
 
 // IpAddressStorageStrategy defines model for IpAddressStorageStrategy.
@@ -3104,6 +5618,20 @@ type Matcher_Values_Item struct {
 	union json.RawMessage
 }
 
+// MattermostWebhookConfig defines model for MattermostWebhookConfig.
+type MattermostWebhookConfig struct {
+	// Channel Optional channel override. Accepts a channel name (`town-square`) or a direct
+	// message target (`@username`). When omitted, Mattermost posts to the channel the
+	// incoming webhook was created for. Overriding requires the webhook's creator to
+	// have access to the target channel; Mattermost rejects the post otherwise.
+	Channel *string `json:"channel,omitempty"`
+
+	// Url The Mattermost incoming webhook URL, as shown in
+	// *Integrations → Incoming Webhooks* of the Mattermost server
+	// (e.g. `https://mattermost.example.com/hooks/xxx-generatedkey-xxx`).
+	Url string `json:"url"`
+}
+
 // MemberDefinition defines model for MemberDefinition.
 type MemberDefinition struct {
 	Kind     MemberDefinitionKind `json:"kind"`
@@ -3120,6 +5648,46 @@ type MemberDisplay struct {
 	FirstName *string `json:"firstName,omitempty"`
 	ImageUrl  *string `json:"imageUrl,omitempty"`
 	LastName  *string `json:"lastName,omitempty"`
+}
+
+// MemberInvitationDefinition An invitation to join the organization that has not been accepted yet. Once accepted, the
+// invitee is listed as a member instead.
+type MemberInvitationDefinition struct {
+	Kind     MemberInvitationDefinitionKind `json:"kind"`
+	Metadata MemberInvitationMetadata       `json:"metadata"`
+	Spec     MemberInvitationSpec           `json:"spec"`
+}
+
+// MemberInvitationDefinitionKind defines model for MemberInvitationDefinition.Kind.
+type MemberInvitationDefinitionKind string
+
+// MemberInvitationLabels defines model for MemberInvitationLabels.
+type MemberInvitationLabels struct {
+	// Dash0ComexpiresAt When the invitation stops being valid. Absent if it does not expire.
+	Dash0ComexpiresAt *time.Time `json:"dash0.com/expires-at,omitempty"`
+
+	// Dash0Comid ID of the invitation, for `DELETE /api/members/invitations/{invitationID}`. It
+	// identifies the invitation, not a member: it cannot be passed where a member ID is
+	// expected.
+	Dash0Comid        string    `json:"dash0.com/id"`
+	Dash0CominvitedAt time.Time `json:"dash0.com/invited-at"`
+
+	// Dash0Comrole The role the invitee receives on accepting.
+	Dash0Comrole string `json:"dash0.com/role"`
+}
+
+// MemberInvitationMetadata defines model for MemberInvitationMetadata.
+type MemberInvitationMetadata struct {
+	Labels MemberInvitationLabels `json:"labels"`
+
+	// Name The address the invitation was sent to.
+	Name string `json:"name"`
+}
+
+// MemberInvitationSpec defines model for MemberInvitationSpec.
+type MemberInvitationSpec struct {
+	// EmailAddress The address the invitation was sent to.
+	EmailAddress string `json:"emailAddress"`
 }
 
 // MemberLabels defines model for MemberLabels.
@@ -3208,6 +5776,9 @@ type NotificationChannelLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -3227,7 +5798,7 @@ type NotificationChannelMetadata struct {
 
 // NotificationChannelRouting defines model for NotificationChannelRouting.
 type NotificationChannelRouting struct {
-	// Assets **Read-only.** The check rules and synthetic checks that are bound to this channel — a back-reference derived by the server; any value supplied on a write is ignored. To bind a check rule to this channel, set the `dash0.com/notification-channel-ids` annotation on the check rule; to bind a synthetic check, set `spec.notifications.channels` on the synthetic check. A channel bound to a check rule or synthetic check receives every notification for it, regardless of `filters`.
+	// Assets **Read-only.** The check rules and synthetic checks that are bound to this channel — a back-reference derived by the server; any value supplied on a write is ignored. To bind a check rule to this channel, set the `dash0.com/notification-channel-ids` annotation on the check rule; to bind a synthetic check, set `spec.notifications.channels` on the synthetic check. A channel bound to a check rule or synthetic check receives every notification for it, regardless of `filters` — unless the binding restricts it to critical, via the `:critical-only` suffix on its entry in the check rule's `dash0.com/notification-channel-ids` annotation, or the synthetic check's `spec.notifications.onlyCriticalChannels`.
 	Assets []NotificationChannelRoutingAsset `json:"assets"`
 
 	// Filters Routing conditions: the channel is notified for any failed check matching at least one condition (conditions are OR-ed; the criteria within one condition are AND-ed). Conditions are evaluated organization-wide — they are not scoped to the assets listed above, and they do not restrict notifications delivered through a direct binding.
@@ -3411,7 +5982,7 @@ type OAuthRevocationRequest struct {
 	// ClientId The identifier of the client the token was issued to. RFC 7009 section 2.1 requires the
 	// revocation request to be authenticated as that client, so a token issued to a different
 	// client is left untouched (the response is still 200).
-	ClientId string `json:"client_id,omitempty"`
+	ClientId string `json:"client_id"`
 
 	// Token The token to be revoked.
 	Token string `json:"token"`
@@ -3622,6 +6193,23 @@ type PrometheusAlertRule struct {
 	Name string `json:"name"`
 
 	// Thresholds Thresholds to use for the `$__threshold` variable in the expression field.
+	//
+	// By default `degraded` and `failed` are absolute values. The optional `baseline` and
+	// `changeGate` sub-objects are detector configuration: **the presence of one of them is the
+	// discriminator** that changes how `degraded` and `failed` are interpreted.
+	//
+	// - Neither present: `degraded` and `failed` are absolute values compared against the
+	//   expression's own value, as they always have been.
+	// - `baseline` present: `degraded` and `failed` are re-interpreted as z-score cutoffs —
+	//   multiples of the watched entity's own typical spread away from its prediction — rather
+	//   than as absolute values. Each configured cutoff must be greater than `0` and less than
+	//   `1000000`, the detector score cap.
+	// - `changeGate` present: `degraded` and `failed` stay absolute, but the check additionally
+	//   requires the value to have become materially worse than it recently was before it fails.
+	//
+	// At most one of `baseline` and `changeGate` may be set. A request setting both is rejected
+	// with a `400`; the mutual exclusion is enforced by the server rather than by this schema,
+	// matching the existing treatment of `metric` versus `servicesMetricQuery`.
 	Thresholds *CheckThresholds `json:"thresholds,omitempty"`
 }
 
@@ -3633,7 +6221,7 @@ type PrometheusAlertRule struct {
 type PrometheusAlertRule_Annotations struct {
 	// Description Human-readable and templatable description for the check that allows you to customize the way the
 	// rationale of the check is textually described in the Dash0 UI, in notifications, etc. This will
-	// be optimized in the design for long form viewing.
+	// be optimized in the design for long form viewing. Limited to 2048 characters.
 	Description *string `json:"description,omitempty"`
 
 	// FolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
@@ -3643,7 +6231,8 @@ type PrometheusAlertRule_Annotations struct {
 	Sharing *string `json:"sharing,omitempty"`
 
 	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
-	// is textually described in short form in the Dash0 UI, in notifications, etc.
+	// is textually described in short form in the Dash0 UI, in notifications, etc. Limited to 255
+	// characters.
 	Summary              *string           `json:"summary,omitempty"`
 	AdditionalProperties map[string]string `json:"-"`
 }
@@ -3673,6 +6262,9 @@ type PrometheusAlertRuleApiListItem struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -3712,6 +6304,9 @@ type PrometheusAlertRuleMetadataLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -3931,7 +6526,14 @@ type PrometheusRuleDefinition struct {
 	// Commonly used keys include `summary` and `description`.
 	//
 	// Dash0 also recognizes:
-	// - `dash0.com/notification-channel-ids`: Comma-separated list of notification channel UUIDs to notify when the alert fires.
+	// - `dash0.com/notification-channel-ids`: Comma-separated list of notification channels to
+	//   notify when the alert fires. Each entry is a channel UUID or a channel origin, and may
+	//   carry the `:critical-only` suffix to notify that channel only once the check reaches
+	//   critical — for example
+	//   `dash0.com/notification-channel-ids: fbc39ea2-d6da-4c8e-b77f-730821913a3c, pagerduty-prod:critical-only`.
+	//   The annotation declares the routing in full: a channel it does not name is unlinked,
+	//   and a channel it names without the suffix notifies on every issue, including when the
+	//   only-on-critical trigger had been set in the UI.
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
 	// Expr PromQL expression to evaluate.
@@ -4047,6 +6649,22 @@ type PrometheusRuleMetadata struct {
 	// - `dash0.com/first-evaluation-at`: First evaluation timestamp (recording rules only, read-only, server-set).
 	// - `dash0.com/runtime-disabled-at`: Timestamp when the recorder took the group out of evaluation because a rule was too expensive (it exceeded the query sample limit). Recording rules only, read-only, server-set. Independent of `dash0.com/enabled`. Cleared only when a cost-determining field changes (the rules or the interval) — a `dash0.com/enabled` toggle, a cosmetic edit, or a blind re-apply of the identical manifest does not re-enable the group.
 	// - `dash0.com/runtime-disabled-reason`: Why the recorder runtime-disabled the group (currently only "max_samples"). Recording rules only, read-only, server-set.
+	// - `dash0.com/baseline-direction`: Anomaly detector baseline direction — "above", "below", or "both". Check rules only. Lifted into the rule's `thresholds.baseline`.
+	// - `dash0.com/baseline-spread-floor`: Optional minimum spread as a fraction of the baseline prediction. Check rules only; use with `dash0.com/baseline-direction`.
+	// - `dash0.com/volume-floor`: Optional minimum traffic rate for a baseline or windowed average traffic rate for a change gate. Supported for Services Metrics and Spans Metrics check rules only.
+	// - `dash0.com/change-gate-comparison`: Change gate comparison — "absolute_delta" or "relative_factor". Check rules only. Set together with the two keys below.
+	// - `dash0.com/change-gate-value`: The minimum change the change gate requires, interpreted according to the comparison. Check rules only.
+	// - `dash0.com/change-gate-baseline-window`: The window the change gate derives the recent level from (e.g. "1h"). Check rules only.
+	//
+	// The detector keys are the only way to configure an anomaly detector from Kubernetes: check rules
+	// are a flat resource whose body has no `thresholds` field. All three change-gate keys must be present
+	// and parseable for a change gate to be created; a partial or unparseable set is left in the annotations
+	// and creates no detector, rather than rejecting the rule and breaking the reconcile loop. A typed
+	// `thresholds` field on the body always wins over the matching annotation.
+	//
+	// New annotation keys use the `dash0.com/` prefix. The legacy `dash0-threshold-degraded` /
+	// `dash0-threshold-critical` forms (and their unprefixed variants) are still lifted for compatibility
+	// but are not extended.
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
 	// Labels Key-value labels for the resource. Dash0 recognizes the following labels:
@@ -4387,6 +7005,9 @@ type SamplingLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -4532,14 +7153,17 @@ type SemanticConventionUpgrades = string
 
 // SettingsPerOrganizationAndDatasetInfo defines model for SettingsPerOrganizationAndDatasetInfo.
 type SettingsPerOrganizationAndDatasetInfo struct {
-	DatasetSettings  []DatasetSettings       `json:"datasetSettings"`
-	ObservedPatterns *[]ObservedPatternEntry `json:"observedPatterns,omitempty"`
-	SamplingSettings []SamplingDefinition    `json:"samplingSettings"`
+	DatasetSettings                []DatasetSettings                `json:"datasetSettings"`
+	GenerativeAiEvaluationSettings []GenerativeAiEvaluationResponse `json:"generativeAiEvaluationSettings"`
+	ObservedPatterns               *[]ObservedPatternEntry          `json:"observedPatterns,omitempty"`
+	SamplingSettings               []SamplingDefinition             `json:"samplingSettings"`
 
-	// SignalControlEdge Per-organization SignalControl *edge* configuration (the edge facet of SignalControl).
-	// Extensible — additional edge sub-settings will be added here over time. Other facets
-	// (e.g. SaaS-side) are modelled as their own schemas under sibling endpoints, not as
-	// fields here.
+	// SignalControlEdge SignalControl *edge* configuration (the edge facet of SignalControl).
+	//
+	// SignalControl is generally available, so this is no longer per-organization state: it is
+	// not stored, not settable, and always reports `enabled: true`. It is still returned by
+	// `GET /api/signal-control/edge/settings` and in the edge-settings payload for Dash0
+	// Operators that still check entitlement before deploying the SignalControl components.
 	SignalControlEdge SignalControlEdgeSettings `json:"signalControlEdge"`
 
 	// SignalControlMetering Per-organization control over edge billing metering enforcement. Set centrally by Dash0
@@ -4549,12 +7173,18 @@ type SettingsPerOrganizationAndDatasetInfo struct {
 	// is a pre-release entitlement gate that goes away at GA, and enforcement has to outlive it.
 	//
 	// Every field is optional, and absence is meaningful — see `enforce`.
-	SignalControlMetering               *SignalControlMeteringSettings          `json:"signalControlMetering,omitempty"`
-	SignalToMetricsSettings             []SignalToMetricsDefinition             `json:"signalToMetricsSettings"`
-	SourceMapSettings                   []SourceMapIntegration                  `json:"sourceMapSettings"`
-	TechnicalID                         string                                  `json:"technicalID"`
-	TelemetryTransformationRuleSettings []TelemetryTransformationRuleDefinition `json:"telemetryTransformationRuleSettings"`
-	TimeSeriesAggregationSettings       []TimeSeriesAggregationDefinition       `json:"timeSeriesAggregationSettings"`
+	SignalControlMetering *SignalControlMeteringSettings `json:"signalControlMetering,omitempty"`
+
+	// SignalControlOperationCardinalityReduction Per-organization SignalControl configuration for SaaS-side operation-name cardinality
+	// reduction (the operation-name-cardinality-reduction facet of SignalControl). Set centrally
+	// by Dash0, not customer-configurable. A sibling of `signalControlEdge` rather than a field
+	// inside it, matching how SaaS-side facets are modelled as their own schemas.
+	SignalControlOperationCardinalityReduction SignalControlOperationCardinalityReductionSettings `json:"signalControlOperationCardinalityReduction"`
+	SignalToMetricsSettings                    []SignalToMetricsDefinition                        `json:"signalToMetricsSettings"`
+	SourceMapSettings                          []SourceMapIntegration                             `json:"sourceMapSettings"`
+	TechnicalID                                string                                             `json:"technicalID"`
+	TelemetryTransformationRuleSettings        []TelemetryTransformationRuleDefinition            `json:"telemetryTransformationRuleSettings"`
+	TimeSeriesAggregationSettings              []TimeSeriesAggregationDefinition                  `json:"timeSeriesAggregationSettings"`
 }
 
 // SeverityNumber SEVERITY_NUMBER_UNSPECIFIED = 0;
@@ -4584,12 +7214,14 @@ type SettingsPerOrganizationAndDatasetInfo struct {
 // SEVERITY_NUMBER_FATAL4 = 24;
 type SeverityNumber = int32
 
-// SignalControlEdgeSettings Per-organization SignalControl *edge* configuration (the edge facet of SignalControl).
-// Extensible — additional edge sub-settings will be added here over time. Other facets
-// (e.g. SaaS-side) are modelled as their own schemas under sibling endpoints, not as
-// fields here.
+// SignalControlEdgeSettings SignalControl *edge* configuration (the edge facet of SignalControl).
+//
+// SignalControl is generally available, so this is no longer per-organization state: it is
+// not stored, not settable, and always reports `enabled: true`. It is still returned by
+// `GET /api/signal-control/edge/settings` and in the edge-settings payload for Dash0
+// Operators that still check entitlement before deploying the SignalControl components.
 type SignalControlEdgeSettings struct {
-	// Enabled Whether the organization is entitled to use SignalControl features.
+	// Enabled Always `true`. Every organization is entitled to use SignalControl.
 	Enabled bool `json:"enabled"`
 }
 
@@ -4616,6 +7248,15 @@ type SignalControlMeteringSettings struct {
 	// something the server turns on. A collector that has never synced never enforces, but
 	// one that has been told to enforce keeps enforcing if it later loses contact.
 	Enforce *bool `json:"enforce,omitempty"`
+}
+
+// SignalControlOperationCardinalityReductionSettings Per-organization SignalControl configuration for SaaS-side operation-name cardinality
+// reduction (the operation-name-cardinality-reduction facet of SignalControl). Set centrally
+// by Dash0, not customer-configurable. A sibling of `signalControlEdge` rather than a field
+// inside it, matching how SaaS-side facets are modelled as their own schemas.
+type SignalControlOperationCardinalityReductionSettings struct {
+	// Enabled Whether SaaS-side operation-name cardinality reduction runs for the organization.
+	Enabled bool `json:"enabled"`
 }
 
 // SignalToMetricsBulkUpsertRequest defines model for SignalToMetricsBulkUpsertRequest.
@@ -4693,6 +7334,9 @@ type SignalToMetricsLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -5218,6 +7862,9 @@ type SloLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -5253,12 +7900,12 @@ type SloMetadata struct {
 	Name string `json:"name"`
 }
 
-// SloMetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide `spec.query` as a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`) — function calls and aggregations are not accepted.
+// SloMetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide the query under `spec.query`. With counter true or omitted, a good, bad or total query must be a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`), because Dash0 wraps it in `sum(increase(...[5m]))`. With counter false, these queries accept any PromQL expression that evaluates to an instant vector, including histogram_count(increase(...[5m])). Raw queries also accept instant-vector expressions. Dash0 wraps counter-false and raw queries only in `sum(...)`.
 type SloMetricSource struct {
 	// MetricSourceRef Reference to an existing DataSource object by name. Not currently supported — provide an inline `spec.query` instead. Requests that set metricSourceRef are rejected with a 400.
 	MetricSourceRef *string `json:"metricSourceRef,omitempty"`
 
-	// Spec Data-source-specific query parameters. For Prometheus this is `{ query: "<bare PromQL vector selector>" }`.
+	// Spec Data-source-specific query parameters. For Prometheus this is `{ query: "<PromQL>" }`, in the shape this schema describes.
 	Spec map[string]interface{} `json:"spec"`
 
 	// Type Predefined data source type. Only 'Prometheus' is currently supported (the default when omitted); other types are rejected with a 400.
@@ -5267,7 +7914,7 @@ type SloMetricSource struct {
 
 // SloMetricSourceWrapper Wraps a metric source for use in ratio metric numerator/denominator/raw.
 type SloMetricSourceWrapper struct {
-	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide `spec.query` as a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`) — function calls and aggregations are not accepted.
+	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide the query under `spec.query`. With counter true or omitted, a good, bad or total query must be a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`), because Dash0 wraps it in `sum(increase(...[5m]))`. With counter false, these queries accept any PromQL expression that evaluates to an instant vector, including histogram_count(increase(...[5m])). Raw queries also accept instant-vector expressions. Dash0 wraps counter-false and raw queries only in `sum(...)`.
 	MetricSource SloMetricSource `json:"metricSource"`
 }
 
@@ -5307,7 +7954,7 @@ type SloRatioMetric struct {
 	// Bad Wraps a metric source for use in ratio metric numerator/denominator/raw.
 	Bad *SloMetricSourceWrapper `json:"bad,omitempty"`
 
-	// Counter True if the metric is a monotonically increasing counter, false if it is a single number that can arbitrarily go up or down. Ignored when using raw.
+	// Counter True (the default) for bare counter selectors, which Dash0 wraps in increase over five minutes. False for instant-vector expressions that already produce event counts, including histogram_count, or for gauge values. Ignored when using raw.
 	Counter *bool `json:"counter,omitempty"`
 
 	// Good Wraps a metric source for use in ratio metric numerator/denominator/raw.
@@ -5362,7 +8009,7 @@ type SloSpec struct {
 
 // SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against objective thresholds (op and value on the objective, not here). Not currently supported — use a ratioMetric instead.
 type SloThresholdMetric struct {
-	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide `spec.query` as a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`) — function calls and aggregations are not accepted.
+	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide the query under `spec.query`. With counter true or omitted, a good, bad or total query must be a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`), because Dash0 wraps it in `sum(increase(...[5m]))`. With counter false, these queries accept any PromQL expression that evaluates to an instant vector, including histogram_count(increase(...[5m])). Raw queries also accept instant-vector expressions. Dash0 wraps counter-false and raw queries only in `sum(...)`.
 	MetricSource SloMetricSource `json:"metricSource"`
 }
 
@@ -5399,6 +8046,9 @@ type SourceMapIntegrationSecrets struct {
 
 // SourceMapIntegrationSpec defines model for SourceMapIntegrationSpec.
 type SourceMapIntegrationSpec struct {
+	// AuthType Which authentication scheme the stored secrets carry. secretsRef alone cannot express this, because the same secret blob also holds custom header values.
+	AuthType *SourceMapIntegrationSpecAuthType `json:"authType,omitempty"`
+
 	// Headers Custom HTTP headers to include in requests
 	Headers    *map[string]string           `json:"headers,omitempty"`
 	Secrets    *SourceMapIntegrationSecrets `json:"secrets,omitempty"`
@@ -5410,6 +8060,9 @@ type SourceMapIntegrationSpec struct {
 	// Username Basic auth username
 	Username *string `json:"username,omitempty"`
 }
+
+// SourceMapIntegrationSpecAuthType Which authentication scheme the stored secrets carry. secretsRef alone cannot express this, because the same secret blob also holds custom header values.
+type SourceMapIntegrationSpecAuthType string
 
 // SpamFilterAnnotations Spam filters use hard delete (removed from the dataset settings array),
 // so there is no `dash0.com/deleted-at` annotation. Timestamps
@@ -5490,6 +8143,9 @@ type SpamFilterLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -5759,8 +8415,10 @@ type SyntheticCheckAttempt struct {
 	Duration int64 `json:"duration"`
 
 	// ErrorMessage Error message of the synthetic check attempt, if any
-	ErrorMessage *string                 `json:"errorMessage,omitempty"`
-	ErrorType    *SyntheticHttpErrorType `json:"errorType,omitempty"`
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+
+	// ErrorType `location_unavailable` marks a run that was never dispatched because its location could not run it. It is reported on results only and is rejected in error assertions.
+	ErrorType *SyntheticHttpErrorType `json:"errorType,omitempty"`
 
 	// FailedCriticalAssertions List of critical assertions that failed
 	FailedCriticalAssertions []FailedHttpCheckAssertion `json:"failedCriticalAssertions"`
@@ -5817,8 +8475,10 @@ type SyntheticCheckAttemptDetails struct {
 	Duration int64 `json:"duration"`
 
 	// ErrorMessage Error message of the synthetic check attempt, if any
-	ErrorMessage *string                 `json:"errorMessage,omitempty"`
-	ErrorType    *SyntheticHttpErrorType `json:"errorType,omitempty"`
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+
+	// ErrorType `location_unavailable` marks a run that was never dispatched because its location could not run it. It is reported on results only and is rejected in error assertions.
+	ErrorType *SyntheticHttpErrorType `json:"errorType,omitempty"`
 
 	// Events Span events using OTLP SpanEvent format
 	Events []SpanEvent `json:"events"`
@@ -5905,6 +8565,9 @@ type SyntheticCheckLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -5916,6 +8579,34 @@ type SyntheticCheckLabels struct {
 
 // SyntheticCheckLocation A geographic location identifier from which synthetic checks can be executed.
 type SyntheticCheckLocation = string
+
+// SyntheticCheckLocationEntry defines model for SyntheticCheckLocationEntry.
+type SyntheticCheckLocationEntry struct {
+	// CreatedAt Private locations only. When Dash0 first registered the location.
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+
+	// Health Private locations only. Public regions are operated by Dash0 and report no per-location
+	// health here.
+	Health *SyntheticPrivateLocationHealth `json:"health,omitempty"`
+
+	// Id The value a synthetic check definition stores to target this location: the region
+	// identifier for a public region, and the Dash0-assigned opaque id for a private
+	// location.
+	Id string `json:"id"`
+
+	// Kind - `public`: A Dash0-operated region, available to every organization.
+	// - `private`: A location the organization runs itself, visible only to that organization.
+	Kind SyntheticCheckLocationKind `json:"kind"`
+
+	// LocationId Private locations only. The label to show for the location. It is not unique, because
+	// two of an organization's locations may carry the same value after a re-registration,
+	// so display it alongside `id` when it repeats.
+	LocationId *SyntheticPrivateLocationLocationId `json:"locationId,omitempty"`
+}
+
+// SyntheticCheckLocationKind - `public`: A Dash0-operated region, available to every organization.
+// - `private`: A location the organization runs itself, visible only to that organization.
+type SyntheticCheckLocationKind string
 
 // SyntheticCheckMetadata defines model for SyntheticCheckMetadata.
 type SyntheticCheckMetadata struct {
@@ -6026,6 +8717,12 @@ type SyntheticCheckSchedulingStrategy string
 
 // SyntheticCheckSpec defines model for SyntheticCheckSpec.
 type SyntheticCheckSpec struct {
+	// Annotations Custom annotations attached to every alert this check raises, alongside the
+	// annotations Dash0 derives from the check itself. The keys `name`, `summary`,
+	// `description`, `type`, `interval` and `locations` are reserved: setting one to
+	// a non-empty value is rejected with a 400. An empty value is accepted and
+	// behaves the same as omitting the key.
+	Annotations   *map[string]string          `json:"annotations,omitempty"`
 	Display       *SyntheticCheckDisplay      `json:"display,omitempty"`
 	Enabled       bool                        `json:"enabled"`
 	Labels        *map[string]string          `json:"labels,omitempty"`
@@ -6051,6 +8748,9 @@ type SyntheticChecksApiListItem struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6080,8 +8780,33 @@ type SyntheticHttpCheckPluginSpec struct {
 	Request    HttpRequestSpec              `json:"request"`
 }
 
-// SyntheticHttpErrorType defines model for SyntheticHttpErrorType.
+// SyntheticHttpErrorType `location_unavailable` marks a run that was never dispatched because its location could not run it. It is reported on results only and is rejected in error assertions.
 type SyntheticHttpErrorType string
+
+// SyntheticPrivateLocationHealth defines model for SyntheticPrivateLocationHealth.
+type SyntheticPrivateLocationHealth struct {
+	// LastSeenAt When one of the location's workers was last seen. Absent when no worker has ever
+	// connected, and absent while `status` is `unknown`.
+	LastSeenAt *time.Time `json:"lastSeenAt,omitempty"`
+
+	// Status - `online`: At least one of the location's workers is connected and within the liveness window.
+	// - `offline`: No worker is connected, so the location executes no checks.
+	// - `unknown`: Dash0 cannot currently determine the location's connection state. This is not a
+	//   claim that the location is down, and it must not be presented as one.
+	Status SyntheticPrivateLocationHealthStatus `json:"status"`
+}
+
+// SyntheticPrivateLocationHealthStatus - `online`: At least one of the location's workers is connected and within the liveness window.
+//   - `offline`: No worker is connected, so the location executes no checks.
+//   - `unknown`: Dash0 cannot currently determine the location's connection state. This is not a
+//     claim that the location is down, and it must not be presented as one.
+type SyntheticPrivateLocationHealthStatus string
+
+// SyntheticPrivateLocationLocationId Customer-chosen identifier for the location, unique within the owning organization only.
+// Two organizations may both use the same value for unrelated locations, and a deleted
+// location and its re-registered successor may share it too, so it never identifies a
+// location on its own.
+type SyntheticPrivateLocationLocationId = string
 
 // TeamAnnotations Key/value annotations on the team. Arbitrary keys are accepted on
 // write (the request is not rejected), but the server only interprets
@@ -6157,6 +8882,9 @@ type TeamLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6226,6 +8954,9 @@ type TeamsListItem struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6285,6 +9016,9 @@ type TelemetryFilter struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6374,6 +9108,9 @@ type TelemetryTransformationRuleLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6548,6 +9285,9 @@ type TimeSeriesAggregationLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6590,8 +9330,9 @@ type TimeSeriesAggregationSpec struct {
 	Match                  TimeSeriesAggregationMetricNameMatch          `json:"match"`
 
 	// Priority Precedence when more than one rule matches a metric. Lower values are evaluated first
-	// (higher precedence). Defaults to 0. Rules with equal priority are ordered deterministically
-	// by creation time, then by id.
+	// (higher precedence). Defaults to 2, the middle of the range, so a rule can be ranked
+	// both above and below the default without renumbering the others. Rules with equal
+	// priority are ordered deterministically by creation time, then by id.
 	Priority *int                        `json:"priority,omitempty"`
 	Sample   TimeSeriesAggregationSample `json:"sample"`
 }
@@ -6623,6 +9364,12 @@ type TlsSettings struct {
 // TracingSettings defines model for TracingSettings.
 type TracingSettings struct {
 	AddTracingHeaders bool `json:"addTracingHeaders"`
+}
+
+// UpdateMemberRoleRequest defines model for UpdateMemberRoleRequest.
+type UpdateMemberRoleRequest struct {
+	// Role The member's role in the organization
+	Role string `json:"role"`
 }
 
 // ViewAction defines model for ViewAction.
@@ -6685,6 +9432,9 @@ type ViewLabels struct {
 	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
 	//   resources Dash0 generates from another resource you own (the recording rules an SLO
 	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
 	// - `api`: created directly through the API, and the fallback for any origin whose
 	//   prefix is not recognized.
 	//
@@ -6957,6 +9707,59 @@ type GetApiAlertingCheckRulesOriginOrIdParams struct {
 // PutApiAlertingCheckRulesOriginOrIdParams defines parameters for PutApiAlertingCheckRulesOriginOrId.
 type PutApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiAttributePatternRulesParams defines parameters for GetApiAttributePatternRules.
+type GetApiAttributePatternRulesParams struct {
+	// Dataset The dataset to list Pattern Rules from.
+	Dataset Dataset `form:"dataset" json:"dataset"`
+
+	// ServiceNamespace Filter to rules scoped to this OpenTelemetry `service.namespace`. Requires `serviceName` to also be set.
+	ServiceNamespace *string `form:"serviceNamespace,omitempty" json:"serviceNamespace,omitempty"`
+
+	// ServiceName Filter to rules scoped to this OpenTelemetry `service.name`.
+	ServiceName *string `form:"serviceName,omitempty" json:"serviceName,omitempty"`
+
+	// Ownership Filter to rules with this ownership.
+	Ownership *AttributePatternRuleOwnership `form:"ownership,omitempty" json:"ownership,omitempty"`
+
+	// Status Filter to rules with this status.
+	Status *AttributePatternRuleStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Priority Filter to rules at any of these priorities, comma-separated. Priorities 1-5 are the
+	// user-facing priority levels; 0 matches auto-derived rows, which always carry the reserved
+	// priority 0 regardless of the `ownership` filter.
+	Priority *[]int `form:"priority,omitempty" json:"priority,omitempty"`
+
+	// Limit Maximum number of rules to return.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of rules to skip.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
+// PostApiAttributePatternRulesParams defines parameters for PostApiAttributePatternRules.
+type PostApiAttributePatternRulesParams struct {
+	// Dataset The dataset to create the Pattern Rule in.
+	Dataset Dataset `form:"dataset" json:"dataset"`
+}
+
+// DeleteApiAttributePatternRulesOriginOrIdParams defines parameters for DeleteApiAttributePatternRulesOriginOrId.
+type DeleteApiAttributePatternRulesOriginOrIdParams struct {
+	// Dataset The dataset the Pattern Rule belongs to.
+	Dataset Dataset `form:"dataset" json:"dataset"`
+}
+
+// GetApiAttributePatternRulesOriginOrIdParams defines parameters for GetApiAttributePatternRulesOriginOrId.
+type GetApiAttributePatternRulesOriginOrIdParams struct {
+	// Dataset The dataset the Pattern Rule belongs to.
+	Dataset Dataset `form:"dataset" json:"dataset"`
+}
+
+// PutApiAttributePatternRulesOriginOrIdParams defines parameters for PutApiAttributePatternRulesOriginOrId.
+type PutApiAttributePatternRulesOriginOrIdParams struct {
+	// Dataset The dataset the Pattern Rule belongs to.
+	Dataset Dataset `form:"dataset" json:"dataset"`
 }
 
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
@@ -7281,6 +10084,11 @@ type PutApiSlosOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// PostApiSlosOriginOrIdResetParams defines parameters for PostApiSlosOriginOrIdReset.
+type PostApiSlosOriginOrIdResetParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiSpamFiltersParams defines parameters for GetApiSpamFilters.
 type GetApiSpamFiltersParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -7423,6 +10231,12 @@ type PostApiAlertingCheckRulesBulkJSONRequestBody = PrometheusAlertRuleBulkCreat
 // PutApiAlertingCheckRulesOriginOrIdJSONRequestBody defines body for PutApiAlertingCheckRulesOriginOrId for application/json ContentType.
 type PutApiAlertingCheckRulesOriginOrIdJSONRequestBody = PrometheusAlertRule
 
+// PostApiAttributePatternRulesJSONRequestBody defines body for PostApiAttributePatternRules for application/json ContentType.
+type PostApiAttributePatternRulesJSONRequestBody = AttributePatternRuleCreateRequest
+
+// PutApiAttributePatternRulesOriginOrIdJSONRequestBody defines body for PutApiAttributePatternRulesOriginOrId for application/json ContentType.
+type PutApiAttributePatternRulesOriginOrIdJSONRequestBody = AttributePatternRuleUpdateRequest
+
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
 
@@ -7455,6 +10269,9 @@ type PostApiLogsDownloadJSONRequestBody = LogRecordsDownloadRequest
 
 // PostApiMembersJSONRequestBody defines body for PostApiMembers for application/json ContentType.
 type PostApiMembersJSONRequestBody = InviteMemberRequest
+
+// PutApiMembersMemberIDRoleJSONRequestBody defines body for PutApiMembersMemberIDRole for application/json ContentType.
+type PutApiMembersMemberIDRoleJSONRequestBody = UpdateMemberRoleRequest
 
 // PostApiNotificationChannelsJSONRequestBody defines body for PostApiNotificationChannels for application/json ContentType.
 type PostApiNotificationChannelsJSONRequestBody = NotificationChannelDefinition
@@ -7575,6 +10392,74 @@ type PostOauthRevokeFormdataRequestBody = OAuthRevocationRequest
 
 // PostOauthTokenFormdataRequestBody defines body for PostOauthToken for application/x-www-form-urlencoded ContentType.
 type PostOauthTokenFormdataRequestBody = OAuthTokenRequest
+
+// Getter for additional properties for AttributePatternRuleSpec_Details. Returns the specified
+// element and whether it was found
+func (a AttributePatternRuleSpec_Details) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for AttributePatternRuleSpec_Details
+func (a *AttributePatternRuleSpec_Details) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for AttributePatternRuleSpec_Details to handle AdditionalProperties
+func (a *AttributePatternRuleSpec_Details) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["canonicalOperation"]; found {
+		err = json.Unmarshal(raw, &a.CanonicalOperation)
+		if err != nil {
+			return fmt.Errorf("error reading 'canonicalOperation': %w", err)
+		}
+		delete(object, "canonicalOperation")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for AttributePatternRuleSpec_Details to handle AdditionalProperties
+func (a AttributePatternRuleSpec_Details) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.CanonicalOperation != nil {
+		object["canonicalOperation"], err = json.Marshal(a.CanonicalOperation)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'canonicalOperation': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // Getter for additional properties for PrometheusAlertRule_Annotations. Returns the specified
 // element and whether it was found
@@ -8453,6 +11338,214 @@ func (t *AgenticWorkflowTrigger) MergeGitHubReleaseAgenticWorkflowTrigger(v GitH
 	return err
 }
 
+// AsGitHubWorkflowRunAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitHubWorkflowRunAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitHubWorkflowRunAgenticWorkflowTrigger() (GitHubWorkflowRunAgenticWorkflowTrigger, error) {
+	var body GitHubWorkflowRunAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitHubWorkflowRunAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitHubWorkflowRunAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitHubWorkflowRunAgenticWorkflowTrigger(v GitHubWorkflowRunAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitHubWorkflowRunAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubWorkflowRunAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitHubWorkflowRunAgenticWorkflowTrigger(v GitHubWorkflowRunAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitHubWorkflowJobAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitHubWorkflowJobAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitHubWorkflowJobAgenticWorkflowTrigger() (GitHubWorkflowJobAgenticWorkflowTrigger, error) {
+	var body GitHubWorkflowJobAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitHubWorkflowJobAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitHubWorkflowJobAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitHubWorkflowJobAgenticWorkflowTrigger(v GitHubWorkflowJobAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitHubWorkflowJobAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubWorkflowJobAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitHubWorkflowJobAgenticWorkflowTrigger(v GitHubWorkflowJobAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitHubWorkflowDispatchAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitHubWorkflowDispatchAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitHubWorkflowDispatchAgenticWorkflowTrigger() (GitHubWorkflowDispatchAgenticWorkflowTrigger, error) {
+	var body GitHubWorkflowDispatchAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitHubWorkflowDispatchAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitHubWorkflowDispatchAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitHubWorkflowDispatchAgenticWorkflowTrigger(v GitHubWorkflowDispatchAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitHubWorkflowDispatchAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubWorkflowDispatchAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitHubWorkflowDispatchAgenticWorkflowTrigger(v GitHubWorkflowDispatchAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitHubCheckRunAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitHubCheckRunAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitHubCheckRunAgenticWorkflowTrigger() (GitHubCheckRunAgenticWorkflowTrigger, error) {
+	var body GitHubCheckRunAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitHubCheckRunAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitHubCheckRunAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitHubCheckRunAgenticWorkflowTrigger(v GitHubCheckRunAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitHubCheckRunAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubCheckRunAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitHubCheckRunAgenticWorkflowTrigger(v GitHubCheckRunAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitHubCheckSuiteAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitHubCheckSuiteAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitHubCheckSuiteAgenticWorkflowTrigger() (GitHubCheckSuiteAgenticWorkflowTrigger, error) {
+	var body GitHubCheckSuiteAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitHubCheckSuiteAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitHubCheckSuiteAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitHubCheckSuiteAgenticWorkflowTrigger(v GitHubCheckSuiteAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitHubCheckSuiteAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubCheckSuiteAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitHubCheckSuiteAgenticWorkflowTrigger(v GitHubCheckSuiteAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitLabMergeRequestAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitLabMergeRequestAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitLabMergeRequestAgenticWorkflowTrigger() (GitLabMergeRequestAgenticWorkflowTrigger, error) {
+	var body GitLabMergeRequestAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitLabMergeRequestAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitLabMergeRequestAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitLabMergeRequestAgenticWorkflowTrigger(v GitLabMergeRequestAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitLabMergeRequestAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitLabMergeRequestAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitLabMergeRequestAgenticWorkflowTrigger(v GitLabMergeRequestAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitLabNoteAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitLabNoteAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitLabNoteAgenticWorkflowTrigger() (GitLabNoteAgenticWorkflowTrigger, error) {
+	var body GitLabNoteAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitLabNoteAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitLabNoteAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitLabNoteAgenticWorkflowTrigger(v GitLabNoteAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitLabNoteAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitLabNoteAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitLabNoteAgenticWorkflowTrigger(v GitLabNoteAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDarkplanePullRequestEvaluationAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a DarkplanePullRequestEvaluationAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsDarkplanePullRequestEvaluationAgenticWorkflowTrigger() (DarkplanePullRequestEvaluationAgenticWorkflowTrigger, error) {
+	var body DarkplanePullRequestEvaluationAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDarkplanePullRequestEvaluationAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided DarkplanePullRequestEvaluationAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromDarkplanePullRequestEvaluationAgenticWorkflowTrigger(v DarkplanePullRequestEvaluationAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeDarkplanePullRequestEvaluationAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided DarkplanePullRequestEvaluationAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeDarkplanePullRequestEvaluationAgenticWorkflowTrigger(v DarkplanePullRequestEvaluationAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 // AsLinearCommentAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a LinearCommentAgenticWorkflowTrigger
 func (t AgenticWorkflowTrigger) AsLinearCommentAgenticWorkflowTrigger() (LinearCommentAgenticWorkflowTrigger, error) {
 	var body LinearCommentAgenticWorkflowTrigger
@@ -8687,6 +11780,94 @@ func (t AttributeFilter_Values_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AttributeFilter_Values_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsGenerativeAiEvaluationJudgeOutputNumeric returns the union data inside the GenerativeAiEvaluationJudgeOutput as a GenerativeAiEvaluationJudgeOutputNumeric
+func (t GenerativeAiEvaluationJudgeOutput) AsGenerativeAiEvaluationJudgeOutputNumeric() (GenerativeAiEvaluationJudgeOutputNumeric, error) {
+	var body GenerativeAiEvaluationJudgeOutputNumeric
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGenerativeAiEvaluationJudgeOutputNumeric overwrites any union data inside the GenerativeAiEvaluationJudgeOutput as the provided GenerativeAiEvaluationJudgeOutputNumeric
+func (t *GenerativeAiEvaluationJudgeOutput) FromGenerativeAiEvaluationJudgeOutputNumeric(v GenerativeAiEvaluationJudgeOutputNumeric) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGenerativeAiEvaluationJudgeOutputNumeric performs a merge with any union data inside the GenerativeAiEvaluationJudgeOutput, using the provided GenerativeAiEvaluationJudgeOutputNumeric
+func (t *GenerativeAiEvaluationJudgeOutput) MergeGenerativeAiEvaluationJudgeOutputNumeric(v GenerativeAiEvaluationJudgeOutputNumeric) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGenerativeAiEvaluationJudgeOutputBoolean returns the union data inside the GenerativeAiEvaluationJudgeOutput as a GenerativeAiEvaluationJudgeOutputBoolean
+func (t GenerativeAiEvaluationJudgeOutput) AsGenerativeAiEvaluationJudgeOutputBoolean() (GenerativeAiEvaluationJudgeOutputBoolean, error) {
+	var body GenerativeAiEvaluationJudgeOutputBoolean
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGenerativeAiEvaluationJudgeOutputBoolean overwrites any union data inside the GenerativeAiEvaluationJudgeOutput as the provided GenerativeAiEvaluationJudgeOutputBoolean
+func (t *GenerativeAiEvaluationJudgeOutput) FromGenerativeAiEvaluationJudgeOutputBoolean(v GenerativeAiEvaluationJudgeOutputBoolean) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGenerativeAiEvaluationJudgeOutputBoolean performs a merge with any union data inside the GenerativeAiEvaluationJudgeOutput, using the provided GenerativeAiEvaluationJudgeOutputBoolean
+func (t *GenerativeAiEvaluationJudgeOutput) MergeGenerativeAiEvaluationJudgeOutputBoolean(v GenerativeAiEvaluationJudgeOutputBoolean) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGenerativeAiEvaluationJudgeOutputCategorical returns the union data inside the GenerativeAiEvaluationJudgeOutput as a GenerativeAiEvaluationJudgeOutputCategorical
+func (t GenerativeAiEvaluationJudgeOutput) AsGenerativeAiEvaluationJudgeOutputCategorical() (GenerativeAiEvaluationJudgeOutputCategorical, error) {
+	var body GenerativeAiEvaluationJudgeOutputCategorical
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGenerativeAiEvaluationJudgeOutputCategorical overwrites any union data inside the GenerativeAiEvaluationJudgeOutput as the provided GenerativeAiEvaluationJudgeOutputCategorical
+func (t *GenerativeAiEvaluationJudgeOutput) FromGenerativeAiEvaluationJudgeOutputCategorical(v GenerativeAiEvaluationJudgeOutputCategorical) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGenerativeAiEvaluationJudgeOutputCategorical performs a merge with any union data inside the GenerativeAiEvaluationJudgeOutput, using the provided GenerativeAiEvaluationJudgeOutputCategorical
+func (t *GenerativeAiEvaluationJudgeOutput) MergeGenerativeAiEvaluationJudgeOutputCategorical(v GenerativeAiEvaluationJudgeOutputCategorical) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t GenerativeAiEvaluationJudgeOutput) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *GenerativeAiEvaluationJudgeOutput) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -9283,6 +12464,32 @@ func (t *NotificationChannelSpec_Config) FromGoogleChatWebhookConfig(v GoogleCha
 
 // MergeGoogleChatWebhookConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided GoogleChatWebhookConfig
 func (t *NotificationChannelSpec_Config) MergeGoogleChatWebhookConfig(v GoogleChatWebhookConfig) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMattermostWebhookConfig returns the union data inside the NotificationChannelSpec_Config as a MattermostWebhookConfig
+func (t NotificationChannelSpec_Config) AsMattermostWebhookConfig() (MattermostWebhookConfig, error) {
+	var body MattermostWebhookConfig
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMattermostWebhookConfig overwrites any union data inside the NotificationChannelSpec_Config as the provided MattermostWebhookConfig
+func (t *NotificationChannelSpec_Config) FromMattermostWebhookConfig(v MattermostWebhookConfig) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMattermostWebhookConfig performs a merge with any union data inside the NotificationChannelSpec_Config, using the provided MattermostWebhookConfig
+func (t *NotificationChannelSpec_Config) MergeMattermostWebhookConfig(v MattermostWebhookConfig) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -10103,6 +13310,25 @@ type ClientInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiAttributePatternRules request
+	GetApiAttributePatternRules(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiAttributePatternRulesWithBody request with any body
+	PostApiAttributePatternRulesWithBody(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiAttributePatternRules(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiAttributePatternRulesOriginOrId request
+	DeleteApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAttributePatternRulesOriginOrId request
+	GetApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAttributePatternRulesOriginOrIdWithBody request with any body
+	PutApiAttributePatternRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiDashboards request
 	GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -10173,8 +13399,19 @@ type ClientInterface interface {
 
 	PostApiMembers(ctx context.Context, body PostApiMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiMembersInvitations request
+	GetApiMembersInvitations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiMembersInvitationsInvitationID request
+	DeleteApiMembersInvitationsInvitationID(ctx context.Context, invitationID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiMembersMemberID request
 	DeleteApiMembersMemberID(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiMembersMemberIDRoleWithBody request with any body
+	PutApiMembersMemberIDRoleWithBody(ctx context.Context, memberID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiMembersMemberIDRole(ctx context.Context, memberID string, body PutApiMembersMemberIDRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiNotificationChannels request
 	GetApiNotificationChannels(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -10337,6 +13574,9 @@ type ClientInterface interface {
 	PutApiSlosOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiSlosOriginOrId(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiSlosOriginOrIdReset request
+	PostApiSlosOriginOrIdReset(ctx context.Context, originOrId string, params *PostApiSlosOriginOrIdResetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiSpamFilters request
 	GetApiSpamFilters(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -10719,6 +13959,90 @@ func (c *generatedClient) PutApiAlertingCheckRulesOriginOrId(ctx context.Context
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) GetApiAttributePatternRules(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAttributePatternRulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAttributePatternRulesWithBody(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAttributePatternRulesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAttributePatternRules(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAttributePatternRulesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAttributePatternRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiDashboardsRequest(c.Server, params)
 	if err != nil {
@@ -11043,8 +14367,56 @@ func (c *generatedClient) PostApiMembers(ctx context.Context, body PostApiMember
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) GetApiMembersInvitations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiMembersInvitationsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiMembersInvitationsInvitationID(ctx context.Context, invitationID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiMembersInvitationsInvitationIDRequest(c.Server, invitationID)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) DeleteApiMembersMemberID(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteApiMembersMemberIDRequest(c.Server, memberID)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiMembersMemberIDRoleWithBody(ctx context.Context, memberID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiMembersMemberIDRoleRequestWithBody(c.Server, memberID, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiMembersMemberIDRole(ctx context.Context, memberID string, body PutApiMembersMemberIDRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiMembersMemberIDRoleRequest(c.Server, memberID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -11765,6 +15137,18 @@ func (c *generatedClient) PutApiSlosOriginOrIdWithBody(ctx context.Context, orig
 
 func (c *generatedClient) PutApiSlosOriginOrId(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiSlosOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiSlosOriginOrIdReset(ctx context.Context, originOrId string, params *PostApiSlosOriginOrIdResetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiSlosOriginOrIdResetRequest(c.Server, originOrId, params)
 	if err != nil {
 		return nil, err
 	}
@@ -13263,6 +16647,390 @@ func NewPutApiAlertingCheckRulesOriginOrIdRequestWithBody(server string, originO
 	return req, nil
 }
 
+// NewGetApiAttributePatternRulesRequest generates requests for GetApiAttributePatternRules
+func NewGetApiAttributePatternRulesRequest(server string, params *GetApiAttributePatternRulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/attribute-pattern-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.ServiceNamespace != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "serviceNamespace", runtime.ParamLocationQuery, *params.ServiceNamespace); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ServiceName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "serviceName", runtime.ParamLocationQuery, *params.ServiceName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Ownership != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "ownership", runtime.ParamLocationQuery, *params.Ownership); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Status != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "status", runtime.ParamLocationQuery, *params.Status); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Priority != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", false, "priority", runtime.ParamLocationQuery, *params.Priority); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiAttributePatternRulesRequest calls the generic PostApiAttributePatternRules builder with application/json body
+func NewPostApiAttributePatternRulesRequest(server string, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiAttributePatternRulesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiAttributePatternRulesRequestWithBody generates requests for PostApiAttributePatternRules with any type of body
+func NewPostApiAttributePatternRulesRequestWithBody(server string, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/attribute-pattern-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiAttributePatternRulesOriginOrIdRequest generates requests for DeleteApiAttributePatternRulesOriginOrId
+func NewDeleteApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAttributePatternRulesOriginOrIdRequest generates requests for GetApiAttributePatternRulesOriginOrId
+func NewGetApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAttributePatternRulesOriginOrIdRequest calls the generic PutApiAttributePatternRulesOriginOrId builder with application/json body
+func NewPutApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiAttributePatternRulesOriginOrIdRequestWithBody generates requests for PutApiAttributePatternRulesOriginOrId with any type of body
+func NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiDashboardsRequest generates requests for GetApiDashboards
 func NewGetApiDashboardsRequest(server string, params *GetApiDashboardsParams) (*http.Request, error) {
 	var err error
@@ -14097,6 +17865,67 @@ func NewPostApiMembersRequestWithBody(server string, contentType string, body io
 	return req, nil
 }
 
+// NewGetApiMembersInvitationsRequest generates requests for GetApiMembersInvitations
+func NewGetApiMembersInvitationsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/members/invitations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteApiMembersInvitationsInvitationIDRequest generates requests for DeleteApiMembersInvitationsInvitationID
+func NewDeleteApiMembersInvitationsInvitationIDRequest(server string, invitationID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "invitationID", runtime.ParamLocationPath, invitationID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/members/invitations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewDeleteApiMembersMemberIDRequest generates requests for DeleteApiMembersMemberID
 func NewDeleteApiMembersMemberIDRequest(server string, memberID string) (*http.Request, error) {
 	var err error
@@ -14127,6 +17956,53 @@ func NewDeleteApiMembersMemberIDRequest(server string, memberID string) (*http.R
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewPutApiMembersMemberIDRoleRequest calls the generic PutApiMembersMemberIDRole builder with application/json body
+func NewPutApiMembersMemberIDRoleRequest(server string, memberID string, body PutApiMembersMemberIDRoleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiMembersMemberIDRoleRequestWithBody(server, memberID, "application/json", bodyReader)
+}
+
+// NewPutApiMembersMemberIDRoleRequestWithBody generates requests for PutApiMembersMemberIDRole with any type of body
+func NewPutApiMembersMemberIDRoleRequestWithBody(server string, memberID string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "memberID", runtime.ParamLocationPath, memberID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/members/%s/role", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -16778,6 +20654,62 @@ func NewPutApiSlosOriginOrIdRequestWithBody(server string, originOrId string, pa
 	return req, nil
 }
 
+// NewPostApiSlosOriginOrIdResetRequest generates requests for PostApiSlosOriginOrIdReset
+func NewPostApiSlosOriginOrIdResetRequest(server string, originOrId string, params *PostApiSlosOriginOrIdResetParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/slos/%s/reset", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, *params.Dataset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetApiSpamFiltersRequest generates requests for GetApiSpamFilters
 func NewGetApiSpamFiltersRequest(server string, params *GetApiSpamFiltersParams) (*http.Request, error) {
 	var err error
@@ -18923,6 +22855,25 @@ type ClientWithResponsesInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAlertingCheckRulesOriginOrIdResponse, error)
 
+	// GetApiAttributePatternRulesWithResponse request
+	GetApiAttributePatternRulesWithResponse(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesResponse, error)
+
+	// PostApiAttributePatternRulesWithBodyWithResponse request with any body
+	PostApiAttributePatternRulesWithBodyWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error)
+
+	PostApiAttributePatternRulesWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error)
+
+	// DeleteApiAttributePatternRulesOriginOrIdWithResponse request
+	DeleteApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error)
+
+	// GetApiAttributePatternRulesOriginOrIdWithResponse request
+	GetApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesOriginOrIdResponse, error)
+
+	// PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse request with any body
+	PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error)
+
+	PutApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error)
+
 	// GetApiDashboardsWithResponse request
 	GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error)
 
@@ -18993,8 +22944,19 @@ type ClientWithResponsesInterface interface {
 
 	PostApiMembersWithResponse(ctx context.Context, body PostApiMembersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiMembersResponse, error)
 
+	// GetApiMembersInvitationsWithResponse request
+	GetApiMembersInvitationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMembersInvitationsResponse, error)
+
+	// DeleteApiMembersInvitationsInvitationIDWithResponse request
+	DeleteApiMembersInvitationsInvitationIDWithResponse(ctx context.Context, invitationID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersInvitationsInvitationIDResponse, error)
+
 	// DeleteApiMembersMemberIDWithResponse request
 	DeleteApiMembersMemberIDWithResponse(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersMemberIDResponse, error)
+
+	// PutApiMembersMemberIDRoleWithBodyWithResponse request with any body
+	PutApiMembersMemberIDRoleWithBodyWithResponse(ctx context.Context, memberID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiMembersMemberIDRoleResponse, error)
+
+	PutApiMembersMemberIDRoleWithResponse(ctx context.Context, memberID string, body PutApiMembersMemberIDRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiMembersMemberIDRoleResponse, error)
 
 	// GetApiNotificationChannelsWithResponse request
 	GetApiNotificationChannelsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiNotificationChannelsResponse, error)
@@ -19157,6 +23119,9 @@ type ClientWithResponsesInterface interface {
 	PutApiSlosOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiSlosOriginOrIdResponse, error)
 
 	PutApiSlosOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiSlosOriginOrIdParams, body PutApiSlosOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiSlosOriginOrIdResponse, error)
+
+	// PostApiSlosOriginOrIdResetWithResponse request
+	PostApiSlosOriginOrIdResetWithResponse(ctx context.Context, originOrId string, params *PostApiSlosOriginOrIdResetParams, reqEditors ...RequestEditorFn) (*PostApiSlosOriginOrIdResetResponse, error)
 
 	// GetApiSpamFiltersWithResponse request
 	GetApiSpamFiltersWithResponse(ctx context.Context, params *GetApiSpamFiltersParams, reqEditors ...RequestEditorFn) (*GetApiSpamFiltersResponse, error)
@@ -19397,6 +23362,7 @@ type PostApiAgenticWorkflowsResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *AgenticWorkflowResponse
 	JSON403      *ErrorResponse
+	JSON503      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -19467,6 +23433,7 @@ type PutApiAgenticWorkflowsOriginOrIdResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *AgenticWorkflowResponse
 	JSON403      *ErrorResponse
+	JSON503      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -19617,6 +23584,124 @@ func (r PutApiAlertingCheckRulesOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiAlertingCheckRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAttributePatternRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AttributePatternRuleListResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAttributePatternRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAttributePatternRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiAttributePatternRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AttributePatternRuleResponse
+	JSON400      *ErrorResponse
+	JSON409      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiAttributePatternRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiAttributePatternRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiAttributePatternRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAttributePatternRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAttributePatternRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AttributePatternRuleResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAttributePatternRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiAttributePatternRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AttributePatternRuleResponse
+	JSON400      *ErrorResponse
+	JSON409      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAttributePatternRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -19990,6 +24075,51 @@ func (r PostApiMembersResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiMembersInvitationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]MemberInvitationDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiMembersInvitationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiMembersInvitationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiMembersInvitationsInvitationIDResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiMembersInvitationsInvitationIDResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiMembersInvitationsInvitationIDResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type DeleteApiMembersMemberIDResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -20006,6 +24136,28 @@ func (r DeleteApiMembersMemberIDResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r DeleteApiMembersMemberIDResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiMembersMemberIDRoleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiMembersMemberIDRoleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiMembersMemberIDRoleResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -20063,6 +24215,7 @@ type DeleteApiNotificationChannelsOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON403      *ErrorResponse
+	JSON409      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -20983,6 +25136,29 @@ func (r PutApiSlosOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiSlosOriginOrIdResetResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SloDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiSlosOriginOrIdResetResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiSlosOriginOrIdResetResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetApiSpamFiltersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -21198,6 +25374,7 @@ type PostApiSyntheticChecksResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *SyntheticCheckDefinition
+	JSON400      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -21220,7 +25397,7 @@ func (r PostApiSyntheticChecksResponse) StatusCode() int {
 type GetApiSyntheticChecksLocationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]SyntheticCheckLocation
+	JSON200      *[]SyntheticCheckLocationEntry
 	JSONDefault  *ErrorResponse
 }
 
@@ -21312,6 +25489,7 @@ type PutApiSyntheticChecksOriginOrIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *SyntheticCheckDefinition
+	JSON400      *ErrorResponse
 	JSONDefault  *ErrorResponse
 }
 
@@ -22061,6 +26239,67 @@ func (c *ClientWithResponses) PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx
 	return ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp)
 }
 
+// GetApiAttributePatternRulesWithResponse request returning *GetApiAttributePatternRulesResponse
+func (c *ClientWithResponses) GetApiAttributePatternRulesWithResponse(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesResponse, error) {
+	rsp, err := c.GetApiAttributePatternRules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAttributePatternRulesResponse(rsp)
+}
+
+// PostApiAttributePatternRulesWithBodyWithResponse request with arbitrary body returning *PostApiAttributePatternRulesResponse
+func (c *ClientWithResponses) PostApiAttributePatternRulesWithBodyWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error) {
+	rsp, err := c.PostApiAttributePatternRulesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAttributePatternRulesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiAttributePatternRulesWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error) {
+	rsp, err := c.PostApiAttributePatternRules(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAttributePatternRulesResponse(rsp)
+}
+
+// DeleteApiAttributePatternRulesOriginOrIdWithResponse request returning *DeleteApiAttributePatternRulesOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiAttributePatternRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAttributePatternRulesOriginOrIdResponse(rsp)
+}
+
+// GetApiAttributePatternRulesOriginOrIdWithResponse request returning *GetApiAttributePatternRulesOriginOrIdResponse
+func (c *ClientWithResponses) GetApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesOriginOrIdResponse, error) {
+	rsp, err := c.GetApiAttributePatternRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAttributePatternRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiAttributePatternRulesOriginOrIdResponse
+func (c *ClientWithResponses) PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiAttributePatternRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiAttributePatternRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp)
+}
+
 // GetApiDashboardsWithResponse request returning *GetApiDashboardsResponse
 func (c *ClientWithResponses) GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error) {
 	rsp, err := c.GetApiDashboards(ctx, params, reqEditors...)
@@ -22293,6 +26532,24 @@ func (c *ClientWithResponses) PostApiMembersWithResponse(ctx context.Context, bo
 	return ParsePostApiMembersResponse(rsp)
 }
 
+// GetApiMembersInvitationsWithResponse request returning *GetApiMembersInvitationsResponse
+func (c *ClientWithResponses) GetApiMembersInvitationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMembersInvitationsResponse, error) {
+	rsp, err := c.GetApiMembersInvitations(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiMembersInvitationsResponse(rsp)
+}
+
+// DeleteApiMembersInvitationsInvitationIDWithResponse request returning *DeleteApiMembersInvitationsInvitationIDResponse
+func (c *ClientWithResponses) DeleteApiMembersInvitationsInvitationIDWithResponse(ctx context.Context, invitationID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersInvitationsInvitationIDResponse, error) {
+	rsp, err := c.DeleteApiMembersInvitationsInvitationID(ctx, invitationID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiMembersInvitationsInvitationIDResponse(rsp)
+}
+
 // DeleteApiMembersMemberIDWithResponse request returning *DeleteApiMembersMemberIDResponse
 func (c *ClientWithResponses) DeleteApiMembersMemberIDWithResponse(ctx context.Context, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiMembersMemberIDResponse, error) {
 	rsp, err := c.DeleteApiMembersMemberID(ctx, memberID, reqEditors...)
@@ -22300,6 +26557,23 @@ func (c *ClientWithResponses) DeleteApiMembersMemberIDWithResponse(ctx context.C
 		return nil, err
 	}
 	return ParseDeleteApiMembersMemberIDResponse(rsp)
+}
+
+// PutApiMembersMemberIDRoleWithBodyWithResponse request with arbitrary body returning *PutApiMembersMemberIDRoleResponse
+func (c *ClientWithResponses) PutApiMembersMemberIDRoleWithBodyWithResponse(ctx context.Context, memberID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiMembersMemberIDRoleResponse, error) {
+	rsp, err := c.PutApiMembersMemberIDRoleWithBody(ctx, memberID, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiMembersMemberIDRoleResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiMembersMemberIDRoleWithResponse(ctx context.Context, memberID string, body PutApiMembersMemberIDRoleJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiMembersMemberIDRoleResponse, error) {
+	rsp, err := c.PutApiMembersMemberIDRole(ctx, memberID, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiMembersMemberIDRoleResponse(rsp)
 }
 
 // GetApiNotificationChannelsWithResponse request returning *GetApiNotificationChannelsResponse
@@ -22822,6 +27096,15 @@ func (c *ClientWithResponses) PutApiSlosOriginOrIdWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParsePutApiSlosOriginOrIdResponse(rsp)
+}
+
+// PostApiSlosOriginOrIdResetWithResponse request returning *PostApiSlosOriginOrIdResetResponse
+func (c *ClientWithResponses) PostApiSlosOriginOrIdResetWithResponse(ctx context.Context, originOrId string, params *PostApiSlosOriginOrIdResetParams, reqEditors ...RequestEditorFn) (*PostApiSlosOriginOrIdResetResponse, error) {
+	rsp, err := c.PostApiSlosOriginOrIdReset(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiSlosOriginOrIdResetResponse(rsp)
 }
 
 // GetApiSpamFiltersWithResponse request returning *GetApiSpamFiltersResponse
@@ -23487,6 +27770,13 @@ func ParsePostApiAgenticWorkflowsResponse(rsp *http.Response) (*PostApiAgenticWo
 		}
 		response.JSON403 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -23592,6 +27882,13 @@ func ParsePutApiAgenticWorkflowsOriginOrIdResponse(rsp *http.Response) (*PutApiA
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 503:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON503 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
@@ -23783,6 +28080,192 @@ func ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp *http.Response) (*PutAp
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAttributePatternRulesResponse parses an HTTP response from a GetApiAttributePatternRulesWithResponse call
+func ParseGetApiAttributePatternRulesResponse(rsp *http.Response) (*GetApiAttributePatternRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAttributePatternRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AttributePatternRuleListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiAttributePatternRulesResponse parses an HTTP response from a PostApiAttributePatternRulesWithResponse call
+func ParsePostApiAttributePatternRulesResponse(rsp *http.Response) (*PostApiAttributePatternRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiAttributePatternRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AttributePatternRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a DeleteApiAttributePatternRulesOriginOrIdWithResponse call
+func ParseDeleteApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAttributePatternRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a GetApiAttributePatternRulesOriginOrIdWithResponse call
+func ParseGetApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*GetApiAttributePatternRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAttributePatternRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AttributePatternRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a PutApiAttributePatternRulesOriginOrIdWithResponse call
+func ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAttributePatternRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AttributePatternRuleResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
@@ -24317,6 +28800,65 @@ func ParsePostApiMembersResponse(rsp *http.Response) (*PostApiMembersResponse, e
 	return response, nil
 }
 
+// ParseGetApiMembersInvitationsResponse parses an HTTP response from a GetApiMembersInvitationsWithResponse call
+func ParseGetApiMembersInvitationsResponse(rsp *http.Response) (*GetApiMembersInvitationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiMembersInvitationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []MemberInvitationDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiMembersInvitationsInvitationIDResponse parses an HTTP response from a DeleteApiMembersInvitationsInvitationIDWithResponse call
+func ParseDeleteApiMembersInvitationsInvitationIDResponse(rsp *http.Response) (*DeleteApiMembersInvitationsInvitationIDResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiMembersInvitationsInvitationIDResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteApiMembersMemberIDResponse parses an HTTP response from a DeleteApiMembersMemberIDWithResponse call
 func ParseDeleteApiMembersMemberIDResponse(rsp *http.Response) (*DeleteApiMembersMemberIDResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -24326,6 +28868,32 @@ func ParseDeleteApiMembersMemberIDResponse(rsp *http.Response) (*DeleteApiMember
 	}
 
 	response := &DeleteApiMembersMemberIDResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiMembersMemberIDRoleResponse parses an HTTP response from a PutApiMembersMemberIDRoleWithResponse call
+func ParsePutApiMembersMemberIDRoleResponse(rsp *http.Response) (*PutApiMembersMemberIDRoleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiMembersMemberIDRoleResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -24436,6 +29004,13 @@ func ParseDeleteApiNotificationChannelsOriginOrIdResponse(rsp *http.Response) (*
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
@@ -25764,6 +30339,39 @@ func ParsePutApiSlosOriginOrIdResponse(rsp *http.Response) (*PutApiSlosOriginOrI
 	return response, nil
 }
 
+// ParsePostApiSlosOriginOrIdResetResponse parses an HTTP response from a PostApiSlosOriginOrIdResetWithResponse call
+func ParsePostApiSlosOriginOrIdResetResponse(rsp *http.Response) (*PostApiSlosOriginOrIdResetResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiSlosOriginOrIdResetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SloDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetApiSpamFiltersResponse parses an HTTP response from a GetApiSpamFiltersWithResponse call
 func ParseGetApiSpamFiltersResponse(rsp *http.Response) (*GetApiSpamFiltersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -26110,6 +30718,13 @@ func ParsePostApiSyntheticChecksResponse(rsp *http.Response) (*PostApiSyntheticC
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -26137,7 +30752,7 @@ func ParseGetApiSyntheticChecksLocationsResponse(rsp *http.Response) (*GetApiSyn
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []SyntheticCheckLocation
+		var dest []SyntheticCheckLocationEntry
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -26267,6 +30882,13 @@ func ParsePutApiSyntheticChecksOriginOrIdResponse(rsp *http.Response) (*PutApiSy
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

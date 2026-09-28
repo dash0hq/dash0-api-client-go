@@ -107,6 +107,25 @@ package dash0
 // [SamplingModeDisabled]) because the upstream spec added a second
 // `disabled`/`adaptive` enum, and oapi-codegen disambiguated both.
 // The old names still work but are deprecated.
+//
+// # Migration guide (v1.22.x to <NEXT_RELEASE>)
+//
+// Several enum constants gained a type prefix because the upstream spec added
+// enums with the same values: [Continue] and [Spawn] are now
+// [AgenticWorkflowTriggerDeliveryContinue] and [AgenticWorkflowTriggerDeliverySpawn],
+// [None] is now [OAuthTokenEndpointAuthMethodNone], [Alternative], [Both], and
+// [Original] are now [SignalToMetricsTargetDatasetModeAlternative],
+// [SignalToMetricsTargetDatasetModeBoth], and [SignalToMetricsTargetDatasetModeOriginal],
+// and [Failure] and [Success] are now [SloRawTypeFailure] and [SloRawTypeSuccess].
+// The old names still work but are deprecated.
+//
+// AgenticWorkflowGuardrails.NetworkLevel moved to [AgenticWorkflowSandbox.NetworkLevel].
+//
+// [HttpRequestSpec.Headers] and [HttpRequestSpec.QueryParameters] are now optional
+// pointers ([HttpHeaders] and [HttpQueryParameters]); both alias []NameValuePair.
+//
+// GetApiSyntheticChecksLocationsResponse.JSON200 now lists [SyntheticCheckLocationEntry]
+// values instead of bare location strings; use [SyntheticCheckLocationEntry.Id].
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -239,3 +258,43 @@ const Adaptive = SamplingModeAdaptive
 //
 // Deprecated: since v1.21.0. Use [SamplingModeDisabled] instead.
 const Disabled = SamplingModeDisabled
+
+// Continue is a deprecated alias for [AgenticWorkflowTriggerDeliveryContinue].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [AgenticWorkflowTriggerDeliveryContinue] instead.
+const Continue = AgenticWorkflowTriggerDeliveryContinue
+
+// Spawn is a deprecated alias for [AgenticWorkflowTriggerDeliverySpawn].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [AgenticWorkflowTriggerDeliverySpawn] instead.
+const Spawn = AgenticWorkflowTriggerDeliverySpawn
+
+// None is a deprecated alias for [OAuthTokenEndpointAuthMethodNone].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [OAuthTokenEndpointAuthMethodNone] instead.
+const None = OAuthTokenEndpointAuthMethodNone
+
+// Alternative is a deprecated alias for [SignalToMetricsTargetDatasetModeAlternative].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SignalToMetricsTargetDatasetModeAlternative] instead.
+const Alternative = SignalToMetricsTargetDatasetModeAlternative
+
+// Both is a deprecated alias for [SignalToMetricsTargetDatasetModeBoth].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SignalToMetricsTargetDatasetModeBoth] instead.
+const Both = SignalToMetricsTargetDatasetModeBoth
+
+// Original is a deprecated alias for [SignalToMetricsTargetDatasetModeOriginal].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SignalToMetricsTargetDatasetModeOriginal] instead.
+const Original = SignalToMetricsTargetDatasetModeOriginal
+
+// Failure is a deprecated alias for [SloRawTypeFailure].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SloRawTypeFailure] instead.
+const Failure = SloRawTypeFailure
+
+// Success is a deprecated alias for [SloRawTypeSuccess].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SloRawTypeSuccess] instead.
+const Success = SloRawTypeSuccess
