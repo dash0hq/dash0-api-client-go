@@ -56,7 +56,20 @@ var symbolRenames = map[string]string{
 // constRenames maps short constant names to prefixed replacements. Unlike
 // symbolRenames (which apply globally), these are only applied to const
 // value specs to avoid renaming identically-named struct fields.
-var constRenames = map[string]string{}
+var constRenames = map[string]string{
+	// These trigger variable constants otherwise collide with schema type names.
+	"DarkplaneAutoApprovalDecision": "DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision",
+	"DarkplaneAutoApprovalMode":     "DarkplaneEvaluationTriggerVariableNameAutoApprovalMode",
+	"DarkplaneProvider":             "DarkplaneEvaluationTriggerVariableNameProvider",
+	// oapi-codegen v2.5.1 misses the TimingType/SyntheticHttpErrorType "dns"
+	// collision once SyntheticPrivateLocationHealthStatus prefixes the latter first.
+	"Connection": "TimingTypeConnection",
+	"Dns":        "TimingTypeDns",
+	"Request":    "TimingTypeRequest",
+	"Response":   "TimingTypeResponse",
+	"Ssl":        "TimingTypeSsl",
+	"Total":      "TimingTypeTotal",
+}
 
 // deprecatedFields lists fields to remove from specific structs. Each entry
 // maps a struct type name to a set of field names whose doc comments contain
