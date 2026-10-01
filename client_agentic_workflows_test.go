@@ -11,7 +11,7 @@ import (
 
 // newTestAgenticWorkflow builds an automation definition modeled on a real
 // schedule-triggered Agent0 automation: a daily digest with a single
-// scheduled trigger, no-network guardrails, and a standing prompt.
+// scheduled trigger, a no-network sandbox, and a standing prompt.
 func newTestAgenticWorkflow() *AgenticWorkflowDefinition {
 	var trigger AgenticWorkflowTrigger
 	if err := trigger.FromScheduledAgenticWorkflowTrigger(ScheduledAgenticWorkflowTrigger{
@@ -33,11 +33,11 @@ func newTestAgenticWorkflow() *AgenticWorkflowDefinition {
 				Description: Ptr("Summarizes overnight incidents every weekday morning."),
 			},
 			Enabled: true,
-			Guardrails: AgenticWorkflowGuardrails{
-				NetworkLevel: "no_network",
-			},
 			Prompt: AgenticWorkflowPrompt{
 				User: "Summarize overnight incidents and post a digest.",
+			},
+			Sandbox: AgenticWorkflowSandbox{
+				NetworkLevel: "no_network",
 			},
 			Triggers: []AgenticWorkflowTrigger{trigger},
 		},
