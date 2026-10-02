@@ -166,7 +166,7 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		assertEqual(t, "rules[1].Metadata.Name", got[1].Metadata.Name, "error-log-count")
 	})
 
-	t.Run("ListSignalToMetrics stops on an empty page that claims hasMore", func(t *testing.T) {
+	t.Run("ListSignalToMetrics fails on an empty page that claims hasMore", func(t *testing.T) {
 		requests := 0
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			requests++
@@ -177,14 +177,14 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		defer server.Close()
 
 		got, err := newTestClient(t, server.URL).ListSignalToMetrics(context.Background(), nil)
-		if err != nil {
-			t.Fatalf("ListSignalToMetrics failed: %v", err)
+		if err == nil {
+			t.Fatal("expected an error for an empty page that claims hasMore")
 		}
 		if requests != 1 {
 			t.Errorf("expected 1 request, got %d", requests)
 		}
-		if len(got) != 0 {
-			t.Errorf("expected no rules, got %d", len(got))
+		if got != nil {
+			t.Errorf("expected nil result, got %d rules", len(got))
 		}
 	})
 
@@ -214,7 +214,7 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(`{"timeSeriesAggregations": null}`))
+			_, _ = w.Write([]byte(`{"signalToMetrics": null}`))
 		}))
 		defer server.Close()
 

@@ -11,6 +11,7 @@ import (
 // Pass [WithOriginPrefix] to restrict the result to rules whose origin starts with a given prefix.
 //
 // The endpoint is offset-paginated; ListSignalToMetrics follows pages until the server reports no more results.
+// An empty page that still reports more results is returned as an error rather than a truncated list.
 func (c *client) ListSignalToMetrics(ctx context.Context, dataset *string, opts ...ListOption) ([]*SignalToMetricsDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
@@ -37,8 +38,11 @@ func (c *client) ListSignalToMetrics(ctx context.Context, dataset *string, opts 
 		}
 		page := resp.JSON200.SignalToMetrics
 		all = append(all, page...)
-		if !BoolValue(resp.JSON200.HasMore) || len(page) == 0 {
+		if !BoolValue(resp.JSON200.HasMore) {
 			break
+		}
+		if len(page) == 0 {
+			return nil, fmt.Errorf("dash0: list signal-to-metrics failed: server reported more results but returned an empty page at offset %d", len(all))
 		}
 	}
 	return toPointerSlice(all), nil

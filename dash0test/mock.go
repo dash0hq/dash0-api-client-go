@@ -20,6 +20,12 @@ import (
 //	    },
 //	}
 //	svc := NewMyService(mock) // accepts dash0.Client interface
+//
+// ListCheckRules, ListRecordingRules, ListSLOs, and their Iter variants drop any
+// [dash0.ListOption] before calling their *Func field, so those fields cannot observe
+// [dash0.WithOriginPrefix].
+// Their signatures predate list options and are kept so existing mocks still compile.
+// ListSignalToMetricsFunc and ListSignalToMetricsIterFunc do receive the options.
 type MockClient struct {
 	// Dashboards
 	ListDashboardsFunc     func(ctx context.Context, dataset *string) ([]*dash0.DashboardApiListItem, error)
