@@ -2270,7 +2270,10 @@ type AgenticWorkflowSpec struct {
 	Prompt           AgenticWorkflowPrompt    `json:"prompt"`
 
 	// Sandbox The sandbox an automation's runs execute in: what it may reach, and what it is built from.
-	Sandbox  AgenticWorkflowSandbox   `json:"sandbox"`
+	Sandbox AgenticWorkflowSandbox `json:"sandbox"`
+
+	// Starred Computed, read-only. Whether the requesting user has starred this automation. Stars are per-user state held outside the versioned definition, so a value supplied on write is ignored. Absent for machine-token callers, which have no user whose stars could be read.
+	Starred  *bool                    `json:"starred,omitempty"`
 	Triggers []AgenticWorkflowTrigger `json:"triggers"`
 }
 
@@ -2519,7 +2522,7 @@ type AttributePatternRuleLabels struct {
 	// Dash0Comid Unique server-generated ID of this Pattern Rule. Set by the server on creation; must not be provided on create (a `POST` body containing it is rejected with 400).
 	Dash0Comid *string `json:"dash0.com/id,omitempty"`
 
-	// Dash0Comorigin Stable, client-chosen label for idempotent apply-by-name (IaC/Terraform-style) workflows, resolved via `{originOrId}` on every path below. Client-provided value wins if given; a machine-token caller that omits it gets a server-generated `api-<uuid>` fallback so the rule still classifies as API-managed; a UI (Clerk) or OAuth caller that omits it keeps a `null` origin. Immutable after creation: a value supplied on update is silently ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't have to strip it back out first. Must not itself look like a UUID (rejected with 400 on create) -- origins and ids are deliberately disjoint namespaces so `{originOrId}` resolution is never ambiguous.
+	// Dash0Comorigin Stable, client-chosen label for idempotent apply-by-name (IaC/Terraform-style) workflows, resolved via `{originOrId}` on every path below. Client-provided value wins if given; a machine-token caller that omits it gets a server-generated `api-<uuid>` fallback so the rule still classifies as API-managed; a UI (Clerk) or OAuth caller that omits it keeps a `null` origin. Immutable after creation: a value supplied on update is silently ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't have to strip it back out first. Must not itself look like a UUID (rejected with 400 on create) -- origins and ids are deliberately disjoint namespaces so `{originOrId}` resolution is never ambiguous. Unique per organization (rejected with 400 on create otherwise) -- this scope is organization-wide, not per dataset or per `spec.targetAttribute`.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
 	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
@@ -3401,7 +3404,6 @@ type GenerativeAiEvaluationJudgeOutputCategoricalItem struct {
 	// - `negative`: this label represents an undesirable outcome.
 	Intent *GenerativeAiEvaluationIntent `json:"intent,omitempty"`
 	Label  string                        `json:"label"`
-	Value  *float32                      `json:"value,omitempty"`
 }
 
 // GenerativeAiEvaluationJudgeOutputCategoricalSpec defines model for GenerativeAiEvaluationJudgeOutputCategoricalSpec.
@@ -3413,21 +3415,18 @@ type GenerativeAiEvaluationJudgeOutputCategoricalSpec struct {
 type GenerativeAiEvaluationJudgeOutputNumeric struct {
 	Kind GenerativeAiEvaluationJudgeOutputNumericKind `json:"kind"`
 
-	// Spec A higher score is always the desirable outcome. Write the rubric so that `max` is the
-	// best result.
+	// Spec Scores are between 0 and 1, inclusive. A higher score is always the desirable
+	// outcome. Write the rubric so that 1 is the best result.
 	Spec GenerativeAiEvaluationJudgeOutputNumericSpec `json:"spec"`
 }
 
 // GenerativeAiEvaluationJudgeOutputNumericKind defines model for GenerativeAiEvaluationJudgeOutputNumeric.Kind.
 type GenerativeAiEvaluationJudgeOutputNumericKind string
 
-// GenerativeAiEvaluationJudgeOutputNumericSpec A higher score is always the desirable outcome. Write the rubric so that `max` is the
-// best result.
+// GenerativeAiEvaluationJudgeOutputNumericSpec Scores are between 0 and 1, inclusive. A higher score is always the desirable
+// outcome. Write the rubric so that 1 is the best result.
 type GenerativeAiEvaluationJudgeOutputNumericSpec struct {
-	Max float32 `json:"max"`
-	Min float32 `json:"min"`
-
-	// Threshold A value between `min` and `max`, inclusive. Absent when the eval declares no
+	// Threshold A value between 0 and 1, inclusive. Absent when the eval declares no
 	// threshold.
 	Threshold *float32 `json:"threshold,omitempty"`
 }
@@ -3474,7 +3473,9 @@ type GenerativeAiEvaluationMatch struct {
 type GenerativeAiEvaluationMetadata struct {
 	Annotations *GenerativeAiEvaluationGroupAnnotations `json:"annotations,omitempty"`
 	Labels      *GenerativeAiEvaluationLabels           `json:"labels,omitempty"`
-	Name        string                                  `json:"name"`
+
+	// Name Identifies the evaluation within its dataset and cannot change after create. The display name is `spec.display.name`.
+	Name string `json:"name"`
 }
 
 // GenerativeAiEvaluationModel The model class used to judge an evaluation. Availability depends on the region and
@@ -3645,11 +3646,12 @@ type GetSpansResponse struct {
 
 // GetTeamResponse defines model for GetTeamResponse.
 type GetTeamResponse struct {
-	CheckRules      []AccessibleAsset  `json:"checkRules"`
-	Dashboards      []AccessibleAsset  `json:"dashboards"`
-	Datasets        []AccessibleAsset  `json:"datasets"`
-	Members         []MemberDefinition `json:"members"`
-	SyntheticChecks []AccessibleAsset  `json:"syntheticChecks"`
+	AgenticWorkflows []AccessibleAsset  `json:"agenticWorkflows"`
+	CheckRules       []AccessibleAsset  `json:"checkRules"`
+	Dashboards       []AccessibleAsset  `json:"dashboards"`
+	Datasets         []AccessibleAsset  `json:"datasets"`
+	Members          []MemberDefinition `json:"members"`
+	SyntheticChecks  []AccessibleAsset  `json:"syntheticChecks"`
 
 	// Team v1alpha1 team definition. `metadata.name` is the team's technical name
 	// (used e.g. as the CRD name in an operator manifest or a Terraform
@@ -5694,6 +5696,9 @@ type MemberInvitationSpec struct {
 type MemberLabels struct {
 	Dash0Comid       *string    `json:"dash0.com/id,omitempty"`
 	Dash0ComjoinedAt *time.Time `json:"dash0.com/joinedAt,omitempty"`
+
+	// Dash0Comrole The member's role in the organization
+	Dash0Comrole *string `json:"dash0.com/role,omitempty"`
 }
 
 // MemberMetadata defines model for MemberMetadata.
@@ -8429,7 +8434,8 @@ type SyntheticCheckAttempt struct {
 	// IsTestRun (Internal) Whether this attempt was triggered as a test run
 	IsTestRun bool `json:"isTestRun"`
 
-	// Location A geographic location identifier from which synthetic checks can be executed.
+	// Location Where a synthetic check runs from: a public region identifier, or a private location's
+	// Dash0-assigned id or its `locationId`. Stored as written.
 	Location SyntheticCheckLocation `json:"location"`
 
 	// PassedCriticalAssertions List of critical assertions that passed
@@ -8492,7 +8498,8 @@ type SyntheticCheckAttemptDetails struct {
 	// IsTestRun (Internal) Whether this attempt was triggered as a test run
 	IsTestRun bool `json:"isTestRun"`
 
-	// Location A geographic location identifier from which synthetic checks can be executed.
+	// Location Where a synthetic check runs from: a public region identifier, or a private location's
+	// Dash0-assigned id or its `locationId`. Stored as written.
 	Location SyntheticCheckLocation `json:"location"`
 
 	// PassedCriticalAssertions List of critical assertions that passed
@@ -8577,7 +8584,8 @@ type SyntheticCheckLabels struct {
 	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
 }
 
-// SyntheticCheckLocation A geographic location identifier from which synthetic checks can be executed.
+// SyntheticCheckLocation Where a synthetic check runs from: a public region identifier, or a private location's
+// Dash0-assigned id or its `locationId`. Stored as written.
 type SyntheticCheckLocation = string
 
 // SyntheticCheckLocationEntry defines model for SyntheticCheckLocationEntry.
@@ -8598,9 +8606,9 @@ type SyntheticCheckLocationEntry struct {
 	// - `private`: A location the organization runs itself, visible only to that organization.
 	Kind SyntheticCheckLocationKind `json:"kind"`
 
-	// LocationId Private locations only. The label to show for the location. It is not unique, because
-	// two of an organization's locations may carry the same value after a re-registration,
-	// so display it alongside `id` when it repeats.
+	// LocationId Private locations only. The customer-chosen name the location's workers register
+	// under. It is unique within the organization and never reused, so a check may target the
+	// location by it in place of `id`.
 	LocationId *SyntheticPrivateLocationLocationId `json:"locationId,omitempty"`
 }
 
@@ -8803,9 +8811,8 @@ type SyntheticPrivateLocationHealth struct {
 type SyntheticPrivateLocationHealthStatus string
 
 // SyntheticPrivateLocationLocationId Customer-chosen identifier for the location, unique within the owning organization only.
-// Two organizations may both use the same value for unrelated locations, and a deleted
-// location and its re-registered successor may share it too, so it never identifies a
-// location on its own.
+// Two organizations may both use the same value for unrelated locations. Within one
+// organization it names one location for good, deleted or not.
 type SyntheticPrivateLocationLocationId = string
 
 // TeamAnnotations Key/value annotations on the team. Arbitrary keys are accepted on
@@ -10018,7 +10025,7 @@ type GetApiSignalToMetricsParams struct {
 	// OriginPrefix Filter by origin prefix.
 	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
 
-	// Name Case-insensitive substring search on the rule name.
+	// Name Case-insensitive substring search on the rule name, or an exact match on the rule id.
 	Name *string `form:"name,omitempty" json:"name,omitempty"`
 
 	// Signal Filter by signal type.
