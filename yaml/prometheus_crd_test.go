@@ -1,8 +1,13 @@
 package yaml
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
 )
@@ -589,4 +594,70 @@ spec:
 	assertEqual(t, "notification-channel-ids",
 		rule.Annotations.AdditionalProperties["dash0.com/notification-channel-ids"], "top-level-channel")
 	assertPtrEqual(t, "Summary", rule.Annotations.Summary, "High error rate")
+}
+
+func TestDetectorExportRoundTrip(t *testing.T) {
+	paths, err := filepath.Glob("testdata/detector-export/*.yaml")
+	require.NoError(t, err)
+	require.Len(t, paths, 7)
+	for _, path := range paths {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			input, err := os.ReadFile(path)
+			require.NoError(t, err)
+			rule, err := UnmarshalPrometheusRule(input)
+			require.NoError(t, err)
+			annotations := rule.Annotations.AdditionalProperties
+			original := rule.Expression
+			if direction, ok := annotations["dash0.com/baseline-direction"]; ok {
+				rule.Thresholds.Baseline = &dash0.CheckThresholdBaseline{Direction: dash0.AnomalyDirection(direction), SpreadFloor: dash0.Ptr(0.1)}
+			} else {
+				value := 2.0
+				if annotations["dash0.com/change-gate-comparison"] == "absolute_delta" {
+					value = 0.05
+				}
+				rule.Thresholds.ChangeGate = &dash0.CheckThresholdChangeGate{Comparison: dash0.ChangeGateComparison(annotations["dash0.com/change-gate-comparison"]), Value: value, BaselineWindow: dash0.Duration(annotations["dash0.com/change-gate-baseline-window"])}
+			}
+			// API reads lift detector annotations into typed settings and remove the consumed keys.
+			for _, key := range []string{"dash0.com/baseline-direction", "dash0.com/baseline-spread-floor", "dash0.com/change-gate-comparison", "dash0.com/change-gate-value", "dash0.com/change-gate-baseline-window"} {
+				delete(annotations, key)
+			}
+			output, err := MarshalPrometheusRule(rule)
+			require.NoError(t, err)
+			equivalent, err := Equivalent(input, output, []string{"metadata.name"}, nil)
+			require.NoError(t, err)
+			assert.True(t, equivalent, string(output))
+			reread, err := UnmarshalPrometheusRule(output)
+			require.NoError(t, err)
+			assert.Equal(t, original, reread.Expression)
+			assert.NotContains(t, string(output), "dash0.com/volume-floor")
+			assert.Equal(t, "production", *reread.Dataset)
+			assert.False(t, *reread.Enabled)
+		})
+	}
+}
+
+func TestMarshalDetectorAnnotations(t *testing.T) {
+	for _, direction := range []dash0.AnomalyDirection{dash0.AnomalyDirectionAbove, dash0.AnomalyDirectionBelow, dash0.AnomalyDirectionBoth} {
+		rule := &dash0.PrometheusAlertRule{Name: "rule", Expression: "observed", Thresholds: &dash0.CheckThresholds{Failed: dash0.Ptr(3.0), Degraded: dash0.Ptr(2.0), Baseline: &dash0.CheckThresholdBaseline{Direction: direction, SpreadFloor: dash0.Ptr(0.1)}}, Annotations: &dash0.PrometheusAlertRule_Annotations{AdditionalProperties: map[string]string{"dash0.com/change-gate-value": "invalid", "dash0.com/volume-floor": "999"}}}
+		data, err := MarshalPrometheusRule(rule)
+		require.NoError(t, err)
+		parsed, err := UnmarshalPrometheusRule(data)
+		require.NoError(t, err)
+		assert.Equal(t, string(direction), parsed.Annotations.AdditionalProperties["dash0.com/baseline-direction"])
+		assert.NotContains(t, parsed.Annotations.AdditionalProperties, "dash0.com/change-gate-value")
+		assert.NotContains(t, parsed.Annotations.AdditionalProperties, "dash0.com/volume-floor")
+		rule.Thresholds.Baseline.VolumeFloor = dash0.Ptr(1.0)
+		_, err = MarshalPrometheusRule(rule)
+		require.Error(t, err)
+	}
+}
+
+func TestMarshalChangeGateZeroDegradedThreshold(t *testing.T) {
+	rule := &dash0.PrometheusAlertRule{Name: "rule", Expression: "observed > $__threshold", Thresholds: &dash0.CheckThresholds{Failed: dash0.Ptr(1.0), Degraded: dash0.Ptr(0.0), ChangeGate: &dash0.CheckThresholdChangeGate{Comparison: dash0.RelativeFactor, Value: 2, BaselineWindow: "1h"}}}
+	data, err := MarshalPrometheusRule(rule)
+	require.NoError(t, err)
+	read, err := UnmarshalPrometheusRule(data)
+	require.NoError(t, err)
+	require.NotNil(t, read.Thresholds.Degraded)
+	assert.Zero(t, *read.Thresholds.Degraded)
 }

@@ -119,17 +119,48 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 		}
 	}
 
+	// Typed detector settings are authoritative on API reads. PromQL exports already carry
+	// traffic gating as an ordinary condition and therefore need no volume-floor annotation.
+	if rule.Thresholds != nil && (rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
+		for _, key := range []string{
+			"dash0.com/baseline-direction", "dash0.com/baseline-spread-floor",
+			"dash0.com/change-gate-comparison", "dash0.com/change-gate-value", "dash0.com/change-gate-baseline-window",
+		} {
+			delete(annotations, key)
+		}
+		delete(annotations, "dash0.com/volume-floor")
+	}
+	if rule.Thresholds != nil {
+		if baseline := rule.Thresholds.Baseline; baseline != nil {
+			annotations["dash0.com/baseline-direction"] = string(baseline.Direction)
+			if baseline.SpreadFloor != nil {
+				annotations["dash0.com/baseline-spread-floor"] = strconv.FormatFloat(*baseline.SpreadFloor, 'f', -1, 64)
+			}
+			if baseline.VolumeFloor != nil {
+				return nil, fmt.Errorf("compile the structured detector volume floor to an enablement condition before YAML export")
+			}
+		}
+		if gate := rule.Thresholds.ChangeGate; gate != nil {
+			annotations["dash0.com/change-gate-comparison"] = string(gate.Comparison)
+			annotations["dash0.com/change-gate-value"] = strconv.FormatFloat(gate.Value, 'f', -1, 64)
+			annotations["dash0.com/change-gate-baseline-window"] = string(gate.BaselineWindow)
+			if gate.VolumeFloor != nil {
+				return nil, fmt.Errorf("compile the structured detector volume floor to an enablement condition before YAML export")
+			}
+		}
+	}
+
 	// Only add enabled annotation if false (true is the default)
 	if rule.Enabled != nil && !*rule.Enabled {
 		annotations[enabledAnnotationKey] = strconv.FormatBool(false)
 	}
 
-	// Only include threshold annotations for non-zero values
+	// Detector thresholds preserve configured tiers even at zero; static zero remains the default.
 	if rule.Thresholds != nil {
-		if rule.Thresholds.Failed != nil && *rule.Thresholds.Failed != 0 {
+		if rule.Thresholds.Failed != nil && (*rule.Thresholds.Failed != 0 || rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
 			annotations[thresholdCriticalAnnotationKey] = strconv.FormatFloat(*rule.Thresholds.Failed, 'f', -1, 64)
 		}
-		if rule.Thresholds.Degraded != nil && *rule.Thresholds.Degraded != 0 {
+		if rule.Thresholds.Degraded != nil && (*rule.Thresholds.Degraded != 0 || rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
 			annotations[thresholdDegradedAnnotationKey] = strconv.FormatFloat(*rule.Thresholds.Degraded, 'f', -1, 64)
 		}
 	}
@@ -184,6 +215,10 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 				},
 			},
 		},
+	}
+
+	if rule.Dataset != nil && *rule.Dataset != "" {
+		dash0.SetPrometheusRuleDataset(promRules, *rule.Dataset)
 	}
 
 	// Marshal via the wire type so durations serialize as strings.
