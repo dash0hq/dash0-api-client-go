@@ -2,8 +2,10 @@ package dash0
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 // TestLiveAPI runs integration tests against a real Dash0 API.
@@ -50,6 +52,212 @@ func TestLiveAPI(t *testing.T) {
 		}
 
 		t.Logf("Found %d check rules", len(checkRules))
+	})
+
+	t.Run("OriginPrefixFiltersLists", func(t *testing.T) {
+		noMatch := WithOriginPrefix(fmt.Sprintf("iac-26-no-such-origin-%d_", time.Now().UnixNano()))
+		checkRules, err := client.ListCheckRules(ctx, nil, noMatch)
+		if err != nil {
+			t.Fatalf("ListCheckRules failed: %v", err)
+		}
+		recordingRules, err := client.ListRecordingRules(ctx, nil, noMatch)
+		if err != nil {
+			t.Fatalf("ListRecordingRules failed: %v", err)
+		}
+		slos, err := client.ListSLOs(ctx, nil, noMatch)
+		if err != nil {
+			t.Fatalf("ListSLOs failed: %v", err)
+		}
+		if len(checkRules) != 0 || len(recordingRules) != 0 || len(slos) != 0 {
+			t.Errorf("unmatched prefix returned %d check rules, %d recording rules, %d SLOs, want 0 each", len(checkRules), len(recordingRules), len(slos))
+		}
+
+		dataset := Ptr("default")
+		prefix := fmt.Sprintf("iac-26-live-%d_", time.Now().UnixNano())
+		checkOrigin, otherCheckOrigin := prefix+"check", fmt.Sprintf("iac-26-live-other-%d-check", time.Now().UnixNano())
+		recordingOrigin, otherRecordingOrigin := prefix+"recording", fmt.Sprintf("iac-26-live-other-%d-recording", time.Now().UnixNano())
+		t.Cleanup(func() {
+			for _, origin := range []string{checkOrigin, otherCheckOrigin} {
+				if err := client.DeleteCheckRule(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
+					t.Logf("cleanup of check rule %s failed: %v", origin, err)
+				}
+			}
+			for _, origin := range []string{recordingOrigin, otherRecordingOrigin} {
+				if err := client.DeleteRecordingRule(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
+					t.Logf("cleanup of recording rule %s failed: %v", origin, err)
+				}
+			}
+		})
+
+		for _, origin := range []string{checkOrigin, otherCheckOrigin} {
+			rule := &PrometheusAlertRule{Name: "IAC26LiveTest", Expression: "vector(0) > 1"}
+			if _, err := client.UpdateCheckRule(ctx, origin, rule, dataset); err != nil {
+				t.Fatalf("UpdateCheckRule(%s) as upsert failed: %v", origin, err)
+			}
+		}
+		for _, origin := range []string{recordingOrigin, otherRecordingOrigin} {
+			rule := &RecordingRule{
+				ApiVersion: MonitoringCoreosComv1,
+				Kind:       PrometheusRuleKindPrometheusRule,
+				Metadata:   PrometheusRuleMetadata{Name: "iac-26-live-test"},
+				Spec: PrometheusRuleSpec{Groups: []PrometheusRuleGroup{{
+					Name:  "iac-26-live-test",
+					Rules: []PrometheusRuleDefinition{{Record: Ptr("iac_26_live_test"), Expr: "vector(0)"}},
+				}}},
+			}
+			if _, err := client.UpdateRecordingRule(ctx, origin, rule, dataset); err != nil {
+				t.Fatalf("UpdateRecordingRule(%s) as upsert failed: %v", origin, err)
+			}
+		}
+
+		allCheckRules, err := client.ListCheckRules(ctx, dataset)
+		if err != nil {
+			t.Fatalf("ListCheckRules failed: %v", err)
+		}
+		matchingCheckRules, err := client.ListCheckRules(ctx, dataset, WithOriginPrefix(prefix))
+		if err != nil {
+			t.Fatalf("ListCheckRules with prefix failed: %v", err)
+		}
+		if len(matchingCheckRules) != 1 || StringValue(matchingCheckRules[0].Origin) != checkOrigin {
+			t.Errorf("ListCheckRules with prefix returned %d rules, want exactly %s", len(matchingCheckRules), checkOrigin)
+		}
+		if len(allCheckRules) < 2 {
+			t.Errorf("unfiltered ListCheckRules returned %d rules, want at least 2", len(allCheckRules))
+		}
+		iterated := 0
+		for iter := client.ListCheckRulesIter(ctx, dataset, WithOriginPrefix(prefix)); iter.Next(); {
+			iterated++
+		}
+		if iterated != 1 {
+			t.Errorf("ListCheckRulesIter with prefix yielded %d rules, want 1", iterated)
+		}
+
+		allRecordingRules, err := client.ListRecordingRules(ctx, dataset)
+		if err != nil {
+			t.Fatalf("ListRecordingRules failed: %v", err)
+		}
+		matchingRecordingRules, err := client.ListRecordingRules(ctx, dataset, WithOriginPrefix(prefix))
+		if err != nil {
+			t.Fatalf("ListRecordingRules with prefix failed: %v", err)
+		}
+		recordingOriginLabel := func(rule *RecordingRule) string {
+			if rule.Metadata.Labels == nil {
+				return ""
+			}
+			return (*rule.Metadata.Labels)[LabelOrigin]
+		}
+		if len(matchingRecordingRules) != 1 || recordingOriginLabel(matchingRecordingRules[0]) != recordingOrigin {
+			t.Errorf("ListRecordingRules with prefix returned %d rules, want exactly %s", len(matchingRecordingRules), recordingOrigin)
+		}
+		if len(allRecordingRules) < 2 {
+			t.Errorf("unfiltered ListRecordingRules returned %d rules, want at least 2", len(allRecordingRules))
+		}
+		t.Logf("check rules: %d total, %d matching; recording rules: %d total, %d matching",
+			len(allCheckRules), len(matchingCheckRules), len(allRecordingRules), len(matchingRecordingRules))
+	})
+
+	t.Run("SignalToMetricsLifecycle", func(t *testing.T) {
+		dataset := Ptr("default")
+		prefix := fmt.Sprintf("iac-26-live-%d_", time.Now().UnixNano())
+		originA, originB := prefix+"a", prefix+"b"
+		otherOrigin := fmt.Sprintf("iac-26-live-other-%d", time.Now().UnixNano())
+		newRule := func(name string) *SignalToMetricsDefinition {
+			return &SignalToMetricsDefinition{
+				Kind:     Dash0SignalToMetrics,
+				Metadata: SignalToMetricsMetadata{Name: name},
+				Spec: SignalToMetricsSpec{
+					Enabled: false,
+					Display: SignalToMetricsDisplay{Name: name},
+					Match: SignalToMetricsMatch{
+						Signal:  SignalToMetricsSignalTypeSpans,
+						Filters: FilterCriteria{{Key: "service.name", Operator: "is_set"}},
+					},
+					Output: SignalToMetricsOutput{Name: "iac_26_live_test_total", Interval: "1m"},
+				},
+			}
+		}
+		t.Cleanup(func() {
+			for _, origin := range []string{originA, originB, otherOrigin} {
+				if err := client.DeleteSignalToMetrics(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
+					t.Logf("cleanup of %s failed: %v", origin, err)
+				}
+			}
+		})
+
+		for _, origin := range []string{originA, originB, otherOrigin} {
+			upserted, err := client.UpdateSignalToMetrics(ctx, origin, newRule(origin), dataset)
+			if err != nil {
+				t.Fatalf("UpdateSignalToMetrics(%s) as upsert failed: %v", origin, err)
+			}
+			if GetSignalToMetricsID(upserted) == "" {
+				t.Errorf("upsert of %s returned no dash0.com/id", origin)
+			}
+		}
+
+		got, err := client.GetSignalToMetrics(ctx, originA, dataset)
+		if err != nil {
+			t.Fatalf("GetSignalToMetrics failed: %v", err)
+		}
+		assertEqual(t, "origin", StringValue(got.Metadata.Labels.Dash0Comorigin), originA)
+
+		filtered, err := client.ListSignalToMetrics(ctx, dataset, WithOriginPrefix(prefix))
+		if err != nil {
+			t.Fatalf("ListSignalToMetrics with prefix failed: %v", err)
+		}
+		if len(filtered) != 2 {
+			t.Errorf("ListSignalToMetrics with prefix returned %d rules, want 2", len(filtered))
+		}
+
+		all, err := client.ListSignalToMetrics(ctx, dataset)
+		if err != nil {
+			t.Fatalf("ListSignalToMetrics failed: %v", err)
+		}
+		found := 0
+		for _, rule := range all {
+			if origin := StringValue(rule.Metadata.Labels.Dash0Comorigin); origin == originA || origin == originB {
+				found++
+			}
+		}
+		if found != 2 {
+			t.Errorf("unfiltered list of %d rules contains %d test rules, want 2", len(all), found)
+		}
+		if len(all) < 3 {
+			t.Errorf("unfiltered list returned %d rules, want at least 3 including %s", len(all), otherOrigin)
+		}
+		t.Logf("unfiltered list returned %d rules", len(all))
+
+		iter := client.ListSignalToMetricsIter(ctx, dataset, WithOriginPrefix(prefix))
+		iterated := 0
+		for iter.Next() {
+			iterated++
+		}
+		if err := iter.Err(); err != nil || iterated != 2 {
+			t.Errorf("ListSignalToMetricsIter yielded %d rules (err %v), want 2", iterated, err)
+		}
+
+		changed := newRule(originA)
+		changed.Spec.Display.Name = "renamed"
+		if _, err := client.UpdateSignalToMetrics(ctx, originA, changed, dataset); err != nil {
+			t.Fatalf("UpdateSignalToMetrics failed: %v", err)
+		}
+		got, err = client.GetSignalToMetrics(ctx, originA, dataset)
+		if err != nil {
+			t.Fatalf("GetSignalToMetrics after update failed: %v", err)
+		}
+		assertEqual(t, "display name after update", GetSignalToMetricsName(got), "renamed")
+
+		for _, origin := range []string{originA, originB, otherOrigin} {
+			if err := client.DeleteSignalToMetrics(ctx, origin, dataset); err != nil {
+				t.Fatalf("DeleteSignalToMetrics(%s) failed: %v", origin, err)
+			}
+		}
+		remaining, err := client.ListSignalToMetrics(ctx, dataset, WithOriginPrefix(prefix))
+		if err != nil {
+			t.Fatalf("ListSignalToMetrics after delete failed: %v", err)
+		}
+		if len(remaining) != 0 {
+			t.Errorf("ListSignalToMetrics after delete returned %d rules, want 0", len(remaining))
+		}
 	})
 
 	t.Run("GetSpans", func(t *testing.T) {

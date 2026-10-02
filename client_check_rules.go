@@ -8,12 +8,14 @@ import (
 )
 
 // ListCheckRules retrieves all check rules.
-func (c *client) ListCheckRules(ctx context.Context, dataset *string) ([]*PrometheusAlertRuleApiListItem, error) {
+// Pass [WithOriginPrefix] to restrict the result to check rules whose origin starts with a given prefix.
+func (c *client) ListCheckRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*PrometheusAlertRuleApiListItem, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
 	params := &GetApiAlertingCheckRulesParams{
-		Dataset: dataset,
+		Dataset:      dataset,
+		OriginPrefix: NewListOptions(opts...).OriginPrefix,
 	}
 	resp, err := c.inner.GetApiAlertingCheckRulesWithResponse(ctx, params)
 	if err != nil {
@@ -109,8 +111,8 @@ func (c *client) DeleteCheckRule(ctx context.Context, originOrID string, dataset
 
 // ListCheckRulesIter returns an iterator over all check rules.
 // This is a convenience wrapper around ListCheckRules for consistent iteration patterns.
-func (c *client) ListCheckRulesIter(ctx context.Context, dataset *string) *Iter[PrometheusAlertRuleApiListItem] {
-	items, err := c.ListCheckRules(ctx, dataset)
+func (c *client) ListCheckRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[PrometheusAlertRuleApiListItem] {
+	items, err := c.ListCheckRules(ctx, dataset, opts...)
 	if err != nil {
 		return newIterWithError[PrometheusAlertRuleApiListItem](err)
 	}

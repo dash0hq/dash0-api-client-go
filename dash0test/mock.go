@@ -20,6 +20,12 @@ import (
 //	    },
 //	}
 //	svc := NewMyService(mock) // accepts dash0.Client interface
+//
+// ListCheckRules, ListRecordingRules, ListSLOs, and their Iter variants drop any
+// [dash0.ListOption] before calling their *Func field, so those fields cannot observe
+// [dash0.WithOriginPrefix].
+// Their signatures predate list options and are kept so existing mocks still compile.
+// ListSignalToMetricsFunc and ListSignalToMetricsIterFunc do receive the options.
 type MockClient struct {
 	// Dashboards
 	ListDashboardsFunc     func(ctx context.Context, dataset *string) ([]*dash0.DashboardApiListItem, error)
@@ -76,6 +82,14 @@ type MockClient struct {
 	UpdateTimeSeriesAggregationFunc    func(ctx context.Context, originOrID string, aggregation *dash0.TimeSeriesAggregationDefinition, dataset *string) (*dash0.TimeSeriesAggregationDefinition, error)
 	DeleteTimeSeriesAggregationFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListTimeSeriesAggregationsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.TimeSeriesAggregationDefinition]
+
+	// Signal-to-Metrics
+	ListSignalToMetricsFunc     func(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.SignalToMetricsDefinition, error)
+	GetSignalToMetricsFunc      func(ctx context.Context, originOrID string, dataset *string) (*dash0.SignalToMetricsDefinition, error)
+	CreateSignalToMetricsFunc   func(ctx context.Context, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error)
+	UpdateSignalToMetricsFunc   func(ctx context.Context, originOrID string, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error)
+	DeleteSignalToMetricsFunc   func(ctx context.Context, originOrID string, dataset *string) error
+	ListSignalToMetricsIterFunc func(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.SignalToMetricsDefinition]
 
 	// Members
 	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
@@ -197,7 +211,7 @@ func (m *MockClient) ListDashboardsIter(ctx context.Context, dataset *string) *d
 
 // Check Rules
 
-func (m *MockClient) ListCheckRules(ctx context.Context, dataset *string) ([]*dash0.PrometheusAlertRuleApiListItem, error) {
+func (m *MockClient) ListCheckRules(ctx context.Context, dataset *string, _ ...dash0.ListOption) ([]*dash0.PrometheusAlertRuleApiListItem, error) {
 	if m.ListCheckRulesFunc != nil {
 		return m.ListCheckRulesFunc(ctx, dataset)
 	}
@@ -232,7 +246,7 @@ func (m *MockClient) DeleteCheckRule(ctx context.Context, originOrID string, dat
 	return nil
 }
 
-func (m *MockClient) ListCheckRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.PrometheusAlertRuleApiListItem] {
+func (m *MockClient) ListCheckRulesIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.PrometheusAlertRuleApiListItem] {
 	if m.ListCheckRulesIterFunc != nil {
 		return m.ListCheckRulesIterFunc(ctx, dataset)
 	}
@@ -285,7 +299,7 @@ func (m *MockClient) ListSyntheticChecksIter(ctx context.Context, dataset *strin
 
 // SLOs
 
-func (m *MockClient) ListSLOs(ctx context.Context, dataset *string) ([]*dash0.SloDefinition, error) {
+func (m *MockClient) ListSLOs(ctx context.Context, dataset *string, _ ...dash0.ListOption) ([]*dash0.SloDefinition, error) {
 	if m.ListSLOsFunc != nil {
 		return m.ListSLOsFunc(ctx, dataset)
 	}
@@ -320,7 +334,7 @@ func (m *MockClient) DeleteSLO(ctx context.Context, originOrID string, dataset *
 	return nil
 }
 
-func (m *MockClient) ListSLOsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SloDefinition] {
+func (m *MockClient) ListSLOsIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.SloDefinition] {
 	if m.ListSLOsIterFunc != nil {
 		return m.ListSLOsIterFunc(ctx, dataset)
 	}
@@ -459,6 +473,50 @@ func (m *MockClient) ListTimeSeriesAggregationsIter(ctx context.Context, dataset
 	return nil
 }
 
+// Signal-to-Metrics
+
+func (m *MockClient) ListSignalToMetrics(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.SignalToMetricsDefinition, error) {
+	if m.ListSignalToMetricsFunc != nil {
+		return m.ListSignalToMetricsFunc(ctx, dataset, opts...)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetSignalToMetrics(ctx context.Context, originOrID string, dataset *string) (*dash0.SignalToMetricsDefinition, error) {
+	if m.GetSignalToMetricsFunc != nil {
+		return m.GetSignalToMetricsFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateSignalToMetrics(ctx context.Context, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error) {
+	if m.CreateSignalToMetricsFunc != nil {
+		return m.CreateSignalToMetricsFunc(ctx, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateSignalToMetrics(ctx context.Context, originOrID string, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error) {
+	if m.UpdateSignalToMetricsFunc != nil {
+		return m.UpdateSignalToMetricsFunc(ctx, originOrID, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteSignalToMetrics(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteSignalToMetricsFunc != nil {
+		return m.DeleteSignalToMetricsFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListSignalToMetricsIter(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.SignalToMetricsDefinition] {
+	if m.ListSignalToMetricsIterFunc != nil {
+		return m.ListSignalToMetricsIterFunc(ctx, dataset, opts...)
+	}
+	return nil
+}
+
 // Members
 
 func (m *MockClient) ListMembers(ctx context.Context) ([]*dash0.MemberDefinition, error) {
@@ -570,7 +628,7 @@ func (m *MockClient) ResolveMemberIDsToEmails(ctx context.Context, ids []string)
 
 // Recording Rules
 
-func (m *MockClient) ListRecordingRules(ctx context.Context, dataset *string) ([]*dash0.RecordingRule, error) {
+func (m *MockClient) ListRecordingRules(ctx context.Context, dataset *string, _ ...dash0.ListOption) ([]*dash0.RecordingRule, error) {
 	if m.ListRecordingRulesFunc != nil {
 		return m.ListRecordingRulesFunc(ctx, dataset)
 	}
@@ -605,7 +663,7 @@ func (m *MockClient) DeleteRecordingRule(ctx context.Context, originOrID string,
 	return nil
 }
 
-func (m *MockClient) ListRecordingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRule] {
+func (m *MockClient) ListRecordingRulesIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.RecordingRule] {
 	if m.ListRecordingRulesIterFunc != nil {
 		return m.ListRecordingRulesIterFunc(ctx, dataset)
 	}

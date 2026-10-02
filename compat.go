@@ -126,6 +126,14 @@ package dash0
 //
 // GetApiSyntheticChecksLocationsResponse.JSON200 now lists [SyntheticCheckLocationEntry]
 // values instead of bare location strings; use [SyntheticCheckLocationEntry.Id].
+//
+// [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], and
+// their Iter variants gained a trailing `opts ...ListOption` parameter for
+// [WithOriginPrefix].
+// Existing call sites compile unchanged.
+// Custom [Client] implementations and wrappers must add the parameter, and
+// should forward it to the wrapped client or ignore it.
+// The dash0test.MockClient *Func fields keep their previous signatures.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //

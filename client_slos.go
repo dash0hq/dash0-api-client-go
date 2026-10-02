@@ -13,12 +13,14 @@ import (
 const sloDisplayNameAnnotation = "dash0.com/display-name"
 
 // ListSLOs retrieves all SLOs.
-func (c *client) ListSLOs(ctx context.Context, dataset *string) ([]*SloDefinition, error) {
+// Pass [WithOriginPrefix] to restrict the result to SLOs whose origin starts with a given prefix.
+func (c *client) ListSLOs(ctx context.Context, dataset *string, opts ...ListOption) ([]*SloDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
 	params := &GetApiSlosParams{
-		Dataset: dataset,
+		Dataset:      dataset,
+		OriginPrefix: NewListOptions(opts...).OriginPrefix,
 	}
 	resp, err := c.inner.GetApiSlosWithResponse(ctx, params)
 	if err != nil {
@@ -114,8 +116,8 @@ func (c *client) DeleteSLO(ctx context.Context, originOrID string, dataset *stri
 
 // ListSLOsIter returns an iterator over all SLOs.
 // This is a convenience wrapper around ListSLOs for consistent iteration patterns.
-func (c *client) ListSLOsIter(ctx context.Context, dataset *string) *Iter[SloDefinition] {
-	items, err := c.ListSLOs(ctx, dataset)
+func (c *client) ListSLOsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[SloDefinition] {
+	items, err := c.ListSLOs(ctx, dataset, opts...)
 	if err != nil {
 		return newIterWithError[SloDefinition](err)
 	}

@@ -271,3 +271,15 @@ AgenticWorkflowGuardrails.NetworkLevel
 HttpRequestSpec.Headers
 HttpRequestSpec.QueryParameters
 GetApiSyntheticChecksLocationsResponse.JSON200
+
+# <NEXT_RELEASE>: ListCheckRules, ListRecordingRules, ListSLOs, and their Iter
+# variants gained a trailing variadic `opts ...ListOption` parameter so callers
+# can pass WithOriginPrefix. Existing call sites compile unchanged; gorelease
+# flags the changed method signatures on the interface and the mock. The
+# MockClient *Func fields keep their previous signatures.
+Client.ListCheckRules*
+Client.ListRecordingRules*
+Client.ListSLOs*
+(*MockClient).ListCheckRules*
+(*MockClient).ListRecordingRules*
+(*MockClient).ListSLOs*

@@ -28,12 +28,12 @@ type Client interface {
 	ListDashboardsIter(ctx context.Context, dataset *string) *Iter[DashboardApiListItem]
 
 	// Check Rules
-	ListCheckRules(ctx context.Context, dataset *string) ([]*PrometheusAlertRuleApiListItem, error)
+	ListCheckRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*PrometheusAlertRuleApiListItem, error)
 	GetCheckRule(ctx context.Context, originOrID string, dataset *string) (*PrometheusAlertRule, error)
 	CreateCheckRule(ctx context.Context, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error)
 	UpdateCheckRule(ctx context.Context, originOrID string, rule *PrometheusAlertRule, dataset *string) (*PrometheusAlertRule, error)
 	DeleteCheckRule(ctx context.Context, originOrID string, dataset *string) error
-	ListCheckRulesIter(ctx context.Context, dataset *string) *Iter[PrometheusAlertRuleApiListItem]
+	ListCheckRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[PrometheusAlertRuleApiListItem]
 
 	// Synthetic Checks
 	ListSyntheticChecks(ctx context.Context, dataset *string) ([]*SyntheticChecksApiListItem, error)
@@ -44,12 +44,12 @@ type Client interface {
 	ListSyntheticChecksIter(ctx context.Context, dataset *string) *Iter[SyntheticChecksApiListItem]
 
 	// SLOs
-	ListSLOs(ctx context.Context, dataset *string) ([]*SloDefinition, error)
+	ListSLOs(ctx context.Context, dataset *string, opts ...ListOption) ([]*SloDefinition, error)
 	GetSLO(ctx context.Context, originOrID string, dataset *string) (*SloDefinition, error)
 	CreateSLO(ctx context.Context, slo *SloDefinition, dataset *string) (*SloDefinition, error)
 	UpdateSLO(ctx context.Context, originOrID string, slo *SloDefinition, dataset *string) (*SloDefinition, error)
 	DeleteSLO(ctx context.Context, originOrID string, dataset *string) error
-	ListSLOsIter(ctx context.Context, dataset *string) *Iter[SloDefinition]
+	ListSLOsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[SloDefinition]
 
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
@@ -75,6 +75,14 @@ type Client interface {
 	DeleteTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) error
 	ListTimeSeriesAggregationsIter(ctx context.Context, dataset *string) *Iter[TimeSeriesAggregationDefinition]
 
+	// Signal-to-Metrics
+	ListSignalToMetrics(ctx context.Context, dataset *string, opts ...ListOption) ([]*SignalToMetricsDefinition, error)
+	GetSignalToMetrics(ctx context.Context, originOrID string, dataset *string) (*SignalToMetricsDefinition, error)
+	CreateSignalToMetrics(ctx context.Context, rule *SignalToMetricsDefinition, dataset *string) (*SignalToMetricsDefinition, error)
+	UpdateSignalToMetrics(ctx context.Context, originOrID string, rule *SignalToMetricsDefinition, dataset *string) (*SignalToMetricsDefinition, error)
+	DeleteSignalToMetrics(ctx context.Context, originOrID string, dataset *string) error
+	ListSignalToMetricsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[SignalToMetricsDefinition]
+
 	// Members
 	ListMembers(ctx context.Context) ([]*MemberDefinition, error)
 	InviteMember(ctx context.Context, request *InviteMemberRequest) error
@@ -95,12 +103,12 @@ type Client interface {
 	ResolveMemberIDsToEmails(ctx context.Context, ids []string) ([]string, error)
 
 	// Recording Rules
-	ListRecordingRules(ctx context.Context, dataset *string) ([]*RecordingRule, error)
+	ListRecordingRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*RecordingRule, error)
 	GetRecordingRule(ctx context.Context, originOrID string, dataset *string) (*RecordingRule, error)
 	CreateRecordingRule(ctx context.Context, rule *RecordingRule, dataset *string) (*RecordingRule, error)
 	UpdateRecordingRule(ctx context.Context, originOrID string, rule *RecordingRule, dataset *string) (*RecordingRule, error)
 	DeleteRecordingRule(ctx context.Context, originOrID string, dataset *string) error
-	ListRecordingRulesIter(ctx context.Context, dataset *string) *Iter[RecordingRule]
+	ListRecordingRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[RecordingRule]
 
 	// Notification Channels
 	ListNotificationChannels(ctx context.Context) ([]*NotificationChannelDefinition, error)
