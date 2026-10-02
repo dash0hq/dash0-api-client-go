@@ -11,12 +11,14 @@ import (
 type RecordingRule = generatedPrometheusRule
 
 // ListRecordingRules retrieves all recording rules.
-func (c *client) ListRecordingRules(ctx context.Context, dataset *string) ([]*RecordingRule, error) {
+// Pass [WithOriginPrefix] to restrict the result to recording rules whose origin starts with a given prefix.
+func (c *client) ListRecordingRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*RecordingRule, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
 	params := &GetApiRecordingRulesParams{
-		Dataset: dataset,
+		Dataset:      dataset,
+		OriginPrefix: NewListOptions(opts...).OriginPrefix,
 	}
 	resp, err := c.inner.GetApiRecordingRulesWithResponse(ctx, params)
 	if err != nil {
@@ -119,8 +121,8 @@ func (c *client) DeleteRecordingRule(ctx context.Context, originOrID string, dat
 
 // ListRecordingRulesIter returns an iterator over all recording rules.
 // This is a convenience wrapper around ListRecordingRules for consistent iteration patterns.
-func (c *client) ListRecordingRulesIter(ctx context.Context, dataset *string) *Iter[RecordingRule] {
-	items, err := c.ListRecordingRules(ctx, dataset)
+func (c *client) ListRecordingRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[RecordingRule] {
+	items, err := c.ListRecordingRules(ctx, dataset, opts...)
 	if err != nil {
 		return newIterWithError[RecordingRule](err)
 	}

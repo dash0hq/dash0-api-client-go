@@ -507,6 +507,21 @@ func ExampleClearTimeSeriesAggregationID() {
 	// Output: true
 }
 
+func ExampleWithOriginPrefix() {
+	// Pass the option to a list call to restrict it to assets you own:
+	//
+	//	rules, err := client.ListCheckRules(ctx, dash0.Ptr("default"), dash0.WithOriginPrefix("dash0-operator_abc_"))
+	opts := dash0.NewListOptions(dash0.WithOriginPrefix("dash0-operator_abc_"))
+	fmt.Println(*opts.OriginPrefix)
+	// Output: dash0-operator_abc_
+}
+
+func ExampleNewListOptions() {
+	opts := dash0.NewListOptions(dash0.WithOriginPrefix(""))
+	fmt.Println(opts.OriginPrefix == nil)
+	// Output: true
+}
+
 // Synthetic check helpers
 
 func ExampleGetSyntheticCheckName() {

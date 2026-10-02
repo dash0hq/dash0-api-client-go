@@ -78,6 +78,7 @@ Keep helpers co-located with their domain's CRUD methods.
 |------|---------|
 | `client.go` | `Client` interface + `NewClient` factory |
 | `client_*.go` | Domain-specific CRUD methods and helpers (dashboards, check rules, views, etc.) |
+| `list_options.go` | `ListOption` / `WithOriginPrefix` for List* methods whose endpoint supports filters |
 | `generated.go` | oapi-codegen generated client (do not edit manually) |
 | `tools/postprocess/` | AST-based post-processing of `generated.go` |
 | `transport.go` | HTTP middleware: rate limiting, retry with backoff |

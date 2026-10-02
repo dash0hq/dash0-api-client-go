@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 	"time"
 )
@@ -530,5 +531,47 @@ func TestListSLOsIter(t *testing.T) {
 	}
 	if count != 1 {
 		t.Errorf("expected 1 SLO, got %d", count)
+	}
+}
+
+func TestListSLOs_OriginPrefix(t *testing.T) {
+	tests := []struct {
+		name       string
+		opts       []ListOption
+		wantPrefix string
+		wantSet    bool
+	}{
+		{"sends the prefix", []ListOption{WithOriginPrefix("dash0-operator_abc_")}, "dash0-operator_abc_", true},
+		{"omits the parameter without options", nil, "", false},
+		{"omits the parameter for an empty prefix", []ListOption{WithOriginPrefix("")}, "", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var gotQuery url.Values
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				gotQuery = r.URL.Query()
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`[]`))
+			}))
+			defer server.Close()
+
+			c := newTestClient(t, server.URL)
+			if _, err := c.ListSLOs(context.Background(), Ptr("production"), tt.opts...); err != nil {
+				t.Fatalf("ListSLOs failed: %v", err)
+			}
+			_, gotSet := gotQuery["originPrefix"]
+			if gotSet != tt.wantSet {
+				t.Errorf("originPrefix present = %v, want %v", gotSet, tt.wantSet)
+			}
+			assertEqual(t, "originPrefix", gotQuery.Get("originPrefix"), tt.wantPrefix)
+			assertEqual(t, "dataset", gotQuery.Get("dataset"), "production")
+
+			iter := c.ListSLOsIter(context.Background(), Ptr("production"), tt.opts...)
+			if err := iter.Err(); err != nil {
+				t.Fatalf("ListSLOsIter failed: %v", err)
+			}
+			assertEqual(t, "iter originPrefix", gotQuery.Get("originPrefix"), tt.wantPrefix)
+		})
 	}
 }

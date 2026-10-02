@@ -197,7 +197,7 @@ func (m *MockClient) ListDashboardsIter(ctx context.Context, dataset *string) *d
 
 // Check Rules
 
-func (m *MockClient) ListCheckRules(ctx context.Context, dataset *string) ([]*dash0.PrometheusAlertRuleApiListItem, error) {
+func (m *MockClient) ListCheckRules(ctx context.Context, dataset *string, _ ...dash0.ListOption) ([]*dash0.PrometheusAlertRuleApiListItem, error) {
 	if m.ListCheckRulesFunc != nil {
 		return m.ListCheckRulesFunc(ctx, dataset)
 	}
@@ -232,7 +232,7 @@ func (m *MockClient) DeleteCheckRule(ctx context.Context, originOrID string, dat
 	return nil
 }
 
-func (m *MockClient) ListCheckRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.PrometheusAlertRuleApiListItem] {
+func (m *MockClient) ListCheckRulesIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.PrometheusAlertRuleApiListItem] {
 	if m.ListCheckRulesIterFunc != nil {
 		return m.ListCheckRulesIterFunc(ctx, dataset)
 	}
@@ -285,7 +285,7 @@ func (m *MockClient) ListSyntheticChecksIter(ctx context.Context, dataset *strin
 
 // SLOs
 
-func (m *MockClient) ListSLOs(ctx context.Context, dataset *string) ([]*dash0.SloDefinition, error) {
+func (m *MockClient) ListSLOs(ctx context.Context, dataset *string, _ ...dash0.ListOption) ([]*dash0.SloDefinition, error) {
 	if m.ListSLOsFunc != nil {
 		return m.ListSLOsFunc(ctx, dataset)
 	}
@@ -320,7 +320,7 @@ func (m *MockClient) DeleteSLO(ctx context.Context, originOrID string, dataset *
 	return nil
 }
 
-func (m *MockClient) ListSLOsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SloDefinition] {
+func (m *MockClient) ListSLOsIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.SloDefinition] {
 	if m.ListSLOsIterFunc != nil {
 		return m.ListSLOsIterFunc(ctx, dataset)
 	}
@@ -570,7 +570,7 @@ func (m *MockClient) ResolveMemberIDsToEmails(ctx context.Context, ids []string)
 
 // Recording Rules
 
-func (m *MockClient) ListRecordingRules(ctx context.Context, dataset *string) ([]*dash0.RecordingRule, error) {
+func (m *MockClient) ListRecordingRules(ctx context.Context, dataset *string, _ ...dash0.ListOption) ([]*dash0.RecordingRule, error) {
 	if m.ListRecordingRulesFunc != nil {
 		return m.ListRecordingRulesFunc(ctx, dataset)
 	}
@@ -605,7 +605,7 @@ func (m *MockClient) DeleteRecordingRule(ctx context.Context, originOrID string,
 	return nil
 }
 
-func (m *MockClient) ListRecordingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRule] {
+func (m *MockClient) ListRecordingRulesIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.RecordingRule] {
 	if m.ListRecordingRulesIterFunc != nil {
 		return m.ListRecordingRulesIterFunc(ctx, dataset)
 	}
