@@ -507,6 +507,102 @@ func ExampleClearTimeSeriesAggregationID() {
 	// Output: true
 }
 
+func ExampleGetSignalToMetricsName() {
+	rule := &dash0.SignalToMetricsDefinition{
+		Spec: dash0.SignalToMetricsSpec{
+			Display: dash0.SignalToMetricsDisplay{Name: "Checkout span count"},
+		},
+	}
+	fmt.Println(dash0.GetSignalToMetricsName(rule))
+	// Output: Checkout span count
+}
+
+func ExampleGetSignalToMetricsName_fallback() {
+	// Falls back to metadata.name when the display name is empty.
+	rule := &dash0.SignalToMetricsDefinition{
+		Metadata: dash0.SignalToMetricsMetadata{Name: "checkout-span-count"},
+	}
+	fmt.Println(dash0.GetSignalToMetricsName(rule))
+	// Output: checkout-span-count
+}
+
+func ExampleGetSignalToMetricsID() {
+	rule := &dash0.SignalToMetricsDefinition{
+		Metadata: dash0.SignalToMetricsMetadata{
+			Labels: &dash0.SignalToMetricsLabels{Dash0Comid: dash0.Ptr("s2m-123")},
+		},
+	}
+	fmt.Println(dash0.GetSignalToMetricsID(rule))
+	// Output: s2m-123
+}
+
+func ExampleGetSignalToMetricsDataset() {
+	rule := &dash0.SignalToMetricsDefinition{
+		Metadata: dash0.SignalToMetricsMetadata{
+			Labels: &dash0.SignalToMetricsLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetSignalToMetricsDataset(rule))
+	// Output: production
+}
+
+func ExampleSetSignalToMetricsDataset() {
+	rule := &dash0.SignalToMetricsDefinition{}
+	dash0.SetSignalToMetricsDataset(rule, "production")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
+func ExampleSetSignalToMetricsID() {
+	rule := &dash0.SignalToMetricsDefinition{}
+	dash0.SetSignalToMetricsID(rule, "tsa-456")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comid)
+	// Output: tsa-456
+}
+
+func ExampleSetSignalToMetricsIDIfAbsent() {
+	rule := &dash0.SignalToMetricsDefinition{
+		Metadata: dash0.SignalToMetricsMetadata{
+			Labels: &dash0.SignalToMetricsLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetSignalToMetricsIDIfAbsent(rule, "tsa-456")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comid)
+	// Output: existing
+}
+
+func ExampleStripSignalToMetricsServerFields() {
+	rule := &dash0.SignalToMetricsDefinition{
+		Metadata: dash0.SignalToMetricsMetadata{
+			Name: "checkout-span-count",
+			Labels: &dash0.SignalToMetricsLabels{
+				Dash0Comid:      dash0.Ptr("s2m-123"),
+				Dash0Comversion: dash0.Ptr("2"),
+			},
+		},
+	}
+	dash0.StripSignalToMetricsServerFields(rule)
+	// The version is server-assigned and is cleared; the ID is preserved so the
+	// definition still addresses the same rule on update.
+	fmt.Println(rule.Metadata.Labels.Dash0Comversion == nil)
+	fmt.Println(dash0.GetSignalToMetricsID(rule))
+	// Output:
+	// true
+	// s2m-123
+}
+
+func ExampleClearSignalToMetricsID() {
+	rule := &dash0.SignalToMetricsDefinition{
+		Metadata: dash0.SignalToMetricsMetadata{
+			Labels: &dash0.SignalToMetricsLabels{Dash0Comid: dash0.Ptr("s2m-123")},
+		},
+	}
+	dash0.ClearSignalToMetricsID(rule)
+	fmt.Println(rule.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
 func ExampleWithOriginPrefix() {
 	// Pass the option to a list call to restrict it to assets you own:
 	//

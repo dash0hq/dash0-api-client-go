@@ -75,6 +75,14 @@ type Client interface {
 	DeleteTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) error
 	ListTimeSeriesAggregationsIter(ctx context.Context, dataset *string) *Iter[TimeSeriesAggregationDefinition]
 
+	// Signal-to-Metrics
+	ListSignalToMetrics(ctx context.Context, dataset *string, opts ...ListOption) ([]*SignalToMetricsDefinition, error)
+	GetSignalToMetrics(ctx context.Context, originOrID string, dataset *string) (*SignalToMetricsDefinition, error)
+	CreateSignalToMetrics(ctx context.Context, rule *SignalToMetricsDefinition, dataset *string) (*SignalToMetricsDefinition, error)
+	UpdateSignalToMetrics(ctx context.Context, originOrID string, rule *SignalToMetricsDefinition, dataset *string) (*SignalToMetricsDefinition, error)
+	DeleteSignalToMetrics(ctx context.Context, originOrID string, dataset *string) error
+	ListSignalToMetricsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[SignalToMetricsDefinition]
+
 	// Members
 	ListMembers(ctx context.Context) ([]*MemberDefinition, error)
 	InviteMember(ctx context.Context, request *InviteMemberRequest) error

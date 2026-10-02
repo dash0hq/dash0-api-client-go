@@ -77,6 +77,14 @@ type MockClient struct {
 	DeleteTimeSeriesAggregationFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListTimeSeriesAggregationsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.TimeSeriesAggregationDefinition]
 
+	// Signal-to-Metrics
+	ListSignalToMetricsFunc     func(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.SignalToMetricsDefinition, error)
+	GetSignalToMetricsFunc      func(ctx context.Context, originOrID string, dataset *string) (*dash0.SignalToMetricsDefinition, error)
+	CreateSignalToMetricsFunc   func(ctx context.Context, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error)
+	UpdateSignalToMetricsFunc   func(ctx context.Context, originOrID string, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error)
+	DeleteSignalToMetricsFunc   func(ctx context.Context, originOrID string, dataset *string) error
+	ListSignalToMetricsIterFunc func(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.SignalToMetricsDefinition]
+
 	// Members
 	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
 	InviteMemberFunc    func(ctx context.Context, request *dash0.InviteMemberRequest) error
@@ -455,6 +463,50 @@ func (m *MockClient) DeleteTimeSeriesAggregation(ctx context.Context, originOrID
 func (m *MockClient) ListTimeSeriesAggregationsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.TimeSeriesAggregationDefinition] {
 	if m.ListTimeSeriesAggregationsIterFunc != nil {
 		return m.ListTimeSeriesAggregationsIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Signal-to-Metrics
+
+func (m *MockClient) ListSignalToMetrics(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.SignalToMetricsDefinition, error) {
+	if m.ListSignalToMetricsFunc != nil {
+		return m.ListSignalToMetricsFunc(ctx, dataset, opts...)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetSignalToMetrics(ctx context.Context, originOrID string, dataset *string) (*dash0.SignalToMetricsDefinition, error) {
+	if m.GetSignalToMetricsFunc != nil {
+		return m.GetSignalToMetricsFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateSignalToMetrics(ctx context.Context, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error) {
+	if m.CreateSignalToMetricsFunc != nil {
+		return m.CreateSignalToMetricsFunc(ctx, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateSignalToMetrics(ctx context.Context, originOrID string, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error) {
+	if m.UpdateSignalToMetricsFunc != nil {
+		return m.UpdateSignalToMetricsFunc(ctx, originOrID, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteSignalToMetrics(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteSignalToMetricsFunc != nil {
+		return m.DeleteSignalToMetricsFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListSignalToMetricsIter(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.SignalToMetricsDefinition] {
+	if m.ListSignalToMetricsIterFunc != nil {
+		return m.ListSignalToMetricsIterFunc(ctx, dataset, opts...)
 	}
 	return nil
 }

@@ -13,7 +13,7 @@ type ListOptions struct {
 
 // WithOriginPrefix restricts a list call to assets whose dash0.com/origin starts with prefix.
 // An empty prefix leaves the filter unset.
-// Supported by [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], and their Iter variants.
+// Supported by [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], [Client.ListSignalToMetrics], and their Iter variants.
 func WithOriginPrefix(prefix string) ListOption {
 	return func(o *ListOptions) {
 		if prefix == "" {

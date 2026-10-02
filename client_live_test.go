@@ -156,6 +156,110 @@ func TestLiveAPI(t *testing.T) {
 			len(allCheckRules), len(matchingCheckRules), len(allRecordingRules), len(matchingRecordingRules))
 	})
 
+	t.Run("SignalToMetricsLifecycle", func(t *testing.T) {
+		dataset := Ptr("default")
+		prefix := fmt.Sprintf("iac-26-live-%d_", time.Now().UnixNano())
+		originA, originB := prefix+"a", prefix+"b"
+		otherOrigin := fmt.Sprintf("iac-26-live-other-%d", time.Now().UnixNano())
+		newRule := func(name string) *SignalToMetricsDefinition {
+			return &SignalToMetricsDefinition{
+				Kind:     Dash0SignalToMetrics,
+				Metadata: SignalToMetricsMetadata{Name: name},
+				Spec: SignalToMetricsSpec{
+					Enabled: false,
+					Display: SignalToMetricsDisplay{Name: name},
+					Match: SignalToMetricsMatch{
+						Signal:  SignalToMetricsSignalTypeSpans,
+						Filters: FilterCriteria{{Key: "service.name", Operator: "is_set"}},
+					},
+					Output: SignalToMetricsOutput{Name: "iac_26_live_test_total", Interval: "1m"},
+				},
+			}
+		}
+		t.Cleanup(func() {
+			for _, origin := range []string{originA, originB, otherOrigin} {
+				if err := client.DeleteSignalToMetrics(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
+					t.Logf("cleanup of %s failed: %v", origin, err)
+				}
+			}
+		})
+
+		for _, origin := range []string{originA, originB, otherOrigin} {
+			upserted, err := client.UpdateSignalToMetrics(ctx, origin, newRule(origin), dataset)
+			if err != nil {
+				t.Fatalf("UpdateSignalToMetrics(%s) as upsert failed: %v", origin, err)
+			}
+			if GetSignalToMetricsID(upserted) == "" {
+				t.Errorf("upsert of %s returned no dash0.com/id", origin)
+			}
+		}
+
+		got, err := client.GetSignalToMetrics(ctx, originA, dataset)
+		if err != nil {
+			t.Fatalf("GetSignalToMetrics failed: %v", err)
+		}
+		assertEqual(t, "origin", StringValue(got.Metadata.Labels.Dash0Comorigin), originA)
+
+		filtered, err := client.ListSignalToMetrics(ctx, dataset, WithOriginPrefix(prefix))
+		if err != nil {
+			t.Fatalf("ListSignalToMetrics with prefix failed: %v", err)
+		}
+		if len(filtered) != 2 {
+			t.Errorf("ListSignalToMetrics with prefix returned %d rules, want 2", len(filtered))
+		}
+
+		all, err := client.ListSignalToMetrics(ctx, dataset)
+		if err != nil {
+			t.Fatalf("ListSignalToMetrics failed: %v", err)
+		}
+		found := 0
+		for _, rule := range all {
+			if origin := StringValue(rule.Metadata.Labels.Dash0Comorigin); origin == originA || origin == originB {
+				found++
+			}
+		}
+		if found != 2 {
+			t.Errorf("unfiltered list of %d rules contains %d test rules, want 2", len(all), found)
+		}
+		if len(all) < 3 {
+			t.Errorf("unfiltered list returned %d rules, want at least 3 including %s", len(all), otherOrigin)
+		}
+		t.Logf("unfiltered list returned %d rules", len(all))
+
+		iter := client.ListSignalToMetricsIter(ctx, dataset, WithOriginPrefix(prefix))
+		iterated := 0
+		for iter.Next() {
+			iterated++
+		}
+		if err := iter.Err(); err != nil || iterated != 2 {
+			t.Errorf("ListSignalToMetricsIter yielded %d rules (err %v), want 2", iterated, err)
+		}
+
+		changed := newRule(originA)
+		changed.Spec.Display.Name = "renamed"
+		if _, err := client.UpdateSignalToMetrics(ctx, originA, changed, dataset); err != nil {
+			t.Fatalf("UpdateSignalToMetrics failed: %v", err)
+		}
+		got, err = client.GetSignalToMetrics(ctx, originA, dataset)
+		if err != nil {
+			t.Fatalf("GetSignalToMetrics after update failed: %v", err)
+		}
+		assertEqual(t, "display name after update", GetSignalToMetricsName(got), "renamed")
+
+		for _, origin := range []string{originA, originB, otherOrigin} {
+			if err := client.DeleteSignalToMetrics(ctx, origin, dataset); err != nil {
+				t.Fatalf("DeleteSignalToMetrics(%s) failed: %v", origin, err)
+			}
+		}
+		remaining, err := client.ListSignalToMetrics(ctx, dataset, WithOriginPrefix(prefix))
+		if err != nil {
+			t.Fatalf("ListSignalToMetrics after delete failed: %v", err)
+		}
+		if len(remaining) != 0 {
+			t.Errorf("ListSignalToMetrics after delete returned %d rules, want 0", len(remaining))
+		}
+	})
+
 	t.Run("GetSpans", func(t *testing.T) {
 		request := GetSpansRequest{
 			TimeRange: TimeReferenceRange{
