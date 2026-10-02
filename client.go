@@ -43,6 +43,14 @@ type Client interface {
 	DeleteSyntheticCheck(ctx context.Context, originOrID string, dataset *string) error
 	ListSyntheticChecksIter(ctx context.Context, dataset *string) *Iter[SyntheticChecksApiListItem]
 
+	// Agentic Workflows (Agent0 automations)
+	ListAgenticWorkflows(ctx context.Context, dataset *string) ([]*AgenticWorkflowDefinition, error)
+	GetAgenticWorkflow(ctx context.Context, originOrID string, dataset *string) (*AgenticWorkflowDefinition, error)
+	CreateAgenticWorkflow(ctx context.Context, workflow *AgenticWorkflowDefinition, dataset *string) (*AgenticWorkflowDefinition, error)
+	UpdateAgenticWorkflow(ctx context.Context, originOrID string, workflow *AgenticWorkflowDefinition, dataset *string) (*AgenticWorkflowDefinition, error)
+	DeleteAgenticWorkflow(ctx context.Context, originOrID string, dataset *string) error
+	ListAgenticWorkflowsIter(ctx context.Context, dataset *string) *Iter[AgenticWorkflowDefinition]
+
 	// SLOs
 	ListSLOs(ctx context.Context, dataset *string) ([]*SloDefinition, error)
 	GetSLO(ctx context.Context, originOrID string, dataset *string) (*SloDefinition, error)

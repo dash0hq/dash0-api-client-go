@@ -553,6 +553,104 @@ func ExampleSetSyntheticCheckID() {
 	// Output: sc-7
 }
 
+// Agentic Workflow (Agent0 automation) helpers
+
+func ExampleGetAgenticWorkflowName() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Spec: dash0.AgenticWorkflowSpec{
+			Display: dash0.AgenticWorkflowDisplay{Name: "Daily digest"},
+		},
+	}
+	fmt.Println(dash0.GetAgenticWorkflowName(workflow))
+	// Output: Daily digest
+}
+
+func ExampleGetAgenticWorkflowID() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Metadata: dash0.AgenticWorkflowMetadata{
+			Labels: &dash0.AgenticWorkflowLabels{Dash0Comid: dash0.Ptr("agentic_workflow_01k5vpx97efdnrkqan15b41k84")},
+		},
+	}
+	fmt.Println(dash0.GetAgenticWorkflowID(workflow))
+	// Output: agentic_workflow_01k5vpx97efdnrkqan15b41k84
+}
+
+func ExampleGetAgenticWorkflowOrigin() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Metadata: dash0.AgenticWorkflowMetadata{
+			Labels: &dash0.AgenticWorkflowLabels{Dash0Comorigin: dash0.Ptr("dash0-cli")},
+		},
+	}
+	fmt.Println(dash0.GetAgenticWorkflowOrigin(workflow))
+	// Output: dash0-cli
+}
+
+func ExampleGetAgenticWorkflowDataset() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Metadata: dash0.AgenticWorkflowMetadata{
+			Labels: &dash0.AgenticWorkflowLabels{Dash0Comdataset: dash0.Ptr("default")},
+		},
+	}
+	fmt.Println(dash0.GetAgenticWorkflowDataset(workflow))
+	// Output: default
+}
+
+func ExampleSetAgenticWorkflowDataset() {
+	workflow := &dash0.AgenticWorkflowDefinition{}
+	dash0.SetAgenticWorkflowDataset(workflow, "default")
+	fmt.Println(*workflow.Metadata.Labels.Dash0Comdataset)
+	// Output: default
+}
+
+func ExampleSetAgenticWorkflowID() {
+	workflow := &dash0.AgenticWorkflowDefinition{}
+	dash0.SetAgenticWorkflowID(workflow, "agentic_workflow_01k5vpx97efdnrkqan15b41k84")
+	fmt.Println(*workflow.Metadata.Labels.Dash0Comid)
+	// Output: agentic_workflow_01k5vpx97efdnrkqan15b41k84
+}
+
+func ExampleSetAgenticWorkflowIDIfAbsent() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Metadata: dash0.AgenticWorkflowMetadata{
+			Labels: &dash0.AgenticWorkflowLabels{Dash0Comid: dash0.Ptr("existing-id")},
+		},
+	}
+	dash0.SetAgenticWorkflowIDIfAbsent(workflow, "new-id")
+	fmt.Println(*workflow.Metadata.Labels.Dash0Comid)
+	// Output: existing-id
+}
+
+func ExampleClearAgenticWorkflowID() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Metadata: dash0.AgenticWorkflowMetadata{
+			Labels: &dash0.AgenticWorkflowLabels{Dash0Comid: dash0.Ptr("agentic_workflow_01k5vpx97efdnrkqan15b41k84")},
+		},
+	}
+	dash0.ClearAgenticWorkflowID(workflow)
+	fmt.Println(workflow.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleStripAgenticWorkflowServerFields() {
+	workflow := &dash0.AgenticWorkflowDefinition{
+		Metadata: dash0.AgenticWorkflowMetadata{
+			Labels: &dash0.AgenticWorkflowLabels{
+				Dash0Comid:      dash0.Ptr("agentic_workflow_01k5vpx97efdnrkqan15b41k84"),
+				Dash0Comversion: dash0.Ptr("2"),
+				Dash0Comdataset: dash0.Ptr("default"),
+				Dash0Comorigin:  dash0.Ptr("my-origin"),
+			},
+		},
+	}
+	// Read any identifier you still need before stripping — the id is
+	// server-assigned for automations, so it is removed along with the
+	// other server-managed labels.
+	id := dash0.GetAgenticWorkflowID(workflow)
+	dash0.StripAgenticWorkflowServerFields(workflow)
+	fmt.Println(id, dash0.GetAgenticWorkflowID(workflow) == "", workflow.Metadata.Labels.Dash0Comversion == nil)
+	// Output: agentic_workflow_01k5vpx97efdnrkqan15b41k84 true true
+}
+
 // SLO helpers
 
 func ExampleGetSLOName() {
