@@ -327,18 +327,21 @@ func stringifyMapValues(m map[string]any) {
 // setting a default value is treated as semantically equivalent to omitting
 // the annotation.
 //   - dash0-threshold-critical: "0" and dash0-threshold-degraded: "0" are
-//     removed because zero-value thresholds are omitted during the Dash0
-//     JSON -> Prometheus YAML conversion.
+//     removed for static rules because their zero-value thresholds are omitted during conversion.
+//     Detector rules retain zero-valued severity tiers.
 //   - dash0-enabled: "true" is removed because true is the default and is
 //     omitted during the same conversion.
 func removeDefaultAnnotationValues(annotations map[string]any) {
+	direction, _ := annotations[baselineDirectionAnnotationKey].(string)
+	comparison, _ := annotations[changeGateComparisonAnnotationKey].(string)
+	hasDetector := direction != "" || comparison != ""
 	for key, value := range annotations {
 		strVal, ok := value.(string)
 		if !ok {
 			continue
 		}
 		if isThresholdCriticalAnnotationKey(key) || isThresholdDegradedAnnotationKey(key) {
-			if strVal == "0" {
+			if strVal == "0" && !hasDetector {
 				delete(annotations, key)
 			}
 			continue
