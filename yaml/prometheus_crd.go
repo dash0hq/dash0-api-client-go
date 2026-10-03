@@ -10,14 +10,17 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-// Round-trip-conversion annotation keys written here and read back by
-// semantic_equal.go's removeDefaultAnnotationValues, which treats their
-// default values (dash0-enabled: true, thresholds: 0) as semantically
-// absent since this conversion omits them.
+// Round-trip annotations use the same keys on read and write.
 const (
-	enabledAnnotationKey           = "dash0-enabled"
-	thresholdCriticalAnnotationKey = "dash0-threshold-critical"
-	thresholdDegradedAnnotationKey = "dash0-threshold-degraded"
+	enabledAnnotationKey                  = "dash0-enabled"
+	thresholdCriticalAnnotationKey        = "dash0-threshold-critical"
+	thresholdDegradedAnnotationKey        = "dash0-threshold-degraded"
+	baselineDirectionAnnotationKey        = "dash0.com/baseline-direction"
+	baselineSpreadFloorAnnotationKey      = "dash0.com/baseline-spread-floor"
+	volumeFloorAnnotationKey              = "dash0.com/volume-floor"
+	changeGateComparisonAnnotationKey     = "dash0.com/change-gate-comparison"
+	changeGateValueAnnotationKey          = "dash0.com/change-gate-value"
+	changeGateBaselineWindowAnnotationKey = "dash0.com/change-gate-baseline-window"
 )
 
 // MergeAnnotations merges a PrometheusRule document's top-level
@@ -95,6 +98,18 @@ func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 // MarshalPrometheusRule converts a PrometheusAlertRule (Dash0 API format)
 // back to a Prometheus rule YAML document.
 func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
+	if rule.Thresholds != nil {
+		if rule.Thresholds.Baseline != nil && rule.Thresholds.ChangeGate != nil {
+			return nil, fmt.Errorf("baseline and change gate detectors are mutually exclusive")
+		}
+		if baseline := rule.Thresholds.Baseline; baseline != nil {
+			switch baseline.Direction {
+			case dash0.AnomalyDirectionAbove, dash0.AnomalyDirectionBelow, dash0.AnomalyDirectionBoth:
+			default:
+				return nil, fmt.Errorf("invalid baseline direction %q", baseline.Direction)
+			}
+		}
+	}
 	nameParts := strings.SplitN(rule.Name, " - ", 2)
 	var groupName, alertName string
 	if len(nameParts) == 2 {
@@ -119,33 +134,33 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 		}
 	}
 
-	// Typed detector settings are authoritative on API reads. PromQL exports already carry
-	// traffic gating as an ordinary condition and therefore need no volume-floor annotation.
+	// Typed detector settings are authoritative on API reads.
+	// This serializer preserves native floors without attempting query compilation.
 	if rule.Thresholds != nil && (rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
 		for _, key := range []string{
-			"dash0.com/baseline-direction", "dash0.com/baseline-spread-floor",
-			"dash0.com/change-gate-comparison", "dash0.com/change-gate-value", "dash0.com/change-gate-baseline-window",
+			baselineDirectionAnnotationKey, baselineSpreadFloorAnnotationKey,
+			changeGateComparisonAnnotationKey, changeGateValueAnnotationKey, changeGateBaselineWindowAnnotationKey,
 		} {
 			delete(annotations, key)
 		}
-		delete(annotations, "dash0.com/volume-floor")
+		delete(annotations, volumeFloorAnnotationKey)
 	}
 	if rule.Thresholds != nil {
 		if baseline := rule.Thresholds.Baseline; baseline != nil {
-			annotations["dash0.com/baseline-direction"] = string(baseline.Direction)
+			annotations[baselineDirectionAnnotationKey] = string(baseline.Direction)
 			if baseline.SpreadFloor != nil {
-				annotations["dash0.com/baseline-spread-floor"] = strconv.FormatFloat(*baseline.SpreadFloor, 'f', -1, 64)
+				annotations[baselineSpreadFloorAnnotationKey] = strconv.FormatFloat(*baseline.SpreadFloor, 'f', -1, 64)
 			}
 			if baseline.VolumeFloor != nil {
-				return nil, fmt.Errorf("compile the structured detector volume floor to an enablement condition before YAML export")
+				annotations[volumeFloorAnnotationKey] = strconv.FormatFloat(*baseline.VolumeFloor, 'f', -1, 64)
 			}
 		}
 		if gate := rule.Thresholds.ChangeGate; gate != nil {
-			annotations["dash0.com/change-gate-comparison"] = string(gate.Comparison)
-			annotations["dash0.com/change-gate-value"] = strconv.FormatFloat(gate.Value, 'f', -1, 64)
-			annotations["dash0.com/change-gate-baseline-window"] = string(gate.BaselineWindow)
+			annotations[changeGateComparisonAnnotationKey] = string(gate.Comparison)
+			annotations[changeGateValueAnnotationKey] = strconv.FormatFloat(gate.Value, 'f', -1, 64)
+			annotations[changeGateBaselineWindowAnnotationKey] = string(gate.BaselineWindow)
 			if gate.VolumeFloor != nil {
-				return nil, fmt.Errorf("compile the structured detector volume floor to an enablement condition before YAML export")
+				annotations[volumeFloorAnnotationKey] = strconv.FormatFloat(*gate.VolumeFloor, 'f', -1, 64)
 			}
 		}
 	}
@@ -215,10 +230,6 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 				},
 			},
 		},
-	}
-
-	if rule.Dataset != nil && *rule.Dataset != "" {
-		dash0.SetPrometheusRuleDataset(promRules, *rule.Dataset)
 	}
 
 	// Marshal via the wire type so durations serialize as strings.

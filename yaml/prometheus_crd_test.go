@@ -1,6 +1,7 @@
 package yaml
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -606,31 +607,17 @@ func TestDetectorExportRoundTrip(t *testing.T) {
 			require.NoError(t, err)
 			rule, err := UnmarshalPrometheusRule(input)
 			require.NoError(t, err)
-			annotations := rule.Annotations.AdditionalProperties
 			original := rule.Expression
-			if direction, ok := annotations["dash0.com/baseline-direction"]; ok {
-				rule.Thresholds.Baseline = &dash0.CheckThresholdBaseline{Direction: dash0.AnomalyDirection(direction), SpreadFloor: dash0.Ptr(0.1)}
-			} else {
-				value := 2.0
-				if annotations["dash0.com/change-gate-comparison"] == "absolute_delta" {
-					value = 0.05
-				}
-				rule.Thresholds.ChangeGate = &dash0.CheckThresholdChangeGate{Comparison: dash0.ChangeGateComparison(annotations["dash0.com/change-gate-comparison"]), Value: value, BaselineWindow: dash0.Duration(annotations["dash0.com/change-gate-baseline-window"])}
-			}
-			// API reads lift detector annotations into typed settings and remove the consumed keys.
-			for _, key := range []string{"dash0.com/baseline-direction", "dash0.com/baseline-spread-floor", "dash0.com/change-gate-comparison", "dash0.com/change-gate-value", "dash0.com/change-gate-baseline-window"} {
-				delete(annotations, key)
-			}
 			output, err := MarshalPrometheusRule(rule)
 			require.NoError(t, err)
-			equivalent, err := Equivalent(input, output, []string{"metadata.name"}, nil)
+			equivalent, err := Equivalent(input, output, []string{"metadata.name", "metadata.labels"}, nil)
 			require.NoError(t, err)
 			assert.True(t, equivalent, string(output))
 			reread, err := UnmarshalPrometheusRule(output)
 			require.NoError(t, err)
 			assert.Equal(t, original, reread.Expression)
 			assert.NotContains(t, string(output), "dash0.com/volume-floor")
-			assert.Equal(t, "production", *reread.Dataset)
+			assert.Nil(t, reread.Dataset)
 			assert.False(t, *reread.Enabled)
 		})
 	}
@@ -643,12 +630,15 @@ func TestMarshalDetectorAnnotations(t *testing.T) {
 		require.NoError(t, err)
 		parsed, err := UnmarshalPrometheusRule(data)
 		require.NoError(t, err)
-		assert.Equal(t, string(direction), parsed.Annotations.AdditionalProperties["dash0.com/baseline-direction"])
-		assert.NotContains(t, parsed.Annotations.AdditionalProperties, "dash0.com/change-gate-value")
-		assert.NotContains(t, parsed.Annotations.AdditionalProperties, "dash0.com/volume-floor")
+		require.NotNil(t, parsed.Thresholds.Baseline)
+		assert.Equal(t, direction, parsed.Thresholds.Baseline.Direction)
+		assert.Nil(t, parsed.Annotations)
 		rule.Thresholds.Baseline.VolumeFloor = dash0.Ptr(1.0)
-		_, err = MarshalPrometheusRule(rule)
-		require.Error(t, err)
+		data, err = MarshalPrometheusRule(rule)
+		require.NoError(t, err)
+		parsed, err = UnmarshalPrometheusRule(data)
+		require.NoError(t, err)
+		assert.InDelta(t, 1, *parsed.Thresholds.Baseline.VolumeFloor, 1e-12)
 	}
 }
 
@@ -660,4 +650,50 @@ func TestMarshalChangeGateZeroDegradedThreshold(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, read.Thresholds.Degraded)
 	assert.Zero(t, *read.Thresholds.Degraded)
+}
+
+func TestMarshalAPIReadDetectorFloors(t *testing.T) {
+	for _, thresholds := range []string{
+		`{"failed":0,"degraded":1,"baseline":{"direction":"below","spreadFloor":0.17,"volumeFloor":12.5}}`,
+		`{"failed":0,"degraded":1,"changeGate":{"comparison":"absolute_delta","value":0.037,"baselineWindow":"90m","volumeFloor":12.5}}`,
+	} {
+		t.Run(thresholds, func(t *testing.T) {
+			// Deserialize the public API shape rather than reconstructing fields from annotations.
+			data := []byte(`{"name":"Alerting - Native floor","expression":"observed > $__threshold","dataset":"production","thresholds":` + thresholds + `,"annotations":{"summary":"Native floor"}}`)
+			var apiRule dash0.PrometheusAlertRule
+			require.NoError(t, json.Unmarshal(data, &apiRule))
+			before, err := json.Marshal(apiRule)
+			require.NoError(t, err)
+			exported, err := MarshalPrometheusRule(&apiRule)
+			require.NoError(t, err)
+			require.Contains(t, string(exported), "dash0.com/volume-floor")
+			require.Contains(t, string(exported), "dash0-threshold-critical")
+			imported, err := UnmarshalPrometheusRule(exported)
+			require.NoError(t, err)
+			assert.Equal(t, apiRule.Thresholds, imported.Thresholds)
+			assert.Equal(t, apiRule.Expression, imported.Expression)
+			assert.Nil(t, imported.Dataset, "marshal must keep the existing metadata-label behavior")
+			reexported, err := MarshalPrometheusRule(imported)
+			require.NoError(t, err)
+			assert.Equal(t, string(exported), string(reexported))
+			after, err := json.Marshal(apiRule)
+			require.NoError(t, err)
+			assert.JSONEq(t, string(before), string(after))
+			rules, err := ParseAsPrometheusAlertRules(exported)
+			require.NoError(t, err)
+			require.Len(t, rules, 1)
+			assert.Equal(t, apiRule.Thresholds, rules[0].Thresholds)
+		})
+	}
+}
+
+func TestMarshalRejectsInvalidDetectorConfiguration(t *testing.T) {
+	for _, thresholds := range []*dash0.CheckThresholds{
+		{Baseline: &dash0.CheckThresholdBaseline{}},
+		{Baseline: &dash0.CheckThresholdBaseline{Direction: "sideways"}},
+		{Baseline: &dash0.CheckThresholdBaseline{Direction: dash0.AnomalyDirectionAbove}, ChangeGate: &dash0.CheckThresholdChangeGate{}},
+	} {
+		_, err := MarshalPrometheusRule(&dash0.PrometheusAlertRule{Name: "rule", Expression: "observed", Thresholds: thresholds})
+		require.Error(t, err)
+	}
 }

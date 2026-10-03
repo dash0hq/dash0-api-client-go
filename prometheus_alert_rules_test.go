@@ -3,6 +3,8 @@ package dash0
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetPrometheusRuleDataset(t *testing.T) {
@@ -373,5 +375,21 @@ func TestConvertPrometheusRuleToPrometheusAlertRule_EnabledFalse(t *testing.T) {
 		if _, ok := result.Annotations.AdditionalProperties["dash0-enabled"]; ok {
 			t.Error("dash0-enabled should be removed from annotations")
 		}
+	}
+}
+
+func TestConvertRejectsMalformedDetectorAnnotations(t *testing.T) {
+	for _, annotations := range []map[string]string{
+		{baselineDirectionAnnotation: "sideways"},
+		{baselineDirectionAnnotation: "above", baselineSpreadFloorAnnotation: "invalid"},
+		{baselineDirectionAnnotation: "above", volumeFloorAnnotation: "NaN"},
+		{baselineDirectionAnnotation: "above", changeGateComparisonAnnotation: "relative_factor"},
+		{changeGateComparisonAnnotation: "relative_factor", changeGateValueAnnotation: "2"},
+		{changeGateComparisonAnnotation: "relative_factor", changeGateValueAnnotation: "invalid", changeGateBaselineWindowAnnotation: "1h"},
+		{changeGateComparisonAnnotation: "invalid", changeGateValueAnnotation: "2", changeGateBaselineWindowAnnotation: "1h"},
+		{volumeFloorAnnotation: "50"},
+	} {
+		_, err := ConvertPrometheusRuleToPrometheusAlertRule(&PrometheusRule{Alert: "rule", Expr: "observed", Annotations: annotations}, time.Minute, "")
+		require.Error(t, err)
 	}
 }
