@@ -242,20 +242,24 @@ func extractEnabledFromAnnotations(annotations map[string]string) (*bool, error)
 }
 
 func extractDetectorFromAnnotations(annotations map[string]string, thresholds *CheckThresholds) (bool, error) {
-	baseline := annotations[baselineDirectionAnnotation] != "" || annotations[baselineSpreadFloorAnnotation] != ""
-	gate := annotations[changeGateComparisonAnnotation] != "" || annotations[changeGateValueAnnotation] != "" || annotations[changeGateBaselineWindowAnnotation] != ""
+	hasAnnotation := func(key string) bool {
+		_, present := annotations[key]
+		return present
+	}
+	baseline := hasAnnotation(baselineDirectionAnnotation) || hasAnnotation(baselineSpreadFloorAnnotation)
+	gate := hasAnnotation(changeGateComparisonAnnotation) || hasAnnotation(changeGateValueAnnotation) || hasAnnotation(changeGateBaselineWindowAnnotation)
 	if baseline && gate {
 		return false, fmt.Errorf("baseline and change gate detectors are mutually exclusive")
 	}
 	if !baseline && !gate {
-		if annotations[volumeFloorAnnotation] != "" {
+		if hasAnnotation(volumeFloorAnnotation) {
 			return false, fmt.Errorf("volume floor requires a baseline or change gate detector")
 		}
 		return false, nil
 	}
 	parseNumber := func(key string, required bool) (*float64, error) {
-		value := annotations[key]
-		if value == "" && !required {
+		value, present := annotations[key]
+		if !present && !required {
 			return nil, nil
 		}
 		number, err := strconv.ParseFloat(value, 64)

@@ -697,3 +697,52 @@ func TestMarshalRejectsInvalidDetectorConfiguration(t *testing.T) {
 		require.Error(t, err)
 	}
 }
+
+func TestImportRejectsEmptyDetectorAnnotations(t *testing.T) {
+	const baseline = "            dash0.com/baseline-direction: above\n"
+	const gate = "            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"2\"\n            dash0.com/change-gate-baseline-window: 1h\n"
+	for _, test := range []struct {
+		name        string
+		annotations string
+	}{
+		{"empty baseline direction", "            dash0.com/baseline-direction: \"\"\n"},
+		{"empty baseline spread alone", "            dash0.com/baseline-spread-floor: \"\"\n"},
+		{"empty gate comparison", "            dash0.com/change-gate-comparison: \"\"\n"},
+		{"empty gate value alone", "            dash0.com/change-gate-value: \"\"\n"},
+		{"empty gate window alone", "            dash0.com/change-gate-baseline-window: \"\"\n"},
+		{"empty floor alone", "            dash0.com/volume-floor: \"\"\n"},
+		{"empty baseline spread", baseline + "            dash0.com/baseline-spread-floor: \"\"\n"},
+		{"empty baseline floor", baseline + "            dash0.com/volume-floor: \"\"\n"},
+		{"empty gate floor", gate + "            dash0.com/volume-floor: \"\"\n"},
+		{"empty required gate value", "            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"\"\n            dash0.com/change-gate-baseline-window: 1h\n"},
+		{"empty required gate window", "            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"2\"\n            dash0.com/change-gate-baseline-window: \"\"\n"},
+		{"baseline with empty gate comparison", baseline + "            dash0.com/change-gate-comparison: \"\"\n"},
+		{"baseline with empty gate value", baseline + "            dash0.com/change-gate-value: \"\"\n"},
+		{"baseline with empty gate window", baseline + "            dash0.com/change-gate-baseline-window: \"\"\n"},
+		{"gate with empty baseline direction", gate + "            dash0.com/baseline-direction: \"\"\n"},
+		{"gate with empty baseline spread", gate + "            dash0.com/baseline-spread-floor: \"\"\n"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			input := []byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rule
+spec:
+  groups:
+    - name: group
+      rules:
+        - alert: rule
+          expr: observed > $__threshold
+          annotations:
+` + test.annotations)
+			t.Run("unmarshal", func(t *testing.T) {
+				_, err := UnmarshalPrometheusRule(input)
+				require.Error(t, err)
+			})
+			t.Run("parse", func(t *testing.T) {
+				_, err := ParseAsPrometheusAlertRules(input)
+				require.Error(t, err)
+			})
+		})
+	}
+}
