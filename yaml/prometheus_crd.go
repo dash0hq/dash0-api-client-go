@@ -10,7 +10,6 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-// Round-trip annotations use the same keys on read and write.
 const (
 	enabledAnnotationKey                  = "dash0-enabled"
 	thresholdCriticalAnnotationKey        = "dash0-threshold-critical"
@@ -97,10 +96,15 @@ func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 
 // MarshalPrometheusRule converts a PrometheusAlertRule (Dash0 API format)
 // back to a Prometheus rule YAML document.
+// Detector volume floors must already be compiled into the expression by the backend.
 func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 	if rule.Thresholds != nil {
 		if rule.Thresholds.Baseline != nil && rule.Thresholds.ChangeGate != nil {
 			return nil, fmt.Errorf("baseline and change gate detectors are mutually exclusive")
+		}
+		if (rule.Thresholds.Baseline != nil && rule.Thresholds.Baseline.VolumeFloor != nil) ||
+			(rule.Thresholds.ChangeGate != nil && rule.Thresholds.ChangeGate.VolumeFloor != nil) {
+			return nil, fmt.Errorf("detector volume floors must be compiled into the expression by the backend before YAML export")
 		}
 		if baseline := rule.Thresholds.Baseline; baseline != nil {
 			switch baseline.Direction {
@@ -135,7 +139,6 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 	}
 
 	// Typed detector settings are authoritative on API reads.
-	// This serializer preserves native floors without attempting query compilation.
 	if rule.Thresholds != nil && (rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
 		for _, key := range []string{
 			baselineDirectionAnnotationKey, baselineSpreadFloorAnnotationKey,
@@ -151,17 +154,11 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 			if baseline.SpreadFloor != nil {
 				annotations[baselineSpreadFloorAnnotationKey] = strconv.FormatFloat(*baseline.SpreadFloor, 'f', -1, 64)
 			}
-			if baseline.VolumeFloor != nil {
-				annotations[volumeFloorAnnotationKey] = strconv.FormatFloat(*baseline.VolumeFloor, 'f', -1, 64)
-			}
 		}
 		if gate := rule.Thresholds.ChangeGate; gate != nil {
 			annotations[changeGateComparisonAnnotationKey] = string(gate.Comparison)
 			annotations[changeGateValueAnnotationKey] = strconv.FormatFloat(gate.Value, 'f', -1, 64)
 			annotations[changeGateBaselineWindowAnnotationKey] = string(gate.BaselineWindow)
-			if gate.VolumeFloor != nil {
-				annotations[volumeFloorAnnotationKey] = strconv.FormatFloat(*gate.VolumeFloor, 'f', -1, 64)
-			}
 		}
 	}
 

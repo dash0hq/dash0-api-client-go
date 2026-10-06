@@ -598,6 +598,7 @@ spec:
 }
 
 func TestDetectorExportRoundTrip(t *testing.T) {
+	// Fixtures come from backend-utils/pkg/common/alertexpression/testdata/detector-export-artifacts.json.
 	paths, err := filepath.Glob("testdata/detector-export/*.yaml")
 	require.NoError(t, err)
 	require.Len(t, paths, 7)
@@ -610,13 +611,21 @@ func TestDetectorExportRoundTrip(t *testing.T) {
 			original := rule.Expression
 			output, err := MarshalPrometheusRule(rule)
 			require.NoError(t, err)
-			equivalent, err := Equivalent(input, output, []string{"metadata.name", "metadata.labels"}, nil)
+			equivalent, err := Equivalent(input, output, []string{"metadata.name"}, nil)
 			require.NoError(t, err)
 			assert.True(t, equivalent, string(output))
 			reread, err := UnmarshalPrometheusRule(output)
 			require.NoError(t, err)
 			assert.Equal(t, original, reread.Expression)
 			assert.NotContains(t, string(output), "dash0.com/volume-floor")
+			assert.NotContains(t, string(output), "dash0.com/volume-query")
+			assert.NotContains(t, string(output), "dash0.com/dataset")
+			if baseline := reread.Thresholds.Baseline; baseline != nil {
+				assert.Nil(t, baseline.VolumeFloor)
+			}
+			if gate := reread.Thresholds.ChangeGate; gate != nil {
+				assert.Nil(t, gate.VolumeFloor)
+			}
 			assert.Nil(t, reread.Dataset)
 			assert.False(t, *reread.Enabled)
 		})
@@ -632,13 +641,9 @@ func TestMarshalDetectorAnnotations(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, parsed.Thresholds.Baseline)
 		assert.Equal(t, direction, parsed.Thresholds.Baseline.Direction)
+		assert.Equal(t, rule.Thresholds, parsed.Thresholds)
+		assert.NotContains(t, string(data), "dash0.com/volume-floor")
 		assert.Nil(t, parsed.Annotations)
-		rule.Thresholds.Baseline.VolumeFloor = dash0.Ptr(1.0)
-		data, err = MarshalPrometheusRule(rule)
-		require.NoError(t, err)
-		parsed, err = UnmarshalPrometheusRule(data)
-		require.NoError(t, err)
-		assert.InDelta(t, 1, *parsed.Thresholds.Baseline.VolumeFloor, 1e-12)
 	}
 }
 
@@ -652,21 +657,28 @@ func TestMarshalChangeGateZeroDegradedThreshold(t *testing.T) {
 	assert.Zero(t, *read.Thresholds.Degraded)
 }
 
-func TestMarshalAPIReadDetectorFloors(t *testing.T) {
-	for _, thresholds := range []string{
-		`{"failed":0,"degraded":1,"baseline":{"direction":"below","spreadFloor":0.17,"volumeFloor":12.5}}`,
-		`{"failed":0,"degraded":1,"changeGate":{"comparison":"absolute_delta","value":0.037,"baselineWindow":"90m","volumeFloor":12.5}}`,
+func TestMarshalAPIReadDetectorConditions(t *testing.T) {
+	for _, test := range []struct {
+		name       string
+		thresholds string
+		traffic    string
+	}{
+		{"baseline", `{"failed":0,"degraded":1,"baseline":{"direction":"below","spreadFloor":0.17}}`, `last_over_time((sum by (service_namespace, service_name) (rate(requests_total{deployment_environment_name="production",dash0_service_qualified_name=~"^(shop/checkout|other/checkout)$",dash0_operation_name="POST /pay"}[5m])))[1s:1s] offset 2m)`},
+		{"change gate", `{"failed":0,"degraded":1,"changeGate":{"comparison":"absolute_delta","value":0.037,"baselineWindow":"90m"}}`, `avg_over_time((sum by (service_namespace, service_name) (rate(requests_total{deployment_environment_name="production",dash0_service_qualified_name=~"^(shop/checkout|other/checkout)$",dash0_operation_name="POST /pay"}[5m])))[90m:1m] offset 2m)`},
 	} {
-		t.Run(thresholds, func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			// Deserialize the public API shape rather than reconstructing fields from annotations.
-			data := []byte(`{"name":"Alerting - Native floor","expression":"observed > $__threshold","dataset":"production","thresholds":` + thresholds + `,"annotations":{"summary":"Native floor"}}`)
+			expression := `(observed > $__threshold) and on (service_namespace, service_name) (` + test.traffic + ` > 12.5)`
+			encodedExpression, err := json.Marshal(expression)
+			require.NoError(t, err)
+			data := []byte(`{"name":"Alerting - Portable floor","expression":` + string(encodedExpression) + `,"dataset":"production","thresholds":` + test.thresholds + `,"annotations":{"summary":"Portable floor"}}`)
 			var apiRule dash0.PrometheusAlertRule
 			require.NoError(t, json.Unmarshal(data, &apiRule))
 			before, err := json.Marshal(apiRule)
 			require.NoError(t, err)
 			exported, err := MarshalPrometheusRule(&apiRule)
 			require.NoError(t, err)
-			require.Contains(t, string(exported), "dash0.com/volume-floor")
+			require.NotContains(t, string(exported), "dash0.com/volume-floor")
 			require.Contains(t, string(exported), "dash0-threshold-critical")
 			imported, err := UnmarshalPrometheusRule(exported)
 			require.NoError(t, err)
@@ -684,6 +696,53 @@ func TestMarshalAPIReadDetectorFloors(t *testing.T) {
 			require.Len(t, rules, 1)
 			assert.Equal(t, apiRule.Thresholds, rules[0].Thresholds)
 		})
+	}
+}
+
+func TestMarshalRejectsNativeDetectorFloors(t *testing.T) {
+	for _, floor := range []float64{0, 12.5} {
+		for _, thresholds := range []*dash0.CheckThresholds{
+			{Baseline: &dash0.CheckThresholdBaseline{Direction: dash0.AnomalyDirectionAbove, VolumeFloor: dash0.Ptr(floor)}},
+			{ChangeGate: &dash0.CheckThresholdChangeGate{Comparison: dash0.RelativeFactor, Value: 2, BaselineWindow: "1h", VolumeFloor: dash0.Ptr(floor)}},
+		} {
+			rule := &dash0.PrometheusAlertRule{Name: "rule", Expression: "observed > $__threshold", Thresholds: thresholds}
+			before, err := json.Marshal(rule)
+			require.NoError(t, err)
+			data, err := MarshalPrometheusRule(rule)
+			require.ErrorContains(t, err, "compiled into the expression by the backend")
+			assert.Nil(t, data)
+			after, err := json.Marshal(rule)
+			require.NoError(t, err)
+			assert.JSONEq(t, string(before), string(after))
+		}
+	}
+}
+
+func TestUnmarshalLegacyDetectorVolumeFloor(t *testing.T) {
+	for _, detector := range []string{
+		"            dash0.com/baseline-direction: above\n",
+		"            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"2\"\n            dash0.com/change-gate-baseline-window: 1h\n",
+	} {
+		input := []byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+spec:
+  groups:
+    - name: group
+      rules:
+        - alert: rule
+          expr: observed > $__threshold
+          annotations:
+            dash0.com/volume-floor: "12.5"
+` + detector)
+		rule, err := UnmarshalPrometheusRule(input)
+		require.NoError(t, err)
+		if baseline := rule.Thresholds.Baseline; baseline != nil {
+			require.Equal(t, dash0.Ptr(12.5), baseline.VolumeFloor)
+		} else {
+			require.Equal(t, dash0.Ptr(12.5), rule.Thresholds.ChangeGate.VolumeFloor)
+		}
+		_, err = MarshalPrometheusRule(rule)
+		require.ErrorContains(t, err, "compiled into the expression by the backend")
 	}
 }
 
