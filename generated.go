@@ -131,6 +131,13 @@ const (
 	AnomalyDirectionBoth  AnomalyDirection = "both"
 )
 
+// Defines values for ArtificialIntelligenceAccess.
+const (
+	ArtificialIntelligenceAccessFull     ArtificialIntelligenceAccess = "full"
+	ArtificialIntelligenceAccessNone     ArtificialIntelligenceAccess = "none"
+	ArtificialIntelligenceAccessReadOnly ArtificialIntelligenceAccess = "read_only"
+)
+
 // Defines values for AttributeFilterOperator.
 const (
 	AttributeFilterOperatorContains         AttributeFilterOperator = "contains"
@@ -154,21 +161,30 @@ const (
 	AttributeFilterOperatorStartsWith       AttributeFilterOperator = "starts_with"
 )
 
-// Defines values for AttributePatternRuleDefinitionKind.
+// Defines values for AwsIntegrationKind.
 const (
-	Dash0AttributePatternRule AttributePatternRuleDefinitionKind = "Dash0AttributePatternRule"
+	Aws AwsIntegrationKind = "aws"
 )
 
-// Defines values for AttributePatternRuleOwnership.
+// Defines values for AwsIntegrationRolePermissionType.
 const (
-	AutoDerived AttributePatternRuleOwnership = "auto_derived"
-	UserDefined AttributePatternRuleOwnership = "user_defined"
+	AwsIntegrationRolePermissionTypeReadOnly                 AwsIntegrationRolePermissionType = "read_only"
+	AwsIntegrationRolePermissionTypeResourcesInstrumentation AwsIntegrationRolePermissionType = "resources_instrumentation"
 )
 
-// Defines values for AttributePatternRuleStatus.
+// Defines values for AwsIntegrationRoleStatus.
 const (
-	Active   AttributePatternRuleStatus = "active"
-	Inactive AttributePatternRuleStatus = "inactive"
+	AwsIntegrationRoleStatusActive  AwsIntegrationRoleStatus = "active"
+	AwsIntegrationRoleStatusFailed  AwsIntegrationRoleStatus = "failed"
+	AwsIntegrationRoleStatusPending AwsIntegrationRoleStatus = "pending"
+)
+
+// Defines values for AwsVerificationStatus.
+const (
+	AwsVerificationStatusCompleted  AwsVerificationStatus = "completed"
+	AwsVerificationStatusError      AwsVerificationStatus = "error"
+	AwsVerificationStatusInProgress AwsVerificationStatus = "inProgress"
+	AwsVerificationStatusPending    AwsVerificationStatus = "pending"
 )
 
 // Defines values for AxisScale.
@@ -926,6 +942,11 @@ const (
 // Defines values for HttpResponseTextBodyAssertionKind.
 const (
 	TextBody HttpResponseTextBodyAssertionKind = "text_body"
+)
+
+// Defines values for IntegrationDefinitionKind.
+const (
+	Dash0Integration IntegrationDefinitionKind = "Dash0Integration"
 )
 
 // Defines values for IpAddressStorageStrategy.
@@ -2071,6 +2092,13 @@ type AgenticWorkflowDisplay struct {
 
 // AgenticWorkflowGuardrails defines model for AgenticWorkflowGuardrails.
 type AgenticWorkflowGuardrails struct {
+	// AllowedSkills The custom (organization-authored) skills this automation may use, by skill name (lowercase
+	// alphanumerics separated by single hyphens, e.g. `cost-report`). A run can only list and load
+	// the custom skills named here, and still only those the automation's creator may read. When
+	// absent or empty, the automation uses no custom skills. Dash0's built-in skills are not
+	// affected. Naming a skill as `/name` in the prompt does not add it to this list.
+	AllowedSkills *[]string `json:"allowedSkills,omitempty"`
+
 	// AllowedTools Optionally restrict which tools are allowed. By default, all tools are allowed to be used. You can use the
 	// `*` character to allow all tools matching a pattern.
 	AllowedTools       *[]string                    `json:"allowedTools,omitempty"`
@@ -2203,10 +2231,15 @@ type AgenticWorkflowResponse = AgenticWorkflowDefinition
 
 // AgenticWorkflowSandbox The sandbox an automation's runs execute in: what it may reach, and what it is built from.
 type AgenticWorkflowSandbox struct {
-	// EnvVars Environment variables passed to the setup script's own execution only. Not persisted in
-	// the cache key by value (only key names are hashed, so rotating a secret's value does not
-	// force a respecialized sandbox) and not propagated to the agent's later tool calls in this
-	// version.
+	// EnvVars Environment variables passed to the setup script's own process only, and surfaced in the
+	// UI as "Setup variables". Not secret storage: the values live in this definition as plain
+	// text, so every retained version keeps them, a duplicate or a share carries them, and
+	// getAutomation returns them verbatim to the agent. Use the deployment's Agent0
+	// environment-variable settings for a credential. Only key names enter the setup cache
+	// hash, never values — but declaring any key makes the setup source permanently ineligible
+	// for a shared warm standby, because the seeding path runs org-blind with no env injected.
+	// The values do not reach the agent's own shell; a setup script that wants to hand one on
+	// must export it to $DASH0_AGENT_ENV, which is visible to the agent and the model.
 	EnvVars *map[string]string `json:"envVars,omitempty"`
 
 	// NetworkLevel Controls outbound network access for the sandbox running this thread.
@@ -2239,9 +2272,13 @@ type AgenticWorkflowSandbox struct {
 
 // AgenticWorkflowSpec defines model for AgenticWorkflowSpec.
 type AgenticWorkflowSpec struct {
-	// Constants Static key-value pairs available as {{variable.name}} in the prompt and
-	// tool parameter overrides. Constants are always available regardless of trigger type.
-	// Trigger variables take precedence over constants on conflict.
+	// Constants Static key-value pairs the automation's author defines, available by name as
+	// {{theKeyName}} in the prompt and in tool parameter overrides. Surfaced in the UI as
+	// "Parameters". Always available regardless of trigger type. On a name conflict a
+	// constant WINS over a caller-supplied variable (a trigger payload value or a test-run
+	// variable) and LOSES to a built-in such as dash0.dataset — see resolveVariables in
+	// components/agents/src/server/routes/agentic-workflows/prompt.ts, whose merge order is
+	// caller < constants < builtIns.
 	Constants  *map[string]string        `json:"constants,omitempty"`
 	Display    AgenticWorkflowDisplay    `json:"display"`
 	Enabled    bool                      `json:"enabled"`
@@ -2357,6 +2394,17 @@ type AnyValue struct {
 	StringValue *string  `json:"stringValue,omitempty"`
 }
 
+// ArtificialIntelligenceAccess Defines whether or not this integration is accessible (and to what degree) by artificial intelligence features
+// of Dash0.
+type ArtificialIntelligenceAccess string
+
+// ArtificialIntelligenceSettings defines model for ArtificialIntelligenceSettings.
+type ArtificialIntelligenceSettings struct {
+	// Access Defines whether or not this integration is accessible (and to what degree) by artificial intelligence features
+	// of Dash0.
+	Access ArtificialIntelligenceAccess `json:"access"`
+}
+
 // AttributeFilter defines model for AttributeFilter.
 type AttributeFilter struct {
 	// Key The attribute key to be filtered.
@@ -2458,196 +2506,198 @@ type AttributeFilterOperator string
 // AttributeFilterStringValue AttributeFilterStringValue may contain a primitive value such as a regex pattern or string.
 type AttributeFilterStringValue = string
 
-// AttributePatternRuleAnnotations Pattern Rules use hard delete and have no folder/sharing/versions-history concept, so
-// only creation/update/last-matched timestamps are tracked here.
-type AttributePatternRuleAnnotations struct {
-	// Dash0ComcreatedAt Timestamp when this Pattern Rule was created. Set by the server; read-only.
-	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
-
-	// Dash0ComlastMatchedAt Read-only: a value supplied on write is always ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't need to strip it back out. Bumped to the current time by every successful `PUT` on this rule (an edit counts as "using" it), and separately by an out-of-band job based on real telemetry-matching activity, writing directly to the database -- the two sources are independent and can disagree. `null` on a freshly created rule that has neither been matched nor edited since.
-	Dash0ComlastMatchedAt *time.Time `json:"dash0.com/last-matched-at,omitempty"`
-
-	// Dash0ComupdatedAt Timestamp of the last update to this Pattern Rule. Doubles as the optimistic-concurrency token (truncated to millisecond precision at write time): required on `PUT` for UI (Clerk session token) callers -- a missing or stale value there is rejected with 400 (`SupersededVersion`). Optional for machine-token/OAuth `PUT` callers, which skip the concurrency check entirely when it is omitted.
-	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+// AwsIntegration defines model for AwsIntegration.
+type AwsIntegration struct {
+	Kind AwsIntegrationKind `json:"kind"`
+	Spec AwsIntegrationSpec `json:"spec"`
 }
 
-// AttributePatternRuleCreateRequest A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleCreateRequest = AttributePatternRuleDefinition
+// AwsIntegrationKind defines model for AwsIntegration.Kind.
+type AwsIntegrationKind string
 
-// AttributePatternRuleDefinition A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleDefinition struct {
-	Kind     AttributePatternRuleDefinitionKind `json:"kind"`
-	Metadata AttributePatternRuleMetadata       `json:"metadata"`
-	Spec     AttributePatternRuleSpec           `json:"spec"`
-}
+// AwsIntegrationRole defines model for AwsIntegrationRole.
+type AwsIntegrationRole struct {
+	// Arn IAM Role ARN
+	Arn string `json:"arn"`
 
-// AttributePatternRuleDefinitionKind defines model for AttributePatternRuleDefinition.Kind.
-type AttributePatternRuleDefinitionKind string
+	// ExternalId External ID for cross-account role assumption
+	ExternalId string `json:"externalId"`
 
-// AttributePatternRuleLabels defines model for AttributePatternRuleLabels.
-type AttributePatternRuleLabels struct {
-	// Dash0Comdataset Dataset this Pattern Rule belongs to. On create, the `dataset` query parameter is authoritative over this field whenever both are present -- this field is only consulted as a fallback when the query parameter is absent. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400.
-	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
-
-	// Dash0Comid Unique server-generated ID of this Pattern Rule. Set by the server on creation; must not be provided on create (a `POST` body containing it is rejected with 400).
-	Dash0Comid *string `json:"dash0.com/id,omitempty"`
-
-	// Dash0Comorigin Stable, client-chosen label for idempotent apply-by-name (IaC/Terraform-style) workflows, resolved via `{originOrId}` on every path below. Client-provided value wins if given; a machine-token caller that omits it gets a server-generated `api-<uuid>` fallback so the rule still classifies as API-managed; a UI (Clerk) or OAuth caller that omits it keeps a `null` origin. Immutable after creation: a value supplied on update is silently ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't have to strip it back out first. Must not itself look like a UUID (rejected with 400 on create) -- origins and ids are deliberately disjoint namespaces so `{originOrId}` resolution is never ambiguous. Unique per organization (rejected with 400 on create otherwise) -- this scope is organization-wide, not per dataset or per `spec.targetAttribute`.
-	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
-
-	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
-	// - `ui`: created interactively in the Dash0 UI.
-	// - `terraform`: managed via the Dash0 Terraform provider.
-	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `dash0-cli`: managed via the Dash0 CLI.
-	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
-	//   resources Dash0 generates from another resource you own (the recording rules an SLO
-	//   produces) and resources Dash0 ships with the product (the built-in views).
-	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
-	//   group from the organization's identity provider. Membership edits made by hand
-	//   revert on the next reconcile.
-	// - `api`: created directly through the API, and the fallback for any origin whose
-	//   prefix is not recognized.
+	// LastAccessTimestamp A fixed point in time represented as an RFC 3339 date-time string.
 	//
-	// New values may be added over time. Treat an unrecognized value as `api`
-	// rather than rejecting the response.
-	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	LastAccessTimestamp *FixedTime `json:"lastAccessTimestamp,omitempty"`
+
+	// PermissionType - `read_only`: Read-only access for resource discovery and monitoring.
+	// - `resources_instrumentation`: Permissions for instrumenting AWS resources (e.g. Lambda functions).
+	PermissionType AwsIntegrationRolePermissionType `json:"permissionType"`
+
+	// Status Current status of the role. Automatically set by the backend, not controllable via API.
+	Status *AwsIntegrationRoleStatus `json:"status,omitempty"`
 }
 
-// AttributePatternRuleListResponse defines model for AttributePatternRuleListResponse.
-type AttributePatternRuleListResponse struct {
-	AttributePatternRules []AttributePatternRuleDefinition `json:"attributePatternRules"`
+// AwsIntegrationRolePermissionType - `read_only`: Read-only access for resource discovery and monitoring.
+// - `resources_instrumentation`: Permissions for instrumenting AWS resources (e.g. Lambda functions).
+type AwsIntegrationRolePermissionType string
 
-	// HasMore Whether there are more rules beyond the current page.
-	HasMore *bool `json:"hasMore,omitempty"`
+// AwsIntegrationRoleStatus defines model for AwsIntegrationRoleStatus.
+type AwsIntegrationRoleStatus string
+
+// AwsIntegrationSpec defines model for AwsIntegrationSpec.
+type AwsIntegrationSpec struct {
+	// AccountId AWS account ID (12 digits)
+	AccountId string `json:"accountId"`
+
+	// CloudFormationStackArn ARN of the Dash0 onboarding CloudFormation stack. Only used for integrations onboarded
+	// through the Dash0 CloudFormation template, which sets it. Omit it for integrations created
+	// without that template. When updating an integration that the template onboarded, send the
+	// stored value back: an update without it clears it.
+	CloudFormationStackArn *string `json:"cloudFormationStackArn,omitempty"`
+
+	// Dataset Dataset slug to associate with this AWS integration
+	Dataset string `json:"dataset"`
+
+	// DesiredRegions AWS regions the customer's parent CloudFormation stack declared for
+	// per-region StackSet deployment, reported by the parent stack's
+	// Dash0Integration custom resource. verificationStatus stays
+	// "inProgress" until every region listed here has produced a successful
+	// Dash0RegionalResourcesReport (i.e. appears in `regionalResources` with
+	// the `firehose` channel populated), then flips to "completed". An empty
+	// or absent list means no per-region StackSets are expected (legacy
+	// customer templates) — the webhook keeps the legacy behavior of
+	// stamping "completed" immediately. Server-managed.
+	DesiredRegions *[]string `json:"desiredRegions,omitempty"`
+
+	// IngestAuthTokenId UUID of the persistent ingest-only auth token provisioned for this
+	// AWS integration. Server-managed; set when the integration is created.
+	IngestAuthTokenId *openapi_types.UUID `json:"ingestAuthTokenId,omitempty"`
+
+	// LastVerifiedAt Timestamp of the last successful CloudFormation onboarding callback.
+	LastVerifiedAt *time.Time `json:"lastVerifiedAt,omitempty"`
+
+	// RegionalResources Per-region delivery state for the customer's CloudFormation StackSet.
+	// One row per per-region stack instance; each row carries the channels
+	// (Firehose metric streaming, Lambda lifecycle event forwarding) that
+	// the per-region template body actually deployed. Server-managed.
+	RegionalResources *[]AwsRegionalResource `json:"regionalResources,omitempty"`
+	Roles             []AwsIntegrationRole   `json:"roles"`
+
+	// TemplateVersion Version of the customer-deployed Dash0 onboarding CloudFormation template,
+	// reported by the parent stack's Dash0Integration custom resource. Used by
+	// Dash0 to detect when a template upgrade is needed. Server-managed.
+	TemplateVersion *string `json:"templateVersion,omitempty"`
+
+	// VerificationError Error message when the CloudFormation onboarding fails. Null when verificationStatus is not "error".
+	VerificationError *string `json:"verificationError,omitempty"`
+
+	// VerificationStatus Current status of the AWS CloudFormation onboarding for this integration. Automatically managed by the backend, not controllable via API.
+	VerificationStatus *AwsVerificationStatus `json:"verificationStatus,omitempty"`
 }
 
-// AttributePatternRuleMetadata defines model for AttributePatternRuleMetadata.
-type AttributePatternRuleMetadata struct {
-	// Annotations Pattern Rules use hard delete and have no folder/sharing/versions-history concept, so
-	// only creation/update/last-matched timestamps are tracked here.
-	Annotations *AttributePatternRuleAnnotations `json:"annotations,omitempty"`
-	Labels      *AttributePatternRuleLabels      `json:"labels,omitempty"`
+// AwsRegionalEventsDelivery Per-region EventBridge forwarding of Lambda lifecycle events
+// (UpdateFunctionConfiguration, DeleteFunction) to Dash0. Present only when
+// the customer enabled `CollectLambdaLifecycleEvents` on the parent
+// CloudFormation stack. The delivery mechanism depends on the onboarding
+// template version: v2 templates use an EventBridge ApiDestination
+// (`apiDestinationArn`); v3 templates forward events via a Firehose stream
+// (`logsFirehoseArn`) in every region — including opt-in regions such as
+// il-central-1 that lack AWS::Events::ApiDestination support. Exactly one of
+// the two is set per region.
+type AwsRegionalEventsDelivery struct {
+	// ApiDestinationArn ARN of the EventBridge ApiDestination delivering Lambda lifecycle
+	// events to Dash0 for this region. Set by v2 onboarding templates (the
+	// API-destination path).
+	ApiDestinationArn *string `json:"apiDestinationArn,omitempty"`
 
-	// Name Computed by the server from `spec.details` (for a `dash0.operation.name` rule, from its `canonicalOperation`). Pattern Rules have no independent, user-editable display name -- this field exists to conform to this API's standard CRD envelope shape. Always present on a read. A value supplied on write is ignored, and -- unlike the other CRD-enveloped resources this API's standard envelope shape is modeled on -- must not be required on write: the client cannot know it in advance, since the server only computes it after compiling `spec.pattern`. Treated the same as the sibling server-computed, write-ignored spec fields (`details`, `normalizedRegex`, `variableNames`), all of which are similarly absent from their schema's `required` list.
-	Name *string `json:"name,omitempty"`
+	// EventRuleArn ARN of the EventBridge rule forwarding Lambda lifecycle events for
+	// this region.
+	EventRuleArn *string `json:"eventRuleArn,omitempty"`
+
+	// LogsFirehoseArn ARN of the Firehose delivery stream forwarding Lambda lifecycle
+	// events to Dash0 for this region. Set by v3 onboarding templates, which
+	// forward events via Firehose in every region (events go EventBridge →
+	// Firehose → /firehose/cwlogs). The same Firehose can carry other log
+	// sources (e.g. CloudWatch log-group subscription filters), so it is
+	// named generically rather than for Lambda.
+	LogsFirehoseArn *string `json:"logsFirehoseArn,omitempty"`
 }
 
-// AttributePatternRuleOwnership - `user_defined`: created, or promoted from `auto_derived`, by a human through this API.
-// - `auto_derived`: inferred by the Operation Miner.
-type AttributePatternRuleOwnership string
+// AwsRegionalFirehoseDelivery Per-region Kinesis Firehose + CloudWatch metric stream pair. Indicates
+// that the per-region template body has deployed the metric streaming
+// pipeline successfully.
+type AwsRegionalFirehoseDelivery struct {
+	// FirehoseArn ARN of the Kinesis Firehose delivery stream in this region.
+	FirehoseArn *string `json:"firehoseArn,omitempty"`
 
-// AttributePatternRuleResponse A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
+	// MetricStreamArn ARN of the CloudWatch metric stream in this region.
+	MetricStreamArn *string `json:"metricStreamArn,omitempty"`
+}
+
+// AwsRegionalResource Per-region delivery row. Populated by the per-region
+// Dash0RegionalResourcesReporter custom resource each time the StackSet
+// body creates / updates / deletes a per-region instance. Each row carries
+// a `region` plus 0..N channel sub-objects describing what the per-region
+// template actually deployed:
+//   - `firehose` → Kinesis Firehose + CloudWatch metric stream (metric
+//     streaming pipeline).
+//   - `regionalEventsDelivery` → EventBridge rule + ApiDestination
+//     forwarding Lambda lifecycle events. Present only when the customer
+//     enabled `CollectLambdaLifecycleEvents` on the parent stack.
 //
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleResponse = AttributePatternRuleDefinition
+// A channel is `null` when the customer opted out, when the per-region
+// stack has not finished applying it yet, or when the underlying resources
+// were rolled back. Absence of a row entirely means the per-region
+// StackSet instance for this region has not reported in yet.
+type AwsRegionalResource struct {
+	// Firehose Per-region Kinesis Firehose + CloudWatch metric stream pair. Indicates
+	// that the per-region template body has deployed the metric streaming
+	// pipeline successfully.
+	Firehose *AwsRegionalFirehoseDelivery `json:"firehose,omitempty"`
 
-// AttributePatternRuleSpec defines model for AttributePatternRuleSpec.
-type AttributePatternRuleSpec struct {
-	// Details Computed by the server. Target-attribute-specific side-effect data; for `dash0.operation.name` it carries `canonicalOperation`, the literal value applied to every span this rule matches. A value supplied on write is ignored.
-	Details *AttributePatternRuleSpec_Details `json:"details,omitempty"`
+	// LastSyncedAt A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	LastSyncedAt *FixedTime `json:"lastSyncedAt,omitempty"`
 
-	// NormalizedRegex Computed by the server from `pattern`. The anchored regular expression the collector's Operation Processor compiles to match operation names against this rule. A value supplied on write is ignored.
-	NormalizedRegex *string `json:"normalizedRegex,omitempty"`
+	// Region AWS region code (e.g. "eu-west-1").
+	Region string `json:"region"`
 
-	// Ownership - `user_defined`: created, or promoted from `auto_derived`, by a human through this API.
-	// - `auto_derived`: inferred by the Operation Miner.
-	Ownership *AttributePatternRuleOwnership `json:"ownership,omitempty"`
+	// RegionalEventsDelivery Per-region EventBridge forwarding of Lambda lifecycle events
+	// (UpdateFunctionConfiguration, DeleteFunction) to Dash0. Present only when
+	// the customer enabled `CollectLambdaLifecycleEvents` on the parent
+	// CloudFormation stack. The delivery mechanism depends on the onboarding
+	// template version: v2 templates use an EventBridge ApiDestination
+	// (`apiDestinationArn`); v3 templates forward events via a Firehose stream
+	// (`logsFirehoseArn`) in every region — including opt-in regions such as
+	// il-central-1 that lack AWS::Events::ApiDestination support. Exactly one of
+	// the two is set per region.
+	RegionalEventsDelivery *AwsRegionalEventsDelivery `json:"regionalEventsDelivery,omitempty"`
 
-	// Pattern Human-authored operation-name pattern using the placeholder DSL (e.g. `/users/<userId>`; `<<` escapes a literal `<`) -- the `named_pattern` concept defined in the "Pattern Representation and Storage" ADR appendix, whose transformations `internal/operationpatterncompiler` implements. Required on create. Populated on every `GET`/`List` response by reconstructing it from the stored canonical representation -- including for `auto_derived` rows this API never compiled itself -- so it is always present on a read, not only for rows this API wrote.
-	Pattern string `json:"pattern"`
+	// TemplateVersion Version of the per-region StackSet body template that produced this
+	// region's resources, reported by the per-region custom resource.
+	TemplateVersion *string `json:"templateVersion,omitempty"`
 
-	// Priority Ranks this rule for list ordering: `GET`/`List` responses are always sorted by `priority` descending first, so higher-priority rules (including manually-promoted ones) surface before lower-priority and `auto_derived` ones. `1` (Minor) through `5` (Major) are the user-facing levels, defaulting to `3` (Standard) when omitted on create; an update that omits it preserves the row's current value instead of resetting it. `0` is reserved for `auto_derived` rows the Operation Miner writes -- a client-supplied `0` is rejected with 400.
-	Priority *int `json:"priority,omitempty"`
+	// VerificationError Error message when the per-region StackSet onboarding fails. Cleared when verificationStatus transitions to completed.
+	VerificationError *string `json:"verificationError,omitempty"`
 
-	// ServiceName OpenTelemetry `service.name` resource attribute this Pattern Rule applies to. Required on create. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Omit when listing to scope the request organization/dataset-wide across every service instead of one.
-	ServiceName string `json:"serviceName"`
-
-	// ServiceNamespace OpenTelemetry `service.namespace` resource attribute this Pattern Rule applies to. Empty string when the target service has no namespace (never omitted/null on a stored row). Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Omit when listing to scope the request organization/dataset-wide across every namespace instead of one.
-	ServiceNamespace *string `json:"serviceNamespace,omitempty"`
-
-	// Status - `active`: applied by the collector's Operation Processor.
-	// - `inactive`: stored but not applied.
-	Status AttributePatternRuleStatus `json:"status"`
-
-	// TargetAttribute The telemetry attribute whose values this rule's patterns match, e.g. `dash0.operation.name`. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Defaults to `dash0.operation.name` when omitted on create, which is what keeps callers written against the pre-generalization API working unchanged.
-	TargetAttribute *string `json:"targetAttribute,omitempty"`
-
-	// VariableNames Computed by the server from `pattern`. Placeholder names, in left-to-right occurrence order. A value supplied on write is ignored.
-	VariableNames *[]string `json:"variableNames,omitempty"`
+	// VerificationStatus Current status of the per-region StackSet onboarding for this region. Automatically managed by the backend, not controllable via API.
+	VerificationStatus *AwsVerificationStatus `json:"verificationStatus,omitempty"`
 }
 
-// AttributePatternRuleSpec_Details Computed by the server. Target-attribute-specific side-effect data; for `dash0.operation.name` it carries `canonicalOperation`, the literal value applied to every span this rule matches. A value supplied on write is ignored.
-type AttributePatternRuleSpec_Details struct {
-	// CanonicalOperation Present when `targetAttribute` is `dash0.operation.name`. The literal value written to that attribute on every span this rule matches.
-	CanonicalOperation   *string                `json:"canonicalOperation,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
-}
-
-// AttributePatternRuleStatus - `active`: applied by the collector's Operation Processor.
-// - `inactive`: stored but not applied.
-type AttributePatternRuleStatus string
-
-// AttributePatternRuleUpdateRequest A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleUpdateRequest = AttributePatternRuleDefinition
+// AwsVerificationStatus Status of the AWS CloudFormation onboarding for an AWS integration.
+// - `pending`: Webhook received the first CloudFormation Custom Resource callback; validation has not yet run.
+// - `inProgress`: Reserved for future multi-step onboarding. Not emitted today.
+// - `completed`: CloudFormation onboarding completed successfully; roles populated.
+// - `error`: CloudFormation onboarding failed; see `verificationError` for the reason.
+type AwsVerificationStatus string
 
 // AxisScale defines model for AxisScale.
 type AxisScale string
@@ -2693,6 +2743,8 @@ type CheckThresholdBaseline struct {
 	// grouping, and rate window and evaluated ad hoc at the detector timestamp. Dashboard
 	// variable placeholders are omitted, as in the observed check query.
 	// Other query types, including hand-written PromQL, cannot configure this floor.
+	// Export compiles this floor into a PromQL enablement condition with the authored filters
+	// and service namespace/name matching. Import retains the condition rather than a typed floor.
 	// No traffic query or volume gate is applied when omitted.
 	VolumeFloor *float64 `json:"volumeFloor,omitempty"`
 }
@@ -2723,6 +2775,8 @@ type CheckThresholdChangeGate struct {
 	// authored selections, filters, grouping, and rate window and evaluated ad hoc. Dashboard
 	// variable placeholders are omitted, as in the observed check query.
 	// Other query types, including hand-written PromQL, cannot configure this floor.
+	// Export compiles this floor into a PromQL enablement condition with the authored filters
+	// and service namespace/name matching. Import retains the condition rather than a typed floor.
 	// No traffic query or volume gate is applied when omitted.
 	VolumeFloor *float64 `json:"volumeFloor,omitempty"`
 }
@@ -3516,6 +3570,11 @@ type GeoLocationStorageStrategy string
 // GetAgenticWorkflowsResponse defines model for GetAgenticWorkflowsResponse.
 type GetAgenticWorkflowsResponse struct {
 	AgenticWorkflows []AgenticWorkflowDefinition `json:"agenticWorkflows"`
+}
+
+// GetIntegrationsResponse defines model for GetIntegrationsResponse.
+type GetIntegrationsResponse struct {
+	Integrations []IntegrationDefinition `json:"integrations"`
 }
 
 // GetLogRecordsRequest defines model for GetLogRecordsRequest.
@@ -5297,6 +5356,87 @@ type InstrumentationScope struct {
 	Version *string `json:"version,omitempty"`
 }
 
+// Integration defines model for Integration.
+type Integration struct {
+	union json.RawMessage
+}
+
+// IntegrationAnnotations defines model for IntegrationAnnotations.
+type IntegrationAnnotations struct {
+	// Dash0ComcreatedAt The time at which this integration was originally created.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComcreatedBy The member ID of the user who originally created this integration.
+	Dash0ComcreatedBy *string `json:"dash0.com/created-by,omitempty"`
+
+	// Dash0ComlastUpdatedAt The time at which the current version of this integration was created.
+	Dash0ComlastUpdatedAt *time.Time `json:"dash0.com/last-updated-at,omitempty"`
+
+	// Dash0ComlastUpdatedBy The member ID of the user who created the current version of this integration.
+	Dash0ComlastUpdatedBy *string `json:"dash0.com/last-updated-by,omitempty"`
+}
+
+// IntegrationCreateRequest defines model for IntegrationCreateRequest.
+type IntegrationCreateRequest = IntegrationDefinition
+
+// IntegrationDefinition defines model for IntegrationDefinition.
+type IntegrationDefinition struct {
+	Kind     IntegrationDefinitionKind `json:"kind"`
+	Metadata IntegrationMetadata       `json:"metadata"`
+	Spec     IntegrationSpec           `json:"spec"`
+}
+
+// IntegrationDefinitionKind defines model for IntegrationDefinition.Kind.
+type IntegrationDefinitionKind string
+
+// IntegrationDisplay defines model for IntegrationDisplay.
+type IntegrationDisplay struct {
+	Name string `json:"name"`
+}
+
+// IntegrationLabels defines model for IntegrationLabels.
+type IntegrationLabels struct {
+	Dash0Comid     *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+}
+
+// IntegrationMetadata defines model for IntegrationMetadata.
+type IntegrationMetadata struct {
+	Annotations *IntegrationAnnotations `json:"annotations,omitempty"`
+	Labels      *IntegrationLabels      `json:"labels,omitempty"`
+	Name        string                  `json:"name"`
+}
+
+// IntegrationResponse defines model for IntegrationResponse.
+type IntegrationResponse = IntegrationDefinition
+
+// IntegrationSpec defines model for IntegrationSpec.
+type IntegrationSpec struct {
+	Ai          ArtificialIntelligenceSettings `json:"ai"`
+	Display     IntegrationDisplay             `json:"display"`
+	Enabled     bool                           `json:"enabled"`
+	Integration Integration                    `json:"integration"`
+}
+
 // InviteMemberRequest defines model for InviteMemberRequest.
 type InviteMemberRequest struct {
 	// EmailAddress The address the invitation is sent to. An address that the organization's sign-up
@@ -5694,11 +5834,15 @@ type MemberInvitationSpec struct {
 
 // MemberLabels defines model for MemberLabels.
 type MemberLabels struct {
+	// Dash0Comid The member's ID, used to address the member in the members and teams endpoints.
 	Dash0Comid       *string    `json:"dash0.com/id,omitempty"`
 	Dash0ComjoinedAt *time.Time `json:"dash0.com/joinedAt,omitempty"`
 
 	// Dash0Comrole The member's role in the organization
 	Dash0Comrole *string `json:"dash0.com/role,omitempty"`
+
+	// Dash0ComuserId The member's Dash0 user ID. Use it wherever another endpoint asks for a user ID, such as the `userId` of a custom skill permission.
+	Dash0ComuserId *string `json:"dash0.com/userId,omitempty"`
 }
 
 // MemberMetadata defines model for MemberMetadata.
@@ -6663,8 +6807,8 @@ type PrometheusRuleMetadata struct {
 	//
 	// The detector keys are the only way to configure an anomaly detector from Kubernetes: check rules
 	// are a flat resource whose body has no `thresholds` field. All three change-gate keys must be present
-	// and parseable for a change gate to be created; a partial or unparseable set is left in the annotations
-	// and creates no detector, rather than rejecting the rule and breaking the reconcile loop. A typed
+	// and valid for a change gate to be created. Malformed or incomplete detector annotations reject
+	// the submission. Baseline and change gate detectors are mutually exclusive. A typed
 	// `thresholds` field on the body always wins over the matching annotation.
 	//
 	// New annotation keys use the `dash0.com/` prefix. The legacy `dash0-threshold-degraded` /
@@ -9716,59 +9860,6 @@ type PutApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
-// GetApiAttributePatternRulesParams defines parameters for GetApiAttributePatternRules.
-type GetApiAttributePatternRulesParams struct {
-	// Dataset The dataset to list Pattern Rules from.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-
-	// ServiceNamespace Filter to rules scoped to this OpenTelemetry `service.namespace`. Requires `serviceName` to also be set.
-	ServiceNamespace *string `form:"serviceNamespace,omitempty" json:"serviceNamespace,omitempty"`
-
-	// ServiceName Filter to rules scoped to this OpenTelemetry `service.name`.
-	ServiceName *string `form:"serviceName,omitempty" json:"serviceName,omitempty"`
-
-	// Ownership Filter to rules with this ownership.
-	Ownership *AttributePatternRuleOwnership `form:"ownership,omitempty" json:"ownership,omitempty"`
-
-	// Status Filter to rules with this status.
-	Status *AttributePatternRuleStatus `form:"status,omitempty" json:"status,omitempty"`
-
-	// Priority Filter to rules at any of these priorities, comma-separated. Priorities 1-5 are the
-	// user-facing priority levels; 0 matches auto-derived rows, which always carry the reserved
-	// priority 0 regardless of the `ownership` filter.
-	Priority *[]int `form:"priority,omitempty" json:"priority,omitempty"`
-
-	// Limit Maximum number of rules to return.
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
-
-	// Offset Number of rules to skip.
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
-}
-
-// PostApiAttributePatternRulesParams defines parameters for PostApiAttributePatternRules.
-type PostApiAttributePatternRulesParams struct {
-	// Dataset The dataset to create the Pattern Rule in.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
-// DeleteApiAttributePatternRulesOriginOrIdParams defines parameters for DeleteApiAttributePatternRulesOriginOrId.
-type DeleteApiAttributePatternRulesOriginOrIdParams struct {
-	// Dataset The dataset the Pattern Rule belongs to.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
-// GetApiAttributePatternRulesOriginOrIdParams defines parameters for GetApiAttributePatternRulesOriginOrId.
-type GetApiAttributePatternRulesOriginOrIdParams struct {
-	// Dataset The dataset the Pattern Rule belongs to.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
-// PutApiAttributePatternRulesOriginOrIdParams defines parameters for PutApiAttributePatternRulesOriginOrId.
-type PutApiAttributePatternRulesOriginOrIdParams struct {
-	// Dataset The dataset the Pattern Rule belongs to.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
 type GetApiDashboardsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -9825,6 +9916,13 @@ type PostApiImportSyntheticCheckParams struct {
 // PostApiImportViewParams defines parameters for PostApiImportView.
 type PostApiImportViewParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiIntegrationsOriginOrIdParams defines parameters for GetApiIntegrationsOriginOrId.
+type GetApiIntegrationsOriginOrIdParams struct {
+	// IncludeDeleted When `true`, a soft-deleted integration is returned instead of a 404.
+	// Defaults to `false`.
+	IncludeDeleted *bool `form:"includeDeleted,omitempty" json:"includeDeleted,omitempty"`
 }
 
 // GetApiPrometheusApiV1FormatQueryParams defines parameters for GetApiPrometheusApiV1FormatQuery.
@@ -10238,12 +10336,6 @@ type PostApiAlertingCheckRulesBulkJSONRequestBody = PrometheusAlertRuleBulkCreat
 // PutApiAlertingCheckRulesOriginOrIdJSONRequestBody defines body for PutApiAlertingCheckRulesOriginOrId for application/json ContentType.
 type PutApiAlertingCheckRulesOriginOrIdJSONRequestBody = PrometheusAlertRule
 
-// PostApiAttributePatternRulesJSONRequestBody defines body for PostApiAttributePatternRules for application/json ContentType.
-type PostApiAttributePatternRulesJSONRequestBody = AttributePatternRuleCreateRequest
-
-// PutApiAttributePatternRulesOriginOrIdJSONRequestBody defines body for PutApiAttributePatternRulesOriginOrId for application/json ContentType.
-type PutApiAttributePatternRulesOriginOrIdJSONRequestBody = AttributePatternRuleUpdateRequest
-
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
 
@@ -10267,6 +10359,12 @@ type PostApiImportSyntheticCheckJSONRequestBody = SyntheticCheckDefinition
 
 // PostApiImportViewJSONRequestBody defines body for PostApiImportView for application/json ContentType.
 type PostApiImportViewJSONRequestBody = ViewDefinition
+
+// PostApiIntegrationsJSONRequestBody defines body for PostApiIntegrations for application/json ContentType.
+type PostApiIntegrationsJSONRequestBody = IntegrationCreateRequest
+
+// PutApiIntegrationsOriginOrIdJSONRequestBody defines body for PutApiIntegrationsOriginOrId for application/json ContentType.
+type PutApiIntegrationsOriginOrIdJSONRequestBody = IntegrationResponse
 
 // PostApiLogsJSONRequestBody defines body for PostApiLogs for application/json ContentType.
 type PostApiLogsJSONRequestBody = GetLogRecordsRequest
@@ -10399,74 +10497,6 @@ type PostOauthRevokeFormdataRequestBody = OAuthRevocationRequest
 
 // PostOauthTokenFormdataRequestBody defines body for PostOauthToken for application/x-www-form-urlencoded ContentType.
 type PostOauthTokenFormdataRequestBody = OAuthTokenRequest
-
-// Getter for additional properties for AttributePatternRuleSpec_Details. Returns the specified
-// element and whether it was found
-func (a AttributePatternRuleSpec_Details) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for AttributePatternRuleSpec_Details
-func (a *AttributePatternRuleSpec_Details) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for AttributePatternRuleSpec_Details to handle AdditionalProperties
-func (a *AttributePatternRuleSpec_Details) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["canonicalOperation"]; found {
-		err = json.Unmarshal(raw, &a.CanonicalOperation)
-		if err != nil {
-			return fmt.Errorf("error reading 'canonicalOperation': %w", err)
-		}
-		delete(object, "canonicalOperation")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for AttributePatternRuleSpec_Details to handle AdditionalProperties
-func (a AttributePatternRuleSpec_Details) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.CanonicalOperation != nil {
-		object["canonicalOperation"], err = json.Marshal(a.CanonicalOperation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'canonicalOperation': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
 
 // Getter for additional properties for PrometheusAlertRule_Annotations. Returns the specified
 // element and whether it was found
@@ -12071,6 +12101,42 @@ func (t *HttpCheckAssertion) UnmarshalJSON(b []byte) error {
 	return err
 }
 
+// AsAwsIntegration returns the union data inside the Integration as a AwsIntegration
+func (t Integration) AsAwsIntegration() (AwsIntegration, error) {
+	var body AwsIntegration
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromAwsIntegration overwrites any union data inside the Integration as the provided AwsIntegration
+func (t *Integration) FromAwsIntegration(v AwsIntegration) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeAwsIntegration performs a merge with any union data inside the Integration, using the provided AwsIntegration
+func (t *Integration) MergeAwsIntegration(v AwsIntegration) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t Integration) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *Integration) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
 // AsAttributeFilterStringValue returns the union data inside the Matcher_Value as a AttributeFilterStringValue
 func (t Matcher_Value) AsAttributeFilterStringValue() (AttributeFilterStringValue, error) {
 	var body AttributeFilterStringValue
@@ -13317,25 +13383,6 @@ type ClientInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiAttributePatternRules request
-	GetApiAttributePatternRules(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostApiAttributePatternRulesWithBody request with any body
-	PostApiAttributePatternRulesWithBody(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PostApiAttributePatternRules(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteApiAttributePatternRulesOriginOrId request
-	DeleteApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetApiAttributePatternRulesOriginOrId request
-	GetApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PutApiAttributePatternRulesOriginOrIdWithBody request with any body
-	PutApiAttributePatternRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PutApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetApiDashboards request
 	GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -13387,6 +13434,25 @@ type ClientInterface interface {
 	PostApiImportViewWithBody(ctx context.Context, params *PostApiImportViewParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiImportView(ctx context.Context, params *PostApiImportViewParams, body PostApiImportViewJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiIntegrations request
+	GetApiIntegrations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiIntegrationsWithBody request with any body
+	PostApiIntegrationsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiIntegrations(ctx context.Context, body PostApiIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiIntegrationsOriginOrId request
+	DeleteApiIntegrationsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiIntegrationsOriginOrId request
+	GetApiIntegrationsOriginOrId(ctx context.Context, originOrId string, params *GetApiIntegrationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiIntegrationsOriginOrIdWithBody request with any body
+	PutApiIntegrationsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiIntegrationsOriginOrId(ctx context.Context, originOrId string, body PutApiIntegrationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiLogsWithBody request with any body
 	PostApiLogsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -13966,90 +14032,6 @@ func (c *generatedClient) PutApiAlertingCheckRulesOriginOrId(ctx context.Context
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) GetApiAttributePatternRules(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiAttributePatternRulesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PostApiAttributePatternRulesWithBody(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiAttributePatternRulesRequestWithBody(c.Server, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PostApiAttributePatternRules(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiAttributePatternRulesRequest(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) DeleteApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) GetApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PutApiAttributePatternRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PutApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *generatedClient) GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiDashboardsRequest(c.Server, params)
 	if err != nil {
@@ -14280,6 +14262,90 @@ func (c *generatedClient) PostApiImportViewWithBody(ctx context.Context, params 
 
 func (c *generatedClient) PostApiImportView(ctx context.Context, params *PostApiImportViewParams, body PostApiImportViewJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiImportViewRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiIntegrations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiIntegrationsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiIntegrationsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiIntegrationsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiIntegrations(ctx context.Context, body PostApiIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiIntegrationsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiIntegrationsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiIntegrationsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiIntegrationsOriginOrId(ctx context.Context, originOrId string, params *GetApiIntegrationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiIntegrationsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiIntegrationsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiIntegrationsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiIntegrationsOriginOrId(ctx context.Context, originOrId string, body PutApiIntegrationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiIntegrationsOriginOrIdRequest(c.Server, originOrId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -16654,390 +16720,6 @@ func NewPutApiAlertingCheckRulesOriginOrIdRequestWithBody(server string, originO
 	return req, nil
 }
 
-// NewGetApiAttributePatternRulesRequest generates requests for GetApiAttributePatternRules
-func NewGetApiAttributePatternRulesRequest(server string, params *GetApiAttributePatternRulesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		if params.ServiceNamespace != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "serviceNamespace", runtime.ParamLocationQuery, *params.ServiceNamespace); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.ServiceName != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "serviceName", runtime.ParamLocationQuery, *params.ServiceName); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Ownership != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "ownership", runtime.ParamLocationQuery, *params.Ownership); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Status != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "status", runtime.ParamLocationQuery, *params.Status); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Priority != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", false, "priority", runtime.ParamLocationQuery, *params.Priority); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Offset != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPostApiAttributePatternRulesRequest calls the generic PostApiAttributePatternRules builder with application/json body
-func NewPostApiAttributePatternRulesRequest(server string, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostApiAttributePatternRulesRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewPostApiAttributePatternRulesRequestWithBody generates requests for PostApiAttributePatternRules with any type of body
-func NewPostApiAttributePatternRulesRequestWithBody(server string, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewDeleteApiAttributePatternRulesOriginOrIdRequest generates requests for DeleteApiAttributePatternRulesOriginOrId
-func NewDeleteApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetApiAttributePatternRulesOriginOrIdRequest generates requests for GetApiAttributePatternRulesOriginOrId
-func NewGetApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPutApiAttributePatternRulesOriginOrIdRequest calls the generic PutApiAttributePatternRulesOriginOrId builder with application/json body
-func NewPutApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
-}
-
-// NewPutApiAttributePatternRulesOriginOrIdRequestWithBody generates requests for PutApiAttributePatternRulesOriginOrId with any type of body
-func NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewGetApiDashboardsRequest generates requests for GetApiDashboards
 func NewGetApiDashboardsRequest(server string, params *GetApiDashboardsParams) (*http.Request, error) {
 	var err error
@@ -17716,6 +17398,210 @@ func NewPostApiImportViewRequestWithBody(server string, params *PostApiImportVie
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiIntegrationsRequest generates requests for GetApiIntegrations
+func NewGetApiIntegrationsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/integrations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiIntegrationsRequest calls the generic PostApiIntegrations builder with application/json body
+func NewPostApiIntegrationsRequest(server string, body PostApiIntegrationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiIntegrationsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiIntegrationsRequestWithBody generates requests for PostApiIntegrations with any type of body
+func NewPostApiIntegrationsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/integrations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiIntegrationsOriginOrIdRequest generates requests for DeleteApiIntegrationsOriginOrId
+func NewDeleteApiIntegrationsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/integrations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiIntegrationsOriginOrIdRequest generates requests for GetApiIntegrationsOriginOrId
+func NewGetApiIntegrationsOriginOrIdRequest(server string, originOrId string, params *GetApiIntegrationsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/integrations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.IncludeDeleted != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "includeDeleted", runtime.ParamLocationQuery, *params.IncludeDeleted); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiIntegrationsOriginOrIdRequest calls the generic PutApiIntegrationsOriginOrId builder with application/json body
+func NewPutApiIntegrationsOriginOrIdRequest(server string, originOrId string, body PutApiIntegrationsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiIntegrationsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiIntegrationsOriginOrIdRequestWithBody generates requests for PutApiIntegrationsOriginOrId with any type of body
+func NewPutApiIntegrationsOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/integrations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -22862,25 +22748,6 @@ type ClientWithResponsesInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAlertingCheckRulesOriginOrIdResponse, error)
 
-	// GetApiAttributePatternRulesWithResponse request
-	GetApiAttributePatternRulesWithResponse(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesResponse, error)
-
-	// PostApiAttributePatternRulesWithBodyWithResponse request with any body
-	PostApiAttributePatternRulesWithBodyWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error)
-
-	PostApiAttributePatternRulesWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error)
-
-	// DeleteApiAttributePatternRulesOriginOrIdWithResponse request
-	DeleteApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error)
-
-	// GetApiAttributePatternRulesOriginOrIdWithResponse request
-	GetApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesOriginOrIdResponse, error)
-
-	// PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse request with any body
-	PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error)
-
-	PutApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error)
-
 	// GetApiDashboardsWithResponse request
 	GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error)
 
@@ -22932,6 +22799,25 @@ type ClientWithResponsesInterface interface {
 	PostApiImportViewWithBodyWithResponse(ctx context.Context, params *PostApiImportViewParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiImportViewResponse, error)
 
 	PostApiImportViewWithResponse(ctx context.Context, params *PostApiImportViewParams, body PostApiImportViewJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiImportViewResponse, error)
+
+	// GetApiIntegrationsWithResponse request
+	GetApiIntegrationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiIntegrationsResponse, error)
+
+	// PostApiIntegrationsWithBodyWithResponse request with any body
+	PostApiIntegrationsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiIntegrationsResponse, error)
+
+	PostApiIntegrationsWithResponse(ctx context.Context, body PostApiIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiIntegrationsResponse, error)
+
+	// DeleteApiIntegrationsOriginOrIdWithResponse request
+	DeleteApiIntegrationsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiIntegrationsOriginOrIdResponse, error)
+
+	// GetApiIntegrationsOriginOrIdWithResponse request
+	GetApiIntegrationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiIntegrationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiIntegrationsOriginOrIdResponse, error)
+
+	// PutApiIntegrationsOriginOrIdWithBodyWithResponse request with any body
+	PutApiIntegrationsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiIntegrationsOriginOrIdResponse, error)
+
+	PutApiIntegrationsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiIntegrationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiIntegrationsOriginOrIdResponse, error)
 
 	// PostApiLogsWithBodyWithResponse request with any body
 	PostApiLogsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiLogsResponse, error)
@@ -23597,124 +23483,6 @@ func (r PutApiAlertingCheckRulesOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
-type GetApiAttributePatternRulesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleListResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiAttributePatternRulesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiAttributePatternRulesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PostApiAttributePatternRulesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleResponse
-	JSON400      *ErrorResponse
-	JSON409      *ErrorResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r PostApiAttributePatternRulesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostApiAttributePatternRulesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteApiAttributePatternRulesOriginOrIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteApiAttributePatternRulesOriginOrIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetApiAttributePatternRulesOriginOrIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiAttributePatternRulesOriginOrIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PutApiAttributePatternRulesOriginOrIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleResponse
-	JSON400      *ErrorResponse
-	JSON409      *ErrorResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r PutApiAttributePatternRulesOriginOrIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PutApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type GetApiDashboardsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -23984,6 +23752,123 @@ func (r PostApiImportViewResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiImportViewResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiIntegrationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GetIntegrationsResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiIntegrationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiIntegrationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiIntegrationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IntegrationResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiIntegrationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiIntegrationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiIntegrationsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiIntegrationsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiIntegrationsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiIntegrationsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IntegrationResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiIntegrationsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiIntegrationsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiIntegrationsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *IntegrationResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiIntegrationsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiIntegrationsOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -26246,67 +26131,6 @@ func (c *ClientWithResponses) PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx
 	return ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp)
 }
 
-// GetApiAttributePatternRulesWithResponse request returning *GetApiAttributePatternRulesResponse
-func (c *ClientWithResponses) GetApiAttributePatternRulesWithResponse(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesResponse, error) {
-	rsp, err := c.GetApiAttributePatternRules(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiAttributePatternRulesResponse(rsp)
-}
-
-// PostApiAttributePatternRulesWithBodyWithResponse request with arbitrary body returning *PostApiAttributePatternRulesResponse
-func (c *ClientWithResponses) PostApiAttributePatternRulesWithBodyWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error) {
-	rsp, err := c.PostApiAttributePatternRulesWithBody(ctx, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostApiAttributePatternRulesResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostApiAttributePatternRulesWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error) {
-	rsp, err := c.PostApiAttributePatternRules(ctx, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostApiAttributePatternRulesResponse(rsp)
-}
-
-// DeleteApiAttributePatternRulesOriginOrIdWithResponse request returning *DeleteApiAttributePatternRulesOriginOrIdResponse
-func (c *ClientWithResponses) DeleteApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.DeleteApiAttributePatternRulesOriginOrId(ctx, originOrId, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
-// GetApiAttributePatternRulesOriginOrIdWithResponse request returning *GetApiAttributePatternRulesOriginOrIdResponse
-func (c *ClientWithResponses) GetApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.GetApiAttributePatternRulesOriginOrId(ctx, originOrId, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
-// PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiAttributePatternRulesOriginOrIdResponse
-func (c *ClientWithResponses) PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.PutApiAttributePatternRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PutApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.PutApiAttributePatternRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
 // GetApiDashboardsWithResponse request returning *GetApiDashboardsResponse
 func (c *ClientWithResponses) GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error) {
 	rsp, err := c.GetApiDashboards(ctx, params, reqEditors...)
@@ -26477,6 +26301,67 @@ func (c *ClientWithResponses) PostApiImportViewWithResponse(ctx context.Context,
 		return nil, err
 	}
 	return ParsePostApiImportViewResponse(rsp)
+}
+
+// GetApiIntegrationsWithResponse request returning *GetApiIntegrationsResponse
+func (c *ClientWithResponses) GetApiIntegrationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiIntegrationsResponse, error) {
+	rsp, err := c.GetApiIntegrations(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiIntegrationsResponse(rsp)
+}
+
+// PostApiIntegrationsWithBodyWithResponse request with arbitrary body returning *PostApiIntegrationsResponse
+func (c *ClientWithResponses) PostApiIntegrationsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiIntegrationsResponse, error) {
+	rsp, err := c.PostApiIntegrationsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiIntegrationsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiIntegrationsWithResponse(ctx context.Context, body PostApiIntegrationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiIntegrationsResponse, error) {
+	rsp, err := c.PostApiIntegrations(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiIntegrationsResponse(rsp)
+}
+
+// DeleteApiIntegrationsOriginOrIdWithResponse request returning *DeleteApiIntegrationsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiIntegrationsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiIntegrationsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiIntegrationsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiIntegrationsOriginOrIdResponse(rsp)
+}
+
+// GetApiIntegrationsOriginOrIdWithResponse request returning *GetApiIntegrationsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiIntegrationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiIntegrationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiIntegrationsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiIntegrationsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiIntegrationsOriginOrIdResponse(rsp)
+}
+
+// PutApiIntegrationsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiIntegrationsOriginOrIdResponse
+func (c *ClientWithResponses) PutApiIntegrationsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiIntegrationsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiIntegrationsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiIntegrationsOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiIntegrationsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiIntegrationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiIntegrationsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiIntegrationsOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiIntegrationsOriginOrIdResponse(rsp)
 }
 
 // PostApiLogsWithBodyWithResponse request with arbitrary body returning *PostApiLogsResponse
@@ -28100,192 +27985,6 @@ func ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp *http.Response) (*PutAp
 	return response, nil
 }
 
-// ParseGetApiAttributePatternRulesResponse parses an HTTP response from a GetApiAttributePatternRulesWithResponse call
-func ParseGetApiAttributePatternRulesResponse(rsp *http.Response) (*GetApiAttributePatternRulesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiAttributePatternRulesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleListResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePostApiAttributePatternRulesResponse parses an HTTP response from a PostApiAttributePatternRulesWithResponse call
-func ParsePostApiAttributePatternRulesResponse(rsp *http.Response) (*PostApiAttributePatternRulesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostApiAttributePatternRulesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a DeleteApiAttributePatternRulesOriginOrIdWithResponse call
-func ParseDeleteApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteApiAttributePatternRulesOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a GetApiAttributePatternRulesOriginOrIdWithResponse call
-func ParseGetApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*GetApiAttributePatternRulesOriginOrIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiAttributePatternRulesOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePutApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a PutApiAttributePatternRulesOriginOrIdWithResponse call
-func ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PutApiAttributePatternRulesOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetApiDashboardsResponse parses an HTTP response from a GetApiDashboardsWithResponse call
 func ParseGetApiDashboardsResponse(rsp *http.Response) (*GetApiDashboardsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -28662,6 +28361,185 @@ func ParsePostApiImportViewResponse(rsp *http.Response) (*PostApiImportViewRespo
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiIntegrationsResponse parses an HTTP response from a GetApiIntegrationsWithResponse call
+func ParseGetApiIntegrationsResponse(rsp *http.Response) (*GetApiIntegrationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiIntegrationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GetIntegrationsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiIntegrationsResponse parses an HTTP response from a PostApiIntegrationsWithResponse call
+func ParsePostApiIntegrationsResponse(rsp *http.Response) (*PostApiIntegrationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiIntegrationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IntegrationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiIntegrationsOriginOrIdResponse parses an HTTP response from a DeleteApiIntegrationsOriginOrIdWithResponse call
+func ParseDeleteApiIntegrationsOriginOrIdResponse(rsp *http.Response) (*DeleteApiIntegrationsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiIntegrationsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiIntegrationsOriginOrIdResponse parses an HTTP response from a GetApiIntegrationsOriginOrIdWithResponse call
+func ParseGetApiIntegrationsOriginOrIdResponse(rsp *http.Response) (*GetApiIntegrationsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiIntegrationsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IntegrationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiIntegrationsOriginOrIdResponse parses an HTTP response from a PutApiIntegrationsOriginOrIdWithResponse call
+func ParsePutApiIntegrationsOriginOrIdResponse(rsp *http.Response) (*PutApiIntegrationsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiIntegrationsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IntegrationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
