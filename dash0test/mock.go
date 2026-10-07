@@ -110,6 +110,14 @@ type MockClient struct {
 	ListTeamsIterFunc            func(ctx context.Context) *dash0.Iter[dash0.TeamsListItem]
 	ResolveMemberIDsToEmailsFunc func(ctx context.Context, ids []string) ([]string, error)
 
+	// Integrations
+	ListIntegrationsFunc     func(ctx context.Context) ([]*dash0.IntegrationDefinition, error)
+	GetIntegrationFunc       func(ctx context.Context, originOrID string) (*dash0.IntegrationDefinition, error)
+	CreateIntegrationFunc    func(ctx context.Context, integration *dash0.IntegrationDefinition) (*dash0.IntegrationDefinition, error)
+	UpsertIntegrationFunc    func(ctx context.Context, originOrID string, integration *dash0.IntegrationDefinition) (*dash0.IntegrationDefinition, error)
+	DeleteIntegrationFunc    func(ctx context.Context, originOrID string) error
+	ListIntegrationsIterFunc func(ctx context.Context) *dash0.Iter[dash0.IntegrationDefinition]
+
 	// Recording Rules
 	ListRecordingRulesFunc     func(ctx context.Context, dataset *string) ([]*dash0.RecordingRule, error)
 	GetRecordingRuleFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.RecordingRule, error)
@@ -624,6 +632,50 @@ func (m *MockClient) ResolveMemberIDsToEmails(ctx context.Context, ids []string)
 		return m.ResolveMemberIDsToEmailsFunc(ctx, ids)
 	}
 	return nil, nil
+}
+
+// Integrations
+
+func (m *MockClient) ListIntegrations(ctx context.Context) ([]*dash0.IntegrationDefinition, error) {
+	if m.ListIntegrationsFunc != nil {
+		return m.ListIntegrationsFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetIntegration(ctx context.Context, originOrID string) (*dash0.IntegrationDefinition, error) {
+	if m.GetIntegrationFunc != nil {
+		return m.GetIntegrationFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateIntegration(ctx context.Context, integration *dash0.IntegrationDefinition) (*dash0.IntegrationDefinition, error) {
+	if m.CreateIntegrationFunc != nil {
+		return m.CreateIntegrationFunc(ctx, integration)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpsertIntegration(ctx context.Context, originOrID string, integration *dash0.IntegrationDefinition) (*dash0.IntegrationDefinition, error) {
+	if m.UpsertIntegrationFunc != nil {
+		return m.UpsertIntegrationFunc(ctx, originOrID, integration)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteIntegration(ctx context.Context, originOrID string) error {
+	if m.DeleteIntegrationFunc != nil {
+		return m.DeleteIntegrationFunc(ctx, originOrID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListIntegrationsIter(ctx context.Context) *dash0.Iter[dash0.IntegrationDefinition] {
+	if m.ListIntegrationsIterFunc != nil {
+		return m.ListIntegrationsIterFunc(ctx)
+	}
+	return nil
 }
 
 // Recording Rules

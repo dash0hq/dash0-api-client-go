@@ -1540,6 +1540,205 @@ func ExampleClient_ResolveMemberIDsToEmails() {
 	// user_orphaned
 }
 
+// Integrations
+
+// ExampleClient_CreateIntegration creates an AWS integration and reads it
+// back. The test server stands in for the Dash0 API: it assigns an ID on
+// create and returns the role as pending until the backend has verified it.
+func ExampleClient_CreateIntegration() {
+	var stored dash0.IntegrationDefinition
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			_ = json.NewDecoder(r.Body).Decode(&stored)
+			dash0.SetIntegrationID(&stored, "00000000-0000-0000-0000-000000000001")
+			spec, _ := dash0.GetAwsIntegrationSpec(&stored)
+			for i := range spec.Roles {
+				spec.Roles[i].Status = dash0.Ptr(dash0.AwsIntegrationRoleStatusPending)
+			}
+			dash0.SetAwsIntegrationSpec(&stored, *spec)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(stored)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	integration := dash0.NewAwsIntegrationDefinition("aws-production", dash0.AwsIntegrationSpec{
+		AccountId: "123456789012",
+		Dataset:   "default",
+		Roles: []dash0.AwsIntegrationRole{
+			{
+				Arn:            "arn:aws:iam::123456789012:role/dash0-read-only",
+				ExternalId:     "dash0-external-id-0001",
+				PermissionType: dash0.AwsIntegrationRolePermissionTypeReadOnly,
+			},
+		},
+	})
+	created, err := client.CreateIntegration(context.Background(), integration)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fetched, err := client.GetIntegration(context.Background(), dash0.GetIntegrationID(created))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetIntegrationID(fetched))
+	fmt.Println(dash0.GetIntegrationKind(fetched))
+	if spec, ok := dash0.GetAwsIntegrationSpec(fetched); ok {
+		fmt.Println(spec.AccountId, *spec.Roles[0].Status)
+	}
+	// Output:
+	// 00000000-0000-0000-0000-000000000001
+	// aws
+	// 123456789012 pending
+}
+
+func ExampleNewAwsIntegrationDefinition() {
+	integration := dash0.NewAwsIntegrationDefinition("aws-production", dash0.AwsIntegrationSpec{
+		AccountId: "123456789012",
+		Dataset:   "default",
+	})
+	fmt.Println(integration.Kind)
+	fmt.Println(integration.Spec.Display.Name, integration.Spec.Enabled, integration.Spec.Ai.Access)
+	fmt.Println(dash0.GetIntegrationKind(integration))
+	// Output:
+	// Dash0Integration
+	// aws-production true none
+	// aws
+}
+
+func ExampleGetIntegrationKind() {
+	var integration dash0.IntegrationDefinition
+	_ = json.Unmarshal([]byte(`{"spec":{"integration":{"kind":"gcp","spec":{}}}}`), &integration)
+	// Kinds the OpenAPI spec does not document are reported as-is.
+	fmt.Println(dash0.GetIntegrationKind(&integration))
+	_, ok := dash0.GetAwsIntegrationSpec(&integration)
+	fmt.Println(ok)
+	// Output:
+	// gcp
+	// false
+}
+
+func ExampleGetAwsIntegrationSpec() {
+	integration := dash0.NewAwsIntegrationDefinition("aws-production", dash0.AwsIntegrationSpec{
+		AccountId: "123456789012",
+		Dataset:   "default",
+	})
+	spec, ok := dash0.GetAwsIntegrationSpec(integration)
+	fmt.Println(ok, spec.AccountId)
+	// Output: true 123456789012
+}
+
+func ExampleSetAwsIntegrationSpec() {
+	integration := dash0.NewAwsIntegrationDefinition("aws-production", dash0.AwsIntegrationSpec{
+		AccountId: "123456789012",
+		Dataset:   "default",
+	})
+	// The spec returned by GetAwsIntegrationSpec is a copy; write changes back.
+	spec, _ := dash0.GetAwsIntegrationSpec(integration)
+	spec.Dataset = "production"
+	dash0.SetAwsIntegrationSpec(integration, *spec)
+	spec, _ = dash0.GetAwsIntegrationSpec(integration)
+	fmt.Println(spec.Dataset)
+	// Output: production
+}
+
+func ExampleGetIntegrationID() {
+	integration := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: &dash0.IntegrationLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+		},
+	}
+	fmt.Println(dash0.GetIntegrationID(integration))
+	// Output: 00000000-0000-0000-0000-000000000001
+}
+
+func ExampleGetIntegrationName() {
+	integration := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{Name: "aws-production"},
+	}
+	fmt.Println(dash0.GetIntegrationName(integration))
+	// Output: aws-production
+}
+
+func ExampleGetIntegrationOrigin() {
+	integration := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: &dash0.IntegrationLabels{Dash0Comorigin: dash0.Ptr("tf_aws_production")},
+		},
+	}
+	fmt.Println(dash0.GetIntegrationOrigin(integration))
+	// Output: tf_aws_production
+}
+
+func ExampleSetIntegrationID() {
+	integration := &dash0.IntegrationDefinition{}
+	dash0.SetIntegrationID(integration, "00000000-0000-0000-0000-000000000001")
+	fmt.Println(dash0.GetIntegrationID(integration))
+	// Output: 00000000-0000-0000-0000-000000000001
+}
+
+func ExampleSetIntegrationIDIfAbsent() {
+	integration := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: &dash0.IntegrationLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetIntegrationIDIfAbsent(integration, "new-id")
+	fmt.Println(dash0.GetIntegrationID(integration))
+	// Output: existing
+}
+
+func ExampleClearIntegrationID() {
+	integration := &dash0.IntegrationDefinition{
+		Metadata: dash0.IntegrationMetadata{
+			Labels: &dash0.IntegrationLabels{Dash0Comid: dash0.Ptr("00000000-0000-0000-0000-000000000001")},
+		},
+	}
+	dash0.ClearIntegrationID(integration)
+	fmt.Println(integration.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleStripIntegrationServerFields() {
+	integration := dash0.NewAwsIntegrationDefinition("aws-production", dash0.AwsIntegrationSpec{
+		AccountId: "123456789012",
+		Dataset:   "default",
+		Roles: []dash0.AwsIntegrationRole{{
+			Arn:            "arn:aws:iam::123456789012:role/dash0-read-only",
+			ExternalId:     "dash0-external-id-0001",
+			PermissionType: dash0.AwsIntegrationRolePermissionTypeReadOnly,
+			Status:         dash0.Ptr(dash0.AwsIntegrationRoleStatusActive),
+		}},
+		VerificationStatus: dash0.Ptr(dash0.AwsVerificationStatusCompleted),
+	})
+	integration.Metadata.Labels = &dash0.IntegrationLabels{
+		Dash0Comid:     dash0.Ptr("00000000-0000-0000-0000-000000000001"),
+		Dash0Comorigin: dash0.Ptr("tf_aws_production"),
+	}
+	dash0.StripIntegrationServerFields(integration)
+	spec, _ := dash0.GetAwsIntegrationSpec(integration)
+	// dash0.com/origin is preserved because it is client-settable.
+	fmt.Println(dash0.GetIntegrationID(integration) == "")
+	fmt.Println(dash0.GetIntegrationOrigin(integration))
+	fmt.Println(spec.VerificationStatus == nil, spec.Roles[0].Status == nil)
+	// Output:
+	// true
+	// tf_aws_production
+	// true true
+}
+
 // Auth token providers
 
 func ExampleStaticAuthTokenProvider() {

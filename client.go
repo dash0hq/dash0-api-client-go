@@ -102,6 +102,16 @@ type Client interface {
 	ListTeamsIter(ctx context.Context) *Iter[TeamsListItem]
 	ResolveMemberIDsToEmails(ctx context.Context, ids []string) ([]string, error)
 
+	// Integrations. Integrations are organization-scoped. The list and get
+	// endpoints can return integration kinds the OpenAPI spec does not
+	// document yet, so inspect GetIntegrationKind before decoding a variant.
+	ListIntegrations(ctx context.Context) ([]*IntegrationDefinition, error)
+	GetIntegration(ctx context.Context, originOrID string) (*IntegrationDefinition, error)
+	CreateIntegration(ctx context.Context, integration *IntegrationDefinition) (*IntegrationDefinition, error)
+	UpsertIntegration(ctx context.Context, originOrID string, integration *IntegrationDefinition) (*IntegrationDefinition, error)
+	DeleteIntegration(ctx context.Context, originOrID string) error
+	ListIntegrationsIter(ctx context.Context) *Iter[IntegrationDefinition]
+
 	// Recording Rules
 	ListRecordingRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*RecordingRule, error)
 	GetRecordingRule(ctx context.Context, originOrID string, dataset *string) (*RecordingRule, error)
