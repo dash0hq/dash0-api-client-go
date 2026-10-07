@@ -16,7 +16,7 @@ func TestUnmarshal_KeepsYAML11BoolsAsStrings(t *testing.T) {
 
 	assert.Equal(t, float64(0), item["y"])
 	assert.Equal(t, "off", item["mode"])
-	assert.Equal(t, true, item["flag"], "real YAML 1.2 booleans stay booleans")
+	assert.Equal(t, true, item["flag"])
 }
 
 func TestToJSON_KeepsYAML11BoolsAsStrings(t *testing.T) {

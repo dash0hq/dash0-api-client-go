@@ -686,7 +686,7 @@ func pathEndsAtKey(p cmp.Path, keys map[string]bool) bool {
 // this filtering entirely, making preservedAnnotationKeys inert -- every
 // annotation key participates in the comparison instead.
 func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (bool, error) {
-	// Unmarshal (inside normalizeToMap) decodes through
+	// sigsyaml.Unmarshal (inside normalizeToMap) decodes through
 	// encoding/json, which always produces float64 for a JSON/YAML number
 	// regardless of its original notation (3, 3.0, 3e0) -- both documents
 	// already agree on numeric type once parsed, so no further cross-type

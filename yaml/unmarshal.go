@@ -9,22 +9,14 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-// Unmarshal decodes YAML or JSON into v, honoring v's JSON struct tags.
-// Unlike sigs.k8s.io/yaml.Unmarshal, plain y, n, yes, no, on, and off stay
-// strings, as YAML 1.2 defines them. Use it instead of sigs.k8s.io/yaml to
-// decode any user-authored asset document.
 func Unmarshal(data []byte, v any) error {
 	return sigsyaml.Unmarshal(quoteYAML11Bools(data), v)
 }
 
-// ToJSON converts YAML or JSON to JSON with the same rules as Unmarshal.
 func ToJSON(data []byte) ([]byte, error) {
 	return sigsyaml.YAMLToJSON(quoteYAML11Bools(data))
 }
 
-// yaml11Bools are the plain scalars that YAML 1.2 reads as strings but
-// YAML 1.1, and so sigs.k8s.io/yaml, reads as booleans. Unquoted, a
-// dashboard grid item's `y: 0` would otherwise decode as `"true": 0`.
 var yaml11Bools = map[string]bool{
 	"y": true, "Y": true, "yes": true, "Yes": true, "YES": true,
 	"n": true, "N": true, "no": true, "No": true, "NO": true,
@@ -32,10 +24,6 @@ var yaml11Bools = map[string]bool{
 	"off": true, "Off": true, "OFF": true,
 }
 
-// quoteYAML11Bools double-quotes every plain scalar in data that YAML 1.2
-// reads as a string but YAML 1.1 reads as a boolean. Input that needs no
-// quoting, or that does not parse, is returned unchanged, so JSON input and
-// parse errors behave as before.
 func quoteYAML11Bools(data []byte) []byte {
 	var docs []*yamlv3.Node
 	changed := false
