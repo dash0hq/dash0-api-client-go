@@ -102,3 +102,24 @@ func TestParseAsDashboard_InvalidYAML(t *testing.T) {
 		t.Error("expected error for invalid YAML")
 	}
 }
+
+func TestParseAsDashboard_UnquotedYGridKey(t *testing.T) {
+	dashboard, err := ParseAsDashboard([]byte(`kind: Dashboard
+metadata:
+  name: d
+spec:
+  layouts:
+    - kind: Grid
+      spec:
+        items:
+          - x: 0
+            y: 3
+`))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	items := dashboard.Spec["layouts"].([]any)[0].(map[string]any)["spec"].(map[string]any)["items"].([]any)
+	if got := items[0].(map[string]any); got["y"] != float64(3) {
+		t.Errorf("grid item = %v, want key y = 3", got)
+	}
+}

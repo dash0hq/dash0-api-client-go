@@ -805,3 +805,25 @@ spec:
 		})
 	}
 }
+
+func TestUnmarshalPrometheusRule_UnquotedYLabelKey(t *testing.T) {
+	rule, err := UnmarshalPrometheusRule([]byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: r
+spec:
+  groups:
+    - name: g
+      rules:
+        - alert: A
+          expr: up == 0
+          labels:
+            y: a
+`))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if rule.Labels == nil || (*rule.Labels)["y"] != "a" {
+		t.Errorf("labels = %v, want y: a", rule.Labels)
+	}
+}
