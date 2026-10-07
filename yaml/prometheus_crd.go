@@ -61,7 +61,7 @@ func MergeAnnotations(metadataAnnotations, ruleAnnotations map[string]string) ma
 // key conflict.
 func UnmarshalPrometheusRule(data []byte) (*dash0.PrometheusAlertRule, error) {
 	var wire prometheusRulesWire
-	if err := sigsyaml.Unmarshal(data, &wire); err != nil {
+	if err := Unmarshal(data, &wire); err != nil {
 		return nil, fmt.Errorf("error parsing Prometheus rule YAML: %w", err)
 	}
 	promRules := wire.toPrometheusRules()
@@ -255,7 +255,7 @@ func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, err
 	kind := strings.ToLower(detectedKind)
 	if kind == "prometheusrule" {
 		var wire prometheusRulesWire
-		if err := sigsyaml.Unmarshal(data, &wire); err != nil {
+		if err := Unmarshal(data, &wire); err != nil {
 			return nil, fmt.Errorf("failed to parse PrometheusRule definition: %w", err)
 		}
 		promRules := wire.toPrometheusRules()
@@ -289,7 +289,7 @@ func ParseAsPrometheusAlertRules(data []byte) ([]*dash0.PrometheusAlertRule, err
 	}
 
 	var rule dash0.PrometheusAlertRule
-	if err := sigsyaml.Unmarshal(data, &rule); err != nil {
+	if err := Unmarshal(data, &rule); err != nil {
 		return nil, fmt.Errorf("failed to parse check rule definition: %w", err)
 	}
 	return []*dash0.PrometheusAlertRule{&rule}, nil

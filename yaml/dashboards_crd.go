@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
-	sigsyaml "sigs.k8s.io/yaml"
 )
 
 // ParseAsDashboard detects whether data is a Dashboard or PersesDashboard
@@ -20,14 +19,14 @@ func ParseAsDashboard(data []byte) (*dash0.DashboardDefinition, error) {
 	kind := strings.ToLower(detectedKind)
 	if kind == "persesdashboard" {
 		var perses dash0.PersesDashboard
-		if err := sigsyaml.Unmarshal(data, &perses); err != nil {
+		if err := Unmarshal(data, &perses); err != nil {
 			return nil, fmt.Errorf("failed to parse PersesDashboard definition: %w", err)
 		}
 		return dash0.ConvertPersesDashboardToDashboard(&perses), nil
 	}
 
 	var dashboard dash0.DashboardDefinition
-	if err := sigsyaml.Unmarshal(data, &dashboard); err != nil {
+	if err := Unmarshal(data, &dashboard); err != nil {
 		return nil, fmt.Errorf("failed to parse dashboard definition: %w", err)
 	}
 	return &dashboard, nil

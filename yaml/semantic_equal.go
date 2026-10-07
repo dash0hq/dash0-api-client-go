@@ -197,7 +197,7 @@ func normalizeToMap(data []byte, additionalIgnoredFields []string, preservedAnno
 	o := resolveOptions(opts)
 
 	var parsed map[string]any
-	if err := sigsyaml.Unmarshal(data, &parsed); err != nil {
+	if err := Unmarshal(data, &parsed); err != nil {
 		return nil, fmt.Errorf("error parsing document: %w", err)
 	}
 	if parsed == nil {
@@ -686,7 +686,7 @@ func pathEndsAtKey(p cmp.Path, keys map[string]bool) bool {
 // this filtering entirely, making preservedAnnotationKeys inert -- every
 // annotation key participates in the comparison instead.
 func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (bool, error) {
-	// sigsyaml.Unmarshal (inside normalizeToMap) decodes through
+	// Unmarshal (inside normalizeToMap) decodes through
 	// encoding/json, which always produces float64 for a JSON/YAML number
 	// regardless of its original notation (3, 3.0, 3e0) -- both documents
 	// already agree on numeric type once parsed, so no further cross-type
@@ -940,7 +940,7 @@ func isAllZeroValues(m map[string]any) bool {
 // didn't include (e.g. ConditionallyIgnoredFields).
 func AbsentFields(data []byte, fields []string) []string {
 	var parsed map[string]any
-	if err := sigsyaml.Unmarshal(data, &parsed); err != nil {
+	if err := Unmarshal(data, &parsed); err != nil {
 		return nil // on error, don't ignore anything extra (safe default)
 	}
 
