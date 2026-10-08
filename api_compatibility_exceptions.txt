@@ -263,7 +263,7 @@ SlackTriggerVariableName
 SlackUserHandle
 SlackUserId
 
-# <NEXT_RELEASE>: Upstream spec moved networkLevel from the agentic-workflow
+# v1.23.0: Upstream spec moved networkLevel from the agentic-workflow
 # guardrails to the sandbox, made HTTP check headers and query parameters
 # optional, and replaced the synthetic-check location list of strings with
 # SyntheticCheckLocationEntry objects. No in-package shim is possible.
@@ -272,7 +272,7 @@ HttpRequestSpec.Headers
 HttpRequestSpec.QueryParameters
 GetApiSyntheticChecksLocationsResponse.JSON200
 
-# <NEXT_RELEASE>: ListCheckRules, ListRecordingRules, ListSLOs, and their Iter
+# v1.23.0: ListCheckRules, ListRecordingRules, ListSLOs, and their Iter
 # variants gained a trailing variadic `opts ...ListOption` parameter so callers
 # can pass WithOriginPrefix. Existing call sites compile unchanged; gorelease
 # flags the changed method signatures on the interface and the mock. The

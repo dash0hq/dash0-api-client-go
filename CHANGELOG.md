@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.23.0
+
+
+### Bug Fixes
+- keep unquoted y/n/yes/no/on/off as strings (#50)
+- preserve anomaly detector settings in check rules (#47)
+
+### Features
+- add signal-to-metrics wrappers and originPrefix filter on List* (#46)
+- add optional member role support to client responses (#43)
+
 ## v1.22.0
 
 
