@@ -51,6 +51,14 @@ type MockClient struct {
 	DeleteSyntheticCheckFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSyntheticChecksIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SyntheticChecksApiListItem]
 
+	// Agentic Workflows (Agent0 automations)
+	ListAgenticWorkflowsFunc     func(ctx context.Context, dataset *string) ([]*dash0.AgenticWorkflowDefinition, error)
+	GetAgenticWorkflowFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.AgenticWorkflowDefinition, error)
+	CreateAgenticWorkflowFunc    func(ctx context.Context, workflow *dash0.AgenticWorkflowDefinition, dataset *string) (*dash0.AgenticWorkflowDefinition, error)
+	UpdateAgenticWorkflowFunc    func(ctx context.Context, originOrID string, workflow *dash0.AgenticWorkflowDefinition, dataset *string) (*dash0.AgenticWorkflowDefinition, error)
+	DeleteAgenticWorkflowFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListAgenticWorkflowsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.AgenticWorkflowDefinition]
+
 	// SLOs
 	ListSLOsFunc     func(ctx context.Context, dataset *string) ([]*dash0.SloDefinition, error)
 	GetSLOFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.SloDefinition, error)
@@ -293,6 +301,50 @@ func (m *MockClient) DeleteSyntheticCheck(ctx context.Context, originOrID string
 func (m *MockClient) ListSyntheticChecksIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SyntheticChecksApiListItem] {
 	if m.ListSyntheticChecksIterFunc != nil {
 		return m.ListSyntheticChecksIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Agentic Workflows (Agent0 automations)
+
+func (m *MockClient) ListAgenticWorkflows(ctx context.Context, dataset *string) ([]*dash0.AgenticWorkflowDefinition, error) {
+	if m.ListAgenticWorkflowsFunc != nil {
+		return m.ListAgenticWorkflowsFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetAgenticWorkflow(ctx context.Context, originOrID string, dataset *string) (*dash0.AgenticWorkflowDefinition, error) {
+	if m.GetAgenticWorkflowFunc != nil {
+		return m.GetAgenticWorkflowFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateAgenticWorkflow(ctx context.Context, workflow *dash0.AgenticWorkflowDefinition, dataset *string) (*dash0.AgenticWorkflowDefinition, error) {
+	if m.CreateAgenticWorkflowFunc != nil {
+		return m.CreateAgenticWorkflowFunc(ctx, workflow, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateAgenticWorkflow(ctx context.Context, originOrID string, workflow *dash0.AgenticWorkflowDefinition, dataset *string) (*dash0.AgenticWorkflowDefinition, error) {
+	if m.UpdateAgenticWorkflowFunc != nil {
+		return m.UpdateAgenticWorkflowFunc(ctx, originOrID, workflow, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteAgenticWorkflow(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteAgenticWorkflowFunc != nil {
+		return m.DeleteAgenticWorkflowFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListAgenticWorkflowsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.AgenticWorkflowDefinition] {
+	if m.ListAgenticWorkflowsIterFunc != nil {
+		return m.ListAgenticWorkflowsIterFunc(ctx, dataset)
 	}
 	return nil
 }
