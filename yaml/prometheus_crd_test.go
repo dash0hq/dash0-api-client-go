@@ -1,8 +1,14 @@
 package yaml
 
 import (
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
 )
@@ -589,4 +595,213 @@ spec:
 	assertEqual(t, "notification-channel-ids",
 		rule.Annotations.AdditionalProperties["dash0.com/notification-channel-ids"], "top-level-channel")
 	assertPtrEqual(t, "Summary", rule.Annotations.Summary, "High error rate")
+}
+
+func TestDetectorExportRoundTrip(t *testing.T) {
+	// Fixtures come from backend-utils/pkg/common/alertexpression/testdata/detector-export-artifacts.json.
+	paths, err := filepath.Glob("testdata/detector-export/*.yaml")
+	require.NoError(t, err)
+	require.Len(t, paths, 7)
+	for _, path := range paths {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			input, err := os.ReadFile(path)
+			require.NoError(t, err)
+			rule, err := UnmarshalPrometheusRule(input)
+			require.NoError(t, err)
+			original := rule.Expression
+			output, err := MarshalPrometheusRule(rule)
+			require.NoError(t, err)
+			equivalent, err := Equivalent(input, output, []string{"metadata.name"}, nil)
+			require.NoError(t, err)
+			assert.True(t, equivalent, string(output))
+			reread, err := UnmarshalPrometheusRule(output)
+			require.NoError(t, err)
+			assert.Equal(t, original, reread.Expression)
+			assert.NotContains(t, string(output), "dash0.com/volume-floor")
+			assert.NotContains(t, string(output), "dash0.com/volume-query")
+			assert.NotContains(t, string(output), "dash0.com/dataset")
+			if baseline := reread.Thresholds.Baseline; baseline != nil {
+				assert.Nil(t, baseline.VolumeFloor)
+			}
+			if gate := reread.Thresholds.ChangeGate; gate != nil {
+				assert.Nil(t, gate.VolumeFloor)
+			}
+			assert.Nil(t, reread.Dataset)
+			assert.False(t, *reread.Enabled)
+		})
+	}
+}
+
+func TestMarshalDetectorAnnotations(t *testing.T) {
+	for _, direction := range []dash0.AnomalyDirection{dash0.AnomalyDirectionAbove, dash0.AnomalyDirectionBelow, dash0.AnomalyDirectionBoth} {
+		rule := &dash0.PrometheusAlertRule{Name: "rule", Expression: "observed", Thresholds: &dash0.CheckThresholds{Failed: dash0.Ptr(3.0), Degraded: dash0.Ptr(2.0), Baseline: &dash0.CheckThresholdBaseline{Direction: direction, SpreadFloor: dash0.Ptr(0.1)}}, Annotations: &dash0.PrometheusAlertRule_Annotations{AdditionalProperties: map[string]string{"dash0.com/change-gate-value": "invalid", "dash0.com/volume-floor": "999"}}}
+		data, err := MarshalPrometheusRule(rule)
+		require.NoError(t, err)
+		parsed, err := UnmarshalPrometheusRule(data)
+		require.NoError(t, err)
+		require.NotNil(t, parsed.Thresholds.Baseline)
+		assert.Equal(t, direction, parsed.Thresholds.Baseline.Direction)
+		assert.Equal(t, rule.Thresholds, parsed.Thresholds)
+		assert.NotContains(t, string(data), "dash0.com/volume-floor")
+		assert.Nil(t, parsed.Annotations)
+	}
+}
+
+func TestMarshalChangeGateZeroDegradedThreshold(t *testing.T) {
+	rule := &dash0.PrometheusAlertRule{Name: "rule", Expression: "observed > $__threshold", Thresholds: &dash0.CheckThresholds{Failed: dash0.Ptr(1.0), Degraded: dash0.Ptr(0.0), ChangeGate: &dash0.CheckThresholdChangeGate{Comparison: dash0.RelativeFactor, Value: 2, BaselineWindow: "1h"}}}
+	data, err := MarshalPrometheusRule(rule)
+	require.NoError(t, err)
+	read, err := UnmarshalPrometheusRule(data)
+	require.NoError(t, err)
+	require.NotNil(t, read.Thresholds.Degraded)
+	assert.Zero(t, *read.Thresholds.Degraded)
+}
+
+func TestMarshalAPIReadDetectorConditions(t *testing.T) {
+	for _, test := range []struct {
+		name       string
+		thresholds string
+		traffic    string
+	}{
+		{"baseline", `{"failed":0,"degraded":1,"baseline":{"direction":"below","spreadFloor":0.17}}`, `last_over_time((sum by (service_namespace, service_name) (rate(requests_total{deployment_environment_name="production",dash0_service_qualified_name=~"^(shop/checkout|other/checkout)$",dash0_operation_name="POST /pay"}[5m])))[1s:1s] offset 2m)`},
+		{"change gate", `{"failed":0,"degraded":1,"changeGate":{"comparison":"absolute_delta","value":0.037,"baselineWindow":"90m"}}`, `avg_over_time((sum by (service_namespace, service_name) (rate(requests_total{deployment_environment_name="production",dash0_service_qualified_name=~"^(shop/checkout|other/checkout)$",dash0_operation_name="POST /pay"}[5m])))[90m:1m] offset 2m)`},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			// Deserialize the public API shape rather than reconstructing fields from annotations.
+			expression := `(observed > $__threshold) and on (service_namespace, service_name) (` + test.traffic + ` > 12.5)`
+			encodedExpression, err := json.Marshal(expression)
+			require.NoError(t, err)
+			data := []byte(`{"name":"Alerting - Portable floor","expression":` + string(encodedExpression) + `,"dataset":"production","thresholds":` + test.thresholds + `,"annotations":{"summary":"Portable floor"}}`)
+			var apiRule dash0.PrometheusAlertRule
+			require.NoError(t, json.Unmarshal(data, &apiRule))
+			before, err := json.Marshal(apiRule)
+			require.NoError(t, err)
+			exported, err := MarshalPrometheusRule(&apiRule)
+			require.NoError(t, err)
+			require.NotContains(t, string(exported), "dash0.com/volume-floor")
+			require.Contains(t, string(exported), "dash0-threshold-critical")
+			imported, err := UnmarshalPrometheusRule(exported)
+			require.NoError(t, err)
+			assert.Equal(t, apiRule.Thresholds, imported.Thresholds)
+			assert.Equal(t, apiRule.Expression, imported.Expression)
+			assert.Nil(t, imported.Dataset, "marshal must keep the existing metadata-label behavior")
+			reexported, err := MarshalPrometheusRule(imported)
+			require.NoError(t, err)
+			assert.Equal(t, string(exported), string(reexported))
+			after, err := json.Marshal(apiRule)
+			require.NoError(t, err)
+			assert.JSONEq(t, string(before), string(after))
+			rules, err := ParseAsPrometheusAlertRules(exported)
+			require.NoError(t, err)
+			require.Len(t, rules, 1)
+			assert.Equal(t, apiRule.Thresholds, rules[0].Thresholds)
+		})
+	}
+}
+
+func TestMarshalRejectsNativeDetectorFloors(t *testing.T) {
+	for _, floor := range []float64{0, 12.5} {
+		for _, thresholds := range []*dash0.CheckThresholds{
+			{Baseline: &dash0.CheckThresholdBaseline{Direction: dash0.AnomalyDirectionAbove, VolumeFloor: dash0.Ptr(floor)}},
+			{ChangeGate: &dash0.CheckThresholdChangeGate{Comparison: dash0.RelativeFactor, Value: 2, BaselineWindow: "1h", VolumeFloor: dash0.Ptr(floor)}},
+		} {
+			rule := &dash0.PrometheusAlertRule{Name: "rule", Expression: "observed > $__threshold", Thresholds: thresholds}
+			before, err := json.Marshal(rule)
+			require.NoError(t, err)
+			data, err := MarshalPrometheusRule(rule)
+			require.ErrorContains(t, err, "compiled into the expression by the backend")
+			assert.Nil(t, data)
+			after, err := json.Marshal(rule)
+			require.NoError(t, err)
+			assert.JSONEq(t, string(before), string(after))
+		}
+	}
+}
+
+func TestUnmarshalLegacyDetectorVolumeFloor(t *testing.T) {
+	for _, detector := range []string{
+		"            dash0.com/baseline-direction: above\n",
+		"            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"2\"\n            dash0.com/change-gate-baseline-window: 1h\n",
+	} {
+		input := []byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+spec:
+  groups:
+    - name: group
+      rules:
+        - alert: rule
+          expr: observed > $__threshold
+          annotations:
+            dash0.com/volume-floor: "12.5"
+` + detector)
+		rule, err := UnmarshalPrometheusRule(input)
+		require.NoError(t, err)
+		if baseline := rule.Thresholds.Baseline; baseline != nil {
+			require.Equal(t, dash0.Ptr(12.5), baseline.VolumeFloor)
+		} else {
+			require.Equal(t, dash0.Ptr(12.5), rule.Thresholds.ChangeGate.VolumeFloor)
+		}
+		_, err = MarshalPrometheusRule(rule)
+		require.ErrorContains(t, err, "compiled into the expression by the backend")
+	}
+}
+
+func TestMarshalRejectsInvalidDetectorConfiguration(t *testing.T) {
+	for _, thresholds := range []*dash0.CheckThresholds{
+		{Baseline: &dash0.CheckThresholdBaseline{}},
+		{Baseline: &dash0.CheckThresholdBaseline{Direction: "sideways"}},
+		{Baseline: &dash0.CheckThresholdBaseline{Direction: dash0.AnomalyDirectionAbove}, ChangeGate: &dash0.CheckThresholdChangeGate{}},
+	} {
+		_, err := MarshalPrometheusRule(&dash0.PrometheusAlertRule{Name: "rule", Expression: "observed", Thresholds: thresholds})
+		require.Error(t, err)
+	}
+}
+
+func TestImportRejectsEmptyDetectorAnnotations(t *testing.T) {
+	const baseline = "            dash0.com/baseline-direction: above\n"
+	const gate = "            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"2\"\n            dash0.com/change-gate-baseline-window: 1h\n"
+	for _, test := range []struct {
+		name        string
+		annotations string
+	}{
+		{"empty baseline direction", "            dash0.com/baseline-direction: \"\"\n"},
+		{"empty baseline spread alone", "            dash0.com/baseline-spread-floor: \"\"\n"},
+		{"empty gate comparison", "            dash0.com/change-gate-comparison: \"\"\n"},
+		{"empty gate value alone", "            dash0.com/change-gate-value: \"\"\n"},
+		{"empty gate window alone", "            dash0.com/change-gate-baseline-window: \"\"\n"},
+		{"empty floor alone", "            dash0.com/volume-floor: \"\"\n"},
+		{"empty baseline spread", baseline + "            dash0.com/baseline-spread-floor: \"\"\n"},
+		{"empty baseline floor", baseline + "            dash0.com/volume-floor: \"\"\n"},
+		{"empty gate floor", gate + "            dash0.com/volume-floor: \"\"\n"},
+		{"empty required gate value", "            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"\"\n            dash0.com/change-gate-baseline-window: 1h\n"},
+		{"empty required gate window", "            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: \"2\"\n            dash0.com/change-gate-baseline-window: \"\"\n"},
+		{"baseline with empty gate comparison", baseline + "            dash0.com/change-gate-comparison: \"\"\n"},
+		{"baseline with empty gate value", baseline + "            dash0.com/change-gate-value: \"\"\n"},
+		{"baseline with empty gate window", baseline + "            dash0.com/change-gate-baseline-window: \"\"\n"},
+		{"gate with empty baseline direction", gate + "            dash0.com/baseline-direction: \"\"\n"},
+		{"gate with empty baseline spread", gate + "            dash0.com/baseline-spread-floor: \"\"\n"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			input := []byte(`apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rule
+spec:
+  groups:
+    - name: group
+      rules:
+        - alert: rule
+          expr: observed > $__threshold
+          annotations:
+` + test.annotations)
+			t.Run("unmarshal", func(t *testing.T) {
+				_, err := UnmarshalPrometheusRule(input)
+				require.Error(t, err)
+			})
+			t.Run("parse", func(t *testing.T) {
+				_, err := ParseAsPrometheusAlertRules(input)
+				require.Error(t, err)
+			})
+		})
+	}
 }

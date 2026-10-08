@@ -3,20 +3,24 @@ package dash0
 import (
 	"fmt"
 	"maps"
+	"math"
 	"strconv"
 	"time"
 )
 
-// Recognized threshold-annotation keys.
-// These mirror the Dash0 Operator's constants
-// (dash0-operator/internal/controller/prometheus_rules_controller.go:76-84):
-// the "dash0-" prefixed names are current, the unprefixed names are legacy
-// aliases kept for a grace period.
+// Recognized threshold and detector annotations.
+// Legacy unprefixed severity keys remain accepted.
 const (
-	thresholdDegradedAnnotation       = "dash0-threshold-degraded"
-	thresholdDegradedAnnotationLegacy = "threshold-degraded"
-	thresholdCriticalAnnotation       = "dash0-threshold-critical"
-	thresholdCriticalAnnotationLegacy = "threshold-critical"
+	thresholdDegradedAnnotation        = "dash0-threshold-degraded"
+	thresholdDegradedAnnotationLegacy  = "threshold-degraded"
+	thresholdCriticalAnnotation        = "dash0-threshold-critical"
+	thresholdCriticalAnnotationLegacy  = "threshold-critical"
+	baselineDirectionAnnotation        = "dash0.com/baseline-direction"
+	baselineSpreadFloorAnnotation      = "dash0.com/baseline-spread-floor"
+	volumeFloorAnnotation              = "dash0.com/volume-floor"
+	changeGateComparisonAnnotation     = "dash0.com/change-gate-comparison"
+	changeGateValueAnnotation          = "dash0.com/change-gate-value"
+	changeGateBaselineWindowAnnotation = "dash0.com/change-gate-baseline-window"
 )
 
 // GetPrometheusRuleDataset extracts the dataset from a PrometheusRules definition.
@@ -95,7 +99,7 @@ func SetPrometheusRuleIDIfAbsent(rule *PrometheusRules, id string) {
 // to a Dash0 CheckRule.
 // It extracts Dash0-specific annotations (thresholds, enabled flag) from the
 // rule annotations and maps them to dedicated fields on the returned rule.
-// It returns an error if a threshold annotation value is non-numeric.
+// It returns an error for non-numeric thresholds or malformed detector annotations.
 func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInterval time.Duration, ruleID string) (*PrometheusAlertRule, error) {
 	checkRule := &PrometheusAlertRule{
 		Name:       rule.Alert,
@@ -167,8 +171,8 @@ func ConvertPrometheusRuleToPrometheusAlertRule(rule *PrometheusRule, groupInter
 }
 
 // extractThresholdsFromAnnotations extracts dash0-threshold-critical and
-// dash0-threshold-degraded (or their legacy unprefixed form) from
-// annotations, removing them from the map.
+// dash0-threshold-degraded (or their legacy unprefixed form), and detector settings
+// from annotations, removing consumed keys from the map.
 // Returns nil if no thresholds are present.
 func extractThresholdsFromAnnotations(annotations map[string]string) (*CheckThresholds, error) {
 	if annotations == nil {
@@ -209,7 +213,11 @@ func extractThresholdsFromAnnotations(annotations map[string]string) (*CheckThre
 		delete(annotations, degKey)
 	}
 
-	if !hasThresholds {
+	hasDetector, err := extractDetectorFromAnnotations(annotations, &thresholds)
+	if err != nil {
+		return nil, err
+	}
+	if !hasThresholds && !hasDetector {
 		return nil, nil
 	}
 	return &thresholds, nil
@@ -231,4 +239,73 @@ func extractEnabledFromAnnotations(annotations map[string]string) (*bool, error)
 	}
 	enabled := true
 	return &enabled, nil
+}
+
+func extractDetectorFromAnnotations(annotations map[string]string, thresholds *CheckThresholds) (bool, error) {
+	hasAnnotation := func(key string) bool {
+		_, present := annotations[key]
+		return present
+	}
+	baseline := hasAnnotation(baselineDirectionAnnotation) || hasAnnotation(baselineSpreadFloorAnnotation)
+	gate := hasAnnotation(changeGateComparisonAnnotation) || hasAnnotation(changeGateValueAnnotation) || hasAnnotation(changeGateBaselineWindowAnnotation)
+	if baseline && gate {
+		return false, fmt.Errorf("baseline and change gate detectors are mutually exclusive")
+	}
+	if !baseline && !gate {
+		if hasAnnotation(volumeFloorAnnotation) {
+			return false, fmt.Errorf("volume floor requires a baseline or change gate detector")
+		}
+		return false, nil
+	}
+	parseNumber := func(key string, required bool) (*float64, error) {
+		value, present := annotations[key]
+		if !present && !required {
+			return nil, nil
+		}
+		number, err := strconv.ParseFloat(value, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid value for %s: %w", key, err)
+		}
+		if math.IsNaN(number) || math.IsInf(number, 0) {
+			return nil, fmt.Errorf("invalid finite value for %s", key)
+		}
+		return &number, nil
+	}
+	floor, err := parseNumber(volumeFloorAnnotation, false)
+	if err != nil {
+		return false, err
+	}
+	if baseline {
+		direction := AnomalyDirection(annotations[baselineDirectionAnnotation])
+		switch direction {
+		case AnomalyDirectionAbove, AnomalyDirectionBelow, AnomalyDirectionBoth:
+		default:
+			return false, fmt.Errorf("invalid baseline direction %q", direction)
+		}
+		spread, err := parseNumber(baselineSpreadFloorAnnotation, false)
+		if err != nil {
+			return false, err
+		}
+		thresholds.Baseline = &CheckThresholdBaseline{Direction: direction, SpreadFloor: spread, VolumeFloor: floor}
+	} else {
+		comparison := ChangeGateComparison(annotations[changeGateComparisonAnnotation])
+		switch comparison {
+		case AbsoluteDelta, RelativeFactor:
+		default:
+			return false, fmt.Errorf("invalid change gate comparison %q", comparison)
+		}
+		value, err := parseNumber(changeGateValueAnnotation, true)
+		if err != nil {
+			return false, err
+		}
+		window := annotations[changeGateBaselineWindowAnnotation]
+		if window == "" {
+			return false, fmt.Errorf("change gate baseline window is required")
+		}
+		thresholds.ChangeGate = &CheckThresholdChangeGate{Comparison: comparison, Value: *value, BaselineWindow: Duration(window), VolumeFloor: floor}
+	}
+	for _, key := range []string{baselineDirectionAnnotation, baselineSpreadFloorAnnotation, volumeFloorAnnotation, changeGateComparisonAnnotation, changeGateValueAnnotation, changeGateBaselineWindowAnnotation} {
+		delete(annotations, key)
+	}
+	return true, nil
 }

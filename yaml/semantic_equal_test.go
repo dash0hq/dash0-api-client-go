@@ -2360,3 +2360,32 @@ func TestConditionallyIgnoredFields_MutatingResultDoesNotAffectOtherCallers(t *t
 	assert.NotContains(t, second, "extra.field")
 	assert.Equal(t, []string{"metadata.name", "spec.permissions"}, second)
 }
+
+func TestEquivalentPreservesDetectorZeroTiers(t *testing.T) {
+	const rule = `apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: rule
+spec:
+  groups:
+    - name: Alerting
+      rules:
+        - alert: Rule
+          expr: observed
+          annotations:
+            custom: keep
+`
+	for _, detector := range []string{
+		"", // Static zero remains the existing implicit default.
+		"            dash0.com/baseline-direction: above\n",
+		"            dash0.com/change-gate-comparison: relative_factor\n            dash0.com/change-gate-value: '2'\n            dash0.com/change-gate-baseline-window: 1h\n",
+	} {
+		for _, tier := range []string{"dash0-threshold-critical", "dash0-threshold-degraded", "threshold-critical", "threshold-degraded"} {
+			withoutTier := rule + detector
+			withTier := withoutTier + "            " + tier + ": '0'\n"
+			equivalent, err := Equivalent([]byte(withTier), []byte(withoutTier), nil, nil)
+			require.NoError(t, err)
+			assert.Equal(t, detector == "", equivalent, "detector=%q tier=%s", detector, tier)
+		}
+	}
+}
