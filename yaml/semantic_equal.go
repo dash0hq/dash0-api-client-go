@@ -197,7 +197,7 @@ func normalizeToMap(data []byte, additionalIgnoredFields []string, preservedAnno
 	o := resolveOptions(opts)
 
 	var parsed map[string]any
-	if err := sigsyaml.Unmarshal(data, &parsed); err != nil {
+	if err := Unmarshal(data, &parsed); err != nil {
 		return nil, fmt.Errorf("error parsing document: %w", err)
 	}
 	if parsed == nil {
@@ -940,7 +940,7 @@ func isAllZeroValues(m map[string]any) bool {
 // didn't include (e.g. ConditionallyIgnoredFields).
 func AbsentFields(data []byte, fields []string) []string {
 	var parsed map[string]any
-	if err := sigsyaml.Unmarshal(data, &parsed); err != nil {
+	if err := Unmarshal(data, &parsed); err != nil {
 		return nil // on error, don't ignore anything extra (safe default)
 	}
 

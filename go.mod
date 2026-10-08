@@ -8,6 +8,7 @@ require (
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/pdata v1.51.0
+	go.yaml.in/yaml/v3 v3.0.3
 	golang.org/x/sync v0.19.0
 	sigs.k8s.io/yaml v1.6.0
 )
