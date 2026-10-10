@@ -8,6 +8,10 @@ body = """
 ### {{ group | upper_first }}
 {%- for commit in commits %}
 - {{ commit.message | split(pat="\n") | first | trim }}\
+{%- for footer in commit.footers %}{% if footer.token == "Changelog" %}
+
+{{ footer.value | trim | indent(prefix="  ", first=true) }}
+{%- endif %}{% endfor %}\
 {%- endfor %}
 {% endfor -%}
 """
