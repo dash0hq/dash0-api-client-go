@@ -134,6 +134,20 @@ package dash0
 // Custom [Client] implementations and wrappers must add the parameter, and
 // should forward it to the wrapped client or ignore it.
 // The dash0test.MockClient *Func fields keep their previous signatures.
+//
+// # Migration guide (v1.23.x to <NEXT_RELEASE>)
+//
+// The generated attribute pattern rule types and operations were removed
+// because the public API spec no longer publishes them.
+// This covers every AttributePatternRule* type, the matching
+// *ApiAttributePatternRules* request and response types and client methods,
+// and the Active, Inactive, UserDefined, and AutoDerived constants.
+// There is no replacement.
+//
+// [Client] gained [Client.ListDatasets], [Client.GetDataset], [Client.CreateDataset],
+// [Client.UpdateDataset], and [Client.ListDatasetsIter].
+// Custom [Client] implementations and wrappers must add them.
+// dash0test.MockClient implements them through new *Func fields.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //

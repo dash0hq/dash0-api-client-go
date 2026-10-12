@@ -126,6 +126,12 @@ func TestUpdateDataset(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assertEqual(t, "method", r.Method, http.MethodPut)
 		assertEqual(t, "path", r.URL.Path, "/api/datasets/tf-staging")
+		var body DatasetDefinition
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Errorf("decode request body: %v", err)
+		}
+		assertEqual(t, "request slug", GetDatasetID(&body), "staging")
+		assertEqual(t, "request name", GetDatasetName(&body), "Staging")
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(newTestDataset("staging"))
 	}))
@@ -157,8 +163,8 @@ func TestUpdateDataset_409(t *testing.T) {
 	defer server.Close()
 
 	_, err := newTestClient(t, server.URL).UpdateDataset(context.Background(), "staging", newTestDataset("staging"))
-	if err == nil {
-		t.Error("UpdateDataset() error = nil, want a conflict error")
+	if !IsConflict(err) {
+		t.Errorf("UpdateDataset() error = %v, want a conflict error", err)
 	}
 }
 
@@ -185,13 +191,14 @@ func TestStripDatasetServerFields(t *testing.T) {
 				Dash0Comsource:  &source,
 			},
 		},
-		Spec: DatasetSpec{PermittedActions: &actions},
+		Spec: DatasetSpec{PermittedActions: &actions, TelemetryFilters: &[]TelemetryFilter{{}}},
 	}
 
 	StripDatasetServerFields(d)
 
 	if d.Metadata.Annotations != nil || d.Metadata.Labels.Dash0Comversion != nil ||
-		d.Metadata.Labels.Dash0Comsource != nil || d.Spec.PermittedActions != nil {
+		d.Metadata.Labels.Dash0Comsource != nil || d.Spec.PermittedActions != nil ||
+		d.Spec.TelemetryFilters != nil {
 		t.Errorf("server fields were not stripped: %+v", d)
 	}
 	assertEqual(t, "slug", d.Metadata.Labels.Dash0Comid, "staging")
@@ -222,4 +229,43 @@ func TestDatasetHelpers_Nil(t *testing.T) {
 	ClearDatasetID(&DatasetDefinition{})
 	assertEqual(t, "id", GetDatasetID(nil), "")
 	assertEqual(t, "name", GetDatasetName(nil), "")
+}
+
+func TestCreateDataset_201(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(newTestDataset("staging"))
+	}))
+	defer server.Close()
+
+	got, err := newTestClient(t, server.URL).CreateDataset(context.Background(), newTestDataset("staging"))
+	if err != nil {
+		t.Fatalf("CreateDataset() error = %v", err)
+	}
+	assertEqual(t, "slug", GetDatasetID(got), "staging")
+}
+
+func TestListDatasets_403(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		writeAPIError(w, http.StatusForbidden, "no permission")
+	}))
+	defer server.Close()
+
+	_, err := newTestClient(t, server.URL).ListDatasets(context.Background())
+	if !IsForbidden(err) {
+		t.Errorf("ListDatasets() error = %v, want a forbidden error", err)
+	}
+}
+
+func TestUpdateDataset_403(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		writeAPIError(w, http.StatusForbidden, "no permission")
+	}))
+	defer server.Close()
+
+	_, err := newTestClient(t, server.URL).UpdateDataset(context.Background(), "staging", newTestDataset("staging"))
+	if !IsForbidden(err) {
+		t.Errorf("UpdateDataset() error = %v, want a forbidden error", err)
+	}
 }
