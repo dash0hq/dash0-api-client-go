@@ -1572,3 +1572,20 @@ func ExampleWithAuthTokenProvider() {
 	fmt.Println(client != nil)
 	// Output: true
 }
+
+// Dataset helpers
+
+func ExampleGetDatasetID() {
+	dataset := &dash0.DatasetDefinition{
+		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: "staging"}},
+	}
+	fmt.Println(dash0.GetDatasetID(dataset))
+	// Output: staging
+}
+
+func ExampleSetDatasetID() {
+	dataset := &dash0.DatasetDefinition{Metadata: dash0.DatasetMetadata{Name: "Staging"}}
+	dash0.SetDatasetID(dataset, "staging")
+	fmt.Println(dash0.GetDatasetID(dataset))
+	// Output: staging
+}
