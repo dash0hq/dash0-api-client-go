@@ -37,6 +37,9 @@ func (c *client) GetDataset(ctx context.Context, originOrID string) (*DatasetDef
 	if resp.StatusCode() != http.StatusOK {
 		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
+	if resp.JSON200 == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
 	return resp.JSON200, nil
 }
 
@@ -68,8 +71,8 @@ func (c *client) CreateDataset(ctx context.Context, dataset *DatasetDefinition) 
 }
 
 // UpdateDataset updates a dataset by origin or slug.
-// For every token except a Dash0 UI session, the server creates the dataset when none matches,
-// so a mistyped origin or slug creates a new dataset instead of returning not found.
+// For every token except a Dash0 UI session, the server creates the dataset when none matches.
+// A mistyped origin or slug therefore creates a new dataset instead of returning not found.
 // Omitting spec.preferred or spec.telemetryFilters leaves the stored value unchanged.
 func (c *client) UpdateDataset(ctx context.Context, originOrID string, dataset *DatasetDefinition) (*DatasetDefinition, error) {
 	if err := c.requireAPI(); err != nil {
@@ -106,8 +109,9 @@ func (c *client) ListDatasetsIter(ctx context.Context) *Iter[DatasetDefinition] 
 }
 
 // StripDatasetServerFields removes server-generated fields from a dataset definition.
-// It also clears spec.telemetryFilters and the dash0.com/version label, so a stripped copy
-// sent to [Client.UpdateDataset] leaves the stored filters unchanged and skips the version check.
+// It also clears spec.telemetryFilters and the dash0.com/version label.
+// A stripped copy sent to [Client.UpdateDataset] therefore leaves the stored filters unchanged and skips the version check.
+// It keeps dash0.com/origin, which is client-settable and identifies the dataset on update, so a copy created in the same organization needs a new origin.
 func StripDatasetServerFields(dataset *DatasetDefinition) {
 	if dataset == nil {
 		return
@@ -137,8 +141,8 @@ func GetDatasetName(dataset *DatasetDefinition) string {
 	return dataset.Metadata.Name
 }
 
-// SetDatasetID sets the dash0.com/id label (the slug) on a dataset definition,
-// initializing the labels struct if needed.
+// SetDatasetID sets the dash0.com/id label (the slug) on a dataset definition.
+// It initializes the labels struct if needed.
 func SetDatasetID(dataset *DatasetDefinition, id string) {
 	if dataset == nil {
 		return
@@ -149,8 +153,8 @@ func SetDatasetID(dataset *DatasetDefinition, id string) {
 	dataset.Metadata.Labels.Dash0Comid = id
 }
 
-// SetDatasetIDIfAbsent sets the dash0.com/id label (the slug) on a dataset
-// definition only if it is not already set, initializing the labels struct if needed.
+// SetDatasetIDIfAbsent sets the dash0.com/id label (the slug) on a dataset definition only if it is not already set.
+// It initializes the labels struct if needed.
 func SetDatasetIDIfAbsent(dataset *DatasetDefinition, id string) {
 	if dataset == nil {
 		return
@@ -163,7 +167,9 @@ func SetDatasetIDIfAbsent(dataset *DatasetDefinition, id string) {
 	}
 }
 
-// ClearDatasetID removes the dash0.com/id label (the slug) from a dataset definition.
+// ClearDatasetID empties the dash0.com/id label (the slug) on a dataset definition.
+// The label is required, so the request still carries an empty value.
+// An update accepts that and addresses the dataset by the path, but a create rejects it.
 func ClearDatasetID(dataset *DatasetDefinition) {
 	if dataset == nil || dataset.Metadata.Labels == nil {
 		return

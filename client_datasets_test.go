@@ -269,3 +269,15 @@ func TestUpdateDataset_403(t *testing.T) {
 		t.Errorf("UpdateDataset() error = %v, want a forbidden error", err)
 	}
 }
+
+func TestGetDataset_EmptyBody(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	got, err := newTestClient(t, server.URL).GetDataset(context.Background(), "staging")
+	if err == nil || got != nil {
+		t.Errorf("GetDataset() = %+v, %v, want nil and an error", got, err)
+	}
+}
