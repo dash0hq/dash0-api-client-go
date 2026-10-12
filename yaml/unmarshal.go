@@ -3,6 +3,7 @@ package yaml
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"sort"
 	"unicode/utf8"
@@ -16,7 +17,15 @@ func Unmarshal(data []byte, v any) error {
 }
 
 func ToJSON(data []byte) ([]byte, error) {
-	return sigsyaml.YAMLToJSON(quoteYAML11BoolKeys(data))
+	var v any
+	if err := yamlv3.Unmarshal(data, &v); err != nil {
+		return nil, fmt.Errorf("error parsing YAML: %w", err)
+	}
+	out, err := json.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling to JSON: %w", err)
+	}
+	return out, nil
 }
 
 var yaml11Bools = map[string]bool{

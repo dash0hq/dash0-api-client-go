@@ -35,6 +35,18 @@ Once the tag is pushed, the **Release** workflow automatically:
 - Creates a GitHub Release with the generated release notes
 - Triggers Go module proxy indexing
 
+### Longer changelog text
+
+Each changelog entry is the first line of a commit message.
+To add a paragraph under an entry, end the commit message with a `Changelog:` footer.
+The footer must be the last paragraph, so for a multi-commit PR put it in the last commit.
+
+```text
+fix(yaml): ToJSON follows YAML 1.2 for keys and values
+
+Changelog: Plain `off` now stays the string "off".
+```
+
 ### Version Guidelines
 
 Follow [semver](https://semver.org/):

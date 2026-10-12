@@ -47,7 +47,30 @@ func TestUnmarshal_MatchesSigsWhenNoKeyIsQuoted(t *testing.T) {
 }
 
 func TestToJSON(t *testing.T) {
-	got, err := ToJSON([]byte("x: 0\ny: 0\n"))
-	require.NoError(t, err)
-	assert.JSONEq(t, `{"x":0,"y":0}`, string(got))
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"bool-word keys stay strings", "y: 0\nn: 1\nOFF: 2\n", `{"OFF":2,"n":1,"y":0}`},
+		{"bool-word values stay strings", "name: off\nregion: NO\nenabled: yes\n", `{"enabled":"yes","name":"off","region":"NO"}`},
+		{"bool-word list items stay strings", "countries: [GB, NO]\n", `{"countries":["GB","NO"]}`},
+		{"YAML 1.2 booleans stay booleans", "a: true\nb: False\n", `{"a":true,"b":false}`},
+		{"only the first document", "a: 1\n---\nb: 2\n", `{"a":1}`},
+		{"JSON input", `{"y": 0, "enabled": "yes"}`, `{"enabled":"yes","y":0}`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ToJSON([]byte(tt.in))
+			require.NoError(t, err)
+			assert.JSONEq(t, tt.want, string(got))
+		})
+	}
+}
+
+func TestToJSON_Errors(t *testing.T) {
+	for _, in := range []string{"not: [valid", "true: a\n", "inf: .inf\n"} {
+		_, err := ToJSON([]byte(in))
+		assert.Error(t, err, in)
+	}
 }
