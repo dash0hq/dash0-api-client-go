@@ -59,6 +59,14 @@ type Client interface {
 	DeleteDataset(ctx context.Context, originOrID string) error
 	ListDatasetsIter(ctx context.Context) *Iter[DatasetDefinition]
 
+	// Auth tokens
+	ListAuthTokens(ctx context.Context) ([]*AuthTokenResponseDefinition, error)
+	GetAuthToken(ctx context.Context, originOrID string) (*AuthTokenResponseDefinition, error)
+	CreateAuthToken(ctx context.Context, token *AuthTokenDefinition) (*AuthTokenResponseDefinition, error)
+	UpdateAuthToken(ctx context.Context, originOrID string, token *AuthTokenDefinition) (*AuthTokenResponseDefinition, error)
+	DeleteAuthToken(ctx context.Context, originOrID string) error
+	ListAuthTokensIter(ctx context.Context) *Iter[AuthTokenResponseDefinition]
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)

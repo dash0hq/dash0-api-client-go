@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"time"
 
 	dash0 "github.com/dash0hq/dash0-api-client-go"
@@ -1622,4 +1625,83 @@ func ExampleStripDatasetServerFields() {
 	dash0.StripDatasetServerFields(dataset)
 	fmt.Println(dash0.GetDatasetID(dataset), dataset.Metadata.Labels.Dash0Comversion == nil)
 	// Output: staging true
+}
+
+// Auth token helpers
+
+func ExampleAuthTokenResponseSpec_Format() {
+	token := &dash0.AuthTokenResponseDefinition{
+		Metadata: dash0.AuthTokenMetadata{Name: "ci"},
+		Spec:     dash0.AuthTokenResponseSpec{Token: dash0.Ptr("auth_secret")},
+	}
+	fmt.Printf("%v\n", token.Spec)
+	fmt.Println(strings.Contains(fmt.Sprintf("%v %+v %#v", token, &token.Spec, token), "auth_secret"))
+	// Output:
+	// {<nil> <nil> <nil> [REDACTED]}
+	// false
+}
+
+func ExampleAuthTokenResponseSpec_LogValue() {
+	spec := dash0.AuthTokenResponseSpec{Token: dash0.Ptr("auth_secret")}
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if len(groups) == 0 && a.Key == slog.TimeKey {
+				return slog.Attr{}
+			}
+			return a
+		},
+	}))
+	logger.Info("created", "spec", spec)
+	// Output: level=INFO msg=created spec.token=[REDACTED]
+}
+
+func ExampleConvertAuthTokenResponseToDefinition() {
+	response := &dash0.AuthTokenResponseDefinition{
+		ApiVersion: "dash0.com/v1alpha1",
+		Metadata:   dash0.AuthTokenMetadata{Name: "ci"},
+		Spec:       dash0.AuthTokenResponseSpec{Token: dash0.Ptr("auth_secret")},
+	}
+	request := dash0.ConvertAuthTokenResponseToDefinition(response)
+	body, _ := json.Marshal(request)
+	fmt.Println(strings.Contains(string(body), "auth_secret"), request.Metadata.Name)
+	// Output: false ci
+}
+
+func ExampleGetAuthTokenID() {
+	request := &dash0.AuthTokenDefinition{}
+	dash0.SetAuthTokenID(request, "0b9a6a52-1c7c-4a43-9b0e-5d5a8d6f6e11")
+	response := &dash0.AuthTokenResponseDefinition{Metadata: request.Metadata}
+	fmt.Println(dash0.GetAuthTokenID(response))
+	// Output: 0b9a6a52-1c7c-4a43-9b0e-5d5a8d6f6e11
+}
+
+func ExampleGetAuthTokenName() {
+	token := &dash0.AuthTokenResponseDefinition{Metadata: dash0.AuthTokenMetadata{Name: "ci"}}
+	fmt.Println(dash0.GetAuthTokenName(token))
+	// Output: ci
+}
+
+func ExampleSetAuthTokenIDIfAbsent() {
+	token := &dash0.AuthTokenDefinition{}
+	dash0.SetAuthTokenIDIfAbsent(token, "0b9a6a52-1c7c-4a43-9b0e-5d5a8d6f6e11")
+	dash0.SetAuthTokenIDIfAbsent(token, "7f1c2d3e-4a5b-4c6d-8e7f-9a0b1c2d3e4f")
+	fmt.Println(token.Metadata.Labels.Dash0Comid)
+	// Output: 0b9a6a52-1c7c-4a43-9b0e-5d5a8d6f6e11
+}
+
+func ExampleClearAuthTokenID() {
+	token := &dash0.AuthTokenDefinition{}
+	dash0.SetAuthTokenID(token, "0b9a6a52-1c7c-4a43-9b0e-5d5a8d6f6e11")
+	dash0.ClearAuthTokenID(token)
+	fmt.Println(token.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleStripAuthTokenServerFields() {
+	token := &dash0.AuthTokenDefinition{
+		Metadata: dash0.AuthTokenMetadata{Labels: &dash0.AuthTokenLabels{Dash0Comorigin: dash0.Ptr("ci"), Dash0Comsource: dash0.Ptr(dash0.Api)}},
+	}
+	dash0.StripAuthTokenServerFields(token)
+	fmt.Println(*token.Metadata.Labels.Dash0Comorigin, token.Metadata.Labels.Dash0Comsource == nil)
+	// Output: ci true
 }
