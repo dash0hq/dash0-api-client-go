@@ -98,6 +98,24 @@ func (c *client) UpdateDataset(ctx context.Context, originOrID string, dataset *
 	return &updated, nil
 }
 
+// DeleteDataset deletes a dataset by origin or slug.
+// The delete is soft: creating a dataset with the same slug within the grace period restores it.
+// The server also answers 200 for an unknown or already-deleted dataset, so a nil error does not prove the dataset existed.
+// The default dataset cannot be deleted and returns a 400 error.
+func (c *client) DeleteDataset(ctx context.Context, originOrID string) error {
+	if err := c.requireAPI(); err != nil {
+		return err
+	}
+	resp, err := c.inner.DeleteApiDatasetsOriginOrIdWithResponse(ctx, originOrID)
+	if err != nil {
+		return fmt.Errorf("dash0: delete dataset failed: %w", err)
+	}
+	if resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusNoContent {
+		return newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
+	}
+	return nil
+}
+
 // ListDatasetsIter returns an iterator over all datasets.
 // This is a convenience wrapper around ListDatasets for consistent iteration patterns.
 func (c *client) ListDatasetsIter(ctx context.Context) *Iter[DatasetDefinition] {

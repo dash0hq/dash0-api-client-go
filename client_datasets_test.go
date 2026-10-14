@@ -281,3 +281,67 @@ func TestGetDataset_EmptyBody(t *testing.T) {
 		t.Errorf("GetDataset() = %+v, %v, want nil and an error", got, err)
 	}
 }
+
+func TestDeleteDataset(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, "method", r.Method, http.MethodDelete)
+		assertEqual(t, "path", r.URL.Path, "/api/datasets/staging")
+		assertEqual(t, "authorization", r.Header.Get("Authorization"), "Bearer auth_test123")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	if err := newTestClient(t, server.URL).DeleteDataset(context.Background(), "staging"); err != nil {
+		t.Fatalf("DeleteDataset() error = %v", err)
+	}
+}
+
+func TestDeleteDataset_204(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	if err := newTestClient(t, server.URL).DeleteDataset(context.Background(), "staging"); err != nil {
+		t.Fatalf("DeleteDataset() error = %v", err)
+	}
+}
+
+// The server answers 200 for an unknown or already-deleted dataset, so this is not an error.
+func TestDeleteDataset_Unknown(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, "path", r.URL.Path, "/api/datasets/does-not-exist")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	if err := newTestClient(t, server.URL).DeleteDataset(context.Background(), "does-not-exist"); err != nil {
+		t.Fatalf("DeleteDataset() error = %v, want nil", err)
+	}
+}
+
+func TestDeleteDataset_Errors(t *testing.T) {
+	tests := []struct {
+		name   string
+		status int
+		check  func(error) bool
+	}{
+		{"400 for the default dataset", http.StatusBadRequest, IsBadRequest},
+		{"401", http.StatusUnauthorized, IsUnauthorized},
+		{"403", http.StatusForbidden, IsForbidden},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assertEqual(t, "path", r.URL.Path, "/api/datasets/default")
+				writeAPIError(w, tt.status, "rejected")
+			}))
+			defer server.Close()
+
+			err := newTestClient(t, server.URL).DeleteDataset(context.Background(), "default")
+			if !tt.check(err) {
+				t.Errorf("DeleteDataset() error = %v, want status %d", err, tt.status)
+			}
+		})
+	}
+}

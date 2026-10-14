@@ -56,6 +56,7 @@ type Client interface {
 	GetDataset(ctx context.Context, originOrID string) (*DatasetDefinition, error)
 	CreateDataset(ctx context.Context, dataset *DatasetDefinition) (*DatasetDefinition, error)
 	UpdateDataset(ctx context.Context, originOrID string, dataset *DatasetDefinition) (*DatasetDefinition, error)
+	DeleteDataset(ctx context.Context, originOrID string) error
 	ListDatasetsIter(ctx context.Context) *Iter[DatasetDefinition]
 
 	// Views

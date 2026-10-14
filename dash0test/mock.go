@@ -64,6 +64,7 @@ type MockClient struct {
 	GetDatasetFunc       func(ctx context.Context, originOrID string) (*dash0.DatasetDefinition, error)
 	CreateDatasetFunc    func(ctx context.Context, dataset *dash0.DatasetDefinition) (*dash0.DatasetDefinition, error)
 	UpdateDatasetFunc    func(ctx context.Context, originOrID string, dataset *dash0.DatasetDefinition) (*dash0.DatasetDefinition, error)
+	DeleteDatasetFunc    func(ctx context.Context, originOrID string) error
 	ListDatasetsIterFunc func(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition]
 
 	// Views
@@ -376,6 +377,13 @@ func (m *MockClient) UpdateDataset(ctx context.Context, originOrID string, datas
 		return m.UpdateDatasetFunc(ctx, originOrID, dataset)
 	}
 	return nil, nil
+}
+
+func (m *MockClient) DeleteDataset(ctx context.Context, originOrID string) error {
+	if m.DeleteDatasetFunc != nil {
+		return m.DeleteDatasetFunc(ctx, originOrID)
+	}
+	return nil
 }
 
 func (m *MockClient) ListDatasetsIter(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition] {
