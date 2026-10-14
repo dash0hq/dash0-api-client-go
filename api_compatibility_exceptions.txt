@@ -293,3 +293,25 @@ Active
 Inactive
 UserDefined
 AutoDerived
+
+# <NEXT_RELEASE>: the dataset document moved to the new shape. The spec
+# fields that mirrored stored settings are grouped under Retention, Privacy,
+# and Processing, and TelemetryFilters left the document (spam filters own
+# them). No in-package shim is possible because the fields were removed.
+DatasetSpec.CardholderDataRedaction
+DatasetSpec.Darkplane
+DatasetSpec.GenAiAttributeRedaction
+DatasetSpec.GeoLocation
+DatasetSpec.IpAddresses
+DatasetSpec.Logging
+DatasetSpec.Metrics
+DatasetSpec.Profiling
+DatasetSpec.SemanticConventionUpgrades
+DatasetSpec.TelemetryFilters
+DatasetSpec.Tracing
+DatasetSpec.WebEvents
+
+# <NEXT_RELEASE>: the agentic-workflow failed-check trigger gained the
+# issue.silenced variable, so availableVariables became a union item type.
+# Comes from the same regeneration, not from the dataset change.
+FailedCheckAgenticWorkflowTriggerSpec.AvailableVariables
