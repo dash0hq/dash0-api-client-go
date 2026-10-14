@@ -40,6 +40,8 @@ const (
 	Moonshot  Agent0ModelMaker = "moonshot"
 	Nvidia    Agent0ModelMaker = "nvidia"
 	Openai    Agent0ModelMaker = "openai"
+	Together  Agent0ModelMaker = "together"
+	Typesafe  Agent0ModelMaker = "typesafe"
 	Xai       Agent0ModelMaker = "xai"
 	Zhipu     Agent0ModelMaker = "zhipu"
 )
@@ -154,23 +156,6 @@ const (
 	AttributeFilterOperatorStartsWith       AttributeFilterOperator = "starts_with"
 )
 
-// Defines values for AttributePatternRuleDefinitionKind.
-const (
-	Dash0AttributePatternRule AttributePatternRuleDefinitionKind = "Dash0AttributePatternRule"
-)
-
-// Defines values for AttributePatternRuleOwnership.
-const (
-	AutoDerived AttributePatternRuleOwnership = "auto_derived"
-	UserDefined AttributePatternRuleOwnership = "user_defined"
-)
-
-// Defines values for AttributePatternRuleStatus.
-const (
-	Active   AttributePatternRuleStatus = "active"
-	Inactive AttributePatternRuleStatus = "inactive"
-)
-
 // Defines values for AxisScale.
 const (
 	AxisScaleLinear AxisScale = "linear"
@@ -277,6 +262,11 @@ const (
 	DatasetDelete                   DatasetAction = "dataset:delete"
 	DatasetRead                     DatasetAction = "dataset:read"
 	DatasetWrite                    DatasetAction = "dataset:write"
+)
+
+// Defines values for DatasetDefinitionKind.
+const (
+	Dash0Dataset DatasetDefinitionKind = "Dash0Dataset"
 )
 
 // Defines values for DatasetRestriction.
@@ -1557,10 +1547,11 @@ const (
 
 // Defines values for TelemetryFilterContext.
 const (
-	TelemetryFilterContextDatapoint TelemetryFilterContext = "datapoint"
-	TelemetryFilterContextLog       TelemetryFilterContext = "log"
-	TelemetryFilterContextSpan      TelemetryFilterContext = "span"
-	TelemetryFilterContextWebEvent  TelemetryFilterContext = "web_event"
+	TelemetryFilterContextDatapoint     TelemetryFilterContext = "datapoint"
+	TelemetryFilterContextLog           TelemetryFilterContext = "log"
+	TelemetryFilterContextProfileSample TelemetryFilterContext = "profile_sample"
+	TelemetryFilterContextSpan          TelemetryFilterContext = "span"
+	TelemetryFilterContextWebEvent      TelemetryFilterContext = "web_event"
 )
 
 // Defines values for TelemetryTransformationRuleContext.
@@ -1807,18 +1798,42 @@ type Agent0ModelClassPreference string
 // - `moonshot`: A Kimi model.
 // - `nvidia`: A Nemotron model.
 // - `openai`: A GPT or o-series model.
+// - `together`: A Together AI Tev1 decision model.
+// - `typesafe`: A TypeSafe Jev decision model.
 // - `xai`: A Grok model.
 // - `zhipu`: A GLM model.
 type Agent0ModelMaker string
 
-// Agent0ModelSpec What a caller asks a model to be: a model class, the maker it's pinned to, a reasoning
+// Agent0ModelSelection A pick from an organization's `GetAgent0ModelsResponse.models`: the model it names and the
+// reasoning effort it asks for. The deployment resolves it to what runs. An organization that
+// no longer routes by model ID runs the class the named model belongs to.
+type Agent0ModelSelection struct {
+	// Model The `Agent0Model.id` of the picked model, sent back as listed.
+	Model string `json:"model"`
+
+	// ReasoningEffort A reasoning-effort preference for Agent0 investigations, passed straight through to the
+	// underlying model's own reasoning-effort parameter where the model supports one. Not every
+	// model class supports every level (a light-tier model, for example, supports none of them),
+	// so a level is only meaningful paired with a model class; see Agent0ModelSpec.
+	// - `low`: Minimal reasoning — fastest responses, lowest cost.
+	// - `medium`: The default balance of reasoning depth against latency and cost.
+	// - `high`: Deeper reasoning for problems the default balance underserves.
+	// - `xhigh`: Substantially more reasoning for complex, multi-step problems.
+	// - `max`: The deepest reasoning tier, for problems where correctness matters more than speed
+	//   or cost.
+	ReasoningEffort *Agent0ReasoningEffort `json:"reasoningEffort,omitempty"`
+}
+
+// Agent0ModelSpec What a caller asks a model to be: either a model class or one specific model, a reasoning
 // effort, and per-invocation knobs. Where the call actually runs is never part of a
 // submitted or stored spec: `provider` and `credentialSource` are resolved fresh at
-// invocation and never written to storage. Model class and maker travel together through
-// the same precedence chain as an inseparable pair: maker cannot be specified without a
-// model class, and when a level names a class without a maker, it resolves from that
-// class's deployment catalog entry rather than inheriting a maker some other level happened
-// to set. On an invocation that chain is request > thread > user > organization >
+// invocation and never written to storage. `modelId` and `modelClass` are alternatives on
+// one axis: a level names at most one of them, and whichever the winning level names
+// replaces the other wholesale rather than combining with it. Model class and maker travel
+// together through the same precedence chain as an inseparable pair: maker cannot be
+// specified without a model class, and when a level names a class without a maker, it
+// resolves from that class's deployment catalog entry rather than inheriting a maker some
+// other level happened to set. On an invocation that chain is request > thread > user > organization >
 // deployment; a stored default
 // (organization, user) or an automation has no request or thread level and so resolves
 // through the last three alone. Reasoning effort cascades independently of class and maker
@@ -1850,6 +1865,13 @@ type Agent0ModelSpec struct {
 	// - `premium`: Live incidents and post-mortems, where being right matters more than being fast.
 	ModelClass *Agent0ModelClassPreference `json:"modelClass,omitempty"`
 
+	// ModelId Agent0's own ID for one specific model, as an `Agent0SupportedModelSpecs.modelId` in the
+	// region's catalog lists it (e.g. `claude-5.5-sonnet`, `gpt-6.1-sol`). The model's class
+	// and maker follow from it. Invalid together with `modelClass` or `modelMaker` at the
+	// same level, and invalid when the region's catalog does not list it as selectable. An
+	// organization without model routing runs the class this model belongs to instead.
+	ModelId *string `json:"modelId,omitempty"`
+
 	// ModelMaker Who trains and owns the model an Agent0 model class runs, independent of the
 	// `Agent0ModelProvider` serving it — Claude is made by Anthropic whether Anthropic's own API,
 	// Amazon Bedrock, or Google Vertex AI serves it.
@@ -1865,6 +1887,8 @@ type Agent0ModelSpec struct {
 	// - `moonshot`: A Kimi model.
 	// - `nvidia`: A Nemotron model.
 	// - `openai`: A GPT or o-series model.
+	// - `together`: A Together AI Tev1 decision model.
+	// - `typesafe`: A TypeSafe Jev decision model.
 	// - `xai`: A Grok model.
 	// - `zhipu`: A GLM model.
 	ModelMaker *Agent0ModelMaker `json:"modelMaker,omitempty"`
@@ -2071,6 +2095,13 @@ type AgenticWorkflowDisplay struct {
 
 // AgenticWorkflowGuardrails defines model for AgenticWorkflowGuardrails.
 type AgenticWorkflowGuardrails struct {
+	// AllowedSkills The custom (organization-authored) skills this automation may use, by skill name (lowercase
+	// alphanumerics separated by single hyphens, e.g. `cost-report`). A run can only list and load
+	// the custom skills named here, and still only those the automation's creator may read. When
+	// absent or empty, the automation uses no custom skills. Dash0's built-in skills are not
+	// affected. Naming a skill as `/name` in the prompt does not add it to this list.
+	AllowedSkills *[]string `json:"allowedSkills,omitempty"`
+
 	// AllowedTools Optionally restrict which tools are allowed. By default, all tools are allowed to be used. You can use the
 	// `*` character to allow all tools matching a pattern.
 	AllowedTools       *[]string                    `json:"allowedTools,omitempty"`
@@ -2203,10 +2234,15 @@ type AgenticWorkflowResponse = AgenticWorkflowDefinition
 
 // AgenticWorkflowSandbox The sandbox an automation's runs execute in: what it may reach, and what it is built from.
 type AgenticWorkflowSandbox struct {
-	// EnvVars Environment variables passed to the setup script's own execution only. Not persisted in
-	// the cache key by value (only key names are hashed, so rotating a secret's value does not
-	// force a respecialized sandbox) and not propagated to the agent's later tool calls in this
-	// version.
+	// EnvVars Environment variables passed to the setup script's own process only, and surfaced in the
+	// UI as "Setup variables". Not secret storage: the values live in this definition as plain
+	// text, so every retained version keeps them, a duplicate or a share carries them, and
+	// getAutomation returns them verbatim to the agent. Use the deployment's Agent0
+	// environment-variable settings for a credential. Only key names enter the setup cache
+	// hash, never values — but declaring any key makes the setup source permanently ineligible
+	// for a shared warm standby, because the seeding path runs org-blind with no env injected.
+	// The values do not reach the agent's own shell; a setup script that wants to hand one on
+	// must export it to $DASH0_AGENT_ENV, which is visible to the agent and the model.
 	EnvVars *map[string]string `json:"envVars,omitempty"`
 
 	// NetworkLevel Controls outbound network access for the sandbox running this thread.
@@ -2239,13 +2275,21 @@ type AgenticWorkflowSandbox struct {
 
 // AgenticWorkflowSpec defines model for AgenticWorkflowSpec.
 type AgenticWorkflowSpec struct {
-	// Constants Static key-value pairs available as {{variable.name}} in the prompt and
-	// tool parameter overrides. Constants are always available regardless of trigger type.
-	// Trigger variables take precedence over constants on conflict.
+	// Constants Static key-value pairs the automation's author defines, available by name as
+	// {{theKeyName}} in the prompt and in tool parameter overrides. Surfaced in the UI as
+	// "Parameters". Always available regardless of trigger type. On a name conflict a
+	// constant WINS over a caller-supplied variable (a trigger payload value or a test-run
+	// variable) and LOSES to a built-in such as dash0.dataset — see resolveVariables in
+	// components/agents/src/server/routes/agentic-workflows/prompt.ts, whose merge order is
+	// caller < constants < builtIns.
 	Constants  *map[string]string        `json:"constants,omitempty"`
 	Display    AgenticWorkflowDisplay    `json:"display"`
 	Enabled    bool                      `json:"enabled"`
 	Guardrails AgenticWorkflowGuardrails `json:"guardrails"`
+
+	// ModelSelection Optional model selection, the routing counterpart of `modelSpec`. Resolved on every run
+	// the same way. Invalid together with `modelSpec`.
+	ModelSelection *Agent0ModelSelection `json:"modelSelection,omitempty"`
 
 	// ModelSpec Optional model spec override, resolved on every run of this automation the same way a
 	// per-invocation override is: `modelClass` and `reasoningEffort` take precedence over the
@@ -2262,7 +2306,18 @@ type AgenticWorkflowSpec struct {
 
 	// Parent Establish as a parent-child hierarchy between automations. You will not want to set this explicitly; instead,
 	// this is going to be set by the automation engine when one automation is deciding to create another.
-	Parent      *AgenticWorkflowParent       `json:"parent,omitempty"`
+	Parent *AgenticWorkflowParent `json:"parent,omitempty"`
+
+	// Permissions The explicit grants on this automation.
+	//
+	// On a write, three cases are distinguished:
+	//
+	// - **Omitted**: the stored grants are left untouched. Use this when the request carries
+	//   no opinion about access, for example a content-only update.
+	// - **Empty array**: the grants are reset to the ones a newly created automation
+	//   receives. This is how a declarative caller removes grants it previously declared —
+	//   omitting the field would be a silent no-op.
+	// - **Non-empty array**: the stored grants are replaced by exactly this set.
 	Permissions *[]AgenticWorkflowPermission `json:"permissions,omitempty"`
 
 	// PermittedActions Computed, read-only. The set of actions the requesting user is permitted to perform on this automation, derived from their org role, dataset permissions, team memberships, and explicit permission entries. Ignored on write.
@@ -2458,197 +2513,6 @@ type AttributeFilterOperator string
 // AttributeFilterStringValue AttributeFilterStringValue may contain a primitive value such as a regex pattern or string.
 type AttributeFilterStringValue = string
 
-// AttributePatternRuleAnnotations Pattern Rules use hard delete and have no folder/sharing/versions-history concept, so
-// only creation/update/last-matched timestamps are tracked here.
-type AttributePatternRuleAnnotations struct {
-	// Dash0ComcreatedAt Timestamp when this Pattern Rule was created. Set by the server; read-only.
-	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
-
-	// Dash0ComlastMatchedAt Read-only: a value supplied on write is always ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't need to strip it back out. Bumped to the current time by every successful `PUT` on this rule (an edit counts as "using" it), and separately by an out-of-band job based on real telemetry-matching activity, writing directly to the database -- the two sources are independent and can disagree. `null` on a freshly created rule that has neither been matched nor edited since.
-	Dash0ComlastMatchedAt *time.Time `json:"dash0.com/last-matched-at,omitempty"`
-
-	// Dash0ComupdatedAt Timestamp of the last update to this Pattern Rule. Doubles as the optimistic-concurrency token (truncated to millisecond precision at write time): required on `PUT` for UI (Clerk session token) callers -- a missing or stale value there is rejected with 400 (`SupersededVersion`). Optional for machine-token/OAuth `PUT` callers, which skip the concurrency check entirely when it is omitted.
-	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
-}
-
-// AttributePatternRuleCreateRequest A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleCreateRequest = AttributePatternRuleDefinition
-
-// AttributePatternRuleDefinition A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleDefinition struct {
-	Kind     AttributePatternRuleDefinitionKind `json:"kind"`
-	Metadata AttributePatternRuleMetadata       `json:"metadata"`
-	Spec     AttributePatternRuleSpec           `json:"spec"`
-}
-
-// AttributePatternRuleDefinitionKind defines model for AttributePatternRuleDefinition.Kind.
-type AttributePatternRuleDefinitionKind string
-
-// AttributePatternRuleLabels defines model for AttributePatternRuleLabels.
-type AttributePatternRuleLabels struct {
-	// Dash0Comdataset Dataset this Pattern Rule belongs to. On create, the `dataset` query parameter is authoritative over this field whenever both are present -- this field is only consulted as a fallback when the query parameter is absent. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400.
-	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
-
-	// Dash0Comid Unique server-generated ID of this Pattern Rule. Set by the server on creation; must not be provided on create (a `POST` body containing it is rejected with 400).
-	Dash0Comid *string `json:"dash0.com/id,omitempty"`
-
-	// Dash0Comorigin Stable, client-chosen label for idempotent apply-by-name (IaC/Terraform-style) workflows, resolved via `{originOrId}` on every path below. Client-provided value wins if given; a machine-token caller that omits it gets a server-generated `api-<uuid>` fallback so the rule still classifies as API-managed; a UI (Clerk) or OAuth caller that omits it keeps a `null` origin. Immutable after creation: a value supplied on update is silently ignored, never rejected, so a normal GET -> edit spec -> PUT round trip doesn't have to strip it back out first. Must not itself look like a UUID (rejected with 400 on create) -- origins and ids are deliberately disjoint namespaces so `{originOrId}` resolution is never ambiguous. Unique per organization (rejected with 400 on create otherwise) -- this scope is organization-wide, not per dataset or per `spec.targetAttribute`.
-	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
-
-	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
-	// - `ui`: created interactively in the Dash0 UI.
-	// - `terraform`: managed via the Dash0 Terraform provider.
-	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `dash0-cli`: managed via the Dash0 CLI.
-	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
-	//   resources Dash0 generates from another resource you own (the recording rules an SLO
-	//   produces) and resources Dash0 ships with the product (the built-in views).
-	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
-	//   group from the organization's identity provider. Membership edits made by hand
-	//   revert on the next reconcile.
-	// - `api`: created directly through the API, and the fallback for any origin whose
-	//   prefix is not recognized.
-	//
-	// New values may be added over time. Treat an unrecognized value as `api`
-	// rather than rejecting the response.
-	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
-}
-
-// AttributePatternRuleListResponse defines model for AttributePatternRuleListResponse.
-type AttributePatternRuleListResponse struct {
-	AttributePatternRules []AttributePatternRuleDefinition `json:"attributePatternRules"`
-
-	// HasMore Whether there are more rules beyond the current page.
-	HasMore *bool `json:"hasMore,omitempty"`
-}
-
-// AttributePatternRuleMetadata defines model for AttributePatternRuleMetadata.
-type AttributePatternRuleMetadata struct {
-	// Annotations Pattern Rules use hard delete and have no folder/sharing/versions-history concept, so
-	// only creation/update/last-matched timestamps are tracked here.
-	Annotations *AttributePatternRuleAnnotations `json:"annotations,omitempty"`
-	Labels      *AttributePatternRuleLabels      `json:"labels,omitempty"`
-
-	// Name Computed by the server from `spec.details` (for a `dash0.operation.name` rule, from its `canonicalOperation`). Pattern Rules have no independent, user-editable display name -- this field exists to conform to this API's standard CRD envelope shape. Always present on a read. A value supplied on write is ignored, and -- unlike the other CRD-enveloped resources this API's standard envelope shape is modeled on -- must not be required on write: the client cannot know it in advance, since the server only computes it after compiling `spec.pattern`. Treated the same as the sibling server-computed, write-ignored spec fields (`details`, `normalizedRegex`, `variableNames`), all of which are similarly absent from their schema's `required` list.
-	Name *string `json:"name,omitempty"`
-}
-
-// AttributePatternRuleOwnership - `user_defined`: created, or promoted from `auto_derived`, by a human through this API.
-// - `auto_derived`: inferred by the Operation Miner.
-type AttributePatternRuleOwnership string
-
-// AttributePatternRuleResponse A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleResponse = AttributePatternRuleDefinition
-
-// AttributePatternRuleSpec defines model for AttributePatternRuleSpec.
-type AttributePatternRuleSpec struct {
-	// Details Computed by the server. Target-attribute-specific side-effect data; for `dash0.operation.name` it carries `canonicalOperation`, the literal value applied to every span this rule matches. A value supplied on write is ignored.
-	Details *AttributePatternRuleSpec_Details `json:"details,omitempty"`
-
-	// NormalizedRegex Computed by the server from `pattern`. The anchored regular expression the collector's Operation Processor compiles to match operation names against this rule. A value supplied on write is ignored.
-	NormalizedRegex *string `json:"normalizedRegex,omitempty"`
-
-	// Ownership - `user_defined`: created, or promoted from `auto_derived`, by a human through this API.
-	// - `auto_derived`: inferred by the Operation Miner.
-	Ownership *AttributePatternRuleOwnership `json:"ownership,omitempty"`
-
-	// Pattern Human-authored operation-name pattern using the placeholder DSL (e.g. `/users/<userId>`; `<<` escapes a literal `<`) -- the `named_pattern` concept defined in the "Pattern Representation and Storage" ADR appendix, whose transformations `internal/operationpatterncompiler` implements. Required on create. Populated on every `GET`/`List` response by reconstructing it from the stored canonical representation -- including for `auto_derived` rows this API never compiled itself -- so it is always present on a read, not only for rows this API wrote.
-	Pattern string `json:"pattern"`
-
-	// Priority Ranks this rule for list ordering: `GET`/`List` responses are always sorted by `priority` descending first, so higher-priority rules (including manually-promoted ones) surface before lower-priority and `auto_derived` ones. `1` (Minor) through `5` (Major) are the user-facing levels, defaulting to `3` (Standard) when omitted on create; an update that omits it preserves the row's current value instead of resetting it. `0` is reserved for `auto_derived` rows the Operation Miner writes -- a client-supplied `0` is rejected with 400.
-	Priority *int `json:"priority,omitempty"`
-
-	// ServiceName OpenTelemetry `service.name` resource attribute this Pattern Rule applies to. Required on create. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Omit when listing to scope the request organization/dataset-wide across every service instead of one.
-	ServiceName string `json:"serviceName"`
-
-	// ServiceNamespace OpenTelemetry `service.namespace` resource attribute this Pattern Rule applies to. Empty string when the target service has no namespace (never omitted/null on a stored row). Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Omit when listing to scope the request organization/dataset-wide across every namespace instead of one.
-	ServiceNamespace *string `json:"serviceNamespace,omitempty"`
-
-	// Status - `active`: applied by the collector's Operation Processor.
-	// - `inactive`: stored but not applied.
-	Status AttributePatternRuleStatus `json:"status"`
-
-	// TargetAttribute The telemetry attribute whose values this rule's patterns match, e.g. `dash0.operation.name`. Immutable after creation: an update whose value disagrees with the stored row is rejected with 400. Defaults to `dash0.operation.name` when omitted on create, which is what keeps callers written against the pre-generalization API working unchanged.
-	TargetAttribute *string `json:"targetAttribute,omitempty"`
-
-	// VariableNames Computed by the server from `pattern`. Placeholder names, in left-to-right occurrence order. A value supplied on write is ignored.
-	VariableNames *[]string `json:"variableNames,omitempty"`
-}
-
-// AttributePatternRuleSpec_Details Computed by the server. Target-attribute-specific side-effect data; for `dash0.operation.name` it carries `canonicalOperation`, the literal value applied to every span this rule matches. A value supplied on write is ignored.
-type AttributePatternRuleSpec_Details struct {
-	// CanonicalOperation Present when `targetAttribute` is `dash0.operation.name`. The literal value written to that attribute on every span this rule matches.
-	CanonicalOperation   *string                `json:"canonicalOperation,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
-}
-
-// AttributePatternRuleStatus - `active`: applied by the collector's Operation Processor.
-// - `inactive`: stored but not applied.
-type AttributePatternRuleStatus string
-
-// AttributePatternRuleUpdateRequest A Pattern Rule abstracts a high-cardinality value of the telemetry attribute named by
-// `spec.targetAttribute` (e.g. `/users/1234`) into a templated one (e.g.
-// `/users/<userId>`), so the collector can collapse matching values together. For
-// `dash0.operation.name` — the default, and the only target attribute mined today —
-// that is the collector's Operation Processor collapsing span operation names. Rows are
-// either authored by a human through this API (`spec.ownership: user_defined`) or
-// inferred by the miner (`spec.ownership: auto_derived`).
-//
-// Unlike most CRD-enveloped resources in this API, Pattern Rules have no independent,
-// user-editable display name, versioning, folder, or sharing concept -- `metadata.name` is
-// server-computed (see below). They are addressable either by their server-generated
-// `metadata.labels["dash0.com/id"]` or by `metadata.labels["dash0.com/origin"]` (an
-// IaC/Terraform-style stable label) -- see `{originOrId}` on each path below.
-// `metadata.labels["dash0.com/dataset"]`/`spec.serviceNamespace`/`spec.serviceName` identify
-// the partition (dataset + service) a rule belongs to, and are immutable once the rule is
-// created.
-type AttributePatternRuleUpdateRequest = AttributePatternRuleDefinition
-
 // AxisScale defines model for AxisScale.
 type AxisScale string
 
@@ -2693,6 +2557,8 @@ type CheckThresholdBaseline struct {
 	// grouping, and rate window and evaluated ad hoc at the detector timestamp. Dashboard
 	// variable placeholders are omitted, as in the observed check query.
 	// Other query types, including hand-written PromQL, cannot configure this floor.
+	// Export compiles this floor into a PromQL enablement condition with the authored filters
+	// and service namespace/name matching. Import retains the condition rather than a typed floor.
 	// No traffic query or volume gate is applied when omitted.
 	VolumeFloor *float64 `json:"volumeFloor,omitempty"`
 }
@@ -2723,6 +2589,8 @@ type CheckThresholdChangeGate struct {
 	// authored selections, filters, grouping, and rate window and evaluated ad hoc. Dashboard
 	// variable placeholders are omitted, as in the observed check query.
 	// Other query types, including hand-written PromQL, cannot configure this floor.
+	// Export compiles this floor into a PromQL enablement condition with the authored filters
+	// and service namespace/name matching. Import retains the condition rather than a typed floor.
 	// No traffic query or volume gate is applied when omitted.
 	VolumeFloor *float64 `json:"volumeFloor,omitempty"`
 }
@@ -2985,6 +2853,65 @@ type Dataset = string
 // DatasetAction defines model for DatasetAction.
 type DatasetAction string
 
+// DatasetAnnotations defines model for DatasetAnnotations.
+type DatasetAnnotations struct {
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// DatasetCreateRequest defines model for DatasetCreateRequest.
+type DatasetCreateRequest = DatasetDefinition
+
+// DatasetDefinition defines model for DatasetDefinition.
+type DatasetDefinition struct {
+	Kind     DatasetDefinitionKind `json:"kind"`
+	Metadata DatasetMetadata       `json:"metadata"`
+	Spec     DatasetSpec           `json:"spec"`
+}
+
+// DatasetDefinitionKind defines model for DatasetDefinition.Kind.
+type DatasetDefinitionKind string
+
+// DatasetLabels defines model for DatasetLabels.
+type DatasetLabels struct {
+	// Dash0Comid The dataset slug. Datasets carry no separate UUID, so the slug is both the identifier and
+	// the path parameter. Required on create, where it is the one `dash0.com/id` a client sets
+	// itself, and immutable thereafter.
+	Dash0Comid string `json:"dash0.com/id"`
+
+	// Dash0Comorigin External identifier for this dataset. Must be unique per organization when set. Used by
+	// Infrastructure-as-Code tools (Terraform, Kubernetes operator). Auto-generated as
+	// `api-<uuid>` on POST if not provided. Must not collide with an existing dataset slug.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Optimistic concurrency token. Server-set on create; required on update from the Dash0 UI
+	// and optional for machine tokens.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// DatasetListResponse defines model for DatasetListResponse.
+type DatasetListResponse struct {
+	Datasets []DatasetResponse `json:"datasets"`
+}
+
 // DatasetLoggingSettings defines model for DatasetLoggingSettings.
 type DatasetLoggingSettings struct {
 	// Retention The retention class selected for a signal, per dataset. The value is the
@@ -3000,6 +2927,15 @@ type DatasetLoggingSettings struct {
 	// - `210d`: 210 days total.
 	// - `390d`: 390 days total.
 	Retention RetentionClass `json:"retention"`
+}
+
+// DatasetMetadata defines model for DatasetMetadata.
+type DatasetMetadata struct {
+	Annotations *DatasetAnnotations `json:"annotations,omitempty"`
+	Labels      *DatasetLabels      `json:"labels,omitempty"`
+
+	// Name Human-readable name for the dataset.
+	Name string `json:"name"`
 }
 
 // DatasetMetricsSettings defines model for DatasetMetricsSettings.
@@ -3043,6 +2979,9 @@ type DatasetProfilingSettings struct {
 	// - `390d`: 390 days total.
 	Retention RetentionClass `json:"retention"`
 }
+
+// DatasetResponse defines model for DatasetResponse.
+type DatasetResponse = DatasetDefinition
 
 // DatasetRestriction defines model for DatasetRestriction.
 type DatasetRestriction string
@@ -3092,6 +3031,59 @@ type DatasetSettings struct {
 	WebEvents        DatasetWebEventsSettings `json:"webEvents"`
 }
 
+// DatasetSpec defines model for DatasetSpec.
+type DatasetSpec struct {
+	// CardholderDataRedaction Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
+	// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
+	// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
+	// or split card numbers, so filtering at the source remains the primary mechanism.
+	// Absent means disabled.
+	CardholderDataRedaction *CardholderDataRedactionSettings `json:"cardholderDataRedaction,omitempty"`
+
+	// Darkplane Darkplane-specific opt-ins for this dataset.
+	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
+
+	// GenAiAttributeRedaction Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
+	// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
+	// e.g. to keep conversation content private while still storing tool input/output.
+	GenAiAttributeRedaction *GenAIAttributeRedactionSettings `json:"genAiAttributeRedaction,omitempty"`
+	GeoLocation             *GeoLocationSettings             `json:"geoLocation,omitempty"`
+	IpAddresses             *IpAddressesSettings             `json:"ipAddresses,omitempty"`
+	Logging                 *DatasetLoggingSettings          `json:"logging,omitempty"`
+	Metrics                 *DatasetMetricsSettings          `json:"metrics,omitempty"`
+
+	// Permissions Access control entries for this dataset. Ignored on create, which always grants
+	// `dataset:read` to the organization's members; set them with a subsequent update.
+	Permissions *[]DatasetPermission `json:"permissions,omitempty"`
+
+	// PermittedActions What the calling identity may do with this dataset. Read-only and derived per request
+	// from the caller's role, the dataset's permissions and its origin; values supplied on a
+	// write are ignored.
+	PermittedActions *[]DatasetAction `json:"permittedActions,omitempty"`
+
+	// Preferred Whether this dataset is the organization's preferred dataset, which the Dash0 UI opens by
+	// default. At most one dataset per organization is preferred; setting it here clears the
+	// flag on the previous one.
+	Preferred *bool                     `json:"preferred,omitempty"`
+	Profiling *DatasetProfilingSettings `json:"profiling,omitempty"`
+
+	// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
+	//
+	// - disabled: No upgrade will be executed
+	// - latest: We will always upgrade to the latest and greatest
+	// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
+	//
+	// Defaults to `latest` for new organizations.
+	SemanticConventionUpgrades *SemanticConventionUpgrades `json:"semanticConventionUpgrades,omitempty"`
+
+	// TelemetryFilters Spam filters for this dataset. Omitting this field on update leaves the stored filters
+	// untouched, so a client that does not manage spam filters cannot clobber filters written
+	// through the spam filter API. Supplying it replaces the whole list.
+	TelemetryFilters *[]TelemetryFilter        `json:"telemetryFilters,omitempty"`
+	Tracing          *DatasetTracingSettings   `json:"tracing,omitempty"`
+	WebEvents        *DatasetWebEventsSettings `json:"webEvents,omitempty"`
+}
+
 // DatasetTracingSettings defines model for DatasetTracingSettings.
 type DatasetTracingSettings struct {
 	// ConvertSpanEventsToLogRecords When enabled, span events are automatically converted to log records correlated with the parent span
@@ -3114,6 +3106,9 @@ type DatasetTracingSettings struct {
 	// - `390d`: 390 days total.
 	Retention RetentionClass `json:"retention"`
 }
+
+// DatasetUpdateRequest defines model for DatasetUpdateRequest.
+type DatasetUpdateRequest = DatasetDefinition
 
 // DatasetWebEventsSettings defines model for DatasetWebEventsSettings.
 type DatasetWebEventsSettings struct {
@@ -3362,6 +3357,11 @@ type GenerativeAiEvaluationIntent string
 
 // GenerativeAiEvaluationJudge defines model for GenerativeAiEvaluationJudge.
 type GenerativeAiEvaluationJudge struct {
+	// AllowPartialPrompt Judge spans that carry only some of the attributes the user prompt references. A
+	// missing or empty attribute is replaced with `<missing attribute key>`. A span is still
+	// skipped when no referenced attribute resolves to non-redacted content. Defaults to false.
+	AllowPartialPrompt *bool `json:"allowPartialPrompt,omitempty"`
+
 	// Model The model class used to judge an evaluation. Availability depends on the region and
 	// evaluation workload. Dash0 manages the serving model privately.
 	//
@@ -3370,7 +3370,11 @@ type GenerativeAiEvaluationJudge struct {
 	Model        GenerativeAiEvaluationModel       `json:"model"`
 	Output       GenerativeAiEvaluationJudgeOutput `json:"output"`
 	SystemPrompt string                            `json:"systemPrompt"`
-	UserPrompt   string                            `json:"userPrompt"`
+
+	// UserPrompt The prompt sent to the judge for each evaluated span. `{{ key }}` is replaced with the
+	// value of the span or resource attribute `key`. A span is skipped when a referenced
+	// attribute is missing or empty, unless `allowPartialPrompt` is set.
+	UserPrompt string `json:"userPrompt"`
 }
 
 // GenerativeAiEvaluationJudgeOutput defines model for GenerativeAiEvaluationJudgeOutput.
@@ -5694,11 +5698,15 @@ type MemberInvitationSpec struct {
 
 // MemberLabels defines model for MemberLabels.
 type MemberLabels struct {
+	// Dash0Comid The member's ID, used to address the member in the members and teams endpoints.
 	Dash0Comid       *string    `json:"dash0.com/id,omitempty"`
 	Dash0ComjoinedAt *time.Time `json:"dash0.com/joinedAt,omitempty"`
 
 	// Dash0Comrole The member's role in the organization
 	Dash0Comrole *string `json:"dash0.com/role,omitempty"`
+
+	// Dash0ComuserId The member's Dash0 user ID. Use it wherever another endpoint asks for a user ID, such as the `userId` of a custom skill permission.
+	Dash0ComuserId *string `json:"dash0.com/userId,omitempty"`
 }
 
 // MemberMetadata defines model for MemberMetadata.
@@ -6663,8 +6671,8 @@ type PrometheusRuleMetadata struct {
 	//
 	// The detector keys are the only way to configure an anomaly detector from Kubernetes: check rules
 	// are a flat resource whose body has no `thresholds` field. All three change-gate keys must be present
-	// and parseable for a change gate to be created; a partial or unparseable set is left in the annotations
-	// and creates no detector, rather than rejecting the rule and breaking the reconcile loop. A typed
+	// and valid for a change gate to be created. Malformed or incomplete detector annotations reject
+	// the submission. Baseline and change gate detectors are mutually exclusive. A typed
 	// `thresholds` field on the body always wins over the matching annotation.
 	//
 	// New annotation keys use the `dash0.com/` prefix. The legacy `dash0-threshold-degraded` /
@@ -7185,11 +7193,14 @@ type SettingsPerOrganizationAndDatasetInfo struct {
 	// by Dash0, not customer-configurable. A sibling of `signalControlEdge` rather than a field
 	// inside it, matching how SaaS-side facets are modelled as their own schemas.
 	SignalControlOperationCardinalityReduction SignalControlOperationCardinalityReductionSettings `json:"signalControlOperationCardinalityReduction"`
-	SignalToMetricsSettings                    []SignalToMetricsDefinition                        `json:"signalToMetricsSettings"`
-	SourceMapSettings                          []SourceMapIntegration                             `json:"sourceMapSettings"`
-	TechnicalID                                string                                             `json:"technicalID"`
-	TelemetryTransformationRuleSettings        []TelemetryTransformationRuleDefinition            `json:"telemetryTransformationRuleSettings"`
-	TimeSeriesAggregationSettings              []TimeSeriesAggregationDefinition                  `json:"timeSeriesAggregationSettings"`
+
+	// SignalToMetricsSettings Signal-to-metrics rules without `spec.output.type`, which every collector version
+	// understands.
+	SignalToMetricsSettings             []SignalToMetricsDefinition             `json:"signalToMetricsSettings"`
+	SourceMapSettings                   []SourceMapIntegration                  `json:"sourceMapSettings"`
+	TechnicalID                         string                                  `json:"technicalID"`
+	TelemetryTransformationRuleSettings []TelemetryTransformationRuleDefinition `json:"telemetryTransformationRuleSettings"`
+	TimeSeriesAggregationSettings       []TimeSeriesAggregationDefinition       `json:"timeSeriesAggregationSettings"`
 }
 
 // SeverityNumber SEVERITY_NUMBER_UNSPECIFIED = 0;
@@ -8189,6 +8200,8 @@ type SpamFilterSpec struct {
 // SpamFilterSpecV1Alpha2 v1alpha2 spam filter specification. The `filter` field defines structured
 // criteria that the server compiles into an OTTL condition for evaluation.
 type SpamFilterSpecV1Alpha2 struct {
+	// Context The telemetry unit a filter rule is evaluated against, and that a matching rule drops.
+	// `profile_sample` evaluates each sample of a profile and drops matching samples individually.
 	Context TelemetryFilterContext `json:"context"`
 	Filter  FilterCriteria         `json:"filter"`
 }
@@ -8994,8 +9007,11 @@ type TelemetryFilter struct {
 	//
 	// Examples:
 	//  - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
-	Condition OTTLCondition          `json:"condition"`
-	Context   TelemetryFilterContext `json:"context"`
+	Condition OTTLCondition `json:"condition"`
+
+	// Context The telemetry unit a filter rule is evaluated against, and that a matching rule drops.
+	// `profile_sample` evaluates each sample of a profile and drops matching samples individually.
+	Context TelemetryFilterContext `json:"context"`
 
 	// Enabled Whether this telemetry filter is active. When absent or true, the filter
 	// is applied. When explicitly set to false, the filter is skipped.
@@ -9034,7 +9050,8 @@ type TelemetryFilter struct {
 	Source *CrdSource `json:"source,omitempty"`
 }
 
-// TelemetryFilterContext defines model for TelemetryFilterContext.
+// TelemetryFilterContext The telemetry unit a filter rule is evaluated against, and that a matching rule drops.
+// `profile_sample` evaluates each sample of a profile and drops matching samples individually.
 type TelemetryFilterContext string
 
 // TelemetryTransformationRuleAnnotations defines model for TelemetryTransformationRuleAnnotations.
@@ -9477,9 +9494,23 @@ type ViewSpec struct {
 	// GroupBy A set of attribute keys to group the view by. This property may be missing to indicate that
 	// no configuration was historically made for this view, i.e., the view was saved before the
 	// grouping capability was added. In that case, you can assume a default grouping should be used.
-	GroupBy        *[]string         `json:"groupBy,omitempty"`
-	ImplicitFilter *FilterCriteria   `json:"implicitFilter,omitempty"`
-	Permissions    *[]ViewPermission `json:"permissions,omitempty"`
+	GroupBy        *[]string       `json:"groupBy,omitempty"`
+	ImplicitFilter *FilterCriteria `json:"implicitFilter,omitempty"`
+
+	// Permissions The explicit grants on this view.
+	//
+	// On `PUT /api/views/{originOrId}`, three cases are distinguished:
+	//
+	// - **Omitted**: the stored grants are left untouched. Use this when the request carries
+	//   no opinion about access, for example a content-only update.
+	// - **Empty array**: the grants are reset to the ones a newly created view receives.
+	//   This is how a declarative caller removes grants it previously declared — omitting
+	//   the field would be a silent no-op.
+	// - **Non-empty array**: the stored grants are replaced by exactly this set.
+	//
+	// The other write endpoints require a set carrying both write and delete, so an empty
+	// array is rejected there.
+	Permissions *[]ViewPermission `json:"permissions,omitempty"`
 
 	// Query The SQL query associated with this view. Only applicable when type is "sql".
 	// When the view is loaded, this query is used to populate the editor and auto-executed.
@@ -9714,59 +9745,6 @@ type GetApiAlertingCheckRulesOriginOrIdParams struct {
 // PutApiAlertingCheckRulesOriginOrIdParams defines parameters for PutApiAlertingCheckRulesOriginOrId.
 type PutApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
-}
-
-// GetApiAttributePatternRulesParams defines parameters for GetApiAttributePatternRules.
-type GetApiAttributePatternRulesParams struct {
-	// Dataset The dataset to list Pattern Rules from.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-
-	// ServiceNamespace Filter to rules scoped to this OpenTelemetry `service.namespace`. Requires `serviceName` to also be set.
-	ServiceNamespace *string `form:"serviceNamespace,omitempty" json:"serviceNamespace,omitempty"`
-
-	// ServiceName Filter to rules scoped to this OpenTelemetry `service.name`.
-	ServiceName *string `form:"serviceName,omitempty" json:"serviceName,omitempty"`
-
-	// Ownership Filter to rules with this ownership.
-	Ownership *AttributePatternRuleOwnership `form:"ownership,omitempty" json:"ownership,omitempty"`
-
-	// Status Filter to rules with this status.
-	Status *AttributePatternRuleStatus `form:"status,omitempty" json:"status,omitempty"`
-
-	// Priority Filter to rules at any of these priorities, comma-separated. Priorities 1-5 are the
-	// user-facing priority levels; 0 matches auto-derived rows, which always carry the reserved
-	// priority 0 regardless of the `ownership` filter.
-	Priority *[]int `form:"priority,omitempty" json:"priority,omitempty"`
-
-	// Limit Maximum number of rules to return.
-	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
-
-	// Offset Number of rules to skip.
-	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
-}
-
-// PostApiAttributePatternRulesParams defines parameters for PostApiAttributePatternRules.
-type PostApiAttributePatternRulesParams struct {
-	// Dataset The dataset to create the Pattern Rule in.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
-// DeleteApiAttributePatternRulesOriginOrIdParams defines parameters for DeleteApiAttributePatternRulesOriginOrId.
-type DeleteApiAttributePatternRulesOriginOrIdParams struct {
-	// Dataset The dataset the Pattern Rule belongs to.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
-// GetApiAttributePatternRulesOriginOrIdParams defines parameters for GetApiAttributePatternRulesOriginOrId.
-type GetApiAttributePatternRulesOriginOrIdParams struct {
-	// Dataset The dataset the Pattern Rule belongs to.
-	Dataset Dataset `form:"dataset" json:"dataset"`
-}
-
-// PutApiAttributePatternRulesOriginOrIdParams defines parameters for PutApiAttributePatternRulesOriginOrId.
-type PutApiAttributePatternRulesOriginOrIdParams struct {
-	// Dataset The dataset the Pattern Rule belongs to.
-	Dataset Dataset `form:"dataset" json:"dataset"`
 }
 
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
@@ -10238,17 +10216,17 @@ type PostApiAlertingCheckRulesBulkJSONRequestBody = PrometheusAlertRuleBulkCreat
 // PutApiAlertingCheckRulesOriginOrIdJSONRequestBody defines body for PutApiAlertingCheckRulesOriginOrId for application/json ContentType.
 type PutApiAlertingCheckRulesOriginOrIdJSONRequestBody = PrometheusAlertRule
 
-// PostApiAttributePatternRulesJSONRequestBody defines body for PostApiAttributePatternRules for application/json ContentType.
-type PostApiAttributePatternRulesJSONRequestBody = AttributePatternRuleCreateRequest
-
-// PutApiAttributePatternRulesOriginOrIdJSONRequestBody defines body for PutApiAttributePatternRulesOriginOrId for application/json ContentType.
-type PutApiAttributePatternRulesOriginOrIdJSONRequestBody = AttributePatternRuleUpdateRequest
-
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
 
 // PutApiDashboardsOriginOrIdJSONRequestBody defines body for PutApiDashboardsOriginOrId for application/json ContentType.
 type PutApiDashboardsOriginOrIdJSONRequestBody = DashboardDefinition
+
+// PostApiDatasetsJSONRequestBody defines body for PostApiDatasets for application/json ContentType.
+type PostApiDatasetsJSONRequestBody = DatasetCreateRequest
+
+// PutApiDatasetsOriginOrIdJSONRequestBody defines body for PutApiDatasetsOriginOrId for application/json ContentType.
+type PutApiDatasetsOriginOrIdJSONRequestBody = DatasetUpdateRequest
 
 // PostApiImportCheckRuleJSONRequestBody defines body for PostApiImportCheckRule for application/json ContentType.
 type PostApiImportCheckRuleJSONRequestBody = PrometheusAlertRule
@@ -10399,74 +10377,6 @@ type PostOauthRevokeFormdataRequestBody = OAuthRevocationRequest
 
 // PostOauthTokenFormdataRequestBody defines body for PostOauthToken for application/x-www-form-urlencoded ContentType.
 type PostOauthTokenFormdataRequestBody = OAuthTokenRequest
-
-// Getter for additional properties for AttributePatternRuleSpec_Details. Returns the specified
-// element and whether it was found
-func (a AttributePatternRuleSpec_Details) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for AttributePatternRuleSpec_Details
-func (a *AttributePatternRuleSpec_Details) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for AttributePatternRuleSpec_Details to handle AdditionalProperties
-func (a *AttributePatternRuleSpec_Details) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["canonicalOperation"]; found {
-		err = json.Unmarshal(raw, &a.CanonicalOperation)
-		if err != nil {
-			return fmt.Errorf("error reading 'canonicalOperation': %w", err)
-		}
-		delete(object, "canonicalOperation")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for AttributePatternRuleSpec_Details to handle AdditionalProperties
-func (a AttributePatternRuleSpec_Details) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.CanonicalOperation != nil {
-		object["canonicalOperation"], err = json.Marshal(a.CanonicalOperation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'canonicalOperation': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
 
 // Getter for additional properties for PrometheusAlertRule_Annotations. Returns the specified
 // element and whether it was found
@@ -13317,25 +13227,6 @@ type ClientInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiAttributePatternRules request
-	GetApiAttributePatternRules(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostApiAttributePatternRulesWithBody request with any body
-	PostApiAttributePatternRulesWithBody(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PostApiAttributePatternRules(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteApiAttributePatternRulesOriginOrId request
-	DeleteApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetApiAttributePatternRulesOriginOrId request
-	GetApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PutApiAttributePatternRulesOriginOrIdWithBody request with any body
-	PutApiAttributePatternRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PutApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetApiDashboards request
 	GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -13354,6 +13245,25 @@ type ClientInterface interface {
 	PutApiDashboardsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutApiDashboardsOriginOrId(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, body PutApiDashboardsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDatasets request
+	GetApiDatasets(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiDatasetsWithBody request with any body
+	PostApiDatasetsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiDatasets(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiDatasetsOriginOrId request
+	DeleteApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDatasetsOriginOrId request
+	GetApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDatasetsOriginOrIdWithBody request with any body
+	PutApiDatasetsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiDatasetsOriginOrId(ctx context.Context, originOrId string, body PutApiDatasetsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiEdgeSettings request
 	GetApiEdgeSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -13966,90 +13876,6 @@ func (c *generatedClient) PutApiAlertingCheckRulesOriginOrId(ctx context.Context
 	return c.Client.Do(req)
 }
 
-func (c *generatedClient) GetApiAttributePatternRules(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiAttributePatternRulesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PostApiAttributePatternRulesWithBody(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiAttributePatternRulesRequestWithBody(c.Server, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PostApiAttributePatternRules(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiAttributePatternRulesRequest(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) DeleteApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) GetApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PutApiAttributePatternRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *generatedClient) PutApiAttributePatternRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiAttributePatternRulesOriginOrIdRequest(c.Server, originOrId, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *generatedClient) GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiDashboardsRequest(c.Server, params)
 	if err != nil {
@@ -14124,6 +13950,90 @@ func (c *generatedClient) PutApiDashboardsOriginOrIdWithBody(ctx context.Context
 
 func (c *generatedClient) PutApiDashboardsOriginOrId(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, body PutApiDashboardsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiDashboardsOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiDatasets(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDatasetsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiDatasetsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiDatasetsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiDatasets(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiDatasetsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiDatasetsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDatasetsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiDatasetsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDatasetsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiDatasetsOriginOrId(ctx context.Context, originOrId string, body PutApiDatasetsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDatasetsOriginOrIdRequest(c.Server, originOrId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -16654,390 +16564,6 @@ func NewPutApiAlertingCheckRulesOriginOrIdRequestWithBody(server string, originO
 	return req, nil
 }
 
-// NewGetApiAttributePatternRulesRequest generates requests for GetApiAttributePatternRules
-func NewGetApiAttributePatternRulesRequest(server string, params *GetApiAttributePatternRulesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		if params.ServiceNamespace != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "serviceNamespace", runtime.ParamLocationQuery, *params.ServiceNamespace); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.ServiceName != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "serviceName", runtime.ParamLocationQuery, *params.ServiceName); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Ownership != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "ownership", runtime.ParamLocationQuery, *params.Ownership); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Status != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "status", runtime.ParamLocationQuery, *params.Status); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Priority != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", false, "priority", runtime.ParamLocationQuery, *params.Priority); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Offset != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPostApiAttributePatternRulesRequest calls the generic PostApiAttributePatternRules builder with application/json body
-func NewPostApiAttributePatternRulesRequest(server string, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostApiAttributePatternRulesRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewPostApiAttributePatternRulesRequestWithBody generates requests for PostApiAttributePatternRules with any type of body
-func NewPostApiAttributePatternRulesRequestWithBody(server string, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewDeleteApiAttributePatternRulesOriginOrIdRequest generates requests for DeleteApiAttributePatternRulesOriginOrId
-func NewDeleteApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetApiAttributePatternRulesOriginOrIdRequest generates requests for GetApiAttributePatternRulesOriginOrId
-func NewGetApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewPutApiAttributePatternRulesOriginOrIdRequest calls the generic PutApiAttributePatternRulesOriginOrId builder with application/json body
-func NewPutApiAttributePatternRulesOriginOrIdRequest(server string, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
-}
-
-// NewPutApiAttributePatternRulesOriginOrIdRequestWithBody generates requests for PutApiAttributePatternRulesOriginOrId with any type of body
-func NewPutApiAttributePatternRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/attribute-pattern-rules/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "dataset", runtime.ParamLocationQuery, params.Dataset); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewGetApiDashboardsRequest generates requests for GetApiDashboards
 func NewGetApiDashboardsRequest(server string, params *GetApiDashboardsParams) (*http.Request, error) {
 	var err error
@@ -17318,6 +16844,188 @@ func NewPutApiDashboardsOriginOrIdRequestWithBody(server string, originOrId stri
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiDatasetsRequest generates requests for GetApiDatasets
+func NewGetApiDatasetsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/datasets")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiDatasetsRequest calls the generic PostApiDatasets builder with application/json body
+func NewPostApiDatasetsRequest(server string, body PostApiDatasetsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiDatasetsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiDatasetsRequestWithBody generates requests for PostApiDatasets with any type of body
+func NewPostApiDatasetsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/datasets")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiDatasetsOriginOrIdRequest generates requests for DeleteApiDatasetsOriginOrId
+func NewDeleteApiDatasetsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/datasets/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiDatasetsOriginOrIdRequest generates requests for GetApiDatasetsOriginOrId
+func NewGetApiDatasetsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/datasets/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiDatasetsOriginOrIdRequest calls the generic PutApiDatasetsOriginOrId builder with application/json body
+func NewPutApiDatasetsOriginOrIdRequest(server string, originOrId string, body PutApiDatasetsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiDatasetsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiDatasetsOriginOrIdRequestWithBody generates requests for PutApiDatasetsOriginOrId with any type of body
+func NewPutApiDatasetsOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/datasets/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
 	}
 
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
@@ -22862,25 +22570,6 @@ type ClientWithResponsesInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAlertingCheckRulesOriginOrIdResponse, error)
 
-	// GetApiAttributePatternRulesWithResponse request
-	GetApiAttributePatternRulesWithResponse(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesResponse, error)
-
-	// PostApiAttributePatternRulesWithBodyWithResponse request with any body
-	PostApiAttributePatternRulesWithBodyWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error)
-
-	PostApiAttributePatternRulesWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error)
-
-	// DeleteApiAttributePatternRulesOriginOrIdWithResponse request
-	DeleteApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error)
-
-	// GetApiAttributePatternRulesOriginOrIdWithResponse request
-	GetApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesOriginOrIdResponse, error)
-
-	// PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse request with any body
-	PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error)
-
-	PutApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error)
-
 	// GetApiDashboardsWithResponse request
 	GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error)
 
@@ -22899,6 +22588,25 @@ type ClientWithResponsesInterface interface {
 	PutApiDashboardsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDashboardsOriginOrIdResponse, error)
 
 	PutApiDashboardsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiDashboardsOriginOrIdParams, body PutApiDashboardsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDashboardsOriginOrIdResponse, error)
+
+	// GetApiDatasetsWithResponse request
+	GetApiDatasetsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiDatasetsResponse, error)
+
+	// PostApiDatasetsWithBodyWithResponse request with any body
+	PostApiDatasetsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiDatasetsResponse, error)
+
+	PostApiDatasetsWithResponse(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiDatasetsResponse, error)
+
+	// DeleteApiDatasetsOriginOrIdWithResponse request
+	DeleteApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiDatasetsOriginOrIdResponse, error)
+
+	// GetApiDatasetsOriginOrIdWithResponse request
+	GetApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiDatasetsOriginOrIdResponse, error)
+
+	// PutApiDatasetsOriginOrIdWithBodyWithResponse request with any body
+	PutApiDatasetsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDatasetsOriginOrIdResponse, error)
+
+	PutApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiDatasetsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDatasetsOriginOrIdResponse, error)
 
 	// GetApiEdgeSettingsWithResponse request
 	GetApiEdgeSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiEdgeSettingsResponse, error)
@@ -23597,124 +23305,6 @@ func (r PutApiAlertingCheckRulesOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
-type GetApiAttributePatternRulesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleListResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiAttributePatternRulesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiAttributePatternRulesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PostApiAttributePatternRulesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleResponse
-	JSON400      *ErrorResponse
-	JSON409      *ErrorResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r PostApiAttributePatternRulesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostApiAttributePatternRulesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteApiAttributePatternRulesOriginOrIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteApiAttributePatternRulesOriginOrIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetApiAttributePatternRulesOriginOrIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApiAttributePatternRulesOriginOrIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PutApiAttributePatternRulesOriginOrIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *AttributePatternRuleResponse
-	JSON400      *ErrorResponse
-	JSON409      *ErrorResponse
-	JSONDefault  *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r PutApiAttributePatternRulesOriginOrIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PutApiAttributePatternRulesOriginOrIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type GetApiDashboardsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -23823,6 +23413,120 @@ func (r PutApiDashboardsOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiDashboardsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiDatasetsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DatasetListResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDatasetsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDatasetsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiDatasetsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DatasetResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiDatasetsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiDatasetsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiDatasetsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiDatasetsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiDatasetsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiDatasetsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DatasetResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDatasetsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDatasetsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiDatasetsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DatasetResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiDatasetsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiDatasetsOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -26246,67 +25950,6 @@ func (c *ClientWithResponses) PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx
 	return ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp)
 }
 
-// GetApiAttributePatternRulesWithResponse request returning *GetApiAttributePatternRulesResponse
-func (c *ClientWithResponses) GetApiAttributePatternRulesWithResponse(ctx context.Context, params *GetApiAttributePatternRulesParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesResponse, error) {
-	rsp, err := c.GetApiAttributePatternRules(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiAttributePatternRulesResponse(rsp)
-}
-
-// PostApiAttributePatternRulesWithBodyWithResponse request with arbitrary body returning *PostApiAttributePatternRulesResponse
-func (c *ClientWithResponses) PostApiAttributePatternRulesWithBodyWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error) {
-	rsp, err := c.PostApiAttributePatternRulesWithBody(ctx, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostApiAttributePatternRulesResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostApiAttributePatternRulesWithResponse(ctx context.Context, params *PostApiAttributePatternRulesParams, body PostApiAttributePatternRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAttributePatternRulesResponse, error) {
-	rsp, err := c.PostApiAttributePatternRules(ctx, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostApiAttributePatternRulesResponse(rsp)
-}
-
-// DeleteApiAttributePatternRulesOriginOrIdWithResponse request returning *DeleteApiAttributePatternRulesOriginOrIdResponse
-func (c *ClientWithResponses) DeleteApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.DeleteApiAttributePatternRulesOriginOrId(ctx, originOrId, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
-// GetApiAttributePatternRulesOriginOrIdWithResponse request returning *GetApiAttributePatternRulesOriginOrIdResponse
-func (c *ClientWithResponses) GetApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiAttributePatternRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.GetApiAttributePatternRulesOriginOrId(ctx, originOrId, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
-// PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiAttributePatternRulesOriginOrIdResponse
-func (c *ClientWithResponses) PutApiAttributePatternRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.PutApiAttributePatternRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PutApiAttributePatternRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAttributePatternRulesOriginOrIdParams, body PutApiAttributePatternRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
-	rsp, err := c.PutApiAttributePatternRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp)
-}
-
 // GetApiDashboardsWithResponse request returning *GetApiDashboardsResponse
 func (c *ClientWithResponses) GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error) {
 	rsp, err := c.GetApiDashboards(ctx, params, reqEditors...)
@@ -26366,6 +26009,67 @@ func (c *ClientWithResponses) PutApiDashboardsOriginOrIdWithResponse(ctx context
 		return nil, err
 	}
 	return ParsePutApiDashboardsOriginOrIdResponse(rsp)
+}
+
+// GetApiDatasetsWithResponse request returning *GetApiDatasetsResponse
+func (c *ClientWithResponses) GetApiDatasetsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiDatasetsResponse, error) {
+	rsp, err := c.GetApiDatasets(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDatasetsResponse(rsp)
+}
+
+// PostApiDatasetsWithBodyWithResponse request with arbitrary body returning *PostApiDatasetsResponse
+func (c *ClientWithResponses) PostApiDatasetsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiDatasetsResponse, error) {
+	rsp, err := c.PostApiDatasetsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiDatasetsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiDatasetsWithResponse(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiDatasetsResponse, error) {
+	rsp, err := c.PostApiDatasets(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiDatasetsResponse(rsp)
+}
+
+// DeleteApiDatasetsOriginOrIdWithResponse request returning *DeleteApiDatasetsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiDatasetsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiDatasetsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiDatasetsOriginOrIdResponse(rsp)
+}
+
+// GetApiDatasetsOriginOrIdWithResponse request returning *GetApiDatasetsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiDatasetsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiDatasetsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDatasetsOriginOrIdResponse(rsp)
+}
+
+// PutApiDatasetsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiDatasetsOriginOrIdResponse
+func (c *ClientWithResponses) PutApiDatasetsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDatasetsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiDatasetsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDatasetsOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiDatasetsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDatasetsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiDatasetsOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDatasetsOriginOrIdResponse(rsp)
 }
 
 // GetApiEdgeSettingsWithResponse request returning *GetApiEdgeSettingsResponse
@@ -28100,192 +27804,6 @@ func ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp *http.Response) (*PutAp
 	return response, nil
 }
 
-// ParseGetApiAttributePatternRulesResponse parses an HTTP response from a GetApiAttributePatternRulesWithResponse call
-func ParseGetApiAttributePatternRulesResponse(rsp *http.Response) (*GetApiAttributePatternRulesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiAttributePatternRulesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleListResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePostApiAttributePatternRulesResponse parses an HTTP response from a PostApiAttributePatternRulesWithResponse call
-func ParsePostApiAttributePatternRulesResponse(rsp *http.Response) (*PostApiAttributePatternRulesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostApiAttributePatternRulesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a DeleteApiAttributePatternRulesOriginOrIdWithResponse call
-func ParseDeleteApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiAttributePatternRulesOriginOrIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteApiAttributePatternRulesOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a GetApiAttributePatternRulesOriginOrIdWithResponse call
-func ParseGetApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*GetApiAttributePatternRulesOriginOrIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApiAttributePatternRulesOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePutApiAttributePatternRulesOriginOrIdResponse parses an HTTP response from a PutApiAttributePatternRulesOriginOrIdWithResponse call
-func ParsePutApiAttributePatternRulesOriginOrIdResponse(rsp *http.Response) (*PutApiAttributePatternRulesOriginOrIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PutApiAttributePatternRulesOriginOrIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AttributePatternRuleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetApiDashboardsResponse parses an HTTP response from a GetApiDashboardsWithResponse call
 func ParseGetApiDashboardsResponse(rsp *http.Response) (*GetApiDashboardsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -28427,6 +27945,164 @@ func ParsePutApiDashboardsOriginOrIdResponse(rsp *http.Response) (*PutApiDashboa
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest DashboardDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDatasetsResponse parses an HTTP response from a GetApiDatasetsWithResponse call
+func ParseGetApiDatasetsResponse(rsp *http.Response) (*GetApiDatasetsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDatasetsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DatasetListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiDatasetsResponse parses an HTTP response from a PostApiDatasetsWithResponse call
+func ParsePostApiDatasetsResponse(rsp *http.Response) (*PostApiDatasetsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiDatasetsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DatasetResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiDatasetsOriginOrIdResponse parses an HTTP response from a DeleteApiDatasetsOriginOrIdWithResponse call
+func ParseDeleteApiDatasetsOriginOrIdResponse(rsp *http.Response) (*DeleteApiDatasetsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiDatasetsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDatasetsOriginOrIdResponse parses an HTTP response from a GetApiDatasetsOriginOrIdWithResponse call
+func ParseGetApiDatasetsOriginOrIdResponse(rsp *http.Response) (*GetApiDatasetsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDatasetsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DatasetResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiDatasetsOriginOrIdResponse parses an HTTP response from a PutApiDatasetsOriginOrIdWithResponse call
+func ParsePutApiDatasetsOriginOrIdResponse(rsp *http.Response) (*PutApiDatasetsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiDatasetsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DatasetResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

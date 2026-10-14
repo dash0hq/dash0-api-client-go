@@ -51,6 +51,14 @@ type Client interface {
 	DeleteSLO(ctx context.Context, originOrID string, dataset *string) error
 	ListSLOsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[SloDefinition]
 
+	// Datasets
+	ListDatasets(ctx context.Context) ([]*DatasetDefinition, error)
+	GetDataset(ctx context.Context, originOrID string) (*DatasetDefinition, error)
+	CreateDataset(ctx context.Context, dataset *DatasetDefinition) (*DatasetDefinition, error)
+	UpdateDataset(ctx context.Context, originOrID string, dataset *DatasetDefinition) (*DatasetDefinition, error)
+	DeleteDataset(ctx context.Context, originOrID string) error
+	ListDatasetsIter(ctx context.Context) *Iter[DatasetDefinition]
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)

@@ -283,3 +283,13 @@ Client.ListSLOs*
 (*MockClient).ListCheckRules*
 (*MockClient).ListRecordingRules*
 (*MockClient).ListSLOs*
+
+# <NEXT_RELEASE>: the generated attribute pattern rule types and operations
+# are removed because the public API spec no longer publishes them. Active,
+# Inactive, UserDefined, and AutoDerived were the constants of the removed
+# AttributePatternRuleStatus and AttributePatternRuleOwnership types.
+*AttributePatternRule*
+Active
+Inactive
+UserDefined
+AutoDerived

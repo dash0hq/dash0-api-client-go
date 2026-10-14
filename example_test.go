@@ -1572,3 +1572,54 @@ func ExampleWithAuthTokenProvider() {
 	fmt.Println(client != nil)
 	// Output: true
 }
+
+// Dataset helpers
+
+func ExampleGetDatasetID() {
+	dataset := &dash0.DatasetDefinition{
+		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: "staging"}},
+	}
+	fmt.Println(dash0.GetDatasetID(dataset))
+	// Output: staging
+}
+
+func ExampleSetDatasetID() {
+	dataset := &dash0.DatasetDefinition{Metadata: dash0.DatasetMetadata{Name: "Staging"}}
+	dash0.SetDatasetID(dataset, "staging")
+	fmt.Println(dash0.GetDatasetID(dataset))
+	// Output: staging
+}
+
+func ExampleGetDatasetName() {
+	dataset := &dash0.DatasetDefinition{Metadata: dash0.DatasetMetadata{Name: "Staging"}}
+	fmt.Println(dash0.GetDatasetName(dataset))
+	// Output: Staging
+}
+
+func ExampleSetDatasetIDIfAbsent() {
+	dataset := &dash0.DatasetDefinition{}
+	dash0.SetDatasetIDIfAbsent(dataset, "staging")
+	dash0.SetDatasetIDIfAbsent(dataset, "other")
+	fmt.Println(dash0.GetDatasetID(dataset))
+	// Output: staging
+}
+
+func ExampleClearDatasetID() {
+	dataset := &dash0.DatasetDefinition{
+		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: "staging"}},
+	}
+	dash0.ClearDatasetID(dataset)
+	fmt.Println(dash0.GetDatasetID(dataset) == "")
+	// Output: true
+}
+
+func ExampleStripDatasetServerFields() {
+	dataset := &dash0.DatasetDefinition{
+		Metadata: dash0.DatasetMetadata{
+			Labels: &dash0.DatasetLabels{Dash0Comid: "staging", Dash0Comversion: dash0.Ptr("3")},
+		},
+	}
+	dash0.StripDatasetServerFields(dataset)
+	fmt.Println(dash0.GetDatasetID(dataset), dataset.Metadata.Labels.Dash0Comversion == nil)
+	// Output: staging true
+}

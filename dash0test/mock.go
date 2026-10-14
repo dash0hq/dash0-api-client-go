@@ -59,6 +59,14 @@ type MockClient struct {
 	DeleteSLOFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSLOsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SloDefinition]
 
+	// Datasets
+	ListDatasetsFunc     func(ctx context.Context) ([]*dash0.DatasetDefinition, error)
+	GetDatasetFunc       func(ctx context.Context, originOrID string) (*dash0.DatasetDefinition, error)
+	CreateDatasetFunc    func(ctx context.Context, dataset *dash0.DatasetDefinition) (*dash0.DatasetDefinition, error)
+	UpdateDatasetFunc    func(ctx context.Context, originOrID string, dataset *dash0.DatasetDefinition) (*dash0.DatasetDefinition, error)
+	DeleteDatasetFunc    func(ctx context.Context, originOrID string) error
+	ListDatasetsIterFunc func(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition]
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -337,6 +345,50 @@ func (m *MockClient) DeleteSLO(ctx context.Context, originOrID string, dataset *
 func (m *MockClient) ListSLOsIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.SloDefinition] {
 	if m.ListSLOsIterFunc != nil {
 		return m.ListSLOsIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Datasets
+
+func (m *MockClient) ListDatasets(ctx context.Context) ([]*dash0.DatasetDefinition, error) {
+	if m.ListDatasetsFunc != nil {
+		return m.ListDatasetsFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetDataset(ctx context.Context, originOrID string) (*dash0.DatasetDefinition, error) {
+	if m.GetDatasetFunc != nil {
+		return m.GetDatasetFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateDataset(ctx context.Context, dataset *dash0.DatasetDefinition) (*dash0.DatasetDefinition, error) {
+	if m.CreateDatasetFunc != nil {
+		return m.CreateDatasetFunc(ctx, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateDataset(ctx context.Context, originOrID string, dataset *dash0.DatasetDefinition) (*dash0.DatasetDefinition, error) {
+	if m.UpdateDatasetFunc != nil {
+		return m.UpdateDatasetFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteDataset(ctx context.Context, originOrID string) error {
+	if m.DeleteDatasetFunc != nil {
+		return m.DeleteDatasetFunc(ctx, originOrID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListDatasetsIter(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition] {
+	if m.ListDatasetsIterFunc != nil {
+		return m.ListDatasetsIterFunc(ctx)
 	}
 	return nil
 }
