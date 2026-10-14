@@ -148,6 +148,19 @@ package dash0
 // [Client.UpdateDataset], and [Client.ListDatasetsIter].
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
+//
+// # Migration guide (v1.24.x to <NEXT_RELEASE>)
+//
+// The dataset document follows a new shape.
+// [DatasetDefinition] gained a required ApiVersion field, which must be "dash0.com/v1alpha1" on create and update.
+// The [DatasetSpec] fields that mirrored stored settings moved into three groups, and every field is optional:
+//
+//   - Tracing, Logging, Metrics, Profiling, and WebEvents became [DatasetRetention] fields on Spec.Retention.
+//   - IpAddresses, GeoLocation, CardholderDataRedaction, and GenAiAttributeRedaction became [DatasetPrivacy] fields on Spec.Privacy.
+//   - SemanticConventionUpgrades and Darkplane became [DatasetProcessing] fields on Spec.Processing, next to SpanEventsToLogs.
+//
+// Spec.TelemetryFilters is gone from the document, because spam filters own filters.
+// An update never changes the stored filters, and [StripDatasetServerFields] no longer clears them.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
