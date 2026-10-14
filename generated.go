@@ -2306,7 +2306,18 @@ type AgenticWorkflowSpec struct {
 
 	// Parent Establish as a parent-child hierarchy between automations. You will not want to set this explicitly; instead,
 	// this is going to be set by the automation engine when one automation is deciding to create another.
-	Parent      *AgenticWorkflowParent       `json:"parent,omitempty"`
+	Parent *AgenticWorkflowParent `json:"parent,omitempty"`
+
+	// Permissions The explicit grants on this automation.
+	//
+	// On a write, three cases are distinguished:
+	//
+	// - **Omitted**: the stored grants are left untouched. Use this when the request carries
+	//   no opinion about access, for example a content-only update.
+	// - **Empty array**: the grants are reset to the ones a newly created automation
+	//   receives. This is how a declarative caller removes grants it previously declared —
+	//   omitting the field would be a silent no-op.
+	// - **Non-empty array**: the stored grants are replaced by exactly this set.
 	Permissions *[]AgenticWorkflowPermission `json:"permissions,omitempty"`
 
 	// PermittedActions Computed, read-only. The set of actions the requesting user is permitted to perform on this automation, derived from their org role, dataset permissions, team memberships, and explicit permission entries. Ignored on write.
@@ -9483,9 +9494,23 @@ type ViewSpec struct {
 	// GroupBy A set of attribute keys to group the view by. This property may be missing to indicate that
 	// no configuration was historically made for this view, i.e., the view was saved before the
 	// grouping capability was added. In that case, you can assume a default grouping should be used.
-	GroupBy        *[]string         `json:"groupBy,omitempty"`
-	ImplicitFilter *FilterCriteria   `json:"implicitFilter,omitempty"`
-	Permissions    *[]ViewPermission `json:"permissions,omitempty"`
+	GroupBy        *[]string       `json:"groupBy,omitempty"`
+	ImplicitFilter *FilterCriteria `json:"implicitFilter,omitempty"`
+
+	// Permissions The explicit grants on this view.
+	//
+	// On `PUT /api/views/{originOrId}`, three cases are distinguished:
+	//
+	// - **Omitted**: the stored grants are left untouched. Use this when the request carries
+	//   no opinion about access, for example a content-only update.
+	// - **Empty array**: the grants are reset to the ones a newly created view receives.
+	//   This is how a declarative caller removes grants it previously declared — omitting
+	//   the field would be a silent no-op.
+	// - **Non-empty array**: the stored grants are replaced by exactly this set.
+	//
+	// The other write endpoints require a set carrying both write and delete, so an empty
+	// array is rejected there.
+	Permissions *[]ViewPermission `json:"permissions,omitempty"`
 
 	// Query The SQL query associated with this view. Only applicable when type is "sql".
 	// When the view is loaded, this query is used to populate the editor and auto-executed.
@@ -13229,6 +13254,9 @@ type ClientInterface interface {
 
 	PostApiDatasets(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteApiDatasetsOriginOrId request
+	DeleteApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiDatasetsOriginOrId request
 	GetApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -13958,6 +13986,18 @@ func (c *generatedClient) PostApiDatasetsWithBody(ctx context.Context, contentTy
 
 func (c *generatedClient) PostApiDatasets(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiDatasetsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiDatasetsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiDatasetsOriginOrIdRequest(c.Server, originOrId)
 	if err != nil {
 		return nil, err
 	}
@@ -16879,6 +16919,40 @@ func NewPostApiDatasetsRequestWithBody(server string, contentType string, body i
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiDatasetsOriginOrIdRequest generates requests for DeleteApiDatasetsOriginOrId
+func NewDeleteApiDatasetsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/datasets/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -22523,6 +22597,9 @@ type ClientWithResponsesInterface interface {
 
 	PostApiDatasetsWithResponse(ctx context.Context, body PostApiDatasetsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiDatasetsResponse, error)
 
+	// DeleteApiDatasetsOriginOrIdWithResponse request
+	DeleteApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiDatasetsOriginOrIdResponse, error)
+
 	// GetApiDatasetsOriginOrIdWithResponse request
 	GetApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiDatasetsOriginOrIdResponse, error)
 
@@ -23382,6 +23459,28 @@ func (r PostApiDatasetsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostApiDatasetsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiDatasetsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiDatasetsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiDatasetsOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -25938,6 +26037,15 @@ func (c *ClientWithResponses) PostApiDatasetsWithResponse(ctx context.Context, b
 	return ParsePostApiDatasetsResponse(rsp)
 }
 
+// DeleteApiDatasetsOriginOrIdWithResponse request returning *DeleteApiDatasetsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiDatasetsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiDatasetsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiDatasetsOriginOrIdResponse(rsp)
+}
+
 // GetApiDatasetsOriginOrIdWithResponse request returning *GetApiDatasetsOriginOrIdResponse
 func (c *ClientWithResponses) GetApiDatasetsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiDatasetsOriginOrIdResponse, error) {
 	rsp, err := c.GetApiDatasetsOriginOrId(ctx, originOrId, reqEditors...)
@@ -27908,6 +28016,32 @@ func ParsePostApiDatasetsResponse(rsp *http.Response) (*PostApiDatasetsResponse,
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiDatasetsOriginOrIdResponse parses an HTTP response from a DeleteApiDatasetsOriginOrIdWithResponse call
+func ParseDeleteApiDatasetsOriginOrIdResponse(rsp *http.Response) (*DeleteApiDatasetsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiDatasetsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
