@@ -308,6 +308,11 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindWebhook                        FailedCheckAgenticWorkflowTriggerKind = "webhook"
 )
 
+// Defines values for FailedCheckSilencedTriggerVariableName.
+const (
+	IssueSilenced FailedCheckSilencedTriggerVariableName = "issue.silenced"
+)
+
 // Defines values for FailedCheckTriggerVariableName.
 const (
 	CheckId         FailedCheckTriggerVariableName = "check.id"
@@ -2864,13 +2869,43 @@ type DatasetCreateRequest = DatasetDefinition
 
 // DatasetDefinition defines model for DatasetDefinition.
 type DatasetDefinition struct {
-	Kind     DatasetDefinitionKind `json:"kind"`
-	Metadata DatasetMetadata       `json:"metadata"`
-	Spec     DatasetSpec           `json:"spec"`
+	// ApiVersion Version of the dataset document format. Required on create and update; the only supported
+	// value is `dash0.com/v1alpha1`, and any other value returns 400. Returned on every read.
+	ApiVersion string                `json:"apiVersion"`
+	Kind       DatasetDefinitionKind `json:"kind"`
+	Metadata   DatasetMetadata       `json:"metadata"`
+
+	// Spec Every field is optional. A field omitted on create takes the server default; a field omitted on
+	// update keeps its stored value. Enumerations may gain values in later versions, so clients must
+	// accept values they do not recognize.
+	Spec DatasetSpec `json:"spec"`
 }
 
 // DatasetDefinitionKind defines model for DatasetDefinition.Kind.
 type DatasetDefinitionKind string
+
+// DatasetGeoLocationPrivacy defines model for DatasetGeoLocationPrivacy.
+type DatasetGeoLocationPrivacy struct {
+	EndUser *DatasetGeoLocationStorage `json:"endUser,omitempty"`
+}
+
+// DatasetGeoLocationStorage defines model for DatasetGeoLocationStorage.
+type DatasetGeoLocationStorage struct {
+	// Storage What kind of geolocation information we are allowed to derive and store. Clients must accept
+	// values they do not recognize.
+	Storage *GeoLocationStorageStrategy `json:"storage,omitempty"`
+}
+
+// DatasetIpAddressPrivacy defines model for DatasetIpAddressPrivacy.
+type DatasetIpAddressPrivacy struct {
+	EndUser *DatasetIpAddressStorage `json:"endUser,omitempty"`
+}
+
+// DatasetIpAddressStorage defines model for DatasetIpAddressStorage.
+type DatasetIpAddressStorage struct {
+	// Storage How end-user IP addresses are stored. Clients must accept values they do not recognize.
+	Storage *IpAddressStorageStrategy `json:"storage,omitempty"`
+}
 
 // DatasetLabels defines model for DatasetLabels.
 type DatasetLabels struct {
@@ -2882,6 +2917,10 @@ type DatasetLabels struct {
 	// Dash0Comorigin External identifier for this dataset. Must be unique per organization when set. Used by
 	// Infrastructure-as-Code tools (Terraform, Kubernetes operator). Auto-generated as
 	// `api-<uuid>` on POST if not provided. Must not collide with an existing dataset slug.
+	// A deleted dataset keeps its origin reserved until it is purged. Creating a dataset
+	// with that origin under another slug returns 400. Restoring a deleted dataset by
+	// creating its slug again takes the request's origin, or an `api-<uuid>` for a machine
+	// token with no user, or none.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
 	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
@@ -2963,6 +3002,32 @@ type DatasetPermission struct {
 	UserId  *string         `json:"userId,omitempty"`
 }
 
+// DatasetPrivacy What Dash0 derives, stores and redacts for this dataset.
+type DatasetPrivacy struct {
+	GeoLocation *DatasetGeoLocationPrivacy `json:"geoLocation,omitempty"`
+	IpAddresses *DatasetIpAddressPrivacy   `json:"ipAddresses,omitempty"`
+	Redaction   *DatasetRedaction          `json:"redaction,omitempty"`
+}
+
+// DatasetProcessing Transformations Dash0 applies to ingested telemetry.
+type DatasetProcessing struct {
+	// Darkplane Darkplane-specific opt-ins for this dataset.
+	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
+
+	// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
+	//
+	// - disabled: No upgrade will be executed
+	// - latest: We will always upgrade to the latest and greatest
+	// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
+	//
+	// Defaults to `latest` for new organizations.
+	SemanticConventionUpgrades *SemanticConventionUpgrades `json:"semanticConventionUpgrades,omitempty"`
+
+	// SpanEventsToLogs Convert span events to log records correlated with the parent span via `traceId` and
+	// `spanId`. Converted log records carry the `dash0.span_event.converted` attribute.
+	SpanEventsToLogs *bool `json:"spanEventsToLogs,omitempty"`
+}
+
 // DatasetProfilingSettings defines model for DatasetProfilingSettings.
 type DatasetProfilingSettings struct {
 	// Retention The retention class selected for a signal, per dataset. The value is the
@@ -2980,11 +3045,99 @@ type DatasetProfilingSettings struct {
 	Retention RetentionClass `json:"retention"`
 }
 
+// DatasetRedaction defines model for DatasetRedaction.
+type DatasetRedaction struct {
+	// CardholderData Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
+	// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
+	// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
+	// or split card numbers, so filtering at the source remains the primary mechanism.
+	// Absent means disabled.
+	CardholderData *CardholderDataRedactionSettings `json:"cardholderData,omitempty"`
+
+	// GenAi Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
+	// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
+	// e.g. to keep conversation content private while still storing tool input/output.
+	GenAi *GenAIAttributeRedactionSettings `json:"genAi,omitempty"`
+}
+
 // DatasetResponse defines model for DatasetResponse.
 type DatasetResponse = DatasetDefinition
 
 // DatasetRestriction defines model for DatasetRestriction.
 type DatasetRestriction string
+
+// DatasetRetention How long each signal is kept. Omitted signals keep their stored retention.
+type DatasetRetention struct {
+	// Logs The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Logs *RetentionClass `json:"logs,omitempty"`
+
+	// Metrics The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Metrics *RetentionClass `json:"metrics,omitempty"`
+
+	// Profiles The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Profiles *RetentionClass `json:"profiles,omitempty"`
+
+	// Traces The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Traces *RetentionClass `json:"traces,omitempty"`
+
+	// WebEvents The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	WebEvents *RetentionClass `json:"webEvents,omitempty"`
+}
 
 // DatasetSettings defines model for DatasetSettings.
 type DatasetSettings struct {
@@ -3031,27 +3184,10 @@ type DatasetSettings struct {
 	WebEvents        DatasetWebEventsSettings `json:"webEvents"`
 }
 
-// DatasetSpec defines model for DatasetSpec.
+// DatasetSpec Every field is optional. A field omitted on create takes the server default; a field omitted on
+// update keeps its stored value. Enumerations may gain values in later versions, so clients must
+// accept values they do not recognize.
 type DatasetSpec struct {
-	// CardholderDataRedaction Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
-	// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
-	// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
-	// or split card numbers, so filtering at the source remains the primary mechanism.
-	// Absent means disabled.
-	CardholderDataRedaction *CardholderDataRedactionSettings `json:"cardholderDataRedaction,omitempty"`
-
-	// Darkplane Darkplane-specific opt-ins for this dataset.
-	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
-
-	// GenAiAttributeRedaction Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
-	// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
-	// e.g. to keep conversation content private while still storing tool input/output.
-	GenAiAttributeRedaction *GenAIAttributeRedactionSettings `json:"genAiAttributeRedaction,omitempty"`
-	GeoLocation             *GeoLocationSettings             `json:"geoLocation,omitempty"`
-	IpAddresses             *IpAddressesSettings             `json:"ipAddresses,omitempty"`
-	Logging                 *DatasetLoggingSettings          `json:"logging,omitempty"`
-	Metrics                 *DatasetMetricsSettings          `json:"metrics,omitempty"`
-
 	// Permissions Access control entries for this dataset. Ignored on create, which always grants
 	// `dataset:read` to the organization's members; set them with a subsequent update.
 	Permissions *[]DatasetPermission `json:"permissions,omitempty"`
@@ -3064,24 +3200,16 @@ type DatasetSpec struct {
 	// Preferred Whether this dataset is the organization's preferred dataset, which the Dash0 UI opens by
 	// default. At most one dataset per organization is preferred; setting it here clears the
 	// flag on the previous one.
-	Preferred *bool                     `json:"preferred,omitempty"`
-	Profiling *DatasetProfilingSettings `json:"profiling,omitempty"`
+	Preferred *bool `json:"preferred,omitempty"`
 
-	// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
-	//
-	// - disabled: No upgrade will be executed
-	// - latest: We will always upgrade to the latest and greatest
-	// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
-	//
-	// Defaults to `latest` for new organizations.
-	SemanticConventionUpgrades *SemanticConventionUpgrades `json:"semanticConventionUpgrades,omitempty"`
+	// Privacy What Dash0 derives, stores and redacts for this dataset.
+	Privacy *DatasetPrivacy `json:"privacy,omitempty"`
 
-	// TelemetryFilters Spam filters for this dataset. Omitting this field on update leaves the stored filters
-	// untouched, so a client that does not manage spam filters cannot clobber filters written
-	// through the spam filter API. Supplying it replaces the whole list.
-	TelemetryFilters *[]TelemetryFilter        `json:"telemetryFilters,omitempty"`
-	Tracing          *DatasetTracingSettings   `json:"tracing,omitempty"`
-	WebEvents        *DatasetWebEventsSettings `json:"webEvents,omitempty"`
+	// Processing Transformations Dash0 applies to ingested telemetry.
+	Processing *DatasetProcessing `json:"processing,omitempty"`
+
+	// Retention How long each signal is kept. Omitted signals keep their stored retention.
+	Retention *DatasetRetention `json:"retention,omitempty"`
 }
 
 // DatasetTracingSettings defines model for DatasetTracingSettings.
@@ -3243,15 +3371,31 @@ type FailedCheckAgenticWorkflowTriggerSpec struct {
 
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
-	AvailableVariables *[]FailedCheckTriggerVariableName `json:"availableVariables,omitempty"`
+	AvailableVariables *[]FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item `json:"availableVariables,omitempty"`
 
 	// CheckRuleIDs Optional list of check rule IDs. When specified, only failed checks
 	// whose rule ID matches one of the listed values trigger the automation.
 	CheckRuleIDs *[]string       `json:"checkRuleIDs,omitempty"`
 	LabelFilters *FilterCriteria `json:"labelFilters,omitempty"`
+
+	// Silenced Optional filter on whether a silence covers the failed check when it fires. `true`
+	// matches only silenced failed checks, `false` only unsilenced ones. When omitted,
+	// silenced state is not considered.
+	Silenced *bool `json:"silenced,omitempty"`
 }
 
-// FailedCheckTriggerVariableName Variables provided by the `failed_check.new` trigger.
+// FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item defines model for FailedCheckAgenticWorkflowTriggerSpec.availableVariables.Item.
+type FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item struct {
+	union json.RawMessage
+}
+
+// FailedCheckSilencedTriggerVariableName Variable provided only by the `failed_check.new` trigger. A silenced failed check never
+// reaches Slack, so `slack_bot.failed_check.new` does not provide it.
+//
+// - `issue.silenced`: `true` when a silence covered the failed check when it fired, `false` otherwise.
+type FailedCheckSilencedTriggerVariableName string
+
+// FailedCheckTriggerVariableName Variables provided by every failed-check trigger.
 //
 // - `check.id`: The ID of the check rule that failed.
 // - `check.name`: The name of the check rule that failed.
@@ -3510,11 +3654,13 @@ type GenerativeAiEvaluationSpec struct {
 
 // GeoLocationSettings defines model for GeoLocationSettings.
 type GeoLocationSettings struct {
-	// EndUserGeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store.
+	// EndUserGeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store. Clients must accept
+	// values they do not recognize.
 	EndUserGeoLocationStorageStrategy GeoLocationStorageStrategy `json:"endUserGeoLocationStorageStrategy"`
 }
 
-// GeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store.
+// GeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store. Clients must accept
+// values they do not recognize.
 type GeoLocationStorageStrategy string
 
 // GetAgenticWorkflowsResponse defines model for GetAgenticWorkflowsResponse.
@@ -5314,11 +5460,12 @@ type InviteMemberRequest struct {
 	Role string `json:"role"`
 }
 
-// IpAddressStorageStrategy defines model for IpAddressStorageStrategy.
+// IpAddressStorageStrategy How end-user IP addresses are stored. Clients must accept values they do not recognize.
 type IpAddressStorageStrategy string
 
 // IpAddressesSettings defines model for IpAddressesSettings.
 type IpAddressesSettings struct {
+	// EndUserIpAddressStorageStrategy How end-user IP addresses are stored. Clients must accept values they do not recognize.
 	EndUserIpAddressStorageStrategy IpAddressStorageStrategy `json:"endUserIpAddressStorageStrategy"`
 }
 
@@ -6299,10 +6446,22 @@ type PrometheusAlertRuleBulkCreateResponse struct {
 
 // PrometheusAlertRuleMetadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
 type PrometheusAlertRuleMetadata struct {
+	// Annotations Server-populated annotations that apply to the alert-rule resource itself, not to the
+	// emitted alert. Read-only on responses; ignored on write if a valid date-time.
+	Annotations *PrometheusAlertRuleMetadataAnnotations `json:"annotations,omitempty"`
+
 	// Labels Server-derived labels that apply to the alert-rule resource itself, not to the
 	// emitted alert. Currently includes `dash0.com/source` when the origin is known; see
 	// the `CrdSource` enum for the values it can take.
 	Labels *PrometheusAlertRuleMetadataLabels `json:"labels,omitempty"`
+}
+
+// PrometheusAlertRuleMetadataAnnotations Server-populated annotations that apply to the alert-rule resource itself, not to the
+// emitted alert. Read-only on responses; ignored on write if a valid date-time.
+type PrometheusAlertRuleMetadataAnnotations struct {
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the check rule has been deleted but not yet purged.
+	// Set by the server; read-only. Ignored on write if a valid date-time; a malformed value is rejected with a 400.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
 }
 
 // PrometheusAlertRuleMetadataLabels Server-derived labels that apply to the alert-rule resource itself, not to the
@@ -11697,6 +11856,68 @@ func (t AttributeFilter_Values_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AttributeFilter_Values_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsFailedCheckTriggerVariableName returns the union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as a FailedCheckTriggerVariableName
+func (t FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) AsFailedCheckTriggerVariableName() (FailedCheckTriggerVariableName, error) {
+	var body FailedCheckTriggerVariableName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedCheckTriggerVariableName overwrites any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as the provided FailedCheckTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) FromFailedCheckTriggerVariableName(v FailedCheckTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedCheckTriggerVariableName performs a merge with any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item, using the provided FailedCheckTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MergeFailedCheckTriggerVariableName(v FailedCheckTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFailedCheckSilencedTriggerVariableName returns the union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as a FailedCheckSilencedTriggerVariableName
+func (t FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) AsFailedCheckSilencedTriggerVariableName() (FailedCheckSilencedTriggerVariableName, error) {
+	var body FailedCheckSilencedTriggerVariableName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedCheckSilencedTriggerVariableName overwrites any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as the provided FailedCheckSilencedTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) FromFailedCheckSilencedTriggerVariableName(v FailedCheckSilencedTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedCheckSilencedTriggerVariableName performs a merge with any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item, using the provided FailedCheckSilencedTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MergeFailedCheckSilencedTriggerVariableName(v FailedCheckSilencedTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

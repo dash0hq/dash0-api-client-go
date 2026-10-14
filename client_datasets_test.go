@@ -3,6 +3,7 @@ package dash0
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,8 +12,9 @@ import (
 
 func newTestDataset(slug string) *DatasetDefinition {
 	return &DatasetDefinition{
-		Kind:     Dash0Dataset,
-		Metadata: DatasetMetadata{Name: "Staging", Labels: &DatasetLabels{Dash0Comid: slug}},
+		ApiVersion: "dash0.com/v1alpha1",
+		Kind:       Dash0Dataset,
+		Metadata:   DatasetMetadata{Name: "Staging", Labels: &DatasetLabels{Dash0Comid: slug}},
 	}
 }
 
@@ -103,6 +105,49 @@ func TestCreateDataset(t *testing.T) {
 	assertEqual(t, "name", GetDatasetName(got), "Staging")
 }
 
+func TestCreateDataset_Shape(t *testing.T) {
+	var got map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
+			t.Errorf("decode request body: %v", err)
+		}
+		// The response carries an enum value this client has no constant for.
+		_, _ = w.Write([]byte(`{"apiVersion":"dash0.com/v1alpha1","kind":"Dash0Dataset","metadata":{"name":"Staging"},` +
+			`"spec":{"privacy":{"ipAddresses":{"endUser":{"storage":"hash"}}}}}`))
+	}))
+	defer server.Close()
+
+	d := newTestDataset("staging")
+	d.Spec = DatasetSpec{
+		Retention: &DatasetRetention{Traces: Ptr(N30d)},
+		Privacy: &DatasetPrivacy{
+			IpAddresses: &DatasetIpAddressPrivacy{EndUser: &DatasetIpAddressStorage{Storage: Ptr(IpAddressStorageStrategyAnonymize)}},
+			Redaction:   &DatasetRedaction{CardholderData: &CardholderDataRedactionSettings{Enabled: true}},
+		},
+		Processing: &DatasetProcessing{SpanEventsToLogs: Ptr(false)},
+	}
+	created, err := newTestClient(t, server.URL).CreateDataset(context.Background(), d)
+	if err != nil {
+		t.Fatalf("CreateDataset() error = %v", err)
+	}
+
+	assertEqual(t, "apiVersion", fmt.Sprint(got["apiVersion"]), "dash0.com/v1alpha1")
+	spec := got["spec"].(map[string]any)
+	// Fields left nil stay off the wire, which the server reads as "unchanged".
+	if _, ok := spec["telemetryFilters"]; ok {
+		t.Errorf("request spec carries telemetryFilters: %v", spec)
+	}
+	if _, ok := spec["preferred"]; ok {
+		t.Errorf("request spec carries preferred: %v", spec)
+	}
+	assertEqual(t, "retention", fmt.Sprint(spec["retention"].(map[string]any)["traces"]), "30d")
+	assertEqual(t, "spanEventsToLogs", fmt.Sprint(spec["processing"].(map[string]any)["spanEventsToLogs"]), "false")
+	storage := spec["privacy"].(map[string]any)["ipAddresses"].(map[string]any)["endUser"].(map[string]any)["storage"]
+	assertEqual(t, "ip storage", fmt.Sprint(storage), "anonymize")
+
+	assertEqual(t, "ip storage in response", string(*created.Spec.Privacy.IpAddresses.EndUser.Storage), "hash")
+}
+
 func TestCreateDataset_400(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		writeAPIError(w, http.StatusBadRequest, "slug already in use")
@@ -191,14 +236,13 @@ func TestStripDatasetServerFields(t *testing.T) {
 				Dash0Comsource:  &source,
 			},
 		},
-		Spec: DatasetSpec{PermittedActions: &actions, TelemetryFilters: &[]TelemetryFilter{{}}},
+		Spec: DatasetSpec{PermittedActions: &actions},
 	}
 
 	StripDatasetServerFields(d)
 
 	if d.Metadata.Annotations != nil || d.Metadata.Labels.Dash0Comversion != nil ||
-		d.Metadata.Labels.Dash0Comsource != nil || d.Spec.PermittedActions != nil ||
-		d.Spec.TelemetryFilters != nil {
+		d.Metadata.Labels.Dash0Comsource != nil || d.Spec.PermittedActions != nil {
 		t.Errorf("server fields were not stripped: %+v", d)
 	}
 	assertEqual(t, "slug", d.Metadata.Labels.Dash0Comid, "staging")
