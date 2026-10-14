@@ -135,7 +135,7 @@ package dash0
 // should forward it to the wrapped client or ignore it.
 // The dash0test.MockClient *Func fields keep their previous signatures.
 //
-// # Migration guide (v1.23.x to <NEXT_RELEASE>)
+// # Migration guide (v1.23.x to v1.24.0)
 //
 // The generated attribute pattern rule types and operations were removed
 // because the public API spec no longer publishes them.

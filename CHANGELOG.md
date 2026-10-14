@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.24.0
+
+
+### Bug Fixes
+- ToJSON follows YAML 1.2 for keys and values (#51)
+
+  `yaml.ToJSON` now follows YAML 1.2 for keys and values, so plain `y`, `n`, `yes`, `no`, `on`, and `off` stay strings everywhere.
+  Before, a value such as `name: off` became `false`, and `[GB, NO]` became `["GB", false]`.
+  Only `true` and `false` (in any case) are booleans.
+  A mapping key that is not a string, such as `true: a`, is now an error.
+  `yaml.Unmarshal` is not changed: it still reads these words as booleans when they are values, so `enabled: yes` stays `true`.
+
+### Features
+- add dataset management to the client (#52)
+
 ## v1.23.0
 
 
