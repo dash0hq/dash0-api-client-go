@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.25.0
+
+
+### Features
+- add auth token management to the client (#53)
+- follow the new dataset document shape (#54)
+
 ## v1.24.0
 
 

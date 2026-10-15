@@ -149,7 +149,7 @@ package dash0
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
 //
-// # Migration guide (v1.24.x to <NEXT_RELEASE>)
+// # Migration guide (v1.24.x to v1.25.0)
 //
 // The dataset document follows a new shape.
 // [DatasetDefinition] gained a required ApiVersion field, which must be "dash0.com/v1alpha1" on create and update.
@@ -224,92 +224,92 @@ const SignalToMetricsSourceUi = Ui
 
 // AwsLambda is a deprecated alias for [ViewTypeAwsLambda].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeAwsLambda] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeAwsLambda] instead.
 const AwsLambda = ViewTypeAwsLambda
 
 // FailedChecks is a deprecated alias for [ViewTypeFailedChecks].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeFailedChecks] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeFailedChecks] instead.
 const FailedChecks = ViewTypeFailedChecks
 
 // GcpCloudRunJobs is a deprecated alias for [ViewTypeGcpCloudRunJobs].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudRunJobs] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeGcpCloudRunJobs] instead.
 const GcpCloudRunJobs = ViewTypeGcpCloudRunJobs
 
 // GcpCloudRunServices is a deprecated alias for [ViewTypeGcpCloudRunServices].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudRunServices] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeGcpCloudRunServices] instead.
 const GcpCloudRunServices = ViewTypeGcpCloudRunServices
 
 // GcpCloudSqlInstances is a deprecated alias for [ViewTypeGcpCloudSqlInstances].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudSqlInstances] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeGcpCloudSqlInstances] instead.
 const GcpCloudSqlInstances = ViewTypeGcpCloudSqlInstances
 
 // GcpCloudStorage is a deprecated alias for [ViewTypeGcpCloudStorage].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudStorage] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeGcpCloudStorage] instead.
 const GcpCloudStorage = ViewTypeGcpCloudStorage
 
 // GcpPubsub is a deprecated alias for [ViewTypeGcpPubsub].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpPubsub] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeGcpPubsub] instead.
 const GcpPubsub = ViewTypeGcpPubsub
 
 // Logs is a deprecated alias for [ViewTypeLogs].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeLogs] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeLogs] instead.
 const Logs = ViewTypeLogs
 
 // Metrics is a deprecated alias for [ViewTypeMetrics].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeMetrics] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeMetrics] instead.
 const Metrics = ViewTypeMetrics
 
 // Profiles is a deprecated alias for [ViewTypeProfiles].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeProfiles] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeProfiles] instead.
 const Profiles = ViewTypeProfiles
 
 // Resources is a deprecated alias for [ViewTypeResources].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeResources] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeResources] instead.
 const Resources = ViewTypeResources
 
 // Services is a deprecated alias for [ViewTypeServices].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeServices] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeServices] instead.
 const Services = ViewTypeServices
 
 // Slos is a deprecated alias for [ViewTypeSlos].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSlos] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeSlos] instead.
 const Slos = ViewTypeSlos
 
 // Spans is a deprecated alias for [ViewTypeSpans].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSpans] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeSpans] instead.
 const Spans = ViewTypeSpans
 
 // Sql is a deprecated alias for [ViewTypeSql].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSql] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeSql] instead.
 const Sql = ViewTypeSql
 
 // WebEvents is a deprecated alias for [ViewTypeWebEvents].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeWebEvents] instead.
+// Deprecated: since v1.25.0. Use [ViewTypeWebEvents] instead.
 const WebEvents = ViewTypeWebEvents
 
 // Restricted is a deprecated alias for [DatasetRestrictionRestricted].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [DatasetRestrictionRestricted] instead.
+// Deprecated: since v1.25.0. Use [DatasetRestrictionRestricted] instead.
 const Restricted = DatasetRestrictionRestricted
 
 // Unrestricted is a deprecated alias for [DatasetRestrictionUnrestricted].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [DatasetRestrictionUnrestricted] instead.
+// Deprecated: since v1.25.0. Use [DatasetRestrictionUnrestricted] instead.
 const Unrestricted = DatasetRestrictionUnrestricted
 
 // Deprecated: since v1.12.3. Use [SpamFilterApiVersionV1alpha1] instead
