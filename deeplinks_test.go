@@ -118,13 +118,13 @@ func TestViewDeeplinkURL(t *testing.T) {
 		viewType ViewType
 		wantPath string
 	}{
-		{"logs", Logs, "/goto/logs"},
-		{"spans", Spans, "/goto/traces/explorer"},
-		{"metrics", Metrics, "/goto/metrics/explorer"},
-		{"services", Services, "/goto/services/map"},
-		{"resources", Resources, "/goto/resources/table"},
-		{"failed checks", FailedChecks, "/goto/alerting/failed-checks"},
-		{"web events", WebEvents, "/goto/web-events/explorer"},
+		{"logs", ViewTypeLogs, "/goto/logs"},
+		{"spans", ViewTypeSpans, "/goto/traces/explorer"},
+		{"metrics", ViewTypeMetrics, "/goto/metrics/explorer"},
+		{"services", ViewTypeServices, "/goto/services/map"},
+		{"resources", ViewTypeResources, "/goto/resources/table"},
+		{"failed checks", ViewTypeFailedChecks, "/goto/alerting/failed-checks"},
+		{"web events", ViewTypeWebEvents, "/goto/web-events/explorer"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -146,7 +146,7 @@ func TestViewDeeplinkURL(t *testing.T) {
 }
 
 func TestViewDeeplinkURL_WithDataset(t *testing.T) {
-	u := parseURL(t, ViewDeeplinkURL("https://api.eu-west-1.aws.dash0.com", Spans, "view-1", Ptr("production")))
+	u := parseURL(t, ViewDeeplinkURL("https://api.eu-west-1.aws.dash0.com", ViewTypeSpans, "view-1", Ptr("production")))
 	if got := u.Query().Get("view_id"); got != "view-1" {
 		t.Errorf("view_id = %q, want view-1", got)
 	}
@@ -157,12 +157,12 @@ func TestViewDeeplinkURL_WithDataset(t *testing.T) {
 
 func TestViewDeeplinkURL_Empty(t *testing.T) {
 	// View types without a dedicated page yield no deep link.
-	for _, vt := range []ViewType{Sql, Profiles, AwsLambda, GcpPubsub} {
+	for _, vt := range []ViewType{ViewTypeSql, ViewTypeProfiles, ViewTypeAwsLambda, ViewTypeGcpPubsub} {
 		if got := ViewDeeplinkURL("https://api.dash0.com", vt, "v1", nil); got != "" {
 			t.Errorf("ViewDeeplinkURL(%q) = %q, want empty", vt, got)
 		}
 	}
-	if got := ViewDeeplinkURL("", Logs, "v1", nil); got != "" {
+	if got := ViewDeeplinkURL("", ViewTypeLogs, "v1", nil); got != "" {
 		t.Errorf("empty api url: got %q, want empty", got)
 	}
 }
