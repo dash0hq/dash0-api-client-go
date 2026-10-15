@@ -293,3 +293,49 @@ Active
 Inactive
 UserDefined
 AutoDerived
+
+# <NEXT_RELEASE>: the dataset document moved to the new shape. The spec
+# fields that mirrored stored settings are grouped under Retention, Privacy,
+# and Processing, and TelemetryFilters left the document (spam filters own
+# them). No in-package shim is possible because the fields were removed.
+DatasetSpec.CardholderDataRedaction
+DatasetSpec.Darkplane
+DatasetSpec.GenAiAttributeRedaction
+DatasetSpec.GeoLocation
+DatasetSpec.IpAddresses
+DatasetSpec.Logging
+DatasetSpec.Metrics
+DatasetSpec.Profiling
+DatasetSpec.SemanticConventionUpgrades
+DatasetSpec.TelemetryFilters
+DatasetSpec.Tracing
+DatasetSpec.WebEvents
+
+# <NEXT_RELEASE>: the agentic-workflow failed-check trigger gained the
+# issue.silenced variable, so availableVariables became a union item type.
+# Comes from the same regeneration, not from the dataset change.
+FailedCheckAgenticWorkflowTriggerSpec.AvailableVariables
+
+# <NEXT_RELEASE>: a second enum (SignalRestriction) now shares the value
+# names of DatasetRestriction, and the view type enum is referenced by more
+# schemas, so oapi-codegen prefixed their constants with the type name.
+# compat.go re-declares the bare names as deprecated aliases, so consumers do
+# not break; gorelease still flags the removal because it diffs generated.go.
+AwsLambda
+FailedChecks
+GcpCloudRunJobs
+GcpCloudRunServices
+GcpCloudSqlInstances
+GcpCloudStorage
+GcpPubsub
+Logs
+Metrics
+Profiles
+Resources
+Services
+Slos
+Spans
+Sql
+WebEvents
+Restricted
+Unrestricted

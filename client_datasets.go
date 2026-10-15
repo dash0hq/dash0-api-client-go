@@ -45,6 +45,7 @@ func (c *client) GetDataset(ctx context.Context, originOrID string) (*DatasetDef
 
 // CreateDataset creates a new dataset.
 // The slug in the dash0.com/id label is required and cannot be changed afterwards.
+// The apiVersion field is required and must be "dash0.com/v1alpha1".
 // The server ignores spec.permissions on create, so set permissions with a later [Client.UpdateDataset].
 func (c *client) CreateDataset(ctx context.Context, dataset *DatasetDefinition) (*DatasetDefinition, error) {
 	if err := c.requireAPI(); err != nil {
@@ -73,7 +74,8 @@ func (c *client) CreateDataset(ctx context.Context, dataset *DatasetDefinition) 
 // UpdateDataset updates a dataset by origin or slug.
 // For every token except a Dash0 UI session, the server creates the dataset when none matches.
 // A mistyped origin or slug therefore creates a new dataset instead of returning not found.
-// Omitting spec.preferred or spec.telemetryFilters leaves the stored value unchanged.
+// The apiVersion field is required and must be "dash0.com/v1alpha1".
+// Omitting any spec field leaves its stored value unchanged.
 func (c *client) UpdateDataset(ctx context.Context, originOrID string, dataset *DatasetDefinition) (*DatasetDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
@@ -127,8 +129,7 @@ func (c *client) ListDatasetsIter(ctx context.Context) *Iter[DatasetDefinition] 
 }
 
 // StripDatasetServerFields removes server-generated fields from a dataset definition.
-// It also clears spec.telemetryFilters and the dash0.com/version label.
-// A stripped copy sent to [Client.UpdateDataset] therefore leaves the stored filters unchanged and skips the version check.
+// It also clears the dash0.com/version label, so a stripped copy sent to [Client.UpdateDataset] skips the version check.
 // It keeps dash0.com/origin, which is client-settable and identifies the dataset on update, so a copy created in the same organization needs a new origin.
 func StripDatasetServerFields(dataset *DatasetDefinition) {
 	if dataset == nil {
@@ -140,7 +141,6 @@ func StripDatasetServerFields(dataset *DatasetDefinition) {
 		dataset.Metadata.Labels.Dash0Comsource = nil
 	}
 	dataset.Spec.PermittedActions = nil
-	dataset.Spec.TelemetryFilters = nil
 }
 
 // GetDatasetID extracts the slug from a dataset definition.

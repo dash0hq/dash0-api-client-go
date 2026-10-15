@@ -151,19 +151,19 @@ func ViewDeeplinkURL(apiURL string, viewType ViewType, viewID string, dataset *s
 // empty string when the view type has no dedicated page.
 func viewTypePath(viewType ViewType) string {
 	switch viewType {
-	case Logs:
+	case ViewTypeLogs:
 		return deeplinkPathViewLogs
-	case Spans:
+	case ViewTypeSpans:
 		return deeplinkPathViewTracing
-	case Metrics:
+	case ViewTypeMetrics:
 		return deeplinkPathViewMetrics
-	case Services:
+	case ViewTypeServices:
 		return deeplinkPathViewServiceMap
-	case Resources:
+	case ViewTypeResources:
 		return deeplinkPathViewResources
-	case FailedChecks:
+	case ViewTypeFailedChecks:
 		return deeplinkPathViewFailedChecks
-	case WebEvents:
+	case ViewTypeWebEvents:
 		return deeplinkPathViewWebEvents
 	default:
 		return ""

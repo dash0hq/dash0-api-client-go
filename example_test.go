@@ -1325,7 +1325,7 @@ func ExampleDeeplinkURL() {
 }
 
 func ExampleViewDeeplinkURL() {
-	fmt.Println(dash0.ViewDeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.Spans, "view-7", dash0.Ptr("production")))
+	fmt.Println(dash0.ViewDeeplinkURL("https://api.us-west-2.aws.dash0.com", dash0.ViewTypeSpans, "view-7", dash0.Ptr("production")))
 	// Output: https://app.dash0.com/goto/traces/explorer?dataset=production&view_id=view-7
 }
 

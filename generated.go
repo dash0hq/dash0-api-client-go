@@ -156,6 +156,16 @@ const (
 	AttributeFilterOperatorStartsWith       AttributeFilterOperator = "starts_with"
 )
 
+// Defines values for AuthTokenDefinitionKind.
+const (
+	AuthTokenDefinitionKindDash0AuthToken AuthTokenDefinitionKind = "Dash0AuthToken"
+)
+
+// Defines values for AuthTokenResponseDefinitionKind.
+const (
+	AuthTokenResponseDefinitionKindDash0AuthToken AuthTokenResponseDefinitionKind = "Dash0AuthToken"
+)
+
 // Defines values for AxisScale.
 const (
 	AxisScaleLinear AxisScale = "linear"
@@ -271,8 +281,8 @@ const (
 
 // Defines values for DatasetRestriction.
 const (
-	Restricted   DatasetRestriction = "restricted"
-	Unrestricted DatasetRestriction = "unrestricted"
+	DatasetRestrictionRestricted   DatasetRestriction = "restricted"
+	DatasetRestrictionUnrestricted DatasetRestriction = "unrestricted"
 )
 
 // Defines values for ErrorAssertionKind.
@@ -306,6 +316,11 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindSlackBotMessage                FailedCheckAgenticWorkflowTriggerKind = "slack_bot.message"
 	FailedCheckAgenticWorkflowTriggerKindSlackBotReaction               FailedCheckAgenticWorkflowTriggerKind = "slack_bot.reaction"
 	FailedCheckAgenticWorkflowTriggerKindWebhook                        FailedCheckAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Defines values for FailedCheckSilencedTriggerVariableName.
+const (
+	IssueSilenced FailedCheckSilencedTriggerVariableName = "issue.silenced"
 )
 
 // Defines values for FailedCheckTriggerVariableName.
@@ -1243,6 +1258,12 @@ const (
 	ScheduledAgenticWorkflowTriggerKindWebhook                        ScheduledAgenticWorkflowTriggerKind = "webhook"
 )
 
+// Defines values for SignalRestriction.
+const (
+	SignalRestrictionRestricted   SignalRestriction = "restricted"
+	SignalRestrictionUnrestricted SignalRestriction = "unrestricted"
+)
+
 // Defines values for SignalToMetricsDefinitionKind.
 const (
 	Dash0SignalToMetrics SignalToMetricsDefinitionKind = "Dash0SignalToMetrics"
@@ -1259,6 +1280,26 @@ const (
 	SignalToMetricsTargetDatasetModeAlternative SignalToMetricsTargetDatasetMode = "alternative"
 	SignalToMetricsTargetDatasetModeBoth        SignalToMetricsTargetDatasetMode = "both"
 	SignalToMetricsTargetDatasetModeOriginal    SignalToMetricsTargetDatasetMode = "original"
+)
+
+// Defines values for SignalType.
+const (
+	SignalTypeAgent0Credits                 SignalType = "agent0Credits"
+	SignalTypeCodeAgentCommitters           SignalType = "codeAgentCommitters"
+	SignalTypeLogs                          SignalType = "logs"
+	SignalTypeMetricDataPoints              SignalType = "metricDataPoints"
+	SignalTypeProfiles                      SignalType = "profiles"
+	SignalTypeSessionReplays                SignalType = "sessionReplays"
+	SignalTypeSignalControlEdgeLogs         SignalType = "signalControlEdgeLogs"
+	SignalTypeSignalControlEdgeMetrics      SignalType = "signalControlEdgeMetrics"
+	SignalTypeSignalControlEdgeTraces       SignalType = "signalControlEdgeTraces"
+	SignalTypeSignalControlManagedLogs      SignalType = "signalControlManagedLogs"
+	SignalTypeSignalControlManagedMetrics   SignalType = "signalControlManagedMetrics"
+	SignalTypeSignalControlManagedTraces    SignalType = "signalControlManagedTraces"
+	SignalTypeSignalControlManagedWebEvents SignalType = "signalControlManagedWebEvents"
+	SignalTypeSpans                         SignalType = "spans"
+	SignalTypeSyntheticApiChecks            SignalType = "syntheticApiChecks"
+	SignalTypeWebEvents                     SignalType = "webEvents"
 )
 
 // Defines values for SlackBotFailedCheckAgenticWorkflowTriggerKind.
@@ -1639,22 +1680,22 @@ const (
 
 // Defines values for ViewType.
 const (
-	AwsLambda            ViewType = "aws_lambda"
-	FailedChecks         ViewType = "failed_checks"
-	GcpCloudRunJobs      ViewType = "gcp_cloud_run_jobs"
-	GcpCloudRunServices  ViewType = "gcp_cloud_run_services"
-	GcpCloudSqlInstances ViewType = "gcp_cloud_sql_instances"
-	GcpCloudStorage      ViewType = "gcp_cloud_storage"
-	GcpPubsub            ViewType = "gcp_pubsub"
-	Logs                 ViewType = "logs"
-	Metrics              ViewType = "metrics"
-	Profiles             ViewType = "profiles"
-	Resources            ViewType = "resources"
-	Services             ViewType = "services"
-	Slos                 ViewType = "slos"
-	Spans                ViewType = "spans"
-	Sql                  ViewType = "sql"
-	WebEvents            ViewType = "web_events"
+	ViewTypeAwsLambda            ViewType = "aws_lambda"
+	ViewTypeFailedChecks         ViewType = "failed_checks"
+	ViewTypeGcpCloudRunJobs      ViewType = "gcp_cloud_run_jobs"
+	ViewTypeGcpCloudRunServices  ViewType = "gcp_cloud_run_services"
+	ViewTypeGcpCloudSqlInstances ViewType = "gcp_cloud_sql_instances"
+	ViewTypeGcpCloudStorage      ViewType = "gcp_cloud_storage"
+	ViewTypeGcpPubsub            ViewType = "gcp_pubsub"
+	ViewTypeLogs                 ViewType = "logs"
+	ViewTypeMetrics              ViewType = "metrics"
+	ViewTypeProfiles             ViewType = "profiles"
+	ViewTypeResources            ViewType = "resources"
+	ViewTypeServices             ViewType = "services"
+	ViewTypeSlos                 ViewType = "slos"
+	ViewTypeSpans                ViewType = "spans"
+	ViewTypeSql                  ViewType = "sql"
+	ViewTypeWebEvents            ViewType = "web_events"
 )
 
 // Defines values for ViewVisualizationMetric.
@@ -2513,6 +2554,148 @@ type AttributeFilterOperator string
 // AttributeFilterStringValue AttributeFilterStringValue may contain a primitive value such as a regex pattern or string.
 type AttributeFilterStringValue = string
 
+// AuthTokenAnnotations defines model for AuthTokenAnnotations.
+type AuthTokenAnnotations struct {
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+}
+
+// AuthTokenCreateRequest defines model for AuthTokenCreateRequest.
+type AuthTokenCreateRequest = AuthTokenDefinition
+
+// AuthTokenDatasetScope defines model for AuthTokenDatasetScope.
+type AuthTokenDatasetScope struct {
+	// Restriction Whether the list of datasets on an auth token limits what it can reach. Clients must accept
+	// values they do not recognize.
+	Restriction *DatasetRestriction `json:"restriction,omitempty"`
+
+	// Slugs The dataset slugs the token is limited to. Read only when `restriction` is `restricted`.
+	Slugs *[]Dataset `json:"slugs,omitempty"`
+}
+
+// AuthTokenDefinition defines model for AuthTokenDefinition.
+type AuthTokenDefinition struct {
+	// ApiVersion Version of the auth token document format. Required on create and update; the only
+	// supported value is `dash0.com/v1alpha1`, and any other value returns 400. Returned on
+	// every read.
+	ApiVersion string                  `json:"apiVersion"`
+	Kind       AuthTokenDefinitionKind `json:"kind"`
+	Metadata   AuthTokenMetadata       `json:"metadata"`
+
+	// Spec Every field is optional. Omitted on create takes the server default. Omitted on update keeps
+	// the stored value.
+	Spec AuthTokenSpec `json:"spec"`
+}
+
+// AuthTokenDefinitionKind defines model for AuthTokenDefinition.Kind.
+type AuthTokenDefinitionKind string
+
+// AuthTokenIngestion defines model for AuthTokenIngestion.
+type AuthTokenIngestion struct {
+	// DefaultDataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	DefaultDataset *Dataset `json:"defaultDataset,omitempty"`
+}
+
+// AuthTokenLabels defines model for AuthTokenLabels.
+type AuthTokenLabels struct {
+	// Dash0Comid The auth token UUID. Server-set; not accepted on create.
+	Dash0Comid *openapi_types.UUID `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for this auth token. Must be unique per organization and must not be a
+	// UUID. Used by Infrastructure-as-Code tools (Terraform, Kubernetes operator).
+	// Auto-generated as `api-<uuid>` for machine tokens that have no user. Immutable once set.
+	// A PUT to an origin that does not exist yet creates the token.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// AuthTokenListResponse defines model for AuthTokenListResponse.
+type AuthTokenListResponse struct {
+	AuthTokens []AuthTokenResponse `json:"authTokens"`
+}
+
+// AuthTokenMetadata defines model for AuthTokenMetadata.
+type AuthTokenMetadata struct {
+	Annotations *AuthTokenAnnotations `json:"annotations,omitempty"`
+	Labels      *AuthTokenLabels      `json:"labels,omitempty"`
+
+	// Name Human-readable name for the auth token.
+	Name string `json:"name"`
+}
+
+// AuthTokenResponse defines model for AuthTokenResponse.
+type AuthTokenResponse = AuthTokenResponseDefinition
+
+// AuthTokenResponseDefinition defines model for AuthTokenResponseDefinition.
+type AuthTokenResponseDefinition struct {
+	ApiVersion string                          `json:"apiVersion"`
+	Kind       AuthTokenResponseDefinitionKind `json:"kind"`
+	Metadata   AuthTokenMetadata               `json:"metadata"`
+	Spec       AuthTokenResponseSpec           `json:"spec"`
+}
+
+// AuthTokenResponseDefinitionKind defines model for AuthTokenResponseDefinition.Kind.
+type AuthTokenResponseDefinitionKind string
+
+// AuthTokenResponseSpec defines model for AuthTokenResponseSpec.
+type AuthTokenResponseSpec struct {
+	Actions   *[]Action           `json:"actions,omitempty"`
+	Ingestion *AuthTokenIngestion `json:"ingestion,omitempty"`
+
+	// Scope What data the token can reach. Both groups default to `unrestricted`.
+	Scope *AuthTokenScope `json:"scope,omitempty"`
+
+	// Token The secret customers use as a Bearer token to send telemetry to Dash0. Generated by
+	// Dash0 and returned only in the response that creates the token (POST, or a PUT that
+	// creates). Never part of a request: a request that carries `spec.token` returns 400.
+	Token *string `json:"token,omitempty"`
+}
+
+// AuthTokenScope What data the token can reach. Both groups default to `unrestricted`.
+type AuthTokenScope struct {
+	Datasets *AuthTokenDatasetScope `json:"datasets,omitempty"`
+	Signals  *AuthTokenSignalScope  `json:"signals,omitempty"`
+}
+
+// AuthTokenSignalScope defines model for AuthTokenSignalScope.
+type AuthTokenSignalScope struct {
+	// Restriction Whether the list of signal types on an auth token limits what it can reach. Clients must accept
+	// values they do not recognize.
+	Restriction *SignalRestriction `json:"restriction,omitempty"`
+
+	// Types The signal types the token is limited to. Read only when `restriction` is `restricted`.
+	Types *[]SignalType `json:"types,omitempty"`
+}
+
+// AuthTokenSpec Every field is optional. Omitted on create takes the server default. Omitted on update keeps
+// the stored value.
+type AuthTokenSpec struct {
+	Actions   *[]Action           `json:"actions,omitempty"`
+	Ingestion *AuthTokenIngestion `json:"ingestion,omitempty"`
+
+	// Scope What data the token can reach. Both groups default to `unrestricted`.
+	Scope *AuthTokenScope `json:"scope,omitempty"`
+}
+
+// AuthTokenUpdateRequest defines model for AuthTokenUpdateRequest.
+type AuthTokenUpdateRequest = AuthTokenDefinition
+
 // AxisScale defines model for AxisScale.
 type AxisScale string
 
@@ -2864,13 +3047,43 @@ type DatasetCreateRequest = DatasetDefinition
 
 // DatasetDefinition defines model for DatasetDefinition.
 type DatasetDefinition struct {
-	Kind     DatasetDefinitionKind `json:"kind"`
-	Metadata DatasetMetadata       `json:"metadata"`
-	Spec     DatasetSpec           `json:"spec"`
+	// ApiVersion Version of the dataset document format. Required on create and update; the only supported
+	// value is `dash0.com/v1alpha1`, and any other value returns 400. Returned on every read.
+	ApiVersion string                `json:"apiVersion"`
+	Kind       DatasetDefinitionKind `json:"kind"`
+	Metadata   DatasetMetadata       `json:"metadata"`
+
+	// Spec Every field is optional. A field omitted on create takes the server default; a field omitted on
+	// update keeps its stored value. Enumerations may gain values in later versions, so clients must
+	// accept values they do not recognize.
+	Spec DatasetSpec `json:"spec"`
 }
 
 // DatasetDefinitionKind defines model for DatasetDefinition.Kind.
 type DatasetDefinitionKind string
+
+// DatasetGeoLocationPrivacy defines model for DatasetGeoLocationPrivacy.
+type DatasetGeoLocationPrivacy struct {
+	EndUser *DatasetGeoLocationStorage `json:"endUser,omitempty"`
+}
+
+// DatasetGeoLocationStorage defines model for DatasetGeoLocationStorage.
+type DatasetGeoLocationStorage struct {
+	// Storage What kind of geolocation information we are allowed to derive and store. Clients must accept
+	// values they do not recognize.
+	Storage *GeoLocationStorageStrategy `json:"storage,omitempty"`
+}
+
+// DatasetIpAddressPrivacy defines model for DatasetIpAddressPrivacy.
+type DatasetIpAddressPrivacy struct {
+	EndUser *DatasetIpAddressStorage `json:"endUser,omitempty"`
+}
+
+// DatasetIpAddressStorage defines model for DatasetIpAddressStorage.
+type DatasetIpAddressStorage struct {
+	// Storage How end-user IP addresses are stored. Clients must accept values they do not recognize.
+	Storage *IpAddressStorageStrategy `json:"storage,omitempty"`
+}
 
 // DatasetLabels defines model for DatasetLabels.
 type DatasetLabels struct {
@@ -2882,6 +3095,10 @@ type DatasetLabels struct {
 	// Dash0Comorigin External identifier for this dataset. Must be unique per organization when set. Used by
 	// Infrastructure-as-Code tools (Terraform, Kubernetes operator). Auto-generated as
 	// `api-<uuid>` on POST if not provided. Must not collide with an existing dataset slug.
+	// A deleted dataset keeps its origin reserved until it is purged. Creating a dataset
+	// with that origin under another slug returns 400. Restoring a deleted dataset by
+	// creating its slug again takes the request's origin, or an `api-<uuid>` for a machine
+	// token with no user, or none.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
 	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
@@ -2963,6 +3180,32 @@ type DatasetPermission struct {
 	UserId  *string         `json:"userId,omitempty"`
 }
 
+// DatasetPrivacy What Dash0 derives, stores and redacts for this dataset.
+type DatasetPrivacy struct {
+	GeoLocation *DatasetGeoLocationPrivacy `json:"geoLocation,omitempty"`
+	IpAddresses *DatasetIpAddressPrivacy   `json:"ipAddresses,omitempty"`
+	Redaction   *DatasetRedaction          `json:"redaction,omitempty"`
+}
+
+// DatasetProcessing Transformations Dash0 applies to ingested telemetry.
+type DatasetProcessing struct {
+	// Darkplane Darkplane-specific opt-ins for this dataset.
+	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
+
+	// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
+	//
+	// - disabled: No upgrade will be executed
+	// - latest: We will always upgrade to the latest and greatest
+	// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
+	//
+	// Defaults to `latest` for new organizations.
+	SemanticConventionUpgrades *SemanticConventionUpgrades `json:"semanticConventionUpgrades,omitempty"`
+
+	// SpanEventsToLogs Convert span events to log records correlated with the parent span via `traceId` and
+	// `spanId`. Converted log records carry the `dash0.span_event.converted` attribute.
+	SpanEventsToLogs *bool `json:"spanEventsToLogs,omitempty"`
+}
+
 // DatasetProfilingSettings defines model for DatasetProfilingSettings.
 type DatasetProfilingSettings struct {
 	// Retention The retention class selected for a signal, per dataset. The value is the
@@ -2980,11 +3223,100 @@ type DatasetProfilingSettings struct {
 	Retention RetentionClass `json:"retention"`
 }
 
+// DatasetRedaction defines model for DatasetRedaction.
+type DatasetRedaction struct {
+	// CardholderData Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
+	// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
+	// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
+	// or split card numbers, so filtering at the source remains the primary mechanism.
+	// Absent means disabled.
+	CardholderData *CardholderDataRedactionSettings `json:"cardholderData,omitempty"`
+
+	// GenAi Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
+	// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
+	// e.g. to keep conversation content private while still storing tool input/output.
+	GenAi *GenAIAttributeRedactionSettings `json:"genAi,omitempty"`
+}
+
 // DatasetResponse defines model for DatasetResponse.
 type DatasetResponse = DatasetDefinition
 
-// DatasetRestriction defines model for DatasetRestriction.
+// DatasetRestriction Whether the list of datasets on an auth token limits what it can reach. Clients must accept
+// values they do not recognize.
 type DatasetRestriction string
+
+// DatasetRetention How long each signal is kept. Omitted signals keep their stored retention.
+type DatasetRetention struct {
+	// Logs The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Logs *RetentionClass `json:"logs,omitempty"`
+
+	// Metrics The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Metrics *RetentionClass `json:"metrics,omitempty"`
+
+	// Profiles The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Profiles *RetentionClass `json:"profiles,omitempty"`
+
+	// Traces The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	Traces *RetentionClass `json:"traces,omitempty"`
+
+	// WebEvents The retention class selected for a signal, per dataset. The value is the
+	// total retention in days, not an increase on top of a baseline.
+	// Customer-selectable signals (logs, spans, web events) expose the full
+	// set; non-selectable signals (metrics, profiling) keep their platform
+	// defaults.
+	//
+	// - `30d`: 30 days total (the included baseline).
+	// - `60d`: 60 days total.
+	// - `90d`: 90 days total.
+	// - `120d`: 120 days total.
+	// - `210d`: 210 days total.
+	// - `390d`: 390 days total.
+	WebEvents *RetentionClass `json:"webEvents,omitempty"`
+}
 
 // DatasetSettings defines model for DatasetSettings.
 type DatasetSettings struct {
@@ -3031,27 +3363,10 @@ type DatasetSettings struct {
 	WebEvents        DatasetWebEventsSettings `json:"webEvents"`
 }
 
-// DatasetSpec defines model for DatasetSpec.
+// DatasetSpec Every field is optional. A field omitted on create takes the server default; a field omitted on
+// update keeps its stored value. Enumerations may gain values in later versions, so clients must
+// accept values they do not recognize.
 type DatasetSpec struct {
-	// CardholderDataRedaction Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
-	// telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
-	// place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
-	// or split card numbers, so filtering at the source remains the primary mechanism.
-	// Absent means disabled.
-	CardholderDataRedaction *CardholderDataRedactionSettings `json:"cardholderDataRedaction,omitempty"`
-
-	// Darkplane Darkplane-specific opt-ins for this dataset.
-	Darkplane *DarkplaneConfig `json:"darkplane,omitempty"`
-
-	// GenAiAttributeRedaction Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
-	// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
-	// e.g. to keep conversation content private while still storing tool input/output.
-	GenAiAttributeRedaction *GenAIAttributeRedactionSettings `json:"genAiAttributeRedaction,omitempty"`
-	GeoLocation             *GeoLocationSettings             `json:"geoLocation,omitempty"`
-	IpAddresses             *IpAddressesSettings             `json:"ipAddresses,omitempty"`
-	Logging                 *DatasetLoggingSettings          `json:"logging,omitempty"`
-	Metrics                 *DatasetMetricsSettings          `json:"metrics,omitempty"`
-
 	// Permissions Access control entries for this dataset. Ignored on create, which always grants
 	// `dataset:read` to the organization's members; set them with a subsequent update.
 	Permissions *[]DatasetPermission `json:"permissions,omitempty"`
@@ -3064,24 +3379,16 @@ type DatasetSpec struct {
 	// Preferred Whether this dataset is the organization's preferred dataset, which the Dash0 UI opens by
 	// default. At most one dataset per organization is preferred; setting it here clears the
 	// flag on the previous one.
-	Preferred *bool                     `json:"preferred,omitempty"`
-	Profiling *DatasetProfilingSettings `json:"profiling,omitempty"`
+	Preferred *bool `json:"preferred,omitempty"`
 
-	// SemanticConventionUpgrades Choose whether or not semantic convention upgrades should be executed. Can be one of:
-	//
-	// - disabled: No upgrade will be executed
-	// - latest: We will always upgrade to the latest and greatest
-	// - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
-	//
-	// Defaults to `latest` for new organizations.
-	SemanticConventionUpgrades *SemanticConventionUpgrades `json:"semanticConventionUpgrades,omitempty"`
+	// Privacy What Dash0 derives, stores and redacts for this dataset.
+	Privacy *DatasetPrivacy `json:"privacy,omitempty"`
 
-	// TelemetryFilters Spam filters for this dataset. Omitting this field on update leaves the stored filters
-	// untouched, so a client that does not manage spam filters cannot clobber filters written
-	// through the spam filter API. Supplying it replaces the whole list.
-	TelemetryFilters *[]TelemetryFilter        `json:"telemetryFilters,omitempty"`
-	Tracing          *DatasetTracingSettings   `json:"tracing,omitempty"`
-	WebEvents        *DatasetWebEventsSettings `json:"webEvents,omitempty"`
+	// Processing Transformations Dash0 applies to ingested telemetry.
+	Processing *DatasetProcessing `json:"processing,omitempty"`
+
+	// Retention How long each signal is kept. Omitted signals keep their stored retention.
+	Retention *DatasetRetention `json:"retention,omitempty"`
 }
 
 // DatasetTracingSettings defines model for DatasetTracingSettings.
@@ -3243,15 +3550,31 @@ type FailedCheckAgenticWorkflowTriggerSpec struct {
 
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
-	AvailableVariables *[]FailedCheckTriggerVariableName `json:"availableVariables,omitempty"`
+	AvailableVariables *[]FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item `json:"availableVariables,omitempty"`
 
 	// CheckRuleIDs Optional list of check rule IDs. When specified, only failed checks
 	// whose rule ID matches one of the listed values trigger the automation.
 	CheckRuleIDs *[]string       `json:"checkRuleIDs,omitempty"`
 	LabelFilters *FilterCriteria `json:"labelFilters,omitempty"`
+
+	// Silenced Optional filter on whether a silence covers the failed check when it fires. `true`
+	// matches only silenced failed checks, `false` only unsilenced ones. When omitted,
+	// silenced state is not considered.
+	Silenced *bool `json:"silenced,omitempty"`
 }
 
-// FailedCheckTriggerVariableName Variables provided by the `failed_check.new` trigger.
+// FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item defines model for FailedCheckAgenticWorkflowTriggerSpec.availableVariables.Item.
+type FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item struct {
+	union json.RawMessage
+}
+
+// FailedCheckSilencedTriggerVariableName Variable provided only by the `failed_check.new` trigger. A silenced failed check never
+// reaches Slack, so `slack_bot.failed_check.new` does not provide it.
+//
+// - `issue.silenced`: `true` when a silence covered the failed check when it fired, `false` otherwise.
+type FailedCheckSilencedTriggerVariableName string
+
+// FailedCheckTriggerVariableName Variables provided by every failed-check trigger.
 //
 // - `check.id`: The ID of the check rule that failed.
 // - `check.name`: The name of the check rule that failed.
@@ -3510,11 +3833,13 @@ type GenerativeAiEvaluationSpec struct {
 
 // GeoLocationSettings defines model for GeoLocationSettings.
 type GeoLocationSettings struct {
-	// EndUserGeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store.
+	// EndUserGeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store. Clients must accept
+	// values they do not recognize.
 	EndUserGeoLocationStorageStrategy GeoLocationStorageStrategy `json:"endUserGeoLocationStorageStrategy"`
 }
 
-// GeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store.
+// GeoLocationStorageStrategy What kind of geolocation information we are allowed to derive and store. Clients must accept
+// values they do not recognize.
 type GeoLocationStorageStrategy string
 
 // GetAgenticWorkflowsResponse defines model for GetAgenticWorkflowsResponse.
@@ -5314,11 +5639,12 @@ type InviteMemberRequest struct {
 	Role string `json:"role"`
 }
 
-// IpAddressStorageStrategy defines model for IpAddressStorageStrategy.
+// IpAddressStorageStrategy How end-user IP addresses are stored. Clients must accept values they do not recognize.
 type IpAddressStorageStrategy string
 
 // IpAddressesSettings defines model for IpAddressesSettings.
 type IpAddressesSettings struct {
+	// EndUserIpAddressStorageStrategy How end-user IP addresses are stored. Clients must accept values they do not recognize.
 	EndUserIpAddressStorageStrategy IpAddressStorageStrategy `json:"endUserIpAddressStorageStrategy"`
 }
 
@@ -6052,7 +6378,10 @@ type OAuthTokenRequest struct {
 // OAuthTokenResponse defines model for OAuthTokenResponse.
 type OAuthTokenResponse struct {
 	// AccessToken The access token issued by the authorization server.
-	AccessToken        string              `json:"access_token"`
+	AccessToken string `json:"access_token"`
+
+	// DatasetRestriction Whether the list of datasets on an auth token limits what it can reach. Clients must accept
+	// values they do not recognize.
 	DatasetRestriction *DatasetRestriction `json:"dataset_restriction,omitempty"`
 	Datasets           *[]string           `json:"datasets,omitempty"`
 
@@ -6299,10 +6628,22 @@ type PrometheusAlertRuleBulkCreateResponse struct {
 
 // PrometheusAlertRuleMetadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
 type PrometheusAlertRuleMetadata struct {
+	// Annotations Server-populated annotations that apply to the alert-rule resource itself, not to the
+	// emitted alert. Read-only on responses; ignored on write if a valid date-time.
+	Annotations *PrometheusAlertRuleMetadataAnnotations `json:"annotations,omitempty"`
+
 	// Labels Server-derived labels that apply to the alert-rule resource itself, not to the
 	// emitted alert. Currently includes `dash0.com/source` when the origin is known; see
 	// the `CrdSource` enum for the values it can take.
 	Labels *PrometheusAlertRuleMetadataLabels `json:"labels,omitempty"`
+}
+
+// PrometheusAlertRuleMetadataAnnotations Server-populated annotations that apply to the alert-rule resource itself, not to the
+// emitted alert. Read-only on responses; ignored on write if a valid date-time.
+type PrometheusAlertRuleMetadataAnnotations struct {
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the check rule has been deleted but not yet purged.
+	// Set by the server; read-only. Ignored on write if a valid date-time; a malformed value is rejected with a 400.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
 }
 
 // PrometheusAlertRuleMetadataLabels Server-derived labels that apply to the alert-rule resource itself, not to the
@@ -7275,6 +7616,10 @@ type SignalControlOperationCardinalityReductionSettings struct {
 	Enabled bool `json:"enabled"`
 }
 
+// SignalRestriction Whether the list of signal types on an auth token limits what it can reach. Clients must accept
+// values they do not recognize.
+type SignalRestriction string
+
 // SignalToMetricsBulkUpsertRequest defines model for SignalToMetricsBulkUpsertRequest.
 type SignalToMetricsBulkUpsertRequest struct {
 	Items []SignalToMetricsDefinition `json:"items"`
@@ -7464,6 +7809,9 @@ type SignalToMetricsTestResponse struct {
 	MatchedCount int64     `json:"matchedCount"`
 	TimeRange    TimeRange `json:"timeRange"`
 }
+
+// SignalType Enumeration of valid signal types in Dash0.
+type SignalType string
 
 // SlackBotConfig defines model for SlackBotConfig.
 type SlackBotConfig struct {
@@ -10216,6 +10564,12 @@ type PostApiAlertingCheckRulesBulkJSONRequestBody = PrometheusAlertRuleBulkCreat
 // PutApiAlertingCheckRulesOriginOrIdJSONRequestBody defines body for PutApiAlertingCheckRulesOriginOrId for application/json ContentType.
 type PutApiAlertingCheckRulesOriginOrIdJSONRequestBody = PrometheusAlertRule
 
+// PostApiAuthTokensJSONRequestBody defines body for PostApiAuthTokens for application/json ContentType.
+type PostApiAuthTokensJSONRequestBody = AuthTokenCreateRequest
+
+// PutApiAuthTokensOriginOrIdJSONRequestBody defines body for PutApiAuthTokensOriginOrId for application/json ContentType.
+type PutApiAuthTokensOriginOrIdJSONRequestBody = AuthTokenUpdateRequest
+
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
 
@@ -11697,6 +12051,68 @@ func (t AttributeFilter_Values_Item) MarshalJSON() ([]byte, error) {
 }
 
 func (t *AttributeFilter_Values_Item) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsFailedCheckTriggerVariableName returns the union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as a FailedCheckTriggerVariableName
+func (t FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) AsFailedCheckTriggerVariableName() (FailedCheckTriggerVariableName, error) {
+	var body FailedCheckTriggerVariableName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedCheckTriggerVariableName overwrites any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as the provided FailedCheckTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) FromFailedCheckTriggerVariableName(v FailedCheckTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedCheckTriggerVariableName performs a merge with any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item, using the provided FailedCheckTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MergeFailedCheckTriggerVariableName(v FailedCheckTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFailedCheckSilencedTriggerVariableName returns the union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as a FailedCheckSilencedTriggerVariableName
+func (t FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) AsFailedCheckSilencedTriggerVariableName() (FailedCheckSilencedTriggerVariableName, error) {
+	var body FailedCheckSilencedTriggerVariableName
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFailedCheckSilencedTriggerVariableName overwrites any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item as the provided FailedCheckSilencedTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) FromFailedCheckSilencedTriggerVariableName(v FailedCheckSilencedTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeFailedCheckSilencedTriggerVariableName performs a merge with any union data inside the FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item, using the provided FailedCheckSilencedTriggerVariableName
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MergeFailedCheckSilencedTriggerVariableName(v FailedCheckSilencedTriggerVariableName) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
@@ -13227,6 +13643,25 @@ type ClientInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiAuthTokens request
+	GetApiAuthTokens(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiAuthTokensWithBody request with any body
+	PostApiAuthTokensWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiAuthTokens(ctx context.Context, body PostApiAuthTokensJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiAuthTokensOriginOrId request
+	DeleteApiAuthTokensOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAuthTokensOriginOrId request
+	GetApiAuthTokensOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAuthTokensOriginOrIdWithBody request with any body
+	PutApiAuthTokensOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiDashboards request
 	GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -13866,6 +14301,90 @@ func (c *generatedClient) PutApiAlertingCheckRulesOriginOrIdWithBody(ctx context
 
 func (c *generatedClient) PutApiAlertingCheckRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiAlertingCheckRulesOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiAuthTokens(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAuthTokensRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAuthTokensWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAuthTokensRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAuthTokens(ctx context.Context, body PostApiAuthTokensJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAuthTokensRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiAuthTokensOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAuthTokensOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiAuthTokensOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAuthTokensOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAuthTokensOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAuthTokensOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAuthTokensOriginOrIdRequest(c.Server, originOrId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -16552,6 +17071,188 @@ func NewPutApiAlertingCheckRulesOriginOrIdRequestWithBody(server string, originO
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiAuthTokensRequest generates requests for GetApiAuthTokens
+func NewGetApiAuthTokensRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/auth-tokens")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiAuthTokensRequest calls the generic PostApiAuthTokens builder with application/json body
+func NewPostApiAuthTokensRequest(server string, body PostApiAuthTokensJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiAuthTokensRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiAuthTokensRequestWithBody generates requests for PostApiAuthTokens with any type of body
+func NewPostApiAuthTokensRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/auth-tokens")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiAuthTokensOriginOrIdRequest generates requests for DeleteApiAuthTokensOriginOrId
+func NewDeleteApiAuthTokensOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/auth-tokens/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAuthTokensOriginOrIdRequest generates requests for GetApiAuthTokensOriginOrId
+func NewGetApiAuthTokensOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/auth-tokens/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAuthTokensOriginOrIdRequest calls the generic PutApiAuthTokensOriginOrId builder with application/json body
+func NewPutApiAuthTokensOriginOrIdRequest(server string, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAuthTokensOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiAuthTokensOriginOrIdRequestWithBody generates requests for PutApiAuthTokensOriginOrId with any type of body
+func NewPutApiAuthTokensOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/auth-tokens/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
 	}
 
 	req, err := http.NewRequest("PUT", queryURL.String(), body)
@@ -22570,6 +23271,25 @@ type ClientWithResponsesInterface interface {
 
 	PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiAlertingCheckRulesOriginOrIdParams, body PutApiAlertingCheckRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAlertingCheckRulesOriginOrIdResponse, error)
 
+	// GetApiAuthTokensWithResponse request
+	GetApiAuthTokensWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiAuthTokensResponse, error)
+
+	// PostApiAuthTokensWithBodyWithResponse request with any body
+	PostApiAuthTokensWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAuthTokensResponse, error)
+
+	PostApiAuthTokensWithResponse(ctx context.Context, body PostApiAuthTokensJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAuthTokensResponse, error)
+
+	// DeleteApiAuthTokensOriginOrIdWithResponse request
+	DeleteApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiAuthTokensOriginOrIdResponse, error)
+
+	// GetApiAuthTokensOriginOrIdWithResponse request
+	GetApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiAuthTokensOriginOrIdResponse, error)
+
+	// PutApiAuthTokensOriginOrIdWithBodyWithResponse request with any body
+	PutApiAuthTokensOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error)
+
+	PutApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error)
+
 	// GetApiDashboardsWithResponse request
 	GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error)
 
@@ -23299,6 +24019,125 @@ func (r PutApiAlertingCheckRulesOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiAlertingCheckRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAuthTokensResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AuthTokenListResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAuthTokensResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAuthTokensResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiAuthTokensResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AuthTokenResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiAuthTokensResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiAuthTokensResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiAuthTokensOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAuthTokensOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAuthTokensOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAuthTokensOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AuthTokenResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAuthTokensOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAuthTokensOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiAuthTokensOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AuthTokenResponse
+	JSON403      *ErrorResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAuthTokensOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAuthTokensOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -25950,6 +26789,67 @@ func (c *ClientWithResponses) PutApiAlertingCheckRulesOriginOrIdWithResponse(ctx
 	return ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp)
 }
 
+// GetApiAuthTokensWithResponse request returning *GetApiAuthTokensResponse
+func (c *ClientWithResponses) GetApiAuthTokensWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiAuthTokensResponse, error) {
+	rsp, err := c.GetApiAuthTokens(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAuthTokensResponse(rsp)
+}
+
+// PostApiAuthTokensWithBodyWithResponse request with arbitrary body returning *PostApiAuthTokensResponse
+func (c *ClientWithResponses) PostApiAuthTokensWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAuthTokensResponse, error) {
+	rsp, err := c.PostApiAuthTokensWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAuthTokensResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiAuthTokensWithResponse(ctx context.Context, body PostApiAuthTokensJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAuthTokensResponse, error) {
+	rsp, err := c.PostApiAuthTokens(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAuthTokensResponse(rsp)
+}
+
+// DeleteApiAuthTokensOriginOrIdWithResponse request returning *DeleteApiAuthTokensOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiAuthTokensOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiAuthTokensOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAuthTokensOriginOrIdResponse(rsp)
+}
+
+// GetApiAuthTokensOriginOrIdWithResponse request returning *GetApiAuthTokensOriginOrIdResponse
+func (c *ClientWithResponses) GetApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiAuthTokensOriginOrIdResponse, error) {
+	rsp, err := c.GetApiAuthTokensOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAuthTokensOriginOrIdResponse(rsp)
+}
+
+// PutApiAuthTokensOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiAuthTokensOriginOrIdResponse
+func (c *ClientWithResponses) PutApiAuthTokensOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error) {
+	rsp, err := c.PutApiAuthTokensOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAuthTokensOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error) {
+	rsp, err := c.PutApiAuthTokensOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAuthTokensOriginOrIdResponse(rsp)
+}
+
 // GetApiDashboardsWithResponse request returning *GetApiDashboardsResponse
 func (c *ClientWithResponses) GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error) {
 	rsp, err := c.GetApiDashboards(ctx, params, reqEditors...)
@@ -27791,6 +28691,199 @@ func ParsePutApiAlertingCheckRulesOriginOrIdResponse(rsp *http.Response) (*PutAp
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAuthTokensResponse parses an HTTP response from a GetApiAuthTokensWithResponse call
+func ParseGetApiAuthTokensResponse(rsp *http.Response) (*GetApiAuthTokensResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAuthTokensResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuthTokenListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiAuthTokensResponse parses an HTTP response from a PostApiAuthTokensWithResponse call
+func ParsePostApiAuthTokensResponse(rsp *http.Response) (*PostApiAuthTokensResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiAuthTokensResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuthTokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiAuthTokensOriginOrIdResponse parses an HTTP response from a DeleteApiAuthTokensOriginOrIdWithResponse call
+func ParseDeleteApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*DeleteApiAuthTokensOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAuthTokensOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAuthTokensOriginOrIdResponse parses an HTTP response from a GetApiAuthTokensOriginOrIdWithResponse call
+func ParseGetApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*GetApiAuthTokensOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAuthTokensOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuthTokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAuthTokensOriginOrIdResponse parses an HTTP response from a PutApiAuthTokensOriginOrIdWithResponse call
+func ParsePutApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*PutApiAuthTokensOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAuthTokensOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuthTokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

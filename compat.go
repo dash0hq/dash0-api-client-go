@@ -148,6 +148,24 @@ package dash0
 // [Client.UpdateDataset], and [Client.ListDatasetsIter].
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
+//
+// # Migration guide (v1.24.x to <NEXT_RELEASE>)
+//
+// The dataset document follows a new shape.
+// [DatasetDefinition] gained a required ApiVersion field, which must be "dash0.com/v1alpha1" on create and update.
+// The [DatasetSpec] fields that mirrored stored settings moved into three groups, and every field is optional:
+//
+//   - Tracing, Logging, Metrics, Profiling, and WebEvents became [DatasetRetention] fields on Spec.Retention.
+//   - IpAddresses, GeoLocation, CardholderDataRedaction, and GenAiAttributeRedaction became [DatasetPrivacy] fields on Spec.Privacy.
+//   - SemanticConventionUpgrades and Darkplane became [DatasetProcessing] fields on Spec.Processing, next to SpanEventsToLogs.
+//
+// Spec.TelemetryFilters is gone from the document, because spam filters own filters.
+// An update never changes the stored filters, and [StripDatasetServerFields] no longer clears them.
+//
+// The same regeneration prefixed the generated constants of two enums that now share value names.
+// The bare view type constants (Logs, Spans, Metrics, and so on) are now [ViewTypeLogs], [ViewTypeSpans], [ViewTypeMetrics], and so on.
+// Restricted and Unrestricted are now [DatasetRestrictionRestricted] and [DatasetRestrictionUnrestricted].
+// The bare names stay as deprecated aliases.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -199,47 +217,95 @@ const SignalToMetricsSourceTerraform = Terraform
 // Deprecated: since v1.12.0. Use [Ui] instead.
 const SignalToMetricsSourceUi = Ui
 
-// Deprecated: since v1.12.3. Use [AwsLambda] instead.
-const ViewTypeAwsLambda = AwsLambda
+// AwsLambda is a deprecated alias for [ViewTypeAwsLambda].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeAwsLambda] instead.
+const AwsLambda = ViewTypeAwsLambda
 
-// Deprecated: since v1.12.3. Use [FailedChecks] instead.
-const ViewTypeFailedChecks = FailedChecks
+// FailedChecks is a deprecated alias for [ViewTypeFailedChecks].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeFailedChecks] instead.
+const FailedChecks = ViewTypeFailedChecks
 
-// Deprecated: since v1.12.3. Use [GcpCloudRunJobs] instead.
-const ViewTypeGcpCloudRunJobs = GcpCloudRunJobs
+// GcpCloudRunJobs is a deprecated alias for [ViewTypeGcpCloudRunJobs].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudRunJobs] instead.
+const GcpCloudRunJobs = ViewTypeGcpCloudRunJobs
 
-// Deprecated: since v1.12.3. Use [GcpCloudRunServices] instead.
-const ViewTypeGcpCloudRunServices = GcpCloudRunServices
+// GcpCloudRunServices is a deprecated alias for [ViewTypeGcpCloudRunServices].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudRunServices] instead.
+const GcpCloudRunServices = ViewTypeGcpCloudRunServices
 
-// Deprecated: since v1.12.3. Use [GcpCloudStorage] instead.
-const ViewTypeGcpCloudStorage = GcpCloudStorage
+// GcpCloudSqlInstances is a deprecated alias for [ViewTypeGcpCloudSqlInstances].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudSqlInstances] instead.
+const GcpCloudSqlInstances = ViewTypeGcpCloudSqlInstances
 
-// Deprecated: since v1.12.3. Use [GcpPubsub] instead.
-const ViewTypeGcpPubsub = GcpPubsub
+// GcpCloudStorage is a deprecated alias for [ViewTypeGcpCloudStorage].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpCloudStorage] instead.
+const GcpCloudStorage = ViewTypeGcpCloudStorage
 
-// Deprecated: since v1.12.3. Use [Logs] instead.
-const ViewTypeLogs = Logs
+// GcpPubsub is a deprecated alias for [ViewTypeGcpPubsub].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeGcpPubsub] instead.
+const GcpPubsub = ViewTypeGcpPubsub
 
-// Deprecated: since v1.12.3. Use [Metrics] instead.
-const ViewTypeMetrics = Metrics
+// Logs is a deprecated alias for [ViewTypeLogs].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeLogs] instead.
+const Logs = ViewTypeLogs
 
-// Deprecated: since v1.12.3. Use [Profiles] instead.
-const ViewTypeProfiles = Profiles
+// Metrics is a deprecated alias for [ViewTypeMetrics].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeMetrics] instead.
+const Metrics = ViewTypeMetrics
 
-// Deprecated: since v1.12.3. Use [Resources] instead.
-const ViewTypeResources = Resources
+// Profiles is a deprecated alias for [ViewTypeProfiles].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeProfiles] instead.
+const Profiles = ViewTypeProfiles
 
-// Deprecated: since v1.12.3. Use [Services] instead.
-const ViewTypeServices = Services
+// Resources is a deprecated alias for [ViewTypeResources].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeResources] instead.
+const Resources = ViewTypeResources
 
-// Deprecated: since v1.12.3. Use [Spans] instead.
-const ViewTypeSpans = Spans
+// Services is a deprecated alias for [ViewTypeServices].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeServices] instead.
+const Services = ViewTypeServices
 
-// Deprecated: since v1.12.3. Use [Sql] instead.
-const ViewTypeSql = Sql
+// Slos is a deprecated alias for [ViewTypeSlos].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSlos] instead.
+const Slos = ViewTypeSlos
 
-// Deprecated: since v1.12.3. Use [WebEvents] instead.
-const ViewTypeWebEvents = WebEvents
+// Spans is a deprecated alias for [ViewTypeSpans].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSpans] instead.
+const Spans = ViewTypeSpans
+
+// Sql is a deprecated alias for [ViewTypeSql].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeSql] instead.
+const Sql = ViewTypeSql
+
+// WebEvents is a deprecated alias for [ViewTypeWebEvents].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [ViewTypeWebEvents] instead.
+const WebEvents = ViewTypeWebEvents
+
+// Restricted is a deprecated alias for [DatasetRestrictionRestricted].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [DatasetRestrictionRestricted] instead.
+const Restricted = DatasetRestrictionRestricted
+
+// Unrestricted is a deprecated alias for [DatasetRestrictionUnrestricted].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [DatasetRestrictionUnrestricted] instead.
+const Unrestricted = DatasetRestrictionUnrestricted
 
 // Deprecated: since v1.12.3. Use [SpamFilterApiVersionV1alpha1] instead
 // (the enum value on the wider [SpamFilterApiVersion] type generated by the
