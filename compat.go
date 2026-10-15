@@ -166,6 +166,11 @@ package dash0
 // The bare view type constants (Logs, Spans, Metrics, and so on) are now [ViewTypeLogs], [ViewTypeSpans], [ViewTypeMetrics], and so on.
 // Restricted and Unrestricted are now [DatasetRestrictionRestricted] and [DatasetRestrictionUnrestricted].
 // The bare names stay as deprecated aliases.
+//
+// [Client] gained [Client.ListAuthTokens], [Client.GetAuthToken], [Client.CreateAuthToken],
+// [Client.UpdateAuthToken], [Client.DeleteAuthToken], and [Client.ListAuthTokensIter].
+// Custom [Client] implementations and wrappers must add them.
+// dash0test.MockClient implements them through new *Func fields.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //

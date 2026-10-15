@@ -67,6 +67,14 @@ type MockClient struct {
 	DeleteDatasetFunc    func(ctx context.Context, originOrID string) error
 	ListDatasetsIterFunc func(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition]
 
+	// Auth tokens
+	ListAuthTokensFunc     func(ctx context.Context) ([]*dash0.AuthTokenResponseDefinition, error)
+	GetAuthTokenFunc       func(ctx context.Context, originOrID string) (*dash0.AuthTokenResponseDefinition, error)
+	CreateAuthTokenFunc    func(ctx context.Context, token *dash0.AuthTokenDefinition) (*dash0.AuthTokenResponseDefinition, error)
+	UpdateAuthTokenFunc    func(ctx context.Context, originOrID string, token *dash0.AuthTokenDefinition) (*dash0.AuthTokenResponseDefinition, error)
+	DeleteAuthTokenFunc    func(ctx context.Context, originOrID string) error
+	ListAuthTokensIterFunc func(ctx context.Context) *dash0.Iter[dash0.AuthTokenResponseDefinition]
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -389,6 +397,50 @@ func (m *MockClient) DeleteDataset(ctx context.Context, originOrID string) error
 func (m *MockClient) ListDatasetsIter(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition] {
 	if m.ListDatasetsIterFunc != nil {
 		return m.ListDatasetsIterFunc(ctx)
+	}
+	return nil
+}
+
+// Auth tokens
+
+func (m *MockClient) ListAuthTokens(ctx context.Context) ([]*dash0.AuthTokenResponseDefinition, error) {
+	if m.ListAuthTokensFunc != nil {
+		return m.ListAuthTokensFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetAuthToken(ctx context.Context, originOrID string) (*dash0.AuthTokenResponseDefinition, error) {
+	if m.GetAuthTokenFunc != nil {
+		return m.GetAuthTokenFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateAuthToken(ctx context.Context, token *dash0.AuthTokenDefinition) (*dash0.AuthTokenResponseDefinition, error) {
+	if m.CreateAuthTokenFunc != nil {
+		return m.CreateAuthTokenFunc(ctx, token)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateAuthToken(ctx context.Context, originOrID string, token *dash0.AuthTokenDefinition) (*dash0.AuthTokenResponseDefinition, error) {
+	if m.UpdateAuthTokenFunc != nil {
+		return m.UpdateAuthTokenFunc(ctx, originOrID, token)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteAuthToken(ctx context.Context, originOrID string) error {
+	if m.DeleteAuthTokenFunc != nil {
+		return m.DeleteAuthTokenFunc(ctx, originOrID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListAuthTokensIter(ctx context.Context) *dash0.Iter[dash0.AuthTokenResponseDefinition] {
+	if m.ListAuthTokensIterFunc != nil {
+		return m.ListAuthTokensIterFunc(ctx)
 	}
 	return nil
 }
