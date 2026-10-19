@@ -23,7 +23,7 @@ func TestListDatasets(t *testing.T) {
 		assertEqual(t, "method", r.Method, http.MethodGet)
 		assertEqual(t, "path", r.URL.Path, "/api/datasets")
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(DatasetListResponse{Datasets: []DatasetResponse{*newTestDataset("a-set"), *newTestDataset("b-set")}})
+		_ = json.NewEncoder(w).Encode(DatasetListResponse{*newTestDataset("a-set"), *newTestDataset("b-set")})
 	}))
 	defer server.Close()
 
@@ -39,7 +39,7 @@ func TestListDatasets(t *testing.T) {
 func TestListDatasetsIter(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(DatasetListResponse{Datasets: []DatasetResponse{*newTestDataset("a-set")}})
+		_ = json.NewEncoder(w).Encode(DatasetListResponse{*newTestDataset("a-set")})
 	}))
 	defer server.Close()
 
@@ -146,6 +146,30 @@ func TestCreateDataset_Shape(t *testing.T) {
 	assertEqual(t, "ip storage", fmt.Sprint(storage), "anonymize")
 
 	assertEqual(t, "ip storage in response", string(*created.Spec.Privacy.IpAddresses.EndUser.Storage), "hash")
+}
+
+func TestCreateDataset_Slug(t *testing.T) {
+	var got map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
+			t.Errorf("decode request body: %v", err)
+		}
+		_, _ = w.Write([]byte(`{"apiVersion":"dash0.com/v1alpha1","kind":"Dash0Dataset","metadata":{"name":"Staging"},"spec":{"slug":"stg"}}`))
+	}))
+	defer server.Close()
+
+	d := &DatasetDefinition{ApiVersion: "dash0.com/v1alpha1", Kind: Dash0Dataset, Metadata: DatasetMetadata{Name: "Staging"}}
+	d.Spec.Slug = "stg"
+	created, err := newTestClient(t, server.URL).CreateDataset(context.Background(), d)
+	if err != nil {
+		t.Fatalf("CreateDataset() error = %v", err)
+	}
+
+	assertEqual(t, "request slug", fmt.Sprint(got["spec"].(map[string]any)["slug"]), "stg")
+	if _, ok := got["metadata"].(map[string]any)["labels"]; ok {
+		t.Errorf("request carries labels: %v", got["metadata"])
+	}
+	assertEqual(t, "response slug", created.Spec.Slug, "stg")
 }
 
 func TestCreateDataset_400(t *testing.T) {

@@ -339,3 +339,11 @@ Sql
 WebEvents
 Restricted
 Unrestricted
+
+# <NEXT_RELEASE>: GET /api/datasets and GET /api/auth-tokens return a plain
+# JSON array, so the list response types became slices. ListDatasets and
+# ListAuthTokens keep their signatures.
+AuthTokenListResponse
+DatasetListResponse
+GetApiAuthTokensResponse.JSON200
+GetApiDatasetsResponse.JSON200

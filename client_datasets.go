@@ -22,7 +22,7 @@ func (c *client) ListDatasets(ctx context.Context) ([]*DatasetDefinition, error)
 	if resp.JSON200 == nil {
 		return nil, fmt.Errorf("dash0: unexpected nil response")
 	}
-	return toPointerSlice(resp.JSON200.Datasets), nil
+	return toPointerSlice(*resp.JSON200), nil
 }
 
 // GetDataset retrieves a dataset by origin or slug.
@@ -185,9 +185,8 @@ func SetDatasetIDIfAbsent(dataset *DatasetDefinition, id string) {
 	}
 }
 
-// ClearDatasetID empties the dash0.com/id label (the slug) on a dataset definition.
-// The label is required, so the request still carries an empty value.
-// An update accepts that and addresses the dataset by the path, but a create rejects it.
+// ClearDatasetID empties the dash0.com/id label (the slug) on a dataset definition, which drops it from the request.
+// It does not touch spec.slug.
 func ClearDatasetID(dataset *DatasetDefinition) {
 	if dataset == nil || dataset.Metadata.Labels == nil {
 		return
