@@ -44,7 +44,8 @@ func (c *client) GetDataset(ctx context.Context, originOrID string) (*DatasetDef
 }
 
 // CreateDataset creates a new dataset.
-// The slug in the dash0.com/id label is required and cannot be changed afterwards.
+// The slug comes from spec.slug or the dash0.com/id label, which must match when both are set, and cannot be changed afterwards.
+// When neither is set, the server derives the slug from metadata.name.
 // The apiVersion field is required and must be "dash0.com/v1alpha1".
 // The server ignores spec.permissions on create, so set permissions with a later [Client.UpdateDataset].
 func (c *client) CreateDataset(ctx context.Context, dataset *DatasetDefinition) (*DatasetDefinition, error) {
@@ -144,8 +145,15 @@ func StripDatasetServerFields(dataset *DatasetDefinition) {
 }
 
 // GetDatasetID extracts the slug from a dataset definition.
+// It prefers spec.slug and falls back to the dash0.com/id label.
 func GetDatasetID(dataset *DatasetDefinition) string {
-	if dataset == nil || dataset.Metadata.Labels == nil {
+	if dataset == nil {
+		return ""
+	}
+	if dataset.Spec.Slug != "" {
+		return dataset.Spec.Slug
+	}
+	if dataset.Metadata.Labels == nil {
 		return ""
 	}
 	return dataset.Metadata.Labels.Dash0Comid
@@ -159,7 +167,7 @@ func GetDatasetName(dataset *DatasetDefinition) string {
 	return dataset.Metadata.Name
 }
 
-// SetDatasetID sets the dash0.com/id label (the slug) on a dataset definition.
+// SetDatasetID sets the slug on a dataset definition, in both spec.slug and the dash0.com/id label, so the two always match.
 // It initializes the labels struct if needed.
 func SetDatasetID(dataset *DatasetDefinition, id string) {
 	if dataset == nil {
@@ -168,28 +176,25 @@ func SetDatasetID(dataset *DatasetDefinition, id string) {
 	if dataset.Metadata.Labels == nil {
 		dataset.Metadata.Labels = &DatasetLabels{}
 	}
+	dataset.Spec.Slug = id
 	dataset.Metadata.Labels.Dash0Comid = id
 }
 
-// SetDatasetIDIfAbsent sets the dash0.com/id label (the slug) on a dataset definition only if it is not already set.
-// It initializes the labels struct if needed.
+// SetDatasetIDIfAbsent sets the slug on a dataset definition, like [SetDatasetID], only if neither spec.slug nor the dash0.com/id label is set.
 func SetDatasetIDIfAbsent(dataset *DatasetDefinition, id string) {
-	if dataset == nil {
-		return
-	}
-	if dataset.Metadata.Labels == nil {
-		dataset.Metadata.Labels = &DatasetLabels{}
-	}
-	if dataset.Metadata.Labels.Dash0Comid == "" {
-		dataset.Metadata.Labels.Dash0Comid = id
+	if GetDatasetID(dataset) == "" {
+		SetDatasetID(dataset, id)
 	}
 }
 
-// ClearDatasetID empties the dash0.com/id label (the slug) on a dataset definition, which drops it from the request.
-// It does not touch spec.slug.
+// ClearDatasetID empties spec.slug and the dash0.com/id label on a dataset definition, which drops the slug from the request.
+// A create then derives the slug from metadata.name, and an update of a missing dataset takes it from the path.
 func ClearDatasetID(dataset *DatasetDefinition) {
-	if dataset == nil || dataset.Metadata.Labels == nil {
+	if dataset == nil {
 		return
 	}
-	dataset.Metadata.Labels.Dash0Comid = ""
+	dataset.Spec.Slug = ""
+	if dataset.Metadata.Labels != nil {
+		dataset.Metadata.Labels.Dash0Comid = ""
+	}
 }
