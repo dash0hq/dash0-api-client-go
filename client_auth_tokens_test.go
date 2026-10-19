@@ -74,7 +74,7 @@ func TestListAuthTokens(t *testing.T) {
 		assertEqual(t, "method", r.Method, http.MethodGet)
 		assertEqual(t, "path", r.URL.Path, "/api/auth-tokens")
 		assertEqual(t, "authorization", r.Header.Get("Authorization"), "Bearer auth_test123")
-		writeAuthTokenJSON(w, http.StatusOK, AuthTokenListResponse{AuthTokens: []AuthTokenResponse{*newTestAuthTokenResponse("a-tok", nil), *newTestAuthTokenResponse("b-tok", nil)}})
+		writeAuthTokenJSON(w, http.StatusOK, AuthTokenListResponse{*newTestAuthTokenResponse("a-tok", nil), *newTestAuthTokenResponse("b-tok", nil)})
 	}))
 	defer server.Close()
 
@@ -89,7 +89,7 @@ func TestListAuthTokens(t *testing.T) {
 
 func TestListAuthTokensIter(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writeAuthTokenJSON(w, http.StatusOK, AuthTokenListResponse{AuthTokens: []AuthTokenResponse{*newTestAuthTokenResponse("a-tok", nil)}})
+		writeAuthTokenJSON(w, http.StatusOK, AuthTokenListResponse{*newTestAuthTokenResponse("a-tok", nil)})
 	}))
 	defer server.Close()
 
@@ -328,12 +328,12 @@ func TestAuthTokenResponse_Redaction(t *testing.T) {
 	wrapper := struct{ Def AuthTokenResponseDefinition }{*def}
 
 	values := map[string]any{
-		"spec value":     def.Spec,
-		"spec pointer":   &def.Spec,
-		"response":       *def,
-		"response ptr":   def,
-		"nested":         wrapper,
-		"list body item": AuthTokenListResponse{AuthTokens: []AuthTokenResponse{*def}}.AuthTokens[0],
+		"spec value":   def.Spec,
+		"spec pointer": &def.Spec,
+		"response":     *def,
+		"response ptr": def,
+		"nested":       wrapper,
+		"list body":    AuthTokenListResponse{*def},
 	}
 	for name, v := range values {
 		for _, verb := range []string{"%v", "%+v", "%#v", "%s"} {

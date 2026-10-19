@@ -171,6 +171,15 @@ package dash0
 // [Client.UpdateAuthToken], [Client.DeleteAuthToken], and [Client.ListAuthTokensIter].
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
+//
+// # Migration guide (v1.25.x to <NEXT_RELEASE>)
+//
+// [DatasetListResponse] and [AuthTokenListResponse] are now slices, because the list endpoints return a plain JSON array.
+// [Client.ListDatasets] and [Client.ListAuthTokens] keep their signatures.
+//
+// The same regeneration dropped the type prefix from the [WebhookAgenticWorkflowTriggerKind] constants.
+// WebhookAgenticWorkflowTriggerKindManual is now [Manual], WebhookAgenticWorkflowTriggerKindWebhook is now [Webhook], and so on.
+// The prefixed names stay as deprecated aliases.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -391,3 +400,123 @@ const Failure = SloRawTypeFailure
 //
 // Deprecated: since v1.23.0. Use [SloRawTypeSuccess] instead.
 const Success = SloRawTypeSuccess
+
+// WebhookAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation is a deprecated alias for [DarkplanePullRequestEvaluation].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplanePullRequestEvaluation] instead.
+const WebhookAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation = DarkplanePullRequestEvaluation
+
+// WebhookAgenticWorkflowTriggerKindFailedCheckNew is a deprecated alias for [FailedCheckNew].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [FailedCheckNew] instead.
+const WebhookAgenticWorkflowTriggerKindFailedCheckNew = FailedCheckNew
+
+// WebhookAgenticWorkflowTriggerKindGithubCheckRun is a deprecated alias for [GithubCheckRun].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubCheckRun] instead.
+const WebhookAgenticWorkflowTriggerKindGithubCheckRun = GithubCheckRun
+
+// WebhookAgenticWorkflowTriggerKindGithubCheckSuite is a deprecated alias for [GithubCheckSuite].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubCheckSuite] instead.
+const WebhookAgenticWorkflowTriggerKindGithubCheckSuite = GithubCheckSuite
+
+// WebhookAgenticWorkflowTriggerKindGithubDeployment is a deprecated alias for [GithubDeployment].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubDeployment] instead.
+const WebhookAgenticWorkflowTriggerKindGithubDeployment = GithubDeployment
+
+// WebhookAgenticWorkflowTriggerKindGithubDeploymentStatus is a deprecated alias for [GithubDeploymentStatus].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubDeploymentStatus] instead.
+const WebhookAgenticWorkflowTriggerKindGithubDeploymentStatus = GithubDeploymentStatus
+
+// WebhookAgenticWorkflowTriggerKindGithubIssueComment is a deprecated alias for [GithubIssueComment].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubIssueComment] instead.
+const WebhookAgenticWorkflowTriggerKindGithubIssueComment = GithubIssueComment
+
+// WebhookAgenticWorkflowTriggerKindGithubPullRequest is a deprecated alias for [GithubPullRequest].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubPullRequest] instead.
+const WebhookAgenticWorkflowTriggerKindGithubPullRequest = GithubPullRequest
+
+// WebhookAgenticWorkflowTriggerKindGithubPullRequestReview is a deprecated alias for [GithubPullRequestReview].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubPullRequestReview] instead.
+const WebhookAgenticWorkflowTriggerKindGithubPullRequestReview = GithubPullRequestReview
+
+// WebhookAgenticWorkflowTriggerKindGithubPullRequestReviewComment is a deprecated alias for [GithubPullRequestReviewComment].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubPullRequestReviewComment] instead.
+const WebhookAgenticWorkflowTriggerKindGithubPullRequestReviewComment = GithubPullRequestReviewComment
+
+// WebhookAgenticWorkflowTriggerKindGithubRelease is a deprecated alias for [GithubRelease].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubRelease] instead.
+const WebhookAgenticWorkflowTriggerKindGithubRelease = GithubRelease
+
+// WebhookAgenticWorkflowTriggerKindGithubWorkflowDispatch is a deprecated alias for [GithubWorkflowDispatch].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubWorkflowDispatch] instead.
+const WebhookAgenticWorkflowTriggerKindGithubWorkflowDispatch = GithubWorkflowDispatch
+
+// WebhookAgenticWorkflowTriggerKindGithubWorkflowJob is a deprecated alias for [GithubWorkflowJob].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubWorkflowJob] instead.
+const WebhookAgenticWorkflowTriggerKindGithubWorkflowJob = GithubWorkflowJob
+
+// WebhookAgenticWorkflowTriggerKindGithubWorkflowRun is a deprecated alias for [GithubWorkflowRun].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GithubWorkflowRun] instead.
+const WebhookAgenticWorkflowTriggerKindGithubWorkflowRun = GithubWorkflowRun
+
+// WebhookAgenticWorkflowTriggerKindGitlabMergeRequest is a deprecated alias for [GitlabMergeRequest].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GitlabMergeRequest] instead.
+const WebhookAgenticWorkflowTriggerKindGitlabMergeRequest = GitlabMergeRequest
+
+// WebhookAgenticWorkflowTriggerKindGitlabNote is a deprecated alias for [GitlabNote].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [GitlabNote] instead.
+const WebhookAgenticWorkflowTriggerKindGitlabNote = GitlabNote
+
+// WebhookAgenticWorkflowTriggerKindLinearComment is a deprecated alias for [LinearComment].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearComment] instead.
+const WebhookAgenticWorkflowTriggerKindLinearComment = LinearComment
+
+// WebhookAgenticWorkflowTriggerKindLinearLabelAdded is a deprecated alias for [LinearLabelAdded].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearLabelAdded] instead.
+const WebhookAgenticWorkflowTriggerKindLinearLabelAdded = LinearLabelAdded
+
+// WebhookAgenticWorkflowTriggerKindManual is a deprecated alias for [Manual].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Manual] instead.
+const WebhookAgenticWorkflowTriggerKindManual = Manual
+
+// WebhookAgenticWorkflowTriggerKindSchedule is a deprecated alias for [Schedule].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Schedule] instead.
+const WebhookAgenticWorkflowTriggerKindSchedule = Schedule
+
+// WebhookAgenticWorkflowTriggerKindSlackBotFailedCheckNew is a deprecated alias for [SlackBotFailedCheckNew].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SlackBotFailedCheckNew] instead.
+const WebhookAgenticWorkflowTriggerKindSlackBotFailedCheckNew = SlackBotFailedCheckNew
+
+// WebhookAgenticWorkflowTriggerKindSlackBotMessage is a deprecated alias for [SlackBotMessage].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SlackBotMessage] instead.
+const WebhookAgenticWorkflowTriggerKindSlackBotMessage = SlackBotMessage
+
+// WebhookAgenticWorkflowTriggerKindSlackBotReaction is a deprecated alias for [SlackBotReaction].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [SlackBotReaction] instead.
+const WebhookAgenticWorkflowTriggerKindSlackBotReaction = SlackBotReaction
+
+// WebhookAgenticWorkflowTriggerKindWebhook is a deprecated alias for [Webhook].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [Webhook] instead.
+const WebhookAgenticWorkflowTriggerKindWebhook = Webhook

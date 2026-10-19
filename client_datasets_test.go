@@ -23,7 +23,7 @@ func TestListDatasets(t *testing.T) {
 		assertEqual(t, "method", r.Method, http.MethodGet)
 		assertEqual(t, "path", r.URL.Path, "/api/datasets")
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(DatasetListResponse{Datasets: []DatasetResponse{*newTestDataset("a-set"), *newTestDataset("b-set")}})
+		_ = json.NewEncoder(w).Encode(DatasetListResponse{*newTestDataset("a-set"), *newTestDataset("b-set")})
 	}))
 	defer server.Close()
 
@@ -39,7 +39,7 @@ func TestListDatasets(t *testing.T) {
 func TestListDatasetsIter(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(DatasetListResponse{Datasets: []DatasetResponse{*newTestDataset("a-set")}})
+		_ = json.NewEncoder(w).Encode(DatasetListResponse{*newTestDataset("a-set")})
 	}))
 	defer server.Close()
 
@@ -146,6 +146,30 @@ func TestCreateDataset_Shape(t *testing.T) {
 	assertEqual(t, "ip storage", fmt.Sprint(storage), "anonymize")
 
 	assertEqual(t, "ip storage in response", string(*created.Spec.Privacy.IpAddresses.EndUser.Storage), "hash")
+}
+
+func TestCreateDataset_Slug(t *testing.T) {
+	var got map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
+			t.Errorf("decode request body: %v", err)
+		}
+		_, _ = w.Write([]byte(`{"apiVersion":"dash0.com/v1alpha1","kind":"Dash0Dataset","metadata":{"name":"Staging"},"spec":{"slug":"stg"}}`))
+	}))
+	defer server.Close()
+
+	d := &DatasetDefinition{ApiVersion: "dash0.com/v1alpha1", Kind: Dash0Dataset, Metadata: DatasetMetadata{Name: "Staging"}}
+	d.Spec.Slug = "stg"
+	created, err := newTestClient(t, server.URL).CreateDataset(context.Background(), d)
+	if err != nil {
+		t.Fatalf("CreateDataset() error = %v", err)
+	}
+
+	assertEqual(t, "request slug", fmt.Sprint(got["spec"].(map[string]any)["slug"]), "stg")
+	if _, ok := got["metadata"].(map[string]any)["labels"]; ok {
+		t.Errorf("request carries labels: %v", got["metadata"])
+	}
+	assertEqual(t, "response slug", created.Spec.Slug, "stg")
 }
 
 func TestCreateDataset_400(t *testing.T) {
@@ -263,6 +287,81 @@ func TestDatasetHelpers(t *testing.T) {
 	ClearDatasetID(d)
 	assertEqual(t, "id after Clear", GetDatasetID(d), "")
 	assertEqual(t, "name", GetDatasetName(d), "Staging")
+}
+
+func TestDatasetHelpers_SlugSources(t *testing.T) {
+	onlySpec := func() *DatasetDefinition { return &DatasetDefinition{Spec: DatasetSpec{Slug: "from-spec"}} }
+	onlyLabel := func() *DatasetDefinition {
+		return &DatasetDefinition{Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comid: "from-label"}}}
+	}
+	both := func() *DatasetDefinition {
+		return &DatasetDefinition{Spec: DatasetSpec{Slug: "staging"}, Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comid: "staging"}}}
+	}
+	for name, tc := range map[string]struct {
+		dataset func() *DatasetDefinition
+		want    string
+	}{
+		"only spec.slug": {onlySpec, "from-spec"},
+		"only label":     {onlyLabel, "from-label"},
+		"both":           {both, "staging"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			d := tc.dataset()
+			assertEqual(t, "get", GetDatasetID(d), tc.want)
+
+			SetDatasetIDIfAbsent(d, "other")
+			assertEqual(t, "after IfAbsent", GetDatasetID(d), tc.want)
+			if d.Metadata.Labels != nil && d.Metadata.Labels.Dash0Comid != "" && d.Metadata.Labels.Dash0Comid != tc.want {
+				t.Errorf("IfAbsent wrote a label that does not match the slug: %q", d.Metadata.Labels.Dash0Comid)
+			}
+
+			SetDatasetID(d, "renamed")
+			assertEqual(t, "spec.slug after Set", d.Spec.Slug, "renamed")
+			assertEqual(t, "label after Set", d.Metadata.Labels.Dash0Comid, "renamed")
+
+			ClearDatasetID(d)
+			assertEqual(t, "spec.slug after Clear", d.Spec.Slug, "")
+			assertEqual(t, "label after Clear", d.Metadata.Labels.Dash0Comid, "")
+		})
+	}
+}
+
+// A copy must not carry the source slug, or the PUT addresses the source dataset instead of creating a new one.
+func TestDataset_CopyFlow(t *testing.T) {
+	var sent map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodGet {
+			_, _ = w.Write([]byte(`{"apiVersion":"dash0.com/v1alpha1","kind":"Dash0Dataset",` +
+				`"metadata":{"name":"Staging","labels":{"dash0.com/id":"staging","dash0.com/origin":"tf-staging","dash0.com/version":"3"}},` +
+				`"spec":{"slug":"staging"}}`))
+			return
+		}
+		assertEqual(t, "path", r.URL.Path, "/api/datasets/tf-staging-copy")
+		if err := json.NewDecoder(r.Body).Decode(&sent); err != nil {
+			t.Errorf("decode request body: %v", err)
+		}
+		_ = json.NewEncoder(w).Encode(newTestDataset("staging-copy"))
+	}))
+	defer server.Close()
+
+	c := newTestClient(t, server.URL)
+	d, err := c.GetDataset(context.Background(), "tf-staging")
+	if err != nil {
+		t.Fatalf("GetDataset() error = %v", err)
+	}
+	StripDatasetServerFields(d)
+	ClearDatasetID(d)
+	if _, err := c.UpdateDataset(context.Background(), "tf-staging-copy", d); err != nil {
+		t.Fatalf("UpdateDataset() error = %v", err)
+	}
+
+	if _, ok := sent["spec"].(map[string]any)["slug"]; ok {
+		t.Errorf("copy request carries spec.slug: %v", sent["spec"])
+	}
+	if _, ok := sent["metadata"].(map[string]any)["labels"].(map[string]any)["dash0.com/id"]; ok {
+		t.Errorf("copy request carries dash0.com/id: %v", sent["metadata"])
+	}
 }
 
 func TestDatasetHelpers_Nil(t *testing.T) {

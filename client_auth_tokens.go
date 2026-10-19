@@ -34,7 +34,7 @@ func (c *client) ListAuthTokens(ctx context.Context) ([]*AuthTokenResponseDefini
 	if resp.JSON200 == nil {
 		return nil, fmt.Errorf("dash0: unexpected nil response")
 	}
-	return toPointerSlice(resp.JSON200.AuthTokens), nil
+	return toPointerSlice(*resp.JSON200), nil
 }
 
 // GetAuthToken retrieves an auth token by origin or ID.

@@ -110,6 +110,7 @@ const (
 	AgenticWorkflowTriggerKindGithubPullRequest              AgenticWorkflowTriggerKind = "github.pull_request"
 	AgenticWorkflowTriggerKindGithubPullRequestReview        AgenticWorkflowTriggerKind = "github.pull_request_review"
 	AgenticWorkflowTriggerKindGithubPullRequestReviewComment AgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	AgenticWorkflowTriggerKindGithubPush                     AgenticWorkflowTriggerKind = "github.push"
 	AgenticWorkflowTriggerKindGithubRelease                  AgenticWorkflowTriggerKind = "github.release"
 	AgenticWorkflowTriggerKindGithubWorkflowDispatch         AgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	AgenticWorkflowTriggerKindGithubWorkflowJob              AgenticWorkflowTriggerKind = "github.workflow_job"
@@ -241,6 +242,7 @@ const (
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPullRequest              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.pull_request"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPullRequestReview        DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.pull_request_review"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPullRequestReviewComment DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubPush                     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.push"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubRelease                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.release"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubWorkflowDispatch         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubWorkflowJob              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -302,6 +304,7 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindGithubPullRequest              FailedCheckAgenticWorkflowTriggerKind = "github.pull_request"
 	FailedCheckAgenticWorkflowTriggerKindGithubPullRequestReview        FailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review"
 	FailedCheckAgenticWorkflowTriggerKindGithubPullRequestReviewComment FailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	FailedCheckAgenticWorkflowTriggerKindGithubPush                     FailedCheckAgenticWorkflowTriggerKind = "github.push"
 	FailedCheckAgenticWorkflowTriggerKindGithubRelease                  FailedCheckAgenticWorkflowTriggerKind = "github.release"
 	FailedCheckAgenticWorkflowTriggerKindGithubWorkflowDispatch         FailedCheckAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	FailedCheckAgenticWorkflowTriggerKindGithubWorkflowJob              FailedCheckAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -388,6 +391,7 @@ const (
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubPullRequest              GitHubCheckRunAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubCheckRunAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubCheckRunAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubCheckRunAgenticWorkflowTriggerKindGithubPush                     GitHubCheckRunAgenticWorkflowTriggerKind = "github.push"
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubRelease                  GitHubCheckRunAgenticWorkflowTriggerKind = "github.release"
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubCheckRunAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubCheckRunAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -439,6 +443,7 @@ const (
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPullRequest              GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubPush                     GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.push"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubRelease                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.release"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -489,6 +494,7 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubPullRequest              GitHubDeploymentAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubDeploymentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubDeploymentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubDeploymentAgenticWorkflowTriggerKindGithubPush                     GitHubDeploymentAgenticWorkflowTriggerKind = "github.push"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubRelease                  GitHubDeploymentAgenticWorkflowTriggerKind = "github.release"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubDeploymentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubDeploymentAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -517,6 +523,7 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubPullRequest              GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubPush                     GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.push"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubRelease                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.release"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -545,6 +552,7 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubPullRequest              GitHubIssueCommentAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubIssueCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubIssueCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubIssueCommentAgenticWorkflowTriggerKindGithubPush                     GitHubIssueCommentAgenticWorkflowTriggerKind = "github.push"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubRelease                  GitHubIssueCommentAgenticWorkflowTriggerKind = "github.release"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubIssueCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubIssueCommentAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -573,6 +581,7 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubPullRequest              GitHubPullRequestAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPullRequestAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPullRequestAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubPullRequestAgenticWorkflowTriggerKindGithubPush                     GitHubPullRequestAgenticWorkflowTriggerKind = "github.push"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubRelease                  GitHubPullRequestAgenticWorkflowTriggerKind = "github.release"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPullRequestAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPullRequestAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -601,6 +610,7 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubPullRequest              GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubPush                     GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.push"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubRelease                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.release"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -629,6 +639,7 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubPullRequest              GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubPush                     GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.push"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubRelease                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.release"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -645,6 +656,35 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindWebhook                        GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "webhook"
 )
 
+// Defines values for GitHubPushAgenticWorkflowTriggerKind.
+const (
+	GitHubPushAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubPushAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	GitHubPushAgenticWorkflowTriggerKindFailedCheckNew                 GitHubPushAgenticWorkflowTriggerKind = "failed_check.new"
+	GitHubPushAgenticWorkflowTriggerKindGithubCheckRun                 GitHubPushAgenticWorkflowTriggerKind = "github.check_run"
+	GitHubPushAgenticWorkflowTriggerKindGithubCheckSuite               GitHubPushAgenticWorkflowTriggerKind = "github.check_suite"
+	GitHubPushAgenticWorkflowTriggerKindGithubDeployment               GitHubPushAgenticWorkflowTriggerKind = "github.deployment"
+	GitHubPushAgenticWorkflowTriggerKindGithubDeploymentStatus         GitHubPushAgenticWorkflowTriggerKind = "github.deployment_status"
+	GitHubPushAgenticWorkflowTriggerKindGithubIssueComment             GitHubPushAgenticWorkflowTriggerKind = "github.issue_comment"
+	GitHubPushAgenticWorkflowTriggerKindGithubPullRequest              GitHubPushAgenticWorkflowTriggerKind = "github.pull_request"
+	GitHubPushAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubPushAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GitHubPushAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubPushAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubPushAgenticWorkflowTriggerKindGithubPush                     GitHubPushAgenticWorkflowTriggerKind = "github.push"
+	GitHubPushAgenticWorkflowTriggerKindGithubRelease                  GitHubPushAgenticWorkflowTriggerKind = "github.release"
+	GitHubPushAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubPushAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GitHubPushAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubPushAgenticWorkflowTriggerKind = "github.workflow_job"
+	GitHubPushAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPushAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitHubPushAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPushAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitHubPushAgenticWorkflowTriggerKindGitlabNote                     GitHubPushAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubPushAgenticWorkflowTriggerKindLinearComment                  GitHubPushAgenticWorkflowTriggerKind = "linear.comment"
+	GitHubPushAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPushAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubPushAgenticWorkflowTriggerKindManual                         GitHubPushAgenticWorkflowTriggerKind = "manual"
+	GitHubPushAgenticWorkflowTriggerKindSchedule                       GitHubPushAgenticWorkflowTriggerKind = "schedule"
+	GitHubPushAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPushAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	GitHubPushAgenticWorkflowTriggerKindSlackBotMessage                GitHubPushAgenticWorkflowTriggerKind = "slack_bot.message"
+	GitHubPushAgenticWorkflowTriggerKindSlackBotReaction               GitHubPushAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	GitHubPushAgenticWorkflowTriggerKindWebhook                        GitHubPushAgenticWorkflowTriggerKind = "webhook"
+)
+
 // Defines values for GitHubReleaseAgenticWorkflowTriggerKind.
 const (
 	GitHubReleaseAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation GitHubReleaseAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
@@ -657,6 +697,7 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindGithubPullRequest              GitHubReleaseAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubReleaseAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubReleaseAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubReleaseAgenticWorkflowTriggerKindGithubPush                     GitHubReleaseAgenticWorkflowTriggerKind = "github.push"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubRelease                  GitHubReleaseAgenticWorkflowTriggerKind = "github.release"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubReleaseAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubReleaseAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubReleaseAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -693,6 +734,11 @@ const (
 	GithubDeploymentStatusState    GitHubTriggerVariableName = "github.deployment_status.state"
 	GithubInstallationId           GitHubTriggerVariableName = "github.installation.id"
 	GithubPullRequestNumber        GitHubTriggerVariableName = "github.pull_request.number"
+	GithubPushBranch               GitHubTriggerVariableName = "github.push.branch"
+	GithubPushChangedFiles         GitHubTriggerVariableName = "github.push.changed_files"
+	GithubPushCommitMessage        GitHubTriggerVariableName = "github.push.commit.message"
+	GithubPushCommitSha            GitHubTriggerVariableName = "github.push.commit.sha"
+	GithubPushTag                  GitHubTriggerVariableName = "github.push.tag"
 	GithubReleaseTag               GitHubTriggerVariableName = "github.release.tag"
 	GithubRepository               GitHubTriggerVariableName = "github.repository"
 	GithubWorkflowDispatchInputs   GitHubTriggerVariableName = "github.workflow_dispatch.inputs"
@@ -723,6 +769,7 @@ const (
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPullRequest              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubPush                     GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.push"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubRelease                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.release"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -751,6 +798,7 @@ const (
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPullRequest              GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubPush                     GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.push"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubRelease                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.release"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -790,6 +838,7 @@ const (
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPullRequest              GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.pull_request"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPullRequestReview        GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubPush                     GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.push"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubRelease                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.release"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubWorkflowJob              GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -831,6 +880,7 @@ const (
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPullRequest              GitLabMergeRequestAgenticWorkflowTriggerKind = "github.pull_request"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPullRequestReview        GitLabMergeRequestAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitLabMergeRequestAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindGithubPush                     GitLabMergeRequestAgenticWorkflowTriggerKind = "github.push"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubRelease                  GitLabMergeRequestAgenticWorkflowTriggerKind = "github.release"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitLabMergeRequestAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubWorkflowJob              GitLabMergeRequestAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -859,6 +909,7 @@ const (
 	GitLabNoteAgenticWorkflowTriggerKindGithubPullRequest              GitLabNoteAgenticWorkflowTriggerKind = "github.pull_request"
 	GitLabNoteAgenticWorkflowTriggerKindGithubPullRequestReview        GitLabNoteAgenticWorkflowTriggerKind = "github.pull_request_review"
 	GitLabNoteAgenticWorkflowTriggerKindGithubPullRequestReviewComment GitLabNoteAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GitLabNoteAgenticWorkflowTriggerKindGithubPush                     GitLabNoteAgenticWorkflowTriggerKind = "github.push"
 	GitLabNoteAgenticWorkflowTriggerKindGithubRelease                  GitLabNoteAgenticWorkflowTriggerKind = "github.release"
 	GitLabNoteAgenticWorkflowTriggerKindGithubWorkflowDispatch         GitLabNoteAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	GitLabNoteAgenticWorkflowTriggerKindGithubWorkflowJob              GitLabNoteAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -951,6 +1002,7 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindGithubPullRequest              LinearCommentAgenticWorkflowTriggerKind = "github.pull_request"
 	LinearCommentAgenticWorkflowTriggerKindGithubPullRequestReview        LinearCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
 	LinearCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	LinearCommentAgenticWorkflowTriggerKindGithubPush                     LinearCommentAgenticWorkflowTriggerKind = "github.push"
 	LinearCommentAgenticWorkflowTriggerKindGithubRelease                  LinearCommentAgenticWorkflowTriggerKind = "github.release"
 	LinearCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	LinearCommentAgenticWorkflowTriggerKindGithubWorkflowJob              LinearCommentAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -988,6 +1040,7 @@ const (
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequest              LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequestReview        LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request_review"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	LinearLabelAddedAgenticWorkflowTriggerKindGithubPush                     LinearLabelAddedAgenticWorkflowTriggerKind = "github.push"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubRelease                  LinearLabelAddedAgenticWorkflowTriggerKind = "github.release"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowJob              LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -1038,6 +1091,7 @@ const (
 	ManualAgenticWorkflowTriggerKindGithubPullRequest              ManualAgenticWorkflowTriggerKind = "github.pull_request"
 	ManualAgenticWorkflowTriggerKindGithubPullRequestReview        ManualAgenticWorkflowTriggerKind = "github.pull_request_review"
 	ManualAgenticWorkflowTriggerKindGithubPullRequestReviewComment ManualAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	ManualAgenticWorkflowTriggerKindGithubPush                     ManualAgenticWorkflowTriggerKind = "github.push"
 	ManualAgenticWorkflowTriggerKindGithubRelease                  ManualAgenticWorkflowTriggerKind = "github.release"
 	ManualAgenticWorkflowTriggerKindGithubWorkflowDispatch         ManualAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	ManualAgenticWorkflowTriggerKindGithubWorkflowJob              ManualAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -1242,6 +1296,7 @@ const (
 	ScheduledAgenticWorkflowTriggerKindGithubPullRequest              ScheduledAgenticWorkflowTriggerKind = "github.pull_request"
 	ScheduledAgenticWorkflowTriggerKindGithubPullRequestReview        ScheduledAgenticWorkflowTriggerKind = "github.pull_request_review"
 	ScheduledAgenticWorkflowTriggerKindGithubPullRequestReviewComment ScheduledAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	ScheduledAgenticWorkflowTriggerKindGithubPush                     ScheduledAgenticWorkflowTriggerKind = "github.push"
 	ScheduledAgenticWorkflowTriggerKindGithubRelease                  ScheduledAgenticWorkflowTriggerKind = "github.release"
 	ScheduledAgenticWorkflowTriggerKindGithubWorkflowDispatch         ScheduledAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	ScheduledAgenticWorkflowTriggerKindGithubWorkflowJob              ScheduledAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -1314,6 +1369,7 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubPullRequest              SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.pull_request"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubPullRequestReview        SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubPullRequestReviewComment SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubPush                     SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.push"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubRelease                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.release"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubWorkflowDispatch         SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubWorkflowJob              SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -1342,6 +1398,7 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindGithubPullRequest              SlackBotMessageAgenticWorkflowTriggerKind = "github.pull_request"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubPullRequestReview        SlackBotMessageAgenticWorkflowTriggerKind = "github.pull_request_review"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubPullRequestReviewComment SlackBotMessageAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	SlackBotMessageAgenticWorkflowTriggerKindGithubPush                     SlackBotMessageAgenticWorkflowTriggerKind = "github.push"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubRelease                  SlackBotMessageAgenticWorkflowTriggerKind = "github.release"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubWorkflowDispatch         SlackBotMessageAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	SlackBotMessageAgenticWorkflowTriggerKindGithubWorkflowJob              SlackBotMessageAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -1370,6 +1427,7 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindGithubPullRequest              SlackBotReactionAgenticWorkflowTriggerKind = "github.pull_request"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubPullRequestReview        SlackBotReactionAgenticWorkflowTriggerKind = "github.pull_request_review"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubPullRequestReviewComment SlackBotReactionAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	SlackBotReactionAgenticWorkflowTriggerKindGithubPush                     SlackBotReactionAgenticWorkflowTriggerKind = "github.push"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubRelease                  SlackBotReactionAgenticWorkflowTriggerKind = "github.release"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubWorkflowDispatch         SlackBotReactionAgenticWorkflowTriggerKind = "github.workflow_dispatch"
 	SlackBotReactionAgenticWorkflowTriggerKindGithubWorkflowJob              SlackBotReactionAgenticWorkflowTriggerKind = "github.workflow_job"
@@ -1756,30 +1814,31 @@ const (
 
 // Defines values for WebhookAgenticWorkflowTriggerKind.
 const (
-	WebhookAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation WebhookAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
-	WebhookAgenticWorkflowTriggerKindFailedCheckNew                 WebhookAgenticWorkflowTriggerKind = "failed_check.new"
-	WebhookAgenticWorkflowTriggerKindGithubCheckRun                 WebhookAgenticWorkflowTriggerKind = "github.check_run"
-	WebhookAgenticWorkflowTriggerKindGithubCheckSuite               WebhookAgenticWorkflowTriggerKind = "github.check_suite"
-	WebhookAgenticWorkflowTriggerKindGithubDeployment               WebhookAgenticWorkflowTriggerKind = "github.deployment"
-	WebhookAgenticWorkflowTriggerKindGithubDeploymentStatus         WebhookAgenticWorkflowTriggerKind = "github.deployment_status"
-	WebhookAgenticWorkflowTriggerKindGithubIssueComment             WebhookAgenticWorkflowTriggerKind = "github.issue_comment"
-	WebhookAgenticWorkflowTriggerKindGithubPullRequest              WebhookAgenticWorkflowTriggerKind = "github.pull_request"
-	WebhookAgenticWorkflowTriggerKindGithubPullRequestReview        WebhookAgenticWorkflowTriggerKind = "github.pull_request_review"
-	WebhookAgenticWorkflowTriggerKindGithubPullRequestReviewComment WebhookAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
-	WebhookAgenticWorkflowTriggerKindGithubRelease                  WebhookAgenticWorkflowTriggerKind = "github.release"
-	WebhookAgenticWorkflowTriggerKindGithubWorkflowDispatch         WebhookAgenticWorkflowTriggerKind = "github.workflow_dispatch"
-	WebhookAgenticWorkflowTriggerKindGithubWorkflowJob              WebhookAgenticWorkflowTriggerKind = "github.workflow_job"
-	WebhookAgenticWorkflowTriggerKindGithubWorkflowRun              WebhookAgenticWorkflowTriggerKind = "github.workflow_run"
-	WebhookAgenticWorkflowTriggerKindGitlabMergeRequest             WebhookAgenticWorkflowTriggerKind = "gitlab.merge_request"
-	WebhookAgenticWorkflowTriggerKindGitlabNote                     WebhookAgenticWorkflowTriggerKind = "gitlab.note"
-	WebhookAgenticWorkflowTriggerKindLinearComment                  WebhookAgenticWorkflowTriggerKind = "linear.comment"
-	WebhookAgenticWorkflowTriggerKindLinearLabelAdded               WebhookAgenticWorkflowTriggerKind = "linear.label_added"
-	WebhookAgenticWorkflowTriggerKindManual                         WebhookAgenticWorkflowTriggerKind = "manual"
-	WebhookAgenticWorkflowTriggerKindSchedule                       WebhookAgenticWorkflowTriggerKind = "schedule"
-	WebhookAgenticWorkflowTriggerKindSlackBotFailedCheckNew         WebhookAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
-	WebhookAgenticWorkflowTriggerKindSlackBotMessage                WebhookAgenticWorkflowTriggerKind = "slack_bot.message"
-	WebhookAgenticWorkflowTriggerKindSlackBotReaction               WebhookAgenticWorkflowTriggerKind = "slack_bot.reaction"
-	WebhookAgenticWorkflowTriggerKindWebhook                        WebhookAgenticWorkflowTriggerKind = "webhook"
+	DarkplanePullRequestEvaluation WebhookAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	FailedCheckNew                 WebhookAgenticWorkflowTriggerKind = "failed_check.new"
+	GithubCheckRun                 WebhookAgenticWorkflowTriggerKind = "github.check_run"
+	GithubCheckSuite               WebhookAgenticWorkflowTriggerKind = "github.check_suite"
+	GithubDeployment               WebhookAgenticWorkflowTriggerKind = "github.deployment"
+	GithubDeploymentStatus         WebhookAgenticWorkflowTriggerKind = "github.deployment_status"
+	GithubIssueComment             WebhookAgenticWorkflowTriggerKind = "github.issue_comment"
+	GithubPullRequest              WebhookAgenticWorkflowTriggerKind = "github.pull_request"
+	GithubPullRequestReview        WebhookAgenticWorkflowTriggerKind = "github.pull_request_review"
+	GithubPullRequestReviewComment WebhookAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	GithubPush                     WebhookAgenticWorkflowTriggerKind = "github.push"
+	GithubRelease                  WebhookAgenticWorkflowTriggerKind = "github.release"
+	GithubWorkflowDispatch         WebhookAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	GithubWorkflowJob              WebhookAgenticWorkflowTriggerKind = "github.workflow_job"
+	GithubWorkflowRun              WebhookAgenticWorkflowTriggerKind = "github.workflow_run"
+	GitlabMergeRequest             WebhookAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	GitlabNote                     WebhookAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearComment                  WebhookAgenticWorkflowTriggerKind = "linear.comment"
+	LinearLabelAdded               WebhookAgenticWorkflowTriggerKind = "linear.label_added"
+	Manual                         WebhookAgenticWorkflowTriggerKind = "manual"
+	Schedule                       WebhookAgenticWorkflowTriggerKind = "schedule"
+	SlackBotFailedCheckNew         WebhookAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	SlackBotMessage                WebhookAgenticWorkflowTriggerKind = "slack_bot.message"
+	SlackBotReaction               WebhookAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	Webhook                        WebhookAgenticWorkflowTriggerKind = "webhook"
 )
 
 // AccessibleAsset defines model for AccessibleAsset.
@@ -2409,6 +2468,7 @@ type AgenticWorkflowTriggerDelivery string
 // - `github.pull_request_review_comment`: Triggered when a GitHub pull request review comment event occurs.
 // - `github.issue_comment`: Triggered when a comment is created, edited, or deleted on a GitHub pull request or issue.
 // - `github.release`: Triggered when a GitHub release event occurs.
+// - `github.push`: Triggered when commits are pushed to a GitHub repository.
 // - `github.workflow_run`: Triggered when a GitHub Actions workflow run completes (or is requested / in progress).
 // - `github.workflow_job`: Triggered when a job within a GitHub Actions workflow run is queued, waiting, started, or completed.
 // - `github.workflow_dispatch`: Triggered when a GitHub Actions workflow is manually dispatched via the UI, API, or CLI.
@@ -2626,9 +2686,7 @@ type AuthTokenLabels struct {
 }
 
 // AuthTokenListResponse defines model for AuthTokenListResponse.
-type AuthTokenListResponse struct {
-	AuthTokens []AuthTokenResponse `json:"authTokens"`
-}
+type AuthTokenListResponse = []AuthTokenResponse
 
 // AuthTokenMetadata defines model for AuthTokenMetadata.
 type AuthTokenMetadata struct {
@@ -3049,9 +3107,11 @@ type DatasetCreateRequest = DatasetDefinition
 type DatasetDefinition struct {
 	// ApiVersion Version of the dataset document format. Required on create and update; the only supported
 	// value is `dash0.com/v1alpha1`, and any other value returns 400. Returned on every read.
-	ApiVersion string                `json:"apiVersion"`
-	Kind       DatasetDefinitionKind `json:"kind"`
-	Metadata   DatasetMetadata       `json:"metadata"`
+	ApiVersion string `json:"apiVersion"`
+
+	// Kind Required on create and update; any other value returns 400.
+	Kind     DatasetDefinitionKind `json:"kind"`
+	Metadata DatasetMetadata       `json:"metadata"`
 
 	// Spec Every field is optional. A field omitted on create takes the server default; a field omitted on
 	// update keeps its stored value. Enumerations may gain values in later versions, so clients must
@@ -3059,7 +3119,7 @@ type DatasetDefinition struct {
 	Spec DatasetSpec `json:"spec"`
 }
 
-// DatasetDefinitionKind defines model for DatasetDefinition.Kind.
+// DatasetDefinitionKind Required on create and update; any other value returns 400.
 type DatasetDefinitionKind string
 
 // DatasetGeoLocationPrivacy defines model for DatasetGeoLocationPrivacy.
@@ -3088,9 +3148,10 @@ type DatasetIpAddressStorage struct {
 // DatasetLabels defines model for DatasetLabels.
 type DatasetLabels struct {
 	// Dash0Comid The dataset slug. Datasets carry no separate UUID, so the slug is both the identifier and
-	// the path parameter. Required on create, where it is the one `dash0.com/id` a client sets
-	// itself, and immutable thereafter.
-	Dash0Comid string `json:"dash0.com/id"`
+	// the path parameter. Returned on every read with the same value as `spec.slug`. Still
+	// accepted on create in place of `spec.slug`; when both are set they must match. Immutable
+	// after create.
+	Dash0Comid string `json:"dash0.com/id,omitempty"`
 
 	// Dash0Comorigin External identifier for this dataset. Must be unique per organization when set. Used by
 	// Infrastructure-as-Code tools (Terraform, Kubernetes operator). Auto-generated as
@@ -3125,9 +3186,7 @@ type DatasetLabels struct {
 }
 
 // DatasetListResponse defines model for DatasetListResponse.
-type DatasetListResponse struct {
-	Datasets []DatasetResponse `json:"datasets"`
-}
+type DatasetListResponse = []DatasetResponse
 
 // DatasetLoggingSettings defines model for DatasetLoggingSettings.
 type DatasetLoggingSettings struct {
@@ -3367,8 +3426,14 @@ type DatasetSettings struct {
 // update keeps its stored value. Enumerations may gain values in later versions, so clients must
 // accept values they do not recognize.
 type DatasetSpec struct {
-	// Permissions Access control entries for this dataset. Ignored on create, which always grants
-	// `dataset:read` to the organization's members; set them with a subsequent update.
+	// Permissions Grants on this dataset, each naming exactly one `userId`, `teamId` or `role` and at least
+	// one action. The only role that can be granted is `basic_member`: Dash0 sets the `admin`
+	// role's grant, so it is neither returned nor accepted. An invalid or duplicate entry
+	// returns 400. An update replaces the grants with the listed ones; an omitted or empty list
+	// keeps them unchanged. Ignored on create, which grants `dataset:read` to `basic_member`; a
+	// fresh dataset reads back as that one grant. Reads list role grants, then user grants, then
+	// team grants, each with its actions sorted, so a list written in that order reads back
+	// unchanged.
 	Permissions *[]DatasetPermission `json:"permissions,omitempty"`
 
 	// PermittedActions What the calling identity may do with this dataset. Read-only and derived per request
@@ -3389,6 +3454,15 @@ type DatasetSpec struct {
 
 	// Retention How long each signal is kept. Omitted signals keep their stored retention.
 	Retention *DatasetRetention `json:"retention,omitempty"`
+
+	// Slug The dataset slug, which telemetry and queries reference the dataset by. Immutable after
+	// create. On create, `spec.slug` wins over `metadata.labels["dash0.com/id"]`; when both are
+	// set they must match. When neither is set, POST derives the slug from `metadata.name`:
+	// accents removed, lowercased, every run of characters outside `[a-z0-9_-]` replaced by
+	// `-`, leading and trailing `-` removed, cut to 26 characters. A derived slug shorter than 3 characters,
+	// equal to `default`, or already in use returns 400; set `spec.slug` instead. PUT on a
+	// missing dataset uses the `{originOrId}` path parameter when neither is set.
+	Slug string `json:"slug,omitempty"`
 }
 
 // DatasetTracingSettings defines model for DatasetTracingSettings.
@@ -4067,7 +4141,7 @@ type GitHubAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -4106,6 +4180,17 @@ type GitHubAgenticWorkflowTriggerSpec struct {
 	// exists to distinguish an explicit "all repositories" choice from an unconfigured
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
 
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
@@ -4134,6 +4219,15 @@ type GitHubAgenticWorkflowTriggerSpec struct {
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
 
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
+
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
 	// deployment-status events whose `state` matches trigger the automation. When omitted, any
@@ -4154,7 +4248,7 @@ type GitHubCheckActivityAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -4194,9 +4288,24 @@ type GitHubCheckActivityAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
 	// commit branch. When omitted, checks on any branch match.
@@ -4224,6 +4333,15 @@ type GitHubCheckActivityAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -4273,7 +4391,7 @@ type GitHubCheckRunAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -4313,9 +4431,24 @@ type GitHubCheckRunAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
 	// commit branch. When omitted, checks on any branch match.
@@ -4347,6 +4480,15 @@ type GitHubCheckRunAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -4423,7 +4565,7 @@ type GitHubCheckSuiteAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -4463,9 +4605,24 @@ type GitHubCheckSuiteAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
 	// commit branch. When omitted, checks on any branch match.
@@ -4497,6 +4654,15 @@ type GitHubCheckSuiteAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -4544,7 +4710,7 @@ type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -4584,6 +4750,17 @@ type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
@@ -4596,11 +4773,14 @@ type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
 	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
 
-	// Keyword Optional keyword the comment body must contain. Evaluated as a
-	// case-insensitive substring match (e.g., "investigate" matches any
-	// comment containing "investigate"). When absent or empty, any comment
-	// fires the automation.
+	// Keyword Optional whole-word keyword the comment body must contain. Matching is
+	// case-insensitive. When absent or empty, any comment fires the automation.
 	Keyword *string `json:"keyword,omitempty"`
+
+	// KeywordRegex Optional RE2 regular expression matched against the complete comment body.
+	// Mutually exclusive with `keyword`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	KeywordRegex *string `json:"keywordRegex,omitempty"`
 
 	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
 	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
@@ -4616,6 +4796,15 @@ type GitHubCommentAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -4794,6 +4983,164 @@ type GitHubPullRequestReviewCommentAgenticWorkflowTrigger struct {
 // GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind defines model for GitHubPullRequestReviewCommentAgenticWorkflowTrigger.Kind.
 type GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind string
 
+// GitHubPushAgenticWorkflowTrigger defines model for GitHubPushAgenticWorkflowTrigger.
+type GitHubPushAgenticWorkflowTrigger struct {
+	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
+	// triggers are the pipes into it, and each pipe is configured independently.
+	//
+	// - `spawn`: Start a new agent thread for this event. This is today's behavior.
+	// - `continue`: Route the event into the existing agent thread that owns the matching
+	//   entity, falling back to spawning a fresh thread when none is active
+	//   (resume-or-spawn). Only valid on continuation-capable triggers that carry an entity
+	//   ref to route by; spawn-only triggers (e.g. `schedule`, `webhook`,
+	//   `failed_check.new`) must not set it.
+	Delivery *AgenticWorkflowTriggerDelivery      `json:"delivery,omitempty"`
+	Kind     GitHubPushAgenticWorkflowTriggerKind `json:"kind"`
+	Spec     GitHubPushAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// GitHubPushAgenticWorkflowTriggerKind defines model for GitHubPushAgenticWorkflowTrigger.Kind.
+type GitHubPushAgenticWorkflowTriggerKind string
+
+// GitHubPushAgenticWorkflowTriggerSpec defines model for GitHubPushAgenticWorkflowTriggerSpec.
+type GitHubPushAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
+
+	// Branches Optional list of branch names to filter on, matched against the check's associated
+	// commit branch. When omitted, checks on any branch match.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// PathPatterns Optional list of GitHub-Actions-style glob patterns (for example,
+	// `migrations/**` or `**/*.go`) matched against files added, modified, or removed by
+	// the push. The automation triggers when any changed file matches any pattern. When
+	// omitted, pushes with any changed-file set match.
+	PathPatterns *[]string `json:"pathPatterns,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// TagRegex Optional RE2 regular expression matched against the complete pushed tag name.
+	// Mutually exclusive with `tags`.
+	TagRegex *string `json:"tagRegex,omitempty"`
+
+	// Tags Optional list of exact tag names. A push matches when its branch filters or its tag
+	// filters match the pushed ref. When no branch or tag filter is configured, every
+	// branch and tag push matches.
+	Tags *[]string `json:"tags,omitempty"`
+}
+
 // GitHubReleaseAgenticWorkflowTrigger defines model for GitHubReleaseAgenticWorkflowTrigger.
 type GitHubReleaseAgenticWorkflowTrigger struct {
 	// Delivery How a trigger delivers its event to an agent. An automation is the agent definition;
@@ -4874,6 +5221,15 @@ type GitHubReleaseAgenticWorkflowTriggerKind string
 //     triggers when the dispatch carried inputs; empty otherwise, including when oversized.
 //     Supplied by whoever triggered the workflow run and not sanitized — treat as untrusted
 //     input when writing a task prompt that references this variable.
+//   - `github.push.branch`: The pushed branch name, without the `refs/heads/` prefix. Present on
+//     push triggers.
+//   - `github.push.tag`: The pushed tag name, without the `refs/tags/` prefix. Present on tag
+//     push triggers.
+//   - `github.push.commit.sha`: The SHA of the push's head commit. Present on push triggers.
+//   - `github.push.commit.message`: The message of the push's head commit. Present on push
+//     triggers.
+//   - `github.push.changed_files`: A JSON-encoded array of paths added, modified, or removed by
+//     the commits included in the webhook payload. Present on push triggers.
 //   - `github.check_run.id`: The check run id. Present on check_run triggers.
 //   - `github.check_run.name`: The name of the check (e.g., `lint`). Present on check_run
 //     triggers.
@@ -4903,7 +5259,7 @@ type GitHubWorkflowActivityAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -4943,9 +5299,25 @@ type GitHubWorkflowActivityAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
 	// on. When omitted, events on any branch match.
@@ -4973,6 +5345,15 @@ type GitHubWorkflowActivityAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -5059,7 +5440,7 @@ type GitHubWorkflowJobAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -5099,9 +5480,25 @@ type GitHubWorkflowJobAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
 	// on. When omitted, events on any branch match.
@@ -5133,6 +5530,15 @@ type GitHubWorkflowJobAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -5200,7 +5606,7 @@ type GitHubWorkflowRunAgenticWorkflowTriggerSpec struct {
 	// When specified, only events with a matching action trigger the workflow.
 	// When omitted, events with any action match.
 	//
-	// Note: `github.deployment`, `github.deployment_status`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
 	//
 	// Valid values per trigger kind:
 	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
@@ -5240,9 +5646,25 @@ type GitHubWorkflowRunAgenticWorkflowTriggerSpec struct {
 	// trigger, mirroring `allOrganizations`.
 	AllRepositories *bool `json:"allRepositories,omitempty"`
 
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
+	// Mutually exclusive with `branches`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
 	// on. When omitted, events on any branch match.
@@ -5274,6 +5696,15 @@ type GitHubWorkflowRunAgenticWorkflowTriggerSpec struct {
 	// When specified, only events from these repositories trigger the automation.
 	// When omitted, events from any repository match.
 	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
 
 	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
 	// this filter; it has no effect for other trigger kinds. When specified, only
@@ -9888,6 +10319,14 @@ type ViewSpecServiceMapProperties struct {
 	NodeSizing       bool                                         `json:"nodeSizing"`
 	Particles        bool                                         `json:"particles"`
 	SelectedMetric   string                                       `json:"selectedMetric"`
+
+	// ShowIndirectServices Whether services that do not match the filter, but communicate with services that do, are
+	// shown in the service map. Treated as `true` when omitted.
+	ShowIndirectServices *bool `json:"showIndirectServices,omitempty"`
+
+	// ShowSyntheticServices Whether the services that Dash0 synthetic checks report as are shown in the service map.
+	// Treated as `true` when omitted.
+	ShowSyntheticServices *bool `json:"showSyntheticServices,omitempty"`
 }
 
 // ViewSpecServiceMapPropertiesExternalServices defines model for ViewSpecServiceMapProperties.ExternalServices.
@@ -11599,6 +12038,32 @@ func (t *AgenticWorkflowTrigger) FromGitHubReleaseAgenticWorkflowTrigger(v GitHu
 
 // MergeGitHubReleaseAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubReleaseAgenticWorkflowTrigger
 func (t *AgenticWorkflowTrigger) MergeGitHubReleaseAgenticWorkflowTrigger(v GitHubReleaseAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsGitHubPushAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a GitHubPushAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsGitHubPushAgenticWorkflowTrigger() (GitHubPushAgenticWorkflowTrigger, error) {
+	var body GitHubPushAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromGitHubPushAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided GitHubPushAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromGitHubPushAgenticWorkflowTrigger(v GitHubPushAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeGitHubPushAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided GitHubPushAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeGitHubPushAgenticWorkflowTrigger(v GitHubPushAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
