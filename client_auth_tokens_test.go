@@ -32,7 +32,7 @@ func newTestAuthToken(origin string) *AuthTokenDefinition {
 			Labels: &AuthTokenLabels{Dash0Comorigin: &origin},
 		},
 		Spec: AuthTokenSpec{
-			Actions:   &[]Action{"ingest:write"},
+			Actions:   &[]AuthTokenAction{IngestLogs},
 			Ingestion: &AuthTokenIngestion{DefaultDataset: Ptr("staging")},
 		},
 	}
@@ -171,8 +171,8 @@ func TestCreateAuthToken(t *testing.T) {
 				labels, _ := meta["labels"].(map[string]any)
 				assertEqual(t, "request origin", fmt.Sprint(labels["dash0.com/origin"]), "ci-token")
 				actions, _ := spec["actions"].([]any)
-				if len(actions) != 1 || actions[0] != "ingest:write" {
-					t.Errorf("request actions = %v, want [ingest:write]", actions)
+				if len(actions) != 1 || actions[0] != "ingest:logs" {
+					t.Errorf("request actions = %v, want [ingest:logs]", actions)
 				}
 				writeAuthTokenJSON(w, status, newTestAuthTokenResponse("ci-token", Ptr(testAuthTokenSecret)))
 			}))
@@ -431,7 +431,7 @@ func TestConvertAuthTokenResponseToDefinition(t *testing.T) {
 	assertEqual(t, "kind", string(got.Kind), "Dash0AuthToken")
 	assertEqual(t, "name", got.Metadata.Name, "CI token")
 	assertEqual(t, "origin", originOf(got.Metadata), "ci-token")
-	if got.Spec.Actions == nil || (*got.Spec.Actions)[0] != "ingest:write" ||
+	if got.Spec.Actions == nil || (*got.Spec.Actions)[0] != IngestLogs ||
 		got.Spec.Ingestion == nil || *got.Spec.Ingestion.DefaultDataset != "staging" ||
 		got.Spec.Scope == nil || (*got.Spec.Scope.Signals.Types)[0] != "spans" {
 		t.Errorf("spec not copied: %+v", got.Spec)

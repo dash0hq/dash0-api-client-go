@@ -347,3 +347,10 @@ AuthTokenListResponse
 DatasetListResponse
 GetApiAuthTokensResponse.JSON200
 GetApiDatasetsResponse.JSON200
+
+# <NEXT_RELEASE>: auth token actions are the named enum AuthTokenAction
+# upstream, so Actions changed from *[]Action (a string alias) to
+# *[]AuthTokenAction. Callers that build actions from plain strings must
+# convert them. Accepted break: no shim, an alias would hide the enum.
+AuthTokenSpec.Actions
+AuthTokenResponseSpec.Actions

@@ -180,6 +180,11 @@ package dash0
 // The same regeneration dropped the type prefix from the [WebhookAgenticWorkflowTriggerKind] constants.
 // WebhookAgenticWorkflowTriggerKindManual is now [Manual], WebhookAgenticWorkflowTriggerKindWebhook is now [Webhook], and so on.
 // The prefixed names stay as deprecated aliases.
+//
+// [AuthTokenSpec] and [AuthTokenResponseSpec] Actions are now *[]AuthTokenAction instead of *[]Action.
+// [AuthTokenAction] is a named enum.
+// Use the constants ([IngestLogs], [AsteriskRead], and so on) or convert a string with AuthTokenAction(s).
+// The API now rejects unknown actions with 400.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
