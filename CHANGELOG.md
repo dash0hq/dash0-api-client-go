@@ -1,5 +1,31 @@
 # Changelog
 
+## v1.26.0
+
+
+### Features
+- typed AuthTokenAction enum and refreshed spec docs (#56)
+
+  `AuthTokenSpec.Actions` and `AuthTokenResponseSpec.Actions` are now `*[]AuthTokenAction` instead of `*[]Action`.
+  This breaks Go callers that build actions from plain strings: use the `AuthTokenAction` constants or convert with `AuthTokenAction(s)`.
+- optional spec.slug and plain-array list responses (#55)
+
+  `ListDatasets` and `ListAuthTokens` read the new list wire shape, a plain JSON array of full documents instead of `{datasets: [...]}` and `{authTokens: [...]}`.
+  `DatasetListResponse` and `AuthTokenListResponse` are now slice types.
+  `DatasetSpec.Slug` is a new optional field; when neither it nor the `dash0.com/id` label is set, create derives the slug from `metadata.name`.
+
+  * fix(datasets): treat spec.slug as the slug in the dataset helpers
+
+  GetDatasetID prefers spec.slug, SetDatasetID writes both spec.slug and
+  the dash0.com/id label, SetDatasetIDIfAbsent checks both, and
+  ClearDatasetID clears both. Before, a copy kept the source spec.slug, and
+  IfAbsent could write a label that did not match spec.slug.
+
+  `ListDatasets` and `ListAuthTokens` read the new list wire shape, a plain JSON array of full documents instead of `{datasets: [...]}` and `{authTokens: [...]}`.
+  `DatasetListResponse` and `AuthTokenListResponse` are now slice types.
+  `DatasetSpec.Slug` is a new optional field; when neither it nor the `dash0.com/id` label is set, create derives the slug from `metadata.name`.
+  `GetDatasetID`, `SetDatasetID`, `SetDatasetIDIfAbsent`, and `ClearDatasetID` treat `spec.slug` and the `dash0.com/id` label as one slug.
+
 ## v1.25.0
 
 

@@ -340,7 +340,7 @@ WebEvents
 Restricted
 Unrestricted
 
-# <NEXT_RELEASE>: GET /api/datasets and GET /api/auth-tokens return a plain
+# v1.26.0: GET /api/datasets and GET /api/auth-tokens return a plain
 # JSON array, so the list response types became slices. ListDatasets and
 # ListAuthTokens keep their signatures.
 AuthTokenListResponse
@@ -348,7 +348,7 @@ DatasetListResponse
 GetApiAuthTokensResponse.JSON200
 GetApiDatasetsResponse.JSON200
 
-# <NEXT_RELEASE>: auth token actions are the named enum AuthTokenAction
+# v1.26.0: auth token actions are the named enum AuthTokenAction
 # upstream, so Actions changed from *[]Action (a string alias) to
 # *[]AuthTokenAction. Callers that build actions from plain strings must
 # convert them. Accepted break: no shim, an alias would hide the enum.
