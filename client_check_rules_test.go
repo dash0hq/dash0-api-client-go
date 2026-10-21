@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"time"
 )
 
 func TestStripCheckRuleServerFields(t *testing.T) {
@@ -37,6 +38,68 @@ func TestStripCheckRuleServerFields(t *testing.T) {
 func TestStripCheckRuleServerFields_NilLabels(t *testing.T) {
 	r := &PrometheusAlertRule{Name: "test"}
 	StripCheckRuleServerFields(r) // should not panic
+}
+
+func TestStripCheckRuleServerFields_Nil(t *testing.T) {
+	StripCheckRuleServerFields(nil)
+}
+
+func TestStripCheckRuleServerFields_Metadata(t *testing.T) {
+	deletedAt := time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC)
+	source := CrdSource("terraform")
+	tests := []struct {
+		name     string
+		metadata *PrometheusAlertRuleMetadata
+		want     string
+	}{
+		{
+			name: "deleted-at only",
+			metadata: &PrometheusAlertRuleMetadata{
+				Annotations: &PrometheusAlertRuleMetadataAnnotations{Dash0ComdeletedAt: &deletedAt},
+			},
+			want: `null`,
+		},
+		{
+			name: "deleted-at and source label",
+			metadata: &PrometheusAlertRuleMetadata{
+				Annotations: &PrometheusAlertRuleMetadataAnnotations{Dash0ComdeletedAt: &deletedAt},
+				Labels:      &PrometheusAlertRuleMetadataLabels{Dash0Comsource: &source},
+			},
+			want: `{"labels":{"dash0.com/source":"terraform"}}`,
+		},
+		{
+			name: "source label only",
+			metadata: &PrometheusAlertRuleMetadata{
+				Labels: &PrometheusAlertRuleMetadataLabels{Dash0Comsource: &source},
+			},
+			want: `{"labels":{"dash0.com/source":"terraform"}}`,
+		},
+		{
+			name:     "empty annotations",
+			metadata: &PrometheusAlertRuleMetadata{Annotations: &PrometheusAlertRuleMetadataAnnotations{}},
+			want:     `null`,
+		},
+		{
+			name:     "no metadata",
+			metadata: nil,
+			want:     `null`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &PrometheusAlertRule{Name: "test", Metadata: tt.metadata}
+
+			StripCheckRuleServerFields(r)
+
+			got, err := json.Marshal(r.Metadata)
+			if err != nil {
+				t.Fatalf("json.Marshal() error = %v", err)
+			}
+			if string(got) != tt.want {
+				t.Errorf("Metadata = %s, want %s", got, tt.want)
+			}
+		})
+	}
 }
 
 func TestClearCheckRuleID(t *testing.T) {

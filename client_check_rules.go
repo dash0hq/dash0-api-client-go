@@ -120,6 +120,7 @@ func (c *client) ListCheckRulesIter(ctx context.Context, dataset *string, opts .
 }
 
 // StripCheckRuleServerFields removes server-generated fields from a check rule definition.
+// When this leaves Metadata.Annotations or Metadata empty, it sets them to nil.
 func StripCheckRuleServerFields(rule *PrometheusAlertRule) {
 	if rule == nil {
 		return
@@ -127,6 +128,17 @@ func StripCheckRuleServerFields(rule *PrometheusAlertRule) {
 	rule.Dataset = nil
 	if rule.Labels != nil {
 		delete(*rule.Labels, LabelOrigin)
+	}
+	if rule.Metadata != nil {
+		if annotations := rule.Metadata.Annotations; annotations != nil {
+			annotations.Dash0ComdeletedAt = nil
+			if *annotations == (PrometheusAlertRuleMetadataAnnotations{}) {
+				rule.Metadata.Annotations = nil
+			}
+		}
+		if rule.Metadata.Annotations == nil && rule.Metadata.Labels == nil {
+			rule.Metadata = nil
+		}
 	}
 }
 
