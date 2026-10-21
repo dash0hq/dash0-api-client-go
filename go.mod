@@ -1,6 +1,6 @@
 module github.com/dash0hq/dash0-api-client-go
 
-go 1.25.1
+go 1.26.10
 
 require (
 	github.com/gofrs/flock v0.13.0

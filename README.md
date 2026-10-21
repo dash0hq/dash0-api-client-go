@@ -4,7 +4,7 @@ A Go client library for the [Dash0](https://www.dash0.com) API.
 
 ## Requirements
 
-Go 1.25 or later.
+Go 1.26.10 or later.
 
 ## Installation
 
