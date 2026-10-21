@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.27.0
+
+
+### Bug Fixes
+- clear deleted-at in StripCheckRuleServerFields (#57)
+
+  `StripCheckRuleServerFields` now clears the `dash0.com/deleted-at` annotation, like the strip helpers for views, synthetic checks, and SLOs.
+  When this leaves `Metadata.Annotations` or `Metadata` empty, it sets them to nil.
+
 ## v1.26.0
 
 
