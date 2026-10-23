@@ -185,6 +185,15 @@ package dash0
 // [AuthTokenAction] is a named enum.
 // Use the constants ([IngestLogs], [AsteriskRead], and so on) or convert a string with AuthTokenAction(s).
 // The API now rejects unknown actions with 400.
+//
+// # Migration guide (v1.27.x to <NEXT_RELEASE>)
+//
+// The public spec no longer exposes two fields of the edge collector settings, so [SettingsPerOrganizationAndDatasetInfo] lost TelemetryTransformationRuleSettings and ObservedPatterns.
+// The types only these fields referenced are gone too: every TelemetryTransformationRule* type and constant, Dash0TelemetryTransformationRule, ObservedPatternEntry, and the OTTLConditions, OTTLStatement, and OTTLStatements aliases.
+// [Client] never used them, and there is no replacement.
+//
+// The [ViewType] constants are unchanged: the prefixed names ([ViewTypeLogs], [ViewTypeSpans], and so on) stay canonical, and the bare names stay deprecated aliases.
+// Code generation now pins the prefixed names, so they no longer depend on whether another enum in the spec shares their values.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
