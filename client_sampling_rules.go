@@ -51,6 +51,9 @@ func (c *client) CreateSamplingRule(ctx context.Context, rule *SamplingDefinitio
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	if rule == nil {
+		return nil, fmt.Errorf("dash0: create sampling rule requires a non-nil rule")
+	}
 	params := &PostApiSamplingRulesParams{
 		Dataset: dataset,
 	}
@@ -75,6 +78,9 @@ func (c *client) CreateSamplingRule(ctx context.Context, rule *SamplingDefinitio
 func (c *client) UpdateSamplingRule(ctx context.Context, originOrID string, rule *SamplingDefinition, dataset *string) (*SamplingDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
+	}
+	if rule == nil {
+		return nil, fmt.Errorf("dash0: update sampling rule requires a non-nil rule")
 	}
 	params := &PutApiSamplingRulesOriginOrIdParams{
 		Dataset: dataset,
