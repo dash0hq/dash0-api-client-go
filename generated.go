@@ -1337,6 +1337,13 @@ const (
 	Dash0SignalToMetrics SignalToMetricsDefinitionKind = "Dash0SignalToMetrics"
 )
 
+// Defines values for SignalToMetricsOutputType.
+const (
+	SignalToMetricsOutputTypeExponentialHistogram SignalToMetricsOutputType = "exponential-histogram"
+	SignalToMetricsOutputTypeGauge                SignalToMetricsOutputType = "gauge"
+	SignalToMetricsOutputTypeSum                  SignalToMetricsOutputType = "sum"
+)
+
 // Defines values for SignalToMetricsSignalType.
 const (
 	SignalToMetricsSignalTypeLogs  SignalToMetricsSignalType = "logs"
@@ -1664,31 +1671,6 @@ const (
 	TelemetryFilterContextProfileSample TelemetryFilterContext = "profile_sample"
 	TelemetryFilterContextSpan          TelemetryFilterContext = "span"
 	TelemetryFilterContextWebEvent      TelemetryFilterContext = "web_event"
-)
-
-// Defines values for TelemetryTransformationRuleContext.
-const (
-	TelemetryTransformationRuleContextDatapoint TelemetryTransformationRuleContext = "datapoint"
-	TelemetryTransformationRuleContextLog       TelemetryTransformationRuleContext = "log"
-	TelemetryTransformationRuleContextMetric    TelemetryTransformationRuleContext = "metric"
-	TelemetryTransformationRuleContextProfile   TelemetryTransformationRuleContext = "profile"
-	TelemetryTransformationRuleContextResource  TelemetryTransformationRuleContext = "resource"
-	TelemetryTransformationRuleContextScope     TelemetryTransformationRuleContext = "scope"
-	TelemetryTransformationRuleContextSpan      TelemetryTransformationRuleContext = "span"
-	TelemetryTransformationRuleContextSpanevent TelemetryTransformationRuleContext = "spanevent"
-)
-
-// Defines values for TelemetryTransformationRuleDefinitionKind.
-const (
-	Dash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
-)
-
-// Defines values for TelemetryTransformationRuleSignalType.
-const (
-	TelemetryTransformationRuleSignalTypeLogs     TelemetryTransformationRuleSignalType = "logs"
-	TelemetryTransformationRuleSignalTypeMetrics  TelemetryTransformationRuleSignalType = "metrics"
-	TelemetryTransformationRuleSignalTypeProfiles TelemetryTransformationRuleSignalType = "profiles"
-	TelemetryTransformationRuleSignalTypeTraces   TelemetryTransformationRuleSignalType = "traces"
 )
 
 // Defines values for TimeSeriesAggregationAttributeModificationKind.
@@ -3127,18 +3109,15 @@ type DatasetAnnotations struct {
 	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
 }
 
-// DatasetCreateRequest defines model for DatasetCreateRequest.
+// DatasetCreateRequest A Dash0 dataset. See [Datasets](https://www.dash0.com/docs/dash0/miscellaneous/glossary/datasets).
 type DatasetCreateRequest = DatasetDefinition
 
-// DatasetDefinition defines model for DatasetDefinition.
+// DatasetDefinition A Dash0 dataset. See [Datasets](https://www.dash0.com/docs/dash0/miscellaneous/glossary/datasets).
 type DatasetDefinition struct {
-	// ApiVersion Version of the dataset document format. Required on create and update; the only supported
-	// value is `dash0.com/v1alpha1`, and any other value returns 400. Returned on every read.
-	ApiVersion string `json:"apiVersion"`
-
-	// Kind Required on create and update; any other value returns 400.
-	Kind     DatasetDefinitionKind `json:"kind"`
-	Metadata DatasetMetadata       `json:"metadata"`
+	// ApiVersion Version of the dataset document format. The only supported value is `dash0.com/v1alpha1`.
+	ApiVersion string                `json:"apiVersion"`
+	Kind       DatasetDefinitionKind `json:"kind"`
+	Metadata   DatasetMetadata       `json:"metadata"`
 
 	// Spec Every field is optional. A field omitted on create takes the server default; a field omitted on
 	// update keeps its stored value. Enumerations may gain values in later versions, so clients must
@@ -3146,7 +3125,7 @@ type DatasetDefinition struct {
 	Spec DatasetSpec `json:"spec"`
 }
 
-// DatasetDefinitionKind Required on create and update; any other value returns 400.
+// DatasetDefinitionKind defines model for DatasetDefinition.Kind.
 type DatasetDefinitionKind string
 
 // DatasetGeoLocationPrivacy defines model for DatasetGeoLocationPrivacy.
@@ -3174,19 +3153,14 @@ type DatasetIpAddressStorage struct {
 
 // DatasetLabels defines model for DatasetLabels.
 type DatasetLabels struct {
-	// Dash0Comid The dataset slug. Datasets carry no separate UUID, so the slug is both the identifier and
-	// the path parameter. Returned on every read with the same value as `spec.slug`. Still
-	// accepted on create in place of `spec.slug`; when both are set they must match. Immutable
-	// after create.
+	// Dash0Comid The same slug as `spec.slug`, kept for compatibility. When both are set, they must match.
 	Dash0Comid string `json:"dash0.com/id,omitempty"`
 
-	// Dash0Comorigin External identifier for this dataset. Must be unique per organization when set. Used by
-	// Infrastructure-as-Code tools (Terraform, Kubernetes operator). Auto-generated as
-	// `api-<uuid>` on POST if not provided. Must not collide with an existing dataset slug.
-	// A deleted dataset keeps its origin reserved until it is purged. Creating a dataset
-	// with that origin under another slug returns 400. Restoring a deleted dataset by
-	// creating its slug again takes the request's origin, or an `api-<uuid>` for a machine
-	// token with no user, or none.
+	// Dash0Comorigin External identifier for this dataset, used by Infrastructure-as-Code tools such as
+	// Terraform and the Kubernetes operator. Unique per organization and different from every
+	// dataset slug. When a machine token with no user omits it on create, Dash0 sets
+	// `api-<uuid>`. A deleted dataset keeps its origin until it is purged; creating the deleted
+	// slug again restores the dataset with the origin of that request.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
 	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
@@ -3298,14 +3272,14 @@ type DatasetRedaction struct {
 	GenAi *GenAIAttributeRedactionSettings `json:"genAi,omitempty"`
 }
 
-// DatasetResponse defines model for DatasetResponse.
+// DatasetResponse A Dash0 dataset. See [Datasets](https://www.dash0.com/docs/dash0/miscellaneous/glossary/datasets).
 type DatasetResponse = DatasetDefinition
 
 // DatasetRestriction Whether the list of datasets on an auth token limits what it can reach. Clients must accept
 // values they do not recognize.
 type DatasetRestriction string
 
-// DatasetRetention How long each signal is kept. Omitted signals keep their stored retention.
+// DatasetRetention How long each signal is kept.
 type DatasetRetention struct {
 	Logs      *RetentionClass       `json:"logs,omitempty"`
 	Metrics   *PinnedRetentionClass `json:"metrics,omitempty"`
@@ -3361,14 +3335,12 @@ type DatasetSettings struct {
 // update keeps its stored value. Enumerations may gain values in later versions, so clients must
 // accept values they do not recognize.
 type DatasetSpec struct {
-	// Permissions Grants on this dataset, each naming exactly one `userId`, `teamId` or `role` and at least
-	// one action. The only role that can be granted is `basic_member`: Dash0 sets the `admin`
-	// role's grant, so it is neither returned nor accepted. An invalid or duplicate entry
-	// returns 400. A create or an update replaces the grants with the listed ones; an omitted or
-	// empty list keeps them unchanged, so a create without one grants `dataset:read` to
-	// `basic_member` and reads back as that one grant. Reads list role grants, then user grants,
-	// then team grants, each with its actions sorted, so a list written in that order reads back
-	// unchanged.
+	// Permissions Who may do what with this dataset. Each grant names exactly one `userId`, `teamId` or
+	// `role`, and each principal appears once. The only role you can grant is `basic_member`;
+	// Dash0 sets the `admin` grant, and it is not listed. The list replaces the stored grants;
+	// an omitted or empty list keeps them unchanged. A dataset created without grants gives
+	// `basic_member` `dataset:read`. Reads list role, then user, then team grants, each with
+	// its actions sorted.
 	Permissions *[]DatasetPermission `json:"permissions,omitempty"`
 
 	// PermittedActions What the calling identity may do with this dataset. Read-only and derived per request
@@ -3387,16 +3359,14 @@ type DatasetSpec struct {
 	// Processing Transformations Dash0 applies to ingested telemetry.
 	Processing *DatasetProcessing `json:"processing,omitempty"`
 
-	// Retention How long each signal is kept. Omitted signals keep their stored retention.
+	// Retention How long each signal is kept.
 	Retention *DatasetRetention `json:"retention,omitempty"`
 
-	// Slug The dataset slug, which telemetry and queries reference the dataset by. Immutable after
-	// create. On create, `spec.slug` wins over `metadata.labels["dash0.com/id"]`; when both are
-	// set they must match. When neither is set, POST derives the slug from `metadata.name`:
-	// accents removed, lowercased, every run of characters outside `[a-z0-9_-]` replaced by
-	// `-`, leading and trailing `-` removed, cut to 26 characters. A derived slug shorter than 3 characters,
-	// equal to `default`, or already in use returns 400; set `spec.slug` instead. PUT on a
-	// missing dataset uses the `{originOrId}` path parameter when neither is set.
+	// Slug The identifier that telemetry and queries use for this dataset. It cannot change after
+	// create. On create, the slug is `spec.slug`, else `metadata.labels["dash0.com/id"]`, else
+	// derived from `metadata.name`: accents removed, lowercased, each run of characters outside
+	// `[a-z0-9_-]` replaced by `-`, leading and trailing `-` removed, cut to 26 characters. Set
+	// `spec.slug` when the derived slug is too short, is `default` or is already in use.
 	Slug string `json:"slug,omitempty"`
 }
 
@@ -3422,7 +3392,7 @@ type DatasetTracingSettings struct {
 	Retention RetentionClass `json:"retention"`
 }
 
-// DatasetUpdateRequest defines model for DatasetUpdateRequest.
+// DatasetUpdateRequest A Dash0 dataset. See [Datasets](https://www.dash0.com/docs/dash0/miscellaneous/glossary/datasets).
 type DatasetUpdateRequest = DatasetDefinition
 
 // DatasetWebEventsSettings defines model for DatasetWebEventsSettings.
@@ -6772,37 +6742,6 @@ type OAuthTokenType string
 //   - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
 type OTTLCondition = string
 
-// OTTLConditions defines model for OTTLConditions.
-type OTTLConditions = []OTTLCondition
-
-// OTTLStatement The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
-// process data with OpenTelemetry-native concepts and constructs. An OTTL *Statement* is an expression that
-// performs an action on telemetry data, such as setting, deleting, or transforming attributes.
-//
-// OTTL statements are used by the OpenTelemetry Transform Processor to modify telemetry data as it passes
-// through the collector pipeline:
-// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/transformprocessor/README.md
-//
-// Statements are only valid for specific evaluation contexts:
-// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
-//
-// Examples:
-//   - `set(attributes["http.request.method"], "GET")` sets an attribute value.
-//   - `delete_key(attributes, "http.request.header.authorization")` removes a sensitive attribute.
-//   - `truncate_all(attributes, 100)` truncates all attribute values to 100 characters.
-type OTTLStatement = string
-
-// OTTLStatements defines model for OTTLStatements.
-type OTTLStatements = []OTTLStatement
-
-// ObservedPatternEntry defines model for ObservedPatternEntry.
-type ObservedPatternEntry struct {
-	Dataset       string `json:"dataset"`
-	ExtractorType string `json:"extractorType"`
-	ScopeKey      string `json:"scopeKey"`
-	Template      string `json:"template"`
-}
-
 // OpsgenieConfig defines model for OpsgenieConfig.
 type OpsgenieConfig struct {
 	ApiKey   string                 `json:"apiKey"`
@@ -7869,7 +7808,6 @@ type SemanticConventionUpgrades = string
 type SettingsPerOrganizationAndDatasetInfo struct {
 	DatasetSettings                []DatasetSettings                `json:"datasetSettings"`
 	GenerativeAiEvaluationSettings []GenerativeAiEvaluationResponse `json:"generativeAiEvaluationSettings"`
-	ObservedPatterns               *[]ObservedPatternEntry          `json:"observedPatterns,omitempty"`
 	SamplingSettings               []SamplingDefinition             `json:"samplingSettings"`
 
 	// SignalControlEdge SignalControl *edge* configuration (the edge facet of SignalControl).
@@ -7897,11 +7835,10 @@ type SettingsPerOrganizationAndDatasetInfo struct {
 
 	// SignalToMetricsSettings Signal-to-metrics rules without `spec.output.type`, which every collector version
 	// understands.
-	SignalToMetricsSettings             []SignalToMetricsDefinition             `json:"signalToMetricsSettings"`
-	SourceMapSettings                   []SourceMapIntegration                  `json:"sourceMapSettings"`
-	TechnicalID                         string                                  `json:"technicalID"`
-	TelemetryTransformationRuleSettings []TelemetryTransformationRuleDefinition `json:"telemetryTransformationRuleSettings"`
-	TimeSeriesAggregationSettings       []TimeSeriesAggregationDefinition       `json:"timeSeriesAggregationSettings"`
+	SignalToMetricsSettings       []SignalToMetricsDefinition       `json:"signalToMetricsSettings"`
+	SourceMapSettings             []SourceMapIntegration            `json:"sourceMapSettings"`
+	TechnicalID                   string                            `json:"technicalID"`
+	TimeSeriesAggregationSettings []TimeSeriesAggregationDefinition `json:"timeSeriesAggregationSettings"`
 }
 
 // SeverityNumber SEVERITY_NUMBER_UNSPECIFIED = 0;
@@ -8084,6 +8021,11 @@ type SignalToMetricsMetadata struct {
 
 // SignalToMetricsOutput defines model for SignalToMetricsOutput.
 type SignalToMetricsOutput struct {
+	// Count OTTL value expression for how many times `value` is recorded per matching
+	// signal. Only allowed when `type` is `exponential-histogram`. Defaults to `"1"`
+	// when absent.
+	Count *string `json:"count,omitempty"`
+
 	// Description Will be used as metadata on the generated metric.
 	Description *string  `json:"description,omitempty"`
 	Interval    Duration `json:"interval"`
@@ -8099,12 +8041,39 @@ type SignalToMetricsOutput struct {
 	// attributes (dimensions) on the output metric. An attribute is kept if its
 	// key matches any matcher in this list. By default, no additional signal
 	// attributes are kept, except for otel.span.status.code which is always set
-	// when the signal type is spans.
+	// when the signal type is spans and `type` is absent.
 	KeepSignalAttributes *[]Matcher `json:"keepSignalAttributes,omitempty"`
+
+	// MaxSize Maximum number of buckets per positive and negative range of the histogram, between
+	// `1` and `160`.
+	// Only allowed when `type` is `exponential-histogram`. Defaults to `160` when absent.
+	MaxSize *int32 `json:"maxSize,omitempty"`
+
+	// Monotonic Whether the sum only increases. Only allowed when `type` is `sum`. Defaults to
+	// `false` when absent.
+	Monotonic *bool `json:"monotonic,omitempty"`
 
 	// Name The name of the resulting metric
 	Name string `json:"name"`
+
+	// Type Metric types computed from the `value` OTTL expression, for both `spans` and `logs` rules.
+	// - `sum`: Cumulative float64 sum of `value`, monotonic when `monotonic` is true.
+	// - `gauge`: Float64 gauge holding the last `value` observed per series.
+	// - `exponential-histogram`: Exponential histogram of `value`, recorded `count` times.
+	Type *SignalToMetricsOutputType `json:"type,omitempty"`
+
+	// Value OTTL value expression producing the number to record, evaluated in the span
+	// context for `spans` rules and the log context for `logs` rules. Required when
+	// `type` is set; must be absent otherwise. A non-numeric, nil, or failing result
+	// records no data point.
+	Value *string `json:"value,omitempty"`
 }
+
+// SignalToMetricsOutputType Metric types computed from the `value` OTTL expression, for both `spans` and `logs` rules.
+// - `sum`: Cumulative float64 sum of `value`, monotonic when `monotonic` is true.
+// - `gauge`: Float64 gauge holding the last `value` observed per series.
+// - `exponential-histogram`: Exponential histogram of `value`, recorded `count` times.
+type SignalToMetricsOutputType string
 
 // SignalToMetricsResponse defines model for SignalToMetricsResponse.
 type SignalToMetricsResponse = SignalToMetricsDefinition
@@ -9761,157 +9730,6 @@ type TelemetryFilter struct {
 // TelemetryFilterContext The telemetry unit a filter rule is evaluated against, and that a matching rule drops.
 // `profile_sample` evaluates each sample of a profile and drops matching samples individually.
 type TelemetryFilterContext string
-
-// TelemetryTransformationRuleAnnotations defines model for TelemetryTransformationRuleAnnotations.
-type TelemetryTransformationRuleAnnotations struct {
-	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
-	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
-
-	// Dash0ComdeletedAt Soft-delete timestamp. Present when the rule has been deleted but not yet purged. Set by the server; read-only.
-	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
-
-	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
-	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
-}
-
-// TelemetryTransformationRuleContext The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
-// Not all contexts are valid for all signal types:
-//
-// For `traces`:
-// - `resource`: Transform resource-level attributes.
-// - `scope`: Transform instrumentation scope-level attributes.
-// - `span`: Transform individual span properties and attributes.
-// - `spanevent`: Transform individual span event properties and attributes.
-//
-// For `metrics`:
-// - `resource`: Transform resource-level attributes.
-// - `scope`: Transform instrumentation scope-level attributes.
-// - `metric`: Transform metric-level properties (name, description, type).
-// - `datapoint`: Transform individual metric data point attributes.
-//
-// For `logs`:
-// - `resource`: Transform resource-level attributes.
-// - `scope`: Transform instrumentation scope-level attributes.
-// - `log`: Transform individual log record properties (body, severity, attributes).
-//
-// For `profiles`:
-// - `resource`: Transform resource-level attributes.
-// - `scope`: Transform instrumentation scope-level attributes.
-// - `profile`: Transform individual profile properties and attributes.
-//
-// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
-// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
-// resource, but a `metric` context cannot access individual data points.
-type TelemetryTransformationRuleContext string
-
-// TelemetryTransformationRuleDefinition defines model for TelemetryTransformationRuleDefinition.
-type TelemetryTransformationRuleDefinition struct {
-	Kind     TelemetryTransformationRuleDefinitionKind `json:"kind"`
-	Metadata TelemetryTransformationRuleMetadata       `json:"metadata"`
-	Spec     TelemetryTransformationRuleSpec           `json:"spec"`
-}
-
-// TelemetryTransformationRuleDefinitionKind defines model for TelemetryTransformationRuleDefinition.Kind.
-type TelemetryTransformationRuleDefinitionKind string
-
-// TelemetryTransformationRuleDisplay defines model for TelemetryTransformationRuleDisplay.
-type TelemetryTransformationRuleDisplay struct {
-	// Name Short-form name for the view to be shown prominently within the view list and atop
-	// the screen when the view is selected.
-	Name string `json:"name"`
-}
-
-// TelemetryTransformationRuleLabels defines model for TelemetryTransformationRuleLabels.
-type TelemetryTransformationRuleLabels struct {
-	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
-	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
-
-	// Dash0Comid Unique internal ID of the telemetry transformation rule. Set by the server on creation; do not set manually.
-	Dash0Comid *string `json:"dash0.com/id,omitempty"`
-
-	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
-	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
-
-	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
-	// - `ui`: created interactively in the Dash0 UI.
-	// - `terraform`: managed via the Dash0 Terraform provider.
-	// - `operator`: managed via the Dash0 Kubernetes operator.
-	// - `dash0-cli`: managed via the Dash0 CLI.
-	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
-	//   resources Dash0 generates from another resource you own (the recording rules an SLO
-	//   produces) and resources Dash0 ships with the product (the built-in views).
-	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
-	//   group from the organization's identity provider. Membership edits made by hand
-	//   revert on the next reconcile.
-	// - `api`: created directly through the API, and the fallback for any origin whose
-	//   prefix is not recognized.
-	//
-	// New values may be added over time. Treat an unrecognized value as `api`
-	// rather than rejecting the response.
-	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
-
-	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
-	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
-}
-
-// TelemetryTransformationRuleMetadata defines model for TelemetryTransformationRuleMetadata.
-type TelemetryTransformationRuleMetadata struct {
-	Annotations *TelemetryTransformationRuleAnnotations `json:"annotations,omitempty"`
-	Labels      *TelemetryTransformationRuleLabels      `json:"labels,omitempty"`
-	Name        string                                  `json:"name"`
-}
-
-// TelemetryTransformationRuleSignalType The signal type that this transformation rule applies to.
-// - `traces`: Apply transformations to trace data (spans and span events).
-// - `metrics`: Apply transformations to metric data (metrics and data points).
-// - `logs`: Apply transformations to log data (log records).
-// - `profiles`: Apply transformations to profile data.
-type TelemetryTransformationRuleSignalType string
-
-// TelemetryTransformationRuleSpec defines model for TelemetryTransformationRuleSpec.
-type TelemetryTransformationRuleSpec struct {
-	Conditions *OTTLConditions `json:"conditions,omitempty"`
-
-	// Context The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
-	// Not all contexts are valid for all signal types:
-	//
-	// For `traces`:
-	// - `resource`: Transform resource-level attributes.
-	// - `scope`: Transform instrumentation scope-level attributes.
-	// - `span`: Transform individual span properties and attributes.
-	// - `spanevent`: Transform individual span event properties and attributes.
-	//
-	// For `metrics`:
-	// - `resource`: Transform resource-level attributes.
-	// - `scope`: Transform instrumentation scope-level attributes.
-	// - `metric`: Transform metric-level properties (name, description, type).
-	// - `datapoint`: Transform individual metric data point attributes.
-	//
-	// For `logs`:
-	// - `resource`: Transform resource-level attributes.
-	// - `scope`: Transform instrumentation scope-level attributes.
-	// - `log`: Transform individual log record properties (body, severity, attributes).
-	//
-	// For `profiles`:
-	// - `resource`: Transform resource-level attributes.
-	// - `scope`: Transform instrumentation scope-level attributes.
-	// - `profile`: Transform individual profile properties and attributes.
-	//
-	// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
-	// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
-	// resource, but a `metric` context cannot access individual data points.
-	Context TelemetryTransformationRuleContext  `json:"context"`
-	Display *TelemetryTransformationRuleDisplay `json:"display,omitempty"`
-	Enabled bool                                `json:"enabled"`
-
-	// Signal The signal type that this transformation rule applies to.
-	// - `traces`: Apply transformations to trace data (spans and span events).
-	// - `metrics`: Apply transformations to metric data (metrics and data points).
-	// - `logs`: Apply transformations to log data (log records).
-	// - `profiles`: Apply transformations to profile data.
-	Signal     TelemetryTransformationRuleSignalType `json:"signal"`
-	Statements OTTLStatements                        `json:"statements"`
-}
 
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
