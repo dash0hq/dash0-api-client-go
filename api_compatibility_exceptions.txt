@@ -354,3 +354,15 @@ GetApiDatasetsResponse.JSON200
 # convert them. Accepted break: no shim, an alias would hide the enum.
 AuthTokenSpec.Actions
 AuthTokenResponseSpec.Actions
+
+# <NEXT_RELEASE>: the edge settings response no longer sends observed
+# patterns or telemetry transformation rules (dash0hq/dash0#23207, #22463),
+# so the fields and the types only they used left the public spec.
+SettingsPerOrganizationAndDatasetInfo.ObservedPatterns
+SettingsPerOrganizationAndDatasetInfo.TelemetryTransformationRuleSettings
+ObservedPatternEntry
+OTTLConditions
+OTTLStatement
+OTTLStatements
+Dash0TelemetryTransformationRule
+TelemetryTransformationRule*

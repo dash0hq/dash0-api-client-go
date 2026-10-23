@@ -185,6 +185,12 @@ package dash0
 // [AuthTokenAction] is a named enum.
 // Use the constants ([IngestLogs], [AsteriskRead], and so on) or convert a string with AuthTokenAction(s).
 // The API now rejects unknown actions with 400.
+//
+// # Migration guide (v1.27.x to <NEXT_RELEASE>)
+//
+// [SettingsPerOrganizationAndDatasetInfo] no longer has the ObservedPatterns and TelemetryTransformationRuleSettings fields, because the edge settings response stopped sending them.
+// The types only those fields used are gone too: the TelemetryTransformationRule types and constants, ObservedPatternEntry, OTTLConditions, OTTLStatement, and OTTLStatements.
+// There is no in-package shim because the upstream spec removed them.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
