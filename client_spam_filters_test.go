@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 // newTestSpamFilterMetadata returns metadata with every server-managed label, a disabled filter, and a custom label.
@@ -1298,4 +1301,125 @@ func TestSpamFilters_Integration_OperatorApiVersion(t *testing.T) {
 			t.Fatal("expected error for foreign apiGroup, got nil")
 		}
 	})
+}
+
+// TestLiveAPI_SpamFilters runs spam filter round trips against a real Dash0 API.
+// It is skipped unless DASH0_API_URL and DASH0_AUTH_TOKEN are set.
+// The filters it creates are disabled, so they drop no telemetry, and it deletes them when it finishes.
+func TestLiveAPI_SpamFilters(t *testing.T) {
+	apiUrl := os.Getenv("DASH0_API_URL")
+	authToken := os.Getenv("DASH0_AUTH_TOKEN")
+	if apiUrl == "" || authToken == "" {
+		t.Skip("Skipping live API tests: DASH0_API_URL and DASH0_AUTH_TOKEN must be set")
+	}
+	client, err := NewClient(WithApiUrl(apiUrl), WithAuthToken(authToken))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ctx := context.Background()
+	dataset := Ptr("default")
+	stamp := time.Now().UnixNano()
+	originV1Alpha1 := fmt.Sprintf("live-spam-filter-v1alpha1-%d", stamp)
+	originV1Alpha2 := fmt.Sprintf("live-spam-filter-v1alpha2-%d", stamp)
+	t.Cleanup(func() {
+		for _, origin := range []string{originV1Alpha1, originV1Alpha2} {
+			if err := client.DeleteSpamFilter(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
+				t.Logf("cleanup of %s failed: %v", origin, err)
+			}
+		}
+	})
+	disabled := func() *SpamFilterAnnotations {
+		return &SpamFilterAnnotations{Dash0Comenabled: Ptr(False)}
+	}
+	match := FilterCriteria{{Key: "dash0.live.test.never.set", Operator: "is_set"}}
+
+	t.Run("a disabled v1alpha1 filter stays disabled through get, strip, and update", func(t *testing.T) {
+		filter := &SpamFilter{
+			Kind:     Dash0SpamFilter,
+			Metadata: SpamFilterMetadata{Name: originV1Alpha1, Annotations: disabled()},
+			Spec:     SpamFilterSpec{Contexts: []TelemetryFilterContext{TelemetryFilterContextLog}, Filter: match},
+		}
+		if _, err := client.UpdateSpamFilter(ctx, originV1Alpha1, filter, dataset); err != nil {
+			t.Fatalf("UpdateSpamFilter as upsert failed: %v", err)
+		}
+
+		got := getLiveSpamFilter[*SpamFilter](t, client, originV1Alpha1, dataset)
+		assertLiveSpamFilterDisabled(t, "after create", got.Metadata)
+
+		StripSpamFilterServerFields(got)
+		got.Metadata.Name = originV1Alpha1 + "-renamed"
+		if _, err := client.UpdateSpamFilter(ctx, originV1Alpha1, got, dataset); err != nil {
+			t.Fatalf("UpdateSpamFilter after strip failed: %v", err)
+		}
+
+		got = getLiveSpamFilter[*SpamFilter](t, client, originV1Alpha1, dataset)
+		assertEqual(t, "name after update", got.Metadata.Name, originV1Alpha1+"-renamed")
+		assertLiveSpamFilterDisabled(t, "after strip and update", got.Metadata)
+		// Strip clears the origin from the body, and the server takes it from the path instead.
+		assertEqual(t, "origin after update", liveSpamFilterOrigin(got.Metadata), originV1Alpha1)
+	})
+
+	t.Run("a disabled v1alpha2 filter keeps its version and stays disabled", func(t *testing.T) {
+		filter := &SpamFilterV1Alpha2{
+			ApiVersion: V1alpha2,
+			Kind:       SpamFilterDefinitionV1Alpha2KindDash0SpamFilter,
+			Metadata:   SpamFilterMetadata{Name: originV1Alpha2, Annotations: disabled()},
+			Spec:       SpamFilterSpecV1Alpha2{Context: TelemetryFilterContextSpan, Filter: match},
+		}
+		if _, err := client.UpdateSpamFilterV1Alpha2(ctx, originV1Alpha2, filter, dataset); err != nil {
+			t.Fatalf("UpdateSpamFilterV1Alpha2 as upsert failed: %v", err)
+		}
+
+		got := getLiveSpamFilter[*SpamFilterV1Alpha2](t, client, originV1Alpha2, dataset)
+		StripSpamFilterV1Alpha2ServerFields(got)
+		if _, err := client.UpdateSpamFilterV1Alpha2(ctx, originV1Alpha2, got, dataset); err != nil {
+			t.Fatalf("UpdateSpamFilterV1Alpha2 after strip failed: %v", err)
+		}
+
+		var listed *SpamFilterV1Alpha2
+		iter := client.ListSpamFilterObjectsIter(ctx, dataset)
+		for iter.Next() {
+			if filter, ok := (*iter.Current()).(*SpamFilterV1Alpha2); ok && liveSpamFilterOrigin(filter.Metadata) == originV1Alpha2 {
+				listed = filter
+			}
+		}
+		if err := iter.Err(); err != nil {
+			t.Fatalf("ListSpamFilterObjectsIter failed: %v", err)
+		}
+		if listed == nil {
+			t.Fatalf("ListSpamFilterObjectsIter did not yield %s as a v1alpha2 filter", originV1Alpha2)
+		}
+		assertEqual(t, "spec.context", string(listed.Spec.Context), string(TelemetryFilterContextSpan))
+		assertLiveSpamFilterDisabled(t, "in the list after strip and update", listed.Metadata)
+	})
+}
+
+// getLiveSpamFilter gets the filter at origin and fails the test unless the server returned it as T.
+func getLiveSpamFilter[T SpamFilterObject](t *testing.T, client Client, origin string, dataset *string) T {
+	t.Helper()
+	obj, err := client.GetSpamFilter(context.Background(), origin, dataset)
+	if err != nil {
+		t.Fatalf("GetSpamFilter(%s) failed: %v", origin, err)
+	}
+	filter, ok := obj.(T)
+	if !ok {
+		t.Fatalf("GetSpamFilter(%s) returned %T, want %T", origin, obj, filter)
+	}
+	return filter
+}
+
+func assertLiveSpamFilterDisabled(t *testing.T, when string, metadata SpamFilterMetadata) {
+	t.Helper()
+	if metadata.Annotations == nil || metadata.Annotations.Dash0Comenabled == nil {
+		t.Fatalf("%s: dash0.com/enabled is missing, so the server treats the filter as enabled", when)
+	}
+	assertEqual(t, "dash0.com/enabled "+when, string(*metadata.Annotations.Dash0Comenabled), string(False))
+}
+
+func liveSpamFilterOrigin(metadata SpamFilterMetadata) string {
+	if metadata.Labels == nil {
+		return ""
+	}
+	return StringValue(metadata.Labels.Dash0Comorigin)
 }
