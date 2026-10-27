@@ -12,13 +12,18 @@ type RecordingRule = generatedPrometheusRule
 
 // ListRecordingRules retrieves all recording rules.
 // Pass [WithOriginPrefix] to restrict the result to recording rules whose origin starts with a given prefix.
+// Any other [ListOption] filter returns an error, because the endpoint does not support it.
 func (c *client) ListRecordingRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*RecordingRule, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	options := NewListOptions(opts...)
+	if err := options.requireOriginPrefixOnly("list recording rules"); err != nil {
+		return nil, err
+	}
 	params := &GetApiRecordingRulesParams{
 		Dataset:      dataset,
-		OriginPrefix: NewListOptions(opts...).OriginPrefix,
+		OriginPrefix: options.OriginPrefix,
 	}
 	resp, err := c.inner.GetApiRecordingRulesWithResponse(ctx, params)
 	if err != nil {

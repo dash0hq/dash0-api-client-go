@@ -14,13 +14,18 @@ const sloDisplayNameAnnotation = "dash0.com/display-name"
 
 // ListSLOs retrieves all SLOs.
 // Pass [WithOriginPrefix] to restrict the result to SLOs whose origin starts with a given prefix.
+// Any other [ListOption] filter returns an error, because the endpoint does not support it.
 func (c *client) ListSLOs(ctx context.Context, dataset *string, opts ...ListOption) ([]*SloDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	options := NewListOptions(opts...)
+	if err := options.requireOriginPrefixOnly("list SLOs"); err != nil {
+		return nil, err
+	}
 	params := &GetApiSlosParams{
 		Dataset:      dataset,
-		OriginPrefix: NewListOptions(opts...).OriginPrefix,
+		OriginPrefix: options.OriginPrefix,
 	}
 	resp, err := c.inner.GetApiSlosWithResponse(ctx, params)
 	if err != nil {

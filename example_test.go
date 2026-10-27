@@ -194,6 +194,49 @@ func ExampleClient_ImportCheckRule() {
 	fmt.Println(dash0.GetCheckRuleID(imported))
 }
 
+func ExampleClient_ImportSignalToMetrics() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var request dash0.SignalToMetricsBulkUpsertRequest
+		_ = json.NewDecoder(r.Body).Decode(&request)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(dash0.SignalToMetricsBulkUpsertResponse{Created: len(request.Items)})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	// The origin label identifies each rule across imports, so a second import of the same rules updates them.
+	rules := []*dash0.SignalToMetricsDefinition{
+		{
+			Kind: dash0.Dash0SignalToMetrics,
+			Metadata: dash0.SignalToMetricsMetadata{
+				Name:   "checkout-span-count",
+				Labels: &dash0.SignalToMetricsLabels{Dash0Comorigin: dash0.Ptr("tf_checkout_span_count")},
+			},
+			Spec: dash0.SignalToMetricsSpec{
+				Enabled: true,
+				Display: dash0.SignalToMetricsDisplay{Name: "Checkout span count"},
+				Match:   dash0.SignalToMetricsMatch{Signal: dash0.SignalToMetricsSignalTypeSpans},
+				Output:  dash0.SignalToMetricsOutput{Name: "checkout_spans_total", Interval: "60s"},
+			},
+		},
+	}
+	result, err := client.ImportSignalToMetrics(context.Background(), rules, "production")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("created %d, updated %d\n", result.Created, result.Updated)
+	// Output: created 1, updated 0
+}
+
 // Dashboard helpers
 
 func ExampleGetDashboardName() {
@@ -510,6 +553,92 @@ func ExampleClearTimeSeriesAggregationID() {
 	// Output: true
 }
 
+// Signal-to-metrics
+
+func ExampleClient_CountSignalToMetrics() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(dash0.GetSignalToMetricsResponse{
+			Counts: &dash0.SignalToMetricsCounts{
+				Logs:  dash0.SignalToMetricsSignalCounts{Total: 4, Enabled: 3},
+				Spans: dash0.SignalToMetricsSignalCounts{Total: 2, Enabled: 2},
+			},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	counts, err := client.CountSignalToMetrics(context.Background(), dash0.Ptr("production"), dash0.WithOriginPrefix("tf_"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("logs: %d active, %d inactive\n", counts.Logs.Enabled, counts.Logs.Total-counts.Logs.Enabled)
+	fmt.Printf("spans: %d active, %d inactive\n", counts.Spans.Enabled, counts.Spans.Total-counts.Spans.Enabled)
+	// Output:
+	// logs: 3 active, 1 inactive
+	// spans: 2 active, 0 inactive
+}
+
+func ExampleClient_TestSignalToMetrics() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(dash0.SignalToMetricsTestResponse{
+			ExecutionTime: time.Date(2026, 10, 27, 12, 0, 0, 0, time.UTC),
+			MatchedCount:  1280,
+			TimeRange: dash0.TimeRange{
+				From: time.Date(2026, 10, 27, 11, 0, 0, 0, time.UTC),
+				To:   time.Date(2026, 10, 27, 12, 0, 0, 0, time.UTC),
+			},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	rule := dash0.SignalToMetricsDefinition{
+		Kind:     dash0.Dash0SignalToMetrics,
+		Metadata: dash0.SignalToMetricsMetadata{Name: "checkout-span-count"},
+		Spec: dash0.SignalToMetricsSpec{
+			Enabled: true,
+			Display: dash0.SignalToMetricsDisplay{Name: "Checkout span count"},
+			Match:   dash0.SignalToMetricsMatch{Signal: dash0.SignalToMetricsSignalTypeSpans},
+			Output:  dash0.SignalToMetricsOutput{Name: "checkout_spans_total", Interval: "60s"},
+		},
+	}
+	// Leave TimeRange nil to test against the last 15 minutes.
+	result, err := client.TestSignalToMetrics(context.Background(), &dash0.SignalToMetricsTestRequest{
+		Definition: rule,
+		TimeRange:  &dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+	}, nil)
+	if dash0.IsBadRequest(err) {
+		// The definition failed validation, and the error message lists why.
+		fmt.Println("invalid rule:", err)
+		return
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%d spans matched between %s and %s\n", result.MatchedCount, result.TimeRange.From.Format(time.Kitchen), result.TimeRange.To.Format(time.Kitchen))
+	// Output: 1280 spans matched between 11:00AM and 12:00PM
+}
+
 func ExampleGetSignalToMetricsName() {
 	rule := &dash0.SignalToMetricsDefinition{
 		Spec: dash0.SignalToMetricsSpec{
@@ -613,6 +742,33 @@ func ExampleWithOriginPrefix() {
 	opts := dash0.NewListOptions(dash0.WithOriginPrefix("dash0-operator_abc_"))
 	fmt.Println(*opts.OriginPrefix)
 	// Output: dash0-operator_abc_
+}
+
+func ExampleWithName() {
+	// Pass the option to a signal-to-metrics list call to search by name:
+	//
+	//	rules, err := client.ListSignalToMetrics(ctx, dash0.Ptr("default"), dash0.WithName("checkout"))
+	opts := dash0.NewListOptions(dash0.WithName("checkout"))
+	fmt.Println(*opts.Name)
+	// Output: checkout
+}
+
+func ExampleWithSignal() {
+	// Pass the option to a signal-to-metrics list call to keep only the rules for one source signal:
+	//
+	//	rules, err := client.ListSignalToMetrics(ctx, dash0.Ptr("default"), dash0.WithSignal(dash0.SignalToMetricsSignalTypeLogs))
+	opts := dash0.NewListOptions(dash0.WithSignal(dash0.SignalToMetricsSignalTypeLogs))
+	fmt.Println(*opts.Signal)
+	// Output: logs
+}
+
+func ExampleWithEnabled() {
+	// Pass the option to a signal-to-metrics list call to keep only the disabled rules:
+	//
+	//	rules, err := client.ListSignalToMetrics(ctx, dash0.Ptr("default"), dash0.WithEnabled(false))
+	opts := dash0.NewListOptions(dash0.WithEnabled(false))
+	fmt.Println(*opts.Enabled)
+	// Output: false
 }
 
 func ExampleNewListOptions() {

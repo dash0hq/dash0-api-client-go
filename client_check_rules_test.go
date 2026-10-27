@@ -393,3 +393,20 @@ func TestListCheckRules_OriginPrefix(t *testing.T) {
 		})
 	}
 }
+
+func TestListCheckRules_RejectsUnsupportedFilters(t *testing.T) {
+	// The endpoint filters by origin prefix only, so ignoring another filter would return rules the caller excluded.
+	for filter, opt := range map[string]ListOption{"name": WithName("checkout"), "signal": WithSignal(SignalToMetricsSignalTypeSpans), "enabled": WithEnabled(false)} {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("no request should reach the server")
+		}))
+		c := newTestClient(t, server.URL)
+		if _, err := c.ListCheckRules(context.Background(), nil, opt); err == nil {
+			t.Errorf("ListCheckRules with the %s filter succeeded, want an error", filter)
+		}
+		if err := c.ListCheckRulesIter(context.Background(), nil, opt).Err(); err == nil {
+			t.Errorf("ListCheckRulesIter with the %s filter succeeded, want an error", filter)
+		}
+		server.Close()
+	}
+}
