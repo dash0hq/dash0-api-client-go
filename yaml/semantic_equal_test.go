@@ -2207,12 +2207,8 @@ func TestEquivalent_AbsentDash0SourceLabelIsNotDrift(t *testing.T) {
 	assert.True(t, result, "an API-derived dash0.com/source absent from the reference must not be reported as drift")
 }
 
-// TestEquivalent_Dash0EnabledAnnotationIsAlwaysCompared guards against
-// dash0.com/enabled (whether a spam filter is active at all -- real,
-// user-controlled content per the OpenAPI spec) being silently discarded by
-// the default "strip every annotation unless preserved" behavior, the same
-// way the API client's own StripSpamFilterServerFields discards it for a
-// different purpose (fields to omit from a write request).
+// TestEquivalent_Dash0EnabledAnnotationIsAlwaysCompared guards against dash0.com/enabled being silently discarded by the default "strip every annotation unless preserved" behavior.
+// The annotation decides whether a spam filter is active at all, which is user-controlled content per the OpenAPI spec.
 func TestEquivalent_Dash0EnabledAnnotationIsAlwaysCompared(t *testing.T) {
 	a := "id: filter-1\nannotations:\n  dash0.com/enabled: \"true\"\n"
 	b := "id: filter-1\nannotations:\n  dash0.com/enabled: \"false\"\n"

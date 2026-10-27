@@ -3,45 +3,61 @@ package dash0
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 )
 
-func TestStripSpamFilterServerFields(t *testing.T) {
+// newTestSpamFilterMetadata returns metadata with every server-managed label, a disabled filter, and a custom label.
+func newTestSpamFilterMetadata() SpamFilterMetadata {
 	source := CrdSource("api")
-	filter := &SpamFilter{
-		Metadata: SpamFilterMetadata{
-			Annotations: &SpamFilterAnnotations{
-				Dash0Comenabled: Ptr(True),
-			},
-			Labels: &SpamFilterLabels{
-				Dash0Comid:      Ptr("sf-1"),
-				Dash0Comsource:  &source,
-				Dash0Comorigin:  Ptr("terraform"),
-				Dash0Comdataset: Ptr("default"),
-			},
+	return SpamFilterMetadata{
+		Name: "Drop noisy health checks",
+		Annotations: &SpamFilterAnnotations{
+			Dash0Comenabled: Ptr(False),
+		},
+		Labels: &SpamFilterLabels{
+			Dash0Comid:      Ptr("sf-1"),
+			Dash0Comsource:  &source,
+			Dash0Comorigin:  Ptr("tf_health"),
+			Dash0Comdataset: Ptr("default"),
+			Custom:          &map[string]string{"team": "platform"},
 		},
 	}
+}
 
-	StripSpamFilterServerFields(filter)
-
-	if filter.Metadata.Annotations.Dash0Comenabled != nil {
-		t.Error("Dash0Comenabled should be nil")
-	}
-	if filter.Metadata.Labels.Dash0Comid != nil {
+// assertSpamFilterMetadataStripped checks that a stripped filter lost the server-managed labels and kept what the user sets.
+func assertSpamFilterMetadataStripped(t *testing.T, metadata SpamFilterMetadata) {
+	t.Helper()
+	labels := metadata.Labels
+	if labels.Dash0Comid != nil {
 		t.Error("Dash0Comid should be nil")
 	}
-	if filter.Metadata.Labels.Dash0Comsource != nil {
+	if labels.Dash0Comsource != nil {
 		t.Error("Dash0Comsource should be nil")
 	}
-	if filter.Metadata.Labels.Dash0Comorigin == nil || *filter.Metadata.Labels.Dash0Comorigin != "terraform" {
-		t.Error("Dash0Comorigin should be preserved")
+	if labels.Dash0Comorigin != nil {
+		t.Error("Dash0Comorigin should be nil")
 	}
-	if filter.Metadata.Labels.Dash0Comdataset == nil || *filter.Metadata.Labels.Dash0Comdataset != "default" {
-		t.Error("Dash0Comdataset should be preserved")
+	if labels.Dash0Comdataset != nil {
+		t.Error("Dash0Comdataset should be nil")
 	}
+	// A filter sent without the annotation is enabled by default, so dropping it would re-enable a disabled filter.
+	assertPtrEqual(t, "Dash0Comenabled", metadata.Annotations.Dash0Comenabled, False)
+	if labels.Custom == nil || (*labels.Custom)["team"] != "platform" {
+		t.Errorf("Custom = %v, want the team label preserved", labels.Custom)
+	}
+	assertEqual(t, "Name", metadata.Name, "Drop noisy health checks")
+}
+
+func TestStripSpamFilterServerFields(t *testing.T) {
+	filter := &SpamFilter{Metadata: newTestSpamFilterMetadata()}
+	StripSpamFilterServerFields(filter)
+	assertSpamFilterMetadataStripped(t, filter.Metadata)
 }
 
 func TestStripSpamFilterServerFields_NilLabels(t *testing.T) {
@@ -195,6 +211,144 @@ func TestSetSpamFilterDataset(t *testing.T) {
 
 func TestSetSpamFilterDataset_Nil(t *testing.T) {
 	SetSpamFilterDataset(nil, "production") // should not panic
+}
+
+func TestStripSpamFilterV1Alpha2ServerFields(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{Metadata: newTestSpamFilterMetadata()}
+	StripSpamFilterV1Alpha2ServerFields(filter)
+	assertSpamFilterMetadataStripped(t, filter.Metadata)
+}
+
+func TestStripSpamFilterV1Alpha2ServerFields_NilLabels(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{}
+	StripSpamFilterV1Alpha2ServerFields(filter) // should not panic
+	if filter.Metadata.Labels != nil {
+		t.Error("Labels should remain nil")
+	}
+}
+
+func TestStripSpamFilterV1Alpha2ServerFields_Nil(t *testing.T) {
+	StripSpamFilterV1Alpha2ServerFields(nil) // should not panic
+}
+
+func TestClearSpamFilterV1Alpha2ID(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{Dash0Comid: Ptr("sf-1")}}}
+	ClearSpamFilterV1Alpha2ID(filter)
+	if filter.Metadata.Labels.Dash0Comid != nil {
+		t.Error("Dash0Comid should be nil")
+	}
+}
+
+func TestClearSpamFilterV1Alpha2ID_NilLabels(t *testing.T) {
+	ClearSpamFilterV1Alpha2ID(&SpamFilterV1Alpha2{}) // should not panic
+}
+
+func TestClearSpamFilterV1Alpha2ID_Nil(t *testing.T) {
+	ClearSpamFilterV1Alpha2ID(nil) // should not panic
+}
+
+func TestGetSpamFilterV1Alpha2ID(t *testing.T) {
+	tests := []struct {
+		name   string
+		filter *SpamFilterV1Alpha2
+		want   string
+	}{
+		{"nil filter", nil, ""},
+		{"nil labels", &SpamFilterV1Alpha2{}, ""},
+		{"nil ID", &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{}}}, ""},
+		{"with ID", &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{Dash0Comid: Ptr("sf-123")}}}, "sf-123"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertEqual(t, "GetSpamFilterV1Alpha2ID()", GetSpamFilterV1Alpha2ID(tt.filter), tt.want)
+		})
+	}
+}
+
+func TestGetSpamFilterV1Alpha2Name(t *testing.T) {
+	tests := []struct {
+		name   string
+		filter *SpamFilterV1Alpha2
+		want   string
+	}{
+		{"nil filter", nil, ""},
+		{"empty name", &SpamFilterV1Alpha2{}, ""},
+		{"with name", &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Name: "Drop noisy health checks"}}, "Drop noisy health checks"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertEqual(t, "GetSpamFilterV1Alpha2Name()", GetSpamFilterV1Alpha2Name(tt.filter), tt.want)
+		})
+	}
+}
+
+func TestGetSpamFilterV1Alpha2Dataset(t *testing.T) {
+	tests := []struct {
+		name   string
+		filter *SpamFilterV1Alpha2
+		want   string
+	}{
+		{"nil filter", nil, ""},
+		{"nil labels", &SpamFilterV1Alpha2{}, ""},
+		{"nil dataset", &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{}}}, ""},
+		{"with dataset", &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{Dash0Comdataset: Ptr("production")}}}, "production"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertEqual(t, "GetSpamFilterV1Alpha2Dataset()", GetSpamFilterV1Alpha2Dataset(tt.filter), tt.want)
+		})
+	}
+}
+
+func TestSetSpamFilterV1Alpha2Dataset(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{}
+	SetSpamFilterV1Alpha2Dataset(filter, "production")
+	if filter.Metadata.Labels == nil {
+		t.Fatal("expected labels to be initialized")
+	}
+	assertPtrEqual(t, "Dash0Comdataset", filter.Metadata.Labels.Dash0Comdataset, "production")
+}
+
+func TestSetSpamFilterV1Alpha2Dataset_Nil(t *testing.T) {
+	SetSpamFilterV1Alpha2Dataset(nil, "production") // should not panic
+}
+
+func TestSetSpamFilterV1Alpha2ID(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{}
+	SetSpamFilterV1Alpha2ID(filter, "new-id")
+	if filter.Metadata.Labels == nil {
+		t.Fatal("expected labels to be initialized")
+	}
+	assertPtrEqual(t, "Dash0Comid", filter.Metadata.Labels.Dash0Comid, "new-id")
+}
+
+func TestSetSpamFilterV1Alpha2ID_Overwrites(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{Dash0Comid: Ptr("existing-id")}}}
+	SetSpamFilterV1Alpha2ID(filter, "new-id")
+	assertPtrEqual(t, "Dash0Comid", filter.Metadata.Labels.Dash0Comid, "new-id")
+}
+
+func TestSetSpamFilterV1Alpha2ID_Nil(t *testing.T) {
+	SetSpamFilterV1Alpha2ID(nil, "new-id") // should not panic
+}
+
+func TestSetSpamFilterV1Alpha2IDIfAbsent(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{}
+	SetSpamFilterV1Alpha2IDIfAbsent(filter, "new-id")
+	if filter.Metadata.Labels == nil {
+		t.Fatal("expected labels to be initialized")
+	}
+	assertPtrEqual(t, "Dash0Comid", filter.Metadata.Labels.Dash0Comid, "new-id")
+}
+
+func TestSetSpamFilterV1Alpha2IDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
+	filter := &SpamFilterV1Alpha2{Metadata: SpamFilterMetadata{Labels: &SpamFilterLabels{Dash0Comid: Ptr("existing-id")}}}
+	SetSpamFilterV1Alpha2IDIfAbsent(filter, "new-id")
+	assertPtrEqual(t, "Dash0Comid", filter.Metadata.Labels.Dash0Comid, "existing-id")
+}
+
+func TestSetSpamFilterV1Alpha2IDIfAbsent_Nil(t *testing.T) {
+	SetSpamFilterV1Alpha2IDIfAbsent(nil, "new-id") // should not panic
 }
 
 func newTestSpamFilter() SpamFilter {
@@ -456,8 +610,8 @@ func TestSpamFilters_Integration(t *testing.T) {
 			t.Fatal("expected error for 400 response")
 		}
 
-		apiErr, ok := err.(*APIError)
-		if !ok {
+		var apiErr *APIError
+		if !errors.As(err, &apiErr) {
 			t.Fatalf("expected *APIError, got %T", err)
 		}
 		if apiErr.StatusCode != http.StatusBadRequest {
@@ -834,6 +988,199 @@ func TestSpamFilters_Integration(t *testing.T) {
 			t.Errorf("expected returned spec.context %q, got %q", "span", got.Spec.Context)
 		}
 	})
+
+	t.Run("every method sends the dataset query parameter", func(t *testing.T) {
+		filter := newTestSpamFilter()
+		filterV1Alpha2 := newTestSpamFilterV1Alpha2()
+		tests := []struct {
+			method   string
+			response any
+			call     func(c Client, dataset *string) error
+		}{
+			{"ListSpamFilters", GetSpamFiltersResponse{}, func(c Client, dataset *string) error {
+				_, err := c.ListSpamFilters(context.Background(), dataset)
+				return err
+			}},
+			{"ListSpamFilterObjects", GetSpamFiltersResponse{}, func(c Client, dataset *string) error {
+				_, err := c.ListSpamFilterObjects(context.Background(), dataset)
+				return err
+			}},
+			{"GetSpamFilter", filter, func(c Client, dataset *string) error {
+				_, err := c.GetSpamFilter(context.Background(), "sf-123", dataset)
+				return err
+			}},
+			{"CreateSpamFilter", filter, func(c Client, dataset *string) error {
+				_, err := c.CreateSpamFilter(context.Background(), &filter, dataset)
+				return err
+			}},
+			{"UpdateSpamFilter", filter, func(c Client, dataset *string) error {
+				_, err := c.UpdateSpamFilter(context.Background(), "sf-123", &filter, dataset)
+				return err
+			}},
+			{"CreateSpamFilterV1Alpha2", filterV1Alpha2, func(c Client, dataset *string) error {
+				_, err := c.CreateSpamFilterV1Alpha2(context.Background(), &filterV1Alpha2, dataset)
+				return err
+			}},
+			{"UpdateSpamFilterV1Alpha2", filterV1Alpha2, func(c Client, dataset *string) error {
+				_, err := c.UpdateSpamFilterV1Alpha2(context.Background(), "sf-123", &filterV1Alpha2, dataset)
+				return err
+			}},
+			{"DeleteSpamFilter", nil, func(c Client, dataset *string) error {
+				return c.DeleteSpamFilter(context.Background(), "sf-123", dataset)
+			}},
+		}
+		for _, tt := range tests {
+			t.Run(tt.method, func(t *testing.T) {
+				var gotURL *url.URL
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					gotURL = r.URL
+					if tt.response == nil {
+						w.WriteHeader(http.StatusNoContent)
+						return
+					}
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusOK)
+					_ = json.NewEncoder(w).Encode(tt.response)
+				}))
+				defer server.Close()
+
+				if err := tt.call(newTestClient(t, server.URL), Ptr("production")); err != nil {
+					t.Fatalf("%s failed: %v", tt.method, err)
+				}
+				assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
+			})
+		}
+	})
+
+	t.Run("create and update reject a nil filter", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("no request should reach the server")
+		}))
+		defer server.Close()
+		c := newTestClient(t, server.URL)
+
+		tests := []struct {
+			method string
+			call   func() error
+		}{
+			{"CreateSpamFilter", func() error {
+				_, err := c.CreateSpamFilter(context.Background(), nil, nil)
+				return err
+			}},
+			{"UpdateSpamFilter", func() error {
+				_, err := c.UpdateSpamFilter(context.Background(), "sf-123", nil, nil)
+				return err
+			}},
+			{"CreateSpamFilterV1Alpha2", func() error {
+				_, err := c.CreateSpamFilterV1Alpha2(context.Background(), nil, nil)
+				return err
+			}},
+			{"UpdateSpamFilterV1Alpha2", func() error {
+				_, err := c.UpdateSpamFilterV1Alpha2(context.Background(), "sf-123", nil, nil)
+				return err
+			}},
+		}
+		for _, tt := range tests {
+			t.Run(tt.method, func(t *testing.T) {
+				err := tt.call()
+				if err == nil {
+					t.Fatal("expected an error for a nil filter")
+				}
+				if !strings.Contains(err.Error(), "requires a non-nil filter") {
+					t.Errorf("error = %q, want it to mention the nil filter", err)
+				}
+			})
+		}
+	})
+
+	t.Run("ListSpamFilterObjectsIter yields each filter in its own version", func(t *testing.T) {
+		var gotURL *url.URL
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			gotURL = r.URL
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"spamFilters": [
+				{
+					"apiVersion": "v1alpha1",
+					"kind": "Dash0SpamFilter",
+					"metadata": {"name": "v1 filter"},
+					"spec": {"contexts": ["log"], "filter": []}
+				},
+				{
+					"apiVersion": "v1alpha2",
+					"kind": "Dash0SpamFilter",
+					"metadata": {"name": "v2 filter"},
+					"spec": {"context": "span", "filter": []}
+				}
+			]}`))
+		}))
+		defer server.Close()
+
+		iter := newTestClient(t, server.URL).ListSpamFilterObjectsIter(context.Background(), nil)
+		var got []string
+		for iter.Next() {
+			switch filter := (*iter.Current()).(type) {
+			case *SpamFilter:
+				got = append(got, filter.Metadata.Name+" "+string(filter.Spec.Contexts[0]))
+			case *SpamFilterV1Alpha2:
+				got = append(got, filter.Metadata.Name+" "+string(filter.Spec.Context))
+			default:
+				t.Fatalf("unexpected type %T", filter)
+			}
+		}
+		if err := iter.Err(); err != nil {
+			t.Fatalf("iterator error: %v", err)
+		}
+
+		assertEqual(t, "path", gotURL.Path, "/api/spam-filters")
+		if len(got) != 2 {
+			t.Fatalf("expected 2 filters, got %d", len(got))
+		}
+		assertEqual(t, "filters[0]", got[0], "v1 filter log")
+		assertEqual(t, "filters[1]", got[1], "v2 filter span")
+	})
+
+	t.Run("ListSpamFilterObjectsIter surfaces the list error", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			writeAPIError(w, http.StatusInternalServerError, "boom")
+		}))
+		defer server.Close()
+
+		iter := newTestClient(t, server.URL).ListSpamFilterObjectsIter(context.Background(), nil)
+		if iter.Next() {
+			t.Error("Next() = true, want false on a failed list")
+		}
+		if !IsServerError(iter.Err()) {
+			t.Errorf("IsServerError(err) = false, want true (err = %v)", iter.Err())
+		}
+	})
+}
+
+func newTestSpamFilterV1Alpha2() SpamFilterV1Alpha2 {
+	return SpamFilterV1Alpha2{
+		ApiVersion: V1alpha2,
+		Kind:       SpamFilterDefinitionV1Alpha2KindDash0SpamFilter,
+		Metadata:   SpamFilterMetadata{Name: "v2 filter"},
+		Spec: SpamFilterSpecV1Alpha2{
+			Context: "log",
+			Filter:  FilterCriteria{{Key: "k8s.namespace.name", Operator: "is"}},
+		},
+	}
+}
+
+func TestSpamFilters_APINotConfigured(t *testing.T) {
+	c, err := NewClient(
+		WithOtlpEndpoint(OtlpEncodingJson, "https://ingress.eu-west-1.aws.dash0.com"),
+		WithAuthToken("auth_test123"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+	ctx := context.Background()
+
+	if err := c.ListSpamFilterObjectsIter(ctx, nil).Err(); !errors.Is(err, ErrAPINotConfigured) {
+		t.Errorf("ListSpamFilterObjectsIter error = %v, want ErrAPINotConfigured", err)
+	}
 }
 
 func TestSpamFilters_Integration_OperatorApiVersion(t *testing.T) {

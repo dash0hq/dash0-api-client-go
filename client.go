@@ -151,6 +151,7 @@ type Client interface {
 	UpdateSpamFilterV1Alpha2(ctx context.Context, originOrID string, filter *SpamFilterV1Alpha2, dataset *string) (*SpamFilterV1Alpha2, error)
 	DeleteSpamFilter(ctx context.Context, originOrID string, dataset *string) error
 	ListSpamFiltersIter(ctx context.Context, dataset *string) *Iter[SpamFilter]
+	ListSpamFilterObjectsIter(ctx context.Context, dataset *string) *Iter[SpamFilterObject]
 
 	// Spans
 	GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSpansResponse, error)
