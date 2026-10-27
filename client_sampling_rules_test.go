@@ -275,8 +275,8 @@ func TestSamplingRules_Integration(t *testing.T) {
 		if !IsBadRequest(err) {
 			t.Errorf("IsBadRequest(err) = false, want true (err = %v)", err)
 		}
-		apiErr, ok := err.(*APIError)
-		if !ok {
+		var apiErr *APIError
+		if !errors.As(err, &apiErr) {
 			t.Fatalf("expected *APIError, got %T", err)
 		}
 		assertEqual(t, "APIError.Message", apiErr.Message, "spec.conditions is required")
