@@ -72,21 +72,49 @@ func TestSamplingRules_Integration(t *testing.T) {
 		assertEqual(t, "rules[1].Metadata.Name", got[1].Metadata.Name, "keep-slow-checkouts")
 	})
 
-	t.Run("ListSamplingRules sends the dataset query parameter", func(t *testing.T) {
-		var gotURL *url.URL
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotURL = r.URL
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(GetSamplingRulesResponse{})
-		}))
-		defer server.Close()
-
-		_, err := newTestClient(t, server.URL).ListSamplingRules(context.Background(), Ptr("production"))
-		if err != nil {
-			t.Fatalf("ListSamplingRules failed: %v", err)
+	t.Run("every method sends the dataset query parameter", func(t *testing.T) {
+		rule := newTestSamplingRule(t)
+		tests := []struct {
+			method string
+			call   func(c Client, dataset *string) error
+		}{
+			{"ListSamplingRules", func(c Client, dataset *string) error {
+				_, err := c.ListSamplingRules(context.Background(), dataset)
+				return err
+			}},
+			{"GetSamplingRule", func(c Client, dataset *string) error {
+				_, err := c.GetSamplingRule(context.Background(), "sr-123", dataset)
+				return err
+			}},
+			{"CreateSamplingRule", func(c Client, dataset *string) error {
+				_, err := c.CreateSamplingRule(context.Background(), &rule, dataset)
+				return err
+			}},
+			{"UpdateSamplingRule", func(c Client, dataset *string) error {
+				_, err := c.UpdateSamplingRule(context.Background(), "sr-123", &rule, dataset)
+				return err
+			}},
+			{"DeleteSamplingRule", func(c Client, dataset *string) error {
+				return c.DeleteSamplingRule(context.Background(), "sr-123", dataset)
+			}},
 		}
-		assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
+		for _, tt := range tests {
+			t.Run(tt.method, func(t *testing.T) {
+				var gotURL *url.URL
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					gotURL = r.URL
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusOK)
+					_ = json.NewEncoder(w).Encode(rule)
+				}))
+				defer server.Close()
+
+				if err := tt.call(newTestClient(t, server.URL), Ptr("production")); err != nil {
+					t.Fatalf("%s failed: %v", tt.method, err)
+				}
+				assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
+			})
+		}
 	})
 
 	t.Run("ListSamplingRules handles a null rule array", func(t *testing.T) {
@@ -195,24 +223,6 @@ func TestSamplingRules_Integration(t *testing.T) {
 		}
 	})
 
-	t.Run("GetSamplingRule sends the dataset query parameter", func(t *testing.T) {
-		rule := newTestSamplingRule(t)
-		var gotURL *url.URL
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotURL = r.URL
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(rule)
-		}))
-		defer server.Close()
-
-		_, err := newTestClient(t, server.URL).GetSamplingRule(context.Background(), "sr-123", Ptr("production"))
-		if err != nil {
-			t.Fatalf("GetSamplingRule failed: %v", err)
-		}
-		assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
-	})
-
 	t.Run("CreateSamplingRule posts the definition", func(t *testing.T) {
 		rule := newTestSamplingRule(t)
 		var gotURL *url.URL
@@ -296,24 +306,6 @@ func TestSamplingRules_Integration(t *testing.T) {
 		if !IsForbidden(err) {
 			t.Errorf("IsForbidden(err) = false, want true (err = %v)", err)
 		}
-	})
-
-	t.Run("CreateSamplingRule sends the dataset query parameter", func(t *testing.T) {
-		rule := newTestSamplingRule(t)
-		var gotURL *url.URL
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotURL = r.URL
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(rule)
-		}))
-		defer server.Close()
-
-		_, err := newTestClient(t, server.URL).CreateSamplingRule(context.Background(), &rule, Ptr("production"))
-		if err != nil {
-			t.Fatalf("CreateSamplingRule failed: %v", err)
-		}
-		assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
 	})
 
 	t.Run("CreateSamplingRule wraps a 201 body it cannot parse", func(t *testing.T) {
@@ -422,24 +414,6 @@ func TestSamplingRules_Integration(t *testing.T) {
 		}
 	})
 
-	t.Run("UpdateSamplingRule sends the dataset query parameter", func(t *testing.T) {
-		rule := newTestSamplingRule(t)
-		var gotURL *url.URL
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotURL = r.URL
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_ = json.NewEncoder(w).Encode(rule)
-		}))
-		defer server.Close()
-
-		_, err := newTestClient(t, server.URL).UpdateSamplingRule(context.Background(), "sr-123", &rule, Ptr("production"))
-		if err != nil {
-			t.Fatalf("UpdateSamplingRule failed: %v", err)
-		}
-		assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
-	})
-
 	t.Run("DeleteSamplingRule handles 200", func(t *testing.T) {
 		var gotURL *url.URL
 		var gotMethod string
@@ -496,20 +470,6 @@ func TestSamplingRules_Integration(t *testing.T) {
 		if !IsForbidden(err) {
 			t.Errorf("IsForbidden(err) = false, want true (err = %v)", err)
 		}
-	})
-
-	t.Run("DeleteSamplingRule sends the dataset query parameter", func(t *testing.T) {
-		var gotURL *url.URL
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotURL = r.URL
-			w.WriteHeader(http.StatusNoContent)
-		}))
-		defer server.Close()
-
-		if err := newTestClient(t, server.URL).DeleteSamplingRule(context.Background(), "sr-123", Ptr("production")); err != nil {
-			t.Fatalf("DeleteSamplingRule failed: %v", err)
-		}
-		assertEqual(t, "dataset", gotURL.Query().Get("dataset"), "production")
 	})
 
 	t.Run("ListSamplingRulesIter iterates every rule", func(t *testing.T) {
