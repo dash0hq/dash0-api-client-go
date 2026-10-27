@@ -671,6 +671,23 @@ func ExampleGetSamplingRuleID() {
 	// Output: sr-123
 }
 
+func ExampleGetSamplingRuleDataset() {
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{
+			Labels: &dash0.SamplingLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetSamplingRuleDataset(rule))
+	// Output: production
+}
+
+func ExampleSetSamplingRuleDataset() {
+	rule := &dash0.SamplingDefinition{}
+	dash0.SetSamplingRuleDataset(rule, "production")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
 func ExampleSetSamplingRuleID() {
 	rule := &dash0.SamplingDefinition{}
 	dash0.SetSamplingRuleID(rule, "sr-456")

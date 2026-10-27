@@ -738,6 +738,53 @@ func TestGetSamplingRuleID(t *testing.T) {
 	}
 }
 
+func TestGetSamplingRuleDataset(t *testing.T) {
+	tests := []struct {
+		name string
+		rule *SamplingDefinition
+		want string
+	}{
+		{
+			"with dataset",
+			&SamplingDefinition{
+				Metadata: SamplingMetadata{
+					Labels: &SamplingLabels{Dash0Comdataset: Ptr("production")},
+				},
+			},
+			"production",
+		},
+		{"nil rule", nil, ""},
+		{"nil labels", &SamplingDefinition{}, ""},
+		{
+			"nil dataset",
+			&SamplingDefinition{
+				Metadata: SamplingMetadata{Labels: &SamplingLabels{}},
+			},
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetSamplingRuleDataset(tt.rule); got != tt.want {
+				t.Errorf("GetSamplingRuleDataset() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetSamplingRuleDataset(t *testing.T) {
+	rule := &SamplingDefinition{}
+	SetSamplingRuleDataset(rule, "production")
+	if rule.Metadata.Labels == nil {
+		t.Fatal("expected the labels struct to be initialized")
+	}
+	assertPtrEqual(t, "Dash0Comdataset", rule.Metadata.Labels.Dash0Comdataset, "production")
+}
+
+func TestSetSamplingRuleDataset_Nil(t *testing.T) {
+	SetSamplingRuleDataset(nil, "production") // should not panic
+}
+
 func TestSetSamplingRuleID(t *testing.T) {
 	rule := &SamplingDefinition{}
 	SetSamplingRuleID(rule, "sr-new")

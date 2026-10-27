@@ -151,6 +151,25 @@ func ClearSamplingRuleID(rule *SamplingDefinition) {
 	}
 }
 
+// GetSamplingRuleDataset extracts the dataset from a sampling rule.
+func GetSamplingRuleDataset(rule *SamplingDefinition) string {
+	if rule == nil || rule.Metadata.Labels == nil || rule.Metadata.Labels.Dash0Comdataset == nil {
+		return ""
+	}
+	return *rule.Metadata.Labels.Dash0Comdataset
+}
+
+// SetSamplingRuleDataset sets the dash0.com/dataset label on a sampling rule, initializing the labels struct if needed.
+func SetSamplingRuleDataset(rule *SamplingDefinition, dataset string) {
+	if rule == nil {
+		return
+	}
+	if rule.Metadata.Labels == nil {
+		rule.Metadata.Labels = &SamplingLabels{}
+	}
+	rule.Metadata.Labels.Dash0Comdataset = &dataset
+}
+
 // GetSamplingRuleID extracts the ID from a sampling rule.
 func GetSamplingRuleID(rule *SamplingDefinition) string {
 	if rule == nil || rule.Metadata.Labels == nil || rule.Metadata.Labels.Dash0Comid == nil {
