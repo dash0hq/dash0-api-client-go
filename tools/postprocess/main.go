@@ -69,6 +69,26 @@ var constRenames = map[string]string{
 	"Response":   "TimingTypeResponse",
 	"Ssl":        "TimingTypeSsl",
 	"Total":      "TimingTypeTotal",
+	// oapi-codegen prefixes the ViewType constants only while another enum in
+	// the spec shares their values, so the names flip whenever such an enum is
+	// added or removed. Pin the prefixed names; compat.go keeps the bare ones
+	// as deprecated aliases.
+	"AwsLambda":            "ViewTypeAwsLambda",
+	"FailedChecks":         "ViewTypeFailedChecks",
+	"GcpCloudRunJobs":      "ViewTypeGcpCloudRunJobs",
+	"GcpCloudRunServices":  "ViewTypeGcpCloudRunServices",
+	"GcpCloudSqlInstances": "ViewTypeGcpCloudSqlInstances",
+	"GcpCloudStorage":      "ViewTypeGcpCloudStorage",
+	"GcpPubsub":            "ViewTypeGcpPubsub",
+	"Logs":                 "ViewTypeLogs",
+	"Metrics":              "ViewTypeMetrics",
+	"Profiles":             "ViewTypeProfiles",
+	"Resources":            "ViewTypeResources",
+	"Services":             "ViewTypeServices",
+	"Slos":                 "ViewTypeSlos",
+	"Spans":                "ViewTypeSpans",
+	"Sql":                  "ViewTypeSql",
+	"WebEvents":            "ViewTypeWebEvents",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry
