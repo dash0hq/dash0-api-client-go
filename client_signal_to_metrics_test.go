@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -959,6 +961,148 @@ func TestSignalToMetrics_APINotConfigured(t *testing.T) {
 	if _, err := c.TestSignalToMetrics(ctx, &SignalToMetricsTestRequest{Definition: rule}, nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("TestSignalToMetrics error = %v, want ErrAPINotConfigured", err)
 	}
+}
+
+// TestLiveAPI_SignalToMetricsTestImportAndCount runs the test, import, count, and list filter calls against a real Dash0 API.
+// It is skipped unless DASH0_API_URL and DASH0_AUTH_TOKEN are set.
+// The rules it imports are disabled, and it deletes them when it finishes.
+func TestLiveAPI_SignalToMetricsTestImportAndCount(t *testing.T) {
+	apiUrl := os.Getenv("DASH0_API_URL")
+	authToken := os.Getenv("DASH0_AUTH_TOKEN")
+	if apiUrl == "" || authToken == "" {
+		t.Skip("Skipping live API tests: DASH0_API_URL and DASH0_AUTH_TOKEN must be set")
+	}
+	client, err := NewClient(WithApiUrl(apiUrl), WithAuthToken(authToken))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ctx := context.Background()
+	dataset := "default"
+	prefix := fmt.Sprintf("live-s2m-%d_", time.Now().UnixNano())
+	spansOrigin, logsOrigin := prefix+"spans", prefix+"logs"
+	newRule := func(origin string, signal SignalToMetricsSignalType) *SignalToMetricsDefinition {
+		return &SignalToMetricsDefinition{
+			Kind: Dash0SignalToMetrics,
+			Metadata: SignalToMetricsMetadata{
+				Name:   origin,
+				Labels: &SignalToMetricsLabels{Dash0Comorigin: Ptr(origin)},
+			},
+			Spec: SignalToMetricsSpec{
+				Enabled: false,
+				Display: SignalToMetricsDisplay{Name: origin},
+				Match: SignalToMetricsMatch{
+					Signal:  signal,
+					Filters: FilterCriteria{{Key: "service.name", Operator: "is_set"}},
+				},
+				Output: SignalToMetricsOutput{Name: "live_s2m_test_total", Interval: "1m"},
+			},
+		}
+	}
+	t.Cleanup(func() {
+		for _, origin := range []string{spansOrigin, logsOrigin} {
+			if err := client.DeleteSignalToMetrics(context.Background(), origin, &dataset); err != nil && !IsNotFound(err) {
+				t.Logf("cleanup of %s failed: %v", origin, err)
+			}
+		}
+	})
+
+	t.Run("TestSignalToMetrics counts the signals a valid rule matches", func(t *testing.T) {
+		request := &SignalToMetricsTestRequest{
+			Definition: *newRule(spansOrigin, SignalToMetricsSignalTypeSpans),
+			TimeRange:  &TimeReferenceRange{From: "now-5m", To: "now"},
+		}
+		result, err := client.TestSignalToMetrics(ctx, request, &dataset)
+		if err != nil {
+			t.Fatalf("TestSignalToMetrics failed: %v", err)
+		}
+		if !result.TimeRange.From.Before(result.TimeRange.To) {
+			t.Errorf("time range %s to %s is empty", result.TimeRange.From, result.TimeRange.To)
+		}
+		if result.MatchedCount < 0 {
+			t.Errorf("MatchedCount = %d, want at least 0", result.MatchedCount)
+		}
+		t.Logf("matched %d spans between %s and %s", result.MatchedCount, result.TimeRange.From, result.TimeRange.To)
+	})
+
+	t.Run("TestSignalToMetrics rejects a rule that fails validation", func(t *testing.T) {
+		rule := newRule(spansOrigin, SignalToMetricsSignalTypeSpans)
+		// The API accepts intervals from 5s to 10m.
+		rule.Spec.Output.Interval = "1s"
+		_, err := client.TestSignalToMetrics(ctx, &SignalToMetricsTestRequest{Definition: *rule}, &dataset)
+		if !IsBadRequest(err) {
+			t.Fatalf("IsBadRequest(err) = false, want true (err = %v)", err)
+		}
+		var apiErr *APIError
+		if !errors.As(err, &apiErr) {
+			t.Fatalf("expected *APIError, got %T", err)
+		}
+		if !strings.Contains(apiErr.Message, "interval") {
+			t.Errorf("APIError.Message = %q, want it to name the interval", apiErr.Message)
+		}
+	})
+
+	imported := t.Run("ImportSignalToMetrics creates the rules, then updates them", func(t *testing.T) {
+		rules := []*SignalToMetricsDefinition{
+			newRule(spansOrigin, SignalToMetricsSignalTypeSpans),
+			newRule(logsOrigin, SignalToMetricsSignalTypeLogs),
+		}
+		first, err := client.ImportSignalToMetrics(ctx, rules, dataset)
+		if err != nil {
+			t.Fatalf("first ImportSignalToMetrics failed: %v", err)
+		}
+		if first.Created != 2 || first.Updated != 0 {
+			t.Errorf("first import = %+v, want {Created:2 Updated:0}", *first)
+		}
+		second, err := client.ImportSignalToMetrics(ctx, rules, dataset)
+		if err != nil {
+			t.Fatalf("second ImportSignalToMetrics failed: %v", err)
+		}
+		if second.Created != 0 || second.Updated != 2 {
+			t.Errorf("second import = %+v, want {Created:0 Updated:2}", *second)
+		}
+	})
+	if !imported {
+		return
+	}
+
+	t.Run("list filters and counts select the imported rules", func(t *testing.T) {
+		byPrefix := WithOriginPrefix(prefix)
+		tests := []struct {
+			name string
+			opts []ListOption
+			want []string
+		}{
+			{"origin prefix", []ListOption{byPrefix}, []string{logsOrigin, spansOrigin}},
+			{"signal", []ListOption{byPrefix, WithSignal(SignalToMetricsSignalTypeLogs)}, []string{logsOrigin}},
+			{"name", []ListOption{byPrefix, WithName(spansOrigin)}, []string{spansOrigin}},
+			{"enabled", []ListOption{byPrefix, WithEnabled(true)}, nil},
+			{"disabled", []ListOption{byPrefix, WithEnabled(false)}, []string{logsOrigin, spansOrigin}},
+		}
+		for _, tt := range tests {
+			rules, err := client.ListSignalToMetrics(ctx, &dataset, tt.opts...)
+			if err != nil {
+				t.Fatalf("ListSignalToMetrics with the %s filter failed: %v", tt.name, err)
+			}
+			var got []string
+			for _, rule := range rules {
+				got = append(got, StringValue(rule.Metadata.Labels.Dash0Comorigin))
+			}
+			slices.Sort(got)
+			if !slices.Equal(got, tt.want) {
+				t.Errorf("ListSignalToMetrics with the %s filter returned %v, want %v", tt.name, got, tt.want)
+			}
+		}
+
+		counts, err := client.CountSignalToMetrics(ctx, &dataset, byPrefix)
+		if err != nil {
+			t.Fatalf("CountSignalToMetrics failed: %v", err)
+		}
+		want := SignalToMetricsSignalCounts{Total: 1, Enabled: 0}
+		if counts.Logs != want || counts.Spans != want {
+			t.Errorf("CountSignalToMetrics = %+v, want one disabled rule per signal", *counts)
+		}
+	})
 }
 
 func TestStripSignalToMetricsServerFields(t *testing.T) {
