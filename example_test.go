@@ -719,8 +719,8 @@ func ExampleStripSamplingRuleServerFields() {
 		Spec: dash0.SamplingSpec{Enabled: true},
 	}
 	dash0.StripSamplingRuleServerFields(rule)
-	// The version is server-assigned and is cleared; the ID and the user-set
-	// enabled flag are preserved so the rule round-trips unchanged on update.
+	// The version is server-assigned and is cleared.
+	// The ID and the user-set enabled flag are preserved, so the rule round-trips unchanged on update.
 	fmt.Println(rule.Metadata.Labels.Dash0Comversion == nil)
 	fmt.Println(dash0.GetSamplingRuleID(rule))
 	fmt.Println(rule.Spec.Enabled)

@@ -135,8 +135,7 @@ func TestSamplingRules_Integration(t *testing.T) {
 	})
 
 	t.Run("ListSamplingRules reports an unparsed 200 body", func(t *testing.T) {
-		// No JSON content type, so the generated parser leaves JSON200 nil and the
-		// client's own guard is what reports the problem.
+		// No JSON content type, so the generated parser leaves JSON200 nil and the client's own guard is what reports the problem.
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		}))
@@ -310,10 +309,8 @@ func TestSamplingRules_Integration(t *testing.T) {
 
 	t.Run("CreateSamplingRule wraps a 201 body it cannot parse", func(t *testing.T) {
 		rule := newTestSamplingRule(t)
-		// On a 201 the generated parser decodes into ErrorResponse, which ignores
-		// unknown fields, so JSON200 stays nil and the manual fallback runs. A
-		// numeric "kind" parses as an ErrorResponse but not as a definition, which
-		// is what reaches the fallback's error branch.
+		// On a 201 the generated parser decodes into ErrorResponse, which ignores unknown fields, so JSON200 stays nil and the manual fallback runs.
+		// A numeric "kind" parses as an ErrorResponse but not as a definition, which is what reaches the fallback's error branch.
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
@@ -588,8 +585,8 @@ func TestStripSamplingRuleServerFields(t *testing.T) {
 		t.Error("Dash0Comorigin should be nil")
 	}
 
-	// The ID survives, so a Get -> Strip -> Update round-trip keeps addressing the
-	// same asset. Callers who want it gone call ClearSamplingRuleID.
+	// The ID survives, so a Get -> Strip -> Update round-trip keeps addressing the same asset.
+	// Callers who want it gone call ClearSamplingRuleID.
 	if got := GetSamplingRuleID(rule); got != "keep-this-id" {
 		t.Errorf("Dash0Comid = %q, want %q (the ID must be preserved)", got, "keep-this-id")
 	}
@@ -598,8 +595,8 @@ func TestStripSamplingRuleServerFields(t *testing.T) {
 		t.Error("Labels.Custom should be preserved")
 	}
 
-	// Enabled is user-set, not server-managed. Clearing it would silently disable
-	// the rule on the next update.
+	// Enabled is user-set, not server-managed.
+	// Clearing it would silently disable the rule on the next update.
 	if !rule.Spec.Enabled {
 		t.Error("Spec.Enabled should be preserved")
 	}
