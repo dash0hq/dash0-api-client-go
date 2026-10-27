@@ -69,8 +69,10 @@ var constRenames = map[string]string{
 	"Response":   "TimingTypeResponse",
 	"Ssl":        "TimingTypeSsl",
 	"Total":      "TimingTypeTotal",
-	// oapi-codegen prefixes the ViewType constants only while another enum
-	// shares a value with them, so pin the prefixed names that compat.go aliases.
+	// oapi-codegen prefixes the ViewType constants only while another enum in
+	// the spec shares their values, so the names flip whenever such an enum is
+	// added or removed. Pin the prefixed names; compat.go keeps the bare ones
+	// as deprecated aliases.
 	"AwsLambda":            "ViewTypeAwsLambda",
 	"FailedChecks":         "ViewTypeFailedChecks",
 	"GcpCloudRunJobs":      "ViewTypeGcpCloudRunJobs",

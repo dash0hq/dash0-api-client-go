@@ -355,14 +355,17 @@ GetApiDatasetsResponse.JSON200
 AuthTokenSpec.Actions
 AuthTokenResponseSpec.Actions
 
-# <NEXT_RELEASE>: the edge settings response no longer sends observed
-# patterns or telemetry transformation rules (dash0hq/dash0#23207, #22463),
-# so the fields and the types only they used left the public spec.
-SettingsPerOrganizationAndDatasetInfo.ObservedPatterns
-SettingsPerOrganizationAndDatasetInfo.TelemetryTransformationRuleSettings
-ObservedPatternEntry
+# <NEXT_RELEASE>: the public spec no longer exposes the telemetry
+# transformation rule settings or the observed patterns on the edge
+# collector settings (SettingsPerOrganizationAndDatasetInfo). The two fields
+# are gone, and so are the types only they referenced. No in-package shim is
+# possible because the fields were removed. The Client interface never used
+# these types.
+Dash0TelemetryTransformationRule
+TelemetryTransformationRule*
 OTTLConditions
 OTTLStatement
 OTTLStatements
-Dash0TelemetryTransformationRule
-TelemetryTransformationRule*
+ObservedPatternEntry
+SettingsPerOrganizationAndDatasetInfo.ObservedPatterns
+SettingsPerOrganizationAndDatasetInfo.TelemetryTransformationRuleSettings
