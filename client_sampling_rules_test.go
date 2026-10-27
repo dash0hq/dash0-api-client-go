@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 func newTestSamplingRule(t *testing.T) SamplingDefinition {
@@ -806,4 +809,67 @@ func TestClearSamplingRuleID_NilLabels(t *testing.T) {
 
 func TestClearSamplingRuleID_Nil(t *testing.T) {
 	ClearSamplingRuleID(nil) // should not panic
+}
+
+// TestLiveAPI_SamplingRules runs a get, strip, and update round trip against a real Dash0 API.
+// It is skipped unless DASH0_API_URL and DASH0_AUTH_TOKEN are set.
+// The rule it creates is disabled, so it samples nothing, and it deletes the rule when it finishes.
+func TestLiveAPI_SamplingRules(t *testing.T) {
+	apiUrl := os.Getenv("DASH0_API_URL")
+	authToken := os.Getenv("DASH0_AUTH_TOKEN")
+	if apiUrl == "" || authToken == "" {
+		t.Skip("Skipping live API tests: DASH0_API_URL and DASH0_AUTH_TOKEN must be set")
+	}
+	client, err := NewClient(WithApiUrl(apiUrl), WithAuthToken(authToken))
+	if err != nil {
+		t.Fatalf("failed to create client: %v", err)
+	}
+
+	ctx := context.Background()
+	dataset := Ptr("default")
+	origin := fmt.Sprintf("live-sampling-rule-%d", time.Now().UnixNano())
+
+	rule := newTestSamplingRule(t)
+	rule.Metadata.Name = origin
+	rule.Metadata.Labels = &SamplingLabels{Dash0Comorigin: Ptr(origin)}
+	rule.Spec.Enabled = false
+	rule.Spec.Display = &SamplingDisplay{Name: origin}
+	created, err := client.CreateSamplingRule(ctx, &rule, dataset)
+	if err != nil {
+		t.Fatalf("CreateSamplingRule failed: %v", err)
+	}
+	id := GetSamplingRuleID(created)
+	if id == "" {
+		t.Fatal("CreateSamplingRule returned no dash0.com/id")
+	}
+	t.Cleanup(func() {
+		if err := client.DeleteSamplingRule(context.Background(), id, dataset); err != nil && !IsNotFound(err) {
+			t.Logf("cleanup of %s failed: %v", id, err)
+		}
+	})
+
+	got, err := client.GetSamplingRule(ctx, id, dataset)
+	if err != nil {
+		t.Fatalf("GetSamplingRule failed: %v", err)
+	}
+	assertEqual(t, "GetSamplingRuleName", GetSamplingRuleName(got), origin)
+	t.Logf("server returned dataset %q for the rule", GetSamplingRuleDataset(got))
+
+	StripSamplingRuleServerFields(got)
+	// Strip keeps the ID, so the stripped rule still addresses the rule it was read from.
+	assertEqual(t, "ID after strip", GetSamplingRuleID(got), id)
+	got.Spec.Display = &SamplingDisplay{Name: origin + "-renamed"}
+	if _, err := client.UpdateSamplingRule(ctx, GetSamplingRuleID(got), got, dataset); err != nil {
+		t.Fatalf("UpdateSamplingRule after strip failed: %v", err)
+	}
+
+	updated, err := client.GetSamplingRule(ctx, id, dataset)
+	if err != nil {
+		t.Fatalf("GetSamplingRule after update failed: %v", err)
+	}
+	assertEqual(t, "ID after update", GetSamplingRuleID(updated), id)
+	assertEqual(t, "GetSamplingRuleName after update", GetSamplingRuleName(updated), origin+"-renamed")
+	if updated.Spec.Enabled {
+		t.Error("spec.enabled = true after strip and update, want the rule to stay disabled")
+	}
 }
