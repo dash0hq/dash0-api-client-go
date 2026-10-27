@@ -768,6 +768,31 @@ func ExampleStripSLOServerFields() {
 	// Output: slo_01k5vpx97efdnrkqan15b41k84 true true
 }
 
+// AWS metric scrape config helpers
+
+func ExampleStripAwsMetricScrapeConfigServerFields() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		ApiVersion: dash0.AwsMetricScrapeConfigApiVersionDash0Comv1alpha1,
+		Kind:       dash0.Dash0AwsMetricScrapeConfig,
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{
+			Labels: &dash0.AwsMetricScrapeConfigLabels{
+				Dash0Comid:      dash0.Ptr("491cb653-954b-4d0b-a84c-4b426b562938"),
+				Dash0Comdataset: dash0.Ptr("default"),
+				Dash0Comorigin:  dash0.Ptr("tf_my-config"),
+			},
+		},
+		Spec: dash0.AwsMetricScrapeConfigSpec{
+			Namespaces: []dash0.AwsMetricScrapeConfigNamespace{
+				{Namespace: "AWS/Lambda", Metrics: []string{"Errors", "Invocations"}},
+			},
+		},
+	}
+	// Strip a fetched config before comparing it with the desired one or sending it back.
+	dash0.StripAwsMetricScrapeConfigServerFields(cfg)
+	fmt.Println(dash0.GetAwsMetricScrapeConfigOrigin(cfg), cfg.Metadata.Labels.Dash0Comid == nil)
+	// Output: tf_my-config true
+}
+
 // Prometheus rule helpers
 
 func ExampleGetPrometheusRuleName() {
