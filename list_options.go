@@ -3,7 +3,8 @@ package dash0
 import "fmt"
 
 // ListOption configures optional filters on List* methods.
-// List methods whose endpoint does not support a given filter do not accept options.
+// Each option names the list methods that support it.
+// The other list methods return an error when given it, rather than ignoring the filter.
 type ListOption func(*ListOptions)
 
 // ListOptions holds the filters resolved from a set of [ListOption] values.
@@ -12,7 +13,8 @@ type ListOptions struct {
 	// Nil means no filter.
 	OriginPrefix *string
 
-	// Name restricts results to assets whose name contains the given string, ignoring case, or whose ID equals it.
+	// Name restricts results to assets that match the given name.
+	// Each list method that supports it documents how it matches.
 	// Nil means no filter.
 	Name *string
 
@@ -38,9 +40,9 @@ func WithOriginPrefix(prefix string) ListOption {
 	}
 }
 
-// WithName restricts a list call to assets whose name contains name, ignoring case, or whose ID equals name.
+// WithName restricts a list call to assets that match name.
 // An empty name leaves the filter unset.
-// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], and [Client.CountSignalToMetrics].
+// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], and [Client.CountSignalToMetrics], each of which documents how it matches.
 // The other list methods return an error when given this option.
 func WithName(name string) ListOption {
 	return func(o *ListOptions) {
@@ -99,6 +101,10 @@ func (o ListOptions) requireOriginPrefixOnly(operation string) error {
 		return fmt.Errorf("dash0: %s does not support the signal filter", operation)
 	case o.Enabled != nil:
 		return fmt.Errorf("dash0: %s does not support the enabled filter", operation)
+	}
+	// Catches a filter added to ListOptions later that the cases above do not name yet.
+	if o != (ListOptions{OriginPrefix: o.OriginPrefix}) {
+		return fmt.Errorf("dash0: %s supports only the origin prefix filter", operation)
 	}
 	return nil
 }

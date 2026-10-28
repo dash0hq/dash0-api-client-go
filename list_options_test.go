@@ -1,6 +1,9 @@
 package dash0
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestNewListOptions(t *testing.T) {
 	tests := []struct {
@@ -86,6 +89,25 @@ func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
 				t.Fatalf("requireOriginPrefixOnly() = nil, want %q", tt.wantErr)
 			}
 			assertEqual(t, "error", err.Error(), tt.wantErr)
+		})
+	}
+}
+
+// TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField sets each ListOptions field other than OriginPrefix in turn, so a filter added later is rejected without a new test case.
+func TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField(t *testing.T) {
+	typ := reflect.TypeOf(ListOptions{})
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		if field.Name == "OriginPrefix" {
+			continue
+		}
+		t.Run(field.Name, func(t *testing.T) {
+			var o ListOptions
+			value := reflect.ValueOf(&o).Elem().Field(i)
+			value.Set(reflect.New(value.Type().Elem()))
+			if err := o.requireOriginPrefixOnly("list check rules"); err == nil {
+				t.Errorf("requireOriginPrefixOnly() with %s set = nil, want an error", field.Name)
+			}
 		})
 	}
 }
