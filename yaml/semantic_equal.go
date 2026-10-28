@@ -236,14 +236,9 @@ func mapAtRoot(data map[string]any, root string) (map[string]any, bool) {
 	return current, true
 }
 
-// alwaysPreservedAnnotationKeys survive stripAnnotations regardless of the
-// caller's preservedAnnotationKeys, even when that list is empty (which
-// otherwise means "strip every annotation"). dash0.com/enabled toggles
-// whether a spam filter is active at all: real, user-controlled content per
-// the OpenAPI spec, not provenance noise -- even though the API client's own
-// StripSpamFilterServerFields (a different concern: fields to omit from a
-// write request, not fields to ignore for drift) discards it, and neither
-// dash0-cli nor terraform-provider-dash0 currently compare it either.
+// alwaysPreservedAnnotationKeys survive stripAnnotations regardless of the caller's preservedAnnotationKeys, even when that list is empty (which otherwise means "strip every annotation").
+// dash0.com/enabled toggles whether a spam filter is active at all.
+// It is user-controlled content per the OpenAPI spec, not provenance noise, so the root package's StripSpamFilterServerFields keeps it too.
 var alwaysPreservedAnnotationKeys = map[string]bool{
 	"dash0.com/enabled": true,
 }

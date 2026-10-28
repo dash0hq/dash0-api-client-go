@@ -1694,12 +1694,22 @@ func ExampleSetSpamFilterIDIfAbsent() {
 
 func ExampleStripSpamFilterServerFields() {
 	filter := &dash0.SpamFilter{
-		Metadata: dash0.SpamFilterMetadata{Name: "Drop noisy health checks"},
+		Metadata: dash0.SpamFilterMetadata{
+			Name:        "Drop noisy health checks",
+			Annotations: &dash0.SpamFilterAnnotations{Dash0Comenabled: dash0.Ptr(dash0.False)},
+			Labels: &dash0.SpamFilterLabels{
+				Dash0Comid:     dash0.Ptr("sf-123"),
+				Dash0Comorigin: dash0.Ptr("tf_health"),
+			},
+		},
 	}
-	dash0.SetSpamFilterID(filter, "sf-123")
 	dash0.StripSpamFilterServerFields(filter)
-	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil)
-	// Output: true
+	// The ID is gone, while the origin and the disabled state stay.
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil, *filter.Metadata.Labels.Dash0Comorigin)
+	fmt.Println(*filter.Metadata.Annotations.Dash0Comenabled)
+	// Output:
+	// true tf_health
+	// false
 }
 
 func ExampleClearSpamFilterID() {
@@ -1711,6 +1721,255 @@ func ExampleClearSpamFilterID() {
 	dash0.ClearSpamFilterID(filter)
 	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil)
 	// Output: true
+}
+
+func ExampleGetSpamFilterV1Alpha2Name() {
+	filter := &dash0.SpamFilterV1Alpha2{
+		Metadata: dash0.SpamFilterMetadata{Name: "Drop noisy health checks"},
+	}
+	fmt.Println(dash0.GetSpamFilterV1Alpha2Name(filter))
+	// Output: Drop noisy health checks
+}
+
+func ExampleGetSpamFilterV1Alpha2ID() {
+	filter := &dash0.SpamFilterV1Alpha2{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comid: dash0.Ptr("sf-123")},
+		},
+	}
+	fmt.Println(dash0.GetSpamFilterV1Alpha2ID(filter))
+	// Output: sf-123
+}
+
+func ExampleGetSpamFilterV1Alpha2Dataset() {
+	filter := &dash0.SpamFilterV1Alpha2{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetSpamFilterV1Alpha2Dataset(filter))
+	// Output: production
+}
+
+func ExampleSetSpamFilterV1Alpha2Dataset() {
+	filter := &dash0.SpamFilterV1Alpha2{}
+	dash0.SetSpamFilterV1Alpha2Dataset(filter, "production")
+	fmt.Println(*filter.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
+func ExampleSetSpamFilterV1Alpha2ID() {
+	filter := &dash0.SpamFilterV1Alpha2{}
+	dash0.SetSpamFilterV1Alpha2ID(filter, "sf-456")
+	fmt.Println(*filter.Metadata.Labels.Dash0Comid)
+	// Output: sf-456
+}
+
+func ExampleSetSpamFilterV1Alpha2IDIfAbsent() {
+	filter := &dash0.SpamFilterV1Alpha2{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetSpamFilterV1Alpha2IDIfAbsent(filter, "new-id")
+	fmt.Println(*filter.Metadata.Labels.Dash0Comid)
+	// Output: existing
+}
+
+func ExampleStripSpamFilterV1Alpha2ServerFields() {
+	filter := &dash0.SpamFilterV1Alpha2{
+		Metadata: dash0.SpamFilterMetadata{
+			Name:        "Drop noisy health checks",
+			Annotations: &dash0.SpamFilterAnnotations{Dash0Comenabled: dash0.Ptr(dash0.False)},
+			Labels: &dash0.SpamFilterLabels{
+				Dash0Comid:      dash0.Ptr("sf-123"),
+				Dash0Comdataset: dash0.Ptr("production"),
+			},
+		},
+	}
+	dash0.StripSpamFilterV1Alpha2ServerFields(filter)
+	// The ID is gone, while the dataset and the disabled state stay.
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil, *filter.Metadata.Labels.Dash0Comdataset, *filter.Metadata.Annotations.Dash0Comenabled)
+	// Output: true production false
+}
+
+func ExampleClearSpamFilterV1Alpha2ID() {
+	filter := &dash0.SpamFilterV1Alpha2{
+		Metadata: dash0.SpamFilterMetadata{
+			Labels: &dash0.SpamFilterLabels{Dash0Comid: dash0.Ptr("sf-123")},
+		},
+	}
+	dash0.ClearSpamFilterV1Alpha2ID(filter)
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+// Spam filters
+
+// spamFilterListBody is a list response that holds one filter of each apiVersion.
+const spamFilterListBody = `{"spamFilters": [
+	{"apiVersion": "v1alpha1", "kind": "Dash0SpamFilter", "metadata": {"name": "Drop debug logs"}, "spec": {"contexts": ["log"], "filter": []}},
+	{"apiVersion": "v1alpha2", "kind": "Dash0SpamFilter", "metadata": {"name": "Drop health checks"}, "spec": {"context": "span", "filter": []}}
+]}`
+
+func ExampleClient_ListSpamFilterObjects() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(spamFilterListBody))
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	filters, err := client.ListSpamFilterObjects(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, obj := range filters {
+		switch filter := obj.(type) {
+		case *dash0.SpamFilter:
+			fmt.Println(dash0.GetSpamFilterName(filter), filter.Spec.Contexts)
+		case *dash0.SpamFilterV1Alpha2:
+			fmt.Println(dash0.GetSpamFilterV1Alpha2Name(filter), filter.Spec.Context)
+		}
+	}
+	// Output:
+	// Drop debug logs [log]
+	// Drop health checks span
+}
+
+func ExampleClient_GetSpamFilter() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"apiVersion": "v1alpha2", "kind": "Dash0SpamFilter", "metadata": {"name": "Drop health checks"}, "spec": {"context": "span", "filter": []}}`))
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	// The server returns the filter in the apiVersion it was stored in.
+	obj, err := client.GetSpamFilter(context.Background(), "tf_health", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	switch filter := obj.(type) {
+	case *dash0.SpamFilter:
+		fmt.Println("v1alpha1 contexts:", filter.Spec.Contexts)
+	case *dash0.SpamFilterV1Alpha2:
+		fmt.Println("v1alpha2 context:", filter.Spec.Context)
+	}
+	// Output: v1alpha2 context: span
+}
+
+func ExampleClient_CreateSpamFilterV1Alpha2() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var filter dash0.SpamFilterV1Alpha2
+		_ = json.NewDecoder(r.Body).Decode(&filter)
+		dash0.SetSpamFilterV1Alpha2ID(&filter, "sf-123")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(filter)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	var route dash0.AttributeFilter_Value
+	if err := route.FromAttributeFilterStringValue("/healthz"); err != nil {
+		log.Fatal(err)
+	}
+	filter := &dash0.SpamFilterV1Alpha2{
+		ApiVersion: dash0.V1alpha2,
+		Kind:       dash0.SpamFilterDefinitionV1Alpha2KindDash0SpamFilter,
+		Metadata:   dash0.SpamFilterMetadata{Name: "Drop health checks"},
+		Spec: dash0.SpamFilterSpecV1Alpha2{
+			Context: "span",
+			Filter:  dash0.FilterCriteria{{Key: "http.route", Operator: "is", Value: &route}},
+		},
+	}
+	created, err := client.CreateSpamFilterV1Alpha2(context.Background(), filter, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetSpamFilterV1Alpha2ID(created), created.Spec.Context)
+	// Output: sf-123 span
+}
+
+func ExampleClient_UpdateSpamFilterV1Alpha2() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{
+				"apiVersion": "v1alpha2",
+				"kind": "Dash0SpamFilter",
+				"metadata": {
+					"name": "Drop health checks",
+					"labels": {"dash0.com/id": "sf-123", "dash0.com/origin": "tf_health", "dash0.com/source": "terraform"}
+				},
+				"spec": {"context": "span", "filter": []}
+			}`))
+			return
+		}
+		var filter dash0.SpamFilterV1Alpha2
+		_ = json.NewDecoder(r.Body).Decode(&filter)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(filter)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	obj, err := client.GetSpamFilter(context.Background(), "tf_health", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	filter, ok := obj.(*dash0.SpamFilterV1Alpha2)
+	if !ok {
+		log.Fatalf("expected a v1alpha2 filter, got %T", obj)
+	}
+
+	// Strip clears the origin and the ID, so the update addresses the filter by the origin it was read with.
+	dash0.StripSpamFilterV1Alpha2ServerFields(filter)
+	filter.Metadata.Annotations = &dash0.SpamFilterAnnotations{Dash0Comenabled: dash0.Ptr(dash0.False)}
+	updated, err := client.UpdateSpamFilterV1Alpha2(context.Background(), "tf_health", filter, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetSpamFilterV1Alpha2Name(updated), *updated.Metadata.Annotations.Dash0Comenabled)
+	// Output: Drop health checks false
 }
 
 // Notification channel helpers

@@ -122,6 +122,9 @@ func (c *client) CreateSpamFilter(ctx context.Context, filter *SpamFilter, datas
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	if filter == nil {
+		return nil, fmt.Errorf("dash0: create spam filter requires a non-nil filter")
+	}
 	params := &PostApiSpamFiltersParams{
 		Dataset: dataset,
 	}
@@ -143,6 +146,9 @@ func (c *client) CreateSpamFilter(ctx context.Context, filter *SpamFilter, datas
 func (c *client) UpdateSpamFilter(ctx context.Context, originOrID string, filter *SpamFilter, dataset *string) (*SpamFilter, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
+	}
+	if filter == nil {
+		return nil, fmt.Errorf("dash0: update spam filter requires a non-nil filter")
 	}
 	params := &PutApiSpamFiltersOriginOrIdParams{
 		Dataset: dataset,
@@ -236,6 +242,9 @@ func (c *client) CreateSpamFilterV1Alpha2(ctx context.Context, filter *SpamFilte
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	if filter == nil {
+		return nil, fmt.Errorf("dash0: create spam filter requires a non-nil filter")
+	}
 	params := &PostApiSpamFiltersParams{
 		Dataset: dataset,
 	}
@@ -260,6 +269,9 @@ func (c *client) CreateSpamFilterV1Alpha2(ctx context.Context, filter *SpamFilte
 func (c *client) UpdateSpamFilterV1Alpha2(ctx context.Context, originOrID string, filter *SpamFilterV1Alpha2, dataset *string) (*SpamFilterV1Alpha2, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
+	}
+	if filter == nil {
+		return nil, fmt.Errorf("dash0: update spam filter requires a non-nil filter")
 	}
 	params := &PutApiSpamFiltersOriginOrIdParams{
 		Dataset: dataset,
@@ -306,40 +318,36 @@ func (c *client) ListSpamFiltersIter(ctx context.Context, dataset *string) *Iter
 	return newIter(items, false, nil, nil)
 }
 
-// StripSpamFilterServerFields removes server-generated fields from a
-// spam filter definition.
+// StripSpamFilterServerFields removes the server-managed fields from a v1alpha1 spam filter, so that it can be sent in a create or update request.
+// It clears the dash0.com/id and dash0.com/source labels.
+// It keeps the dash0.com/enabled annotation, the dash0.com/origin and dash0.com/dataset labels, and the custom labels.
+//
+// The origin is the filter's identity for an upsert by origin, so a filter recreated from a stripped copy keeps it and a later upsert by that origin finds it.
+// A caller that updates the filter by ID must read the ID before stripping.
 func StripSpamFilterServerFields(filter *SpamFilter) {
 	if filter == nil {
 		return
 	}
-	if filter.Metadata.Annotations != nil {
-		filter.Metadata.Annotations.Dash0Comenabled = nil
-	}
-	if filter.Metadata.Labels != nil {
-		filter.Metadata.Labels.Dash0Comid = nil
-		filter.Metadata.Labels.Dash0Comsource = nil
-	}
+	stripSpamFilterMetadataServerFields(&filter.Metadata)
 }
 
-// ClearSpamFilterID removes the ID from a spam filter definition.
+// ClearSpamFilterID removes the ID from a v1alpha1 spam filter.
 func ClearSpamFilterID(filter *SpamFilter) {
 	if filter == nil {
 		return
 	}
-	if filter.Metadata.Labels != nil {
-		filter.Metadata.Labels.Dash0Comid = nil
-	}
+	clearSpamFilterMetadataID(&filter.Metadata)
 }
 
-// GetSpamFilterID extracts the ID from a spam filter definition.
+// GetSpamFilterID extracts the ID from a v1alpha1 spam filter.
 func GetSpamFilterID(filter *SpamFilter) string {
-	if filter == nil || filter.Metadata.Labels == nil || filter.Metadata.Labels.Dash0Comid == nil {
+	if filter == nil {
 		return ""
 	}
-	return *filter.Metadata.Labels.Dash0Comid
+	return getSpamFilterMetadataID(&filter.Metadata)
 }
 
-// GetSpamFilterName extracts the display name from a spam filter definition.
+// GetSpamFilterName extracts the name from a v1alpha1 spam filter.
 func GetSpamFilterName(filter *SpamFilter) string {
 	if filter == nil {
 		return ""
@@ -347,49 +355,153 @@ func GetSpamFilterName(filter *SpamFilter) string {
 	return filter.Metadata.Name
 }
 
-// GetSpamFilterDataset extracts the dataset label from a spam filter definition.
+// GetSpamFilterDataset extracts the dataset label from a v1alpha1 spam filter.
 func GetSpamFilterDataset(filter *SpamFilter) string {
-	if filter == nil || filter.Metadata.Labels == nil || filter.Metadata.Labels.Dash0Comdataset == nil {
+	if filter == nil {
 		return ""
 	}
-	return *filter.Metadata.Labels.Dash0Comdataset
+	return getSpamFilterMetadataDataset(&filter.Metadata)
 }
 
-// SetSpamFilterDataset sets the dash0.com/dataset label on a spam filter
-// definition, initializing the labels struct if needed.
+// SetSpamFilterDataset sets the dash0.com/dataset label on a v1alpha1 spam filter, initializing the labels struct if needed.
 func SetSpamFilterDataset(filter *SpamFilter, dataset string) {
 	if filter == nil {
 		return
 	}
-	if filter.Metadata.Labels == nil {
-		filter.Metadata.Labels = &SpamFilterLabels{}
-	}
-	filter.Metadata.Labels.Dash0Comdataset = &dataset
+	setSpamFilterMetadataDataset(&filter.Metadata, dataset)
 }
 
-// SetSpamFilterID sets the dash0.com/id label on a spam filter definition,
-// initializing the labels struct if needed.
+// SetSpamFilterID sets the dash0.com/id label on a v1alpha1 spam filter, initializing the labels struct if needed.
 func SetSpamFilterID(filter *SpamFilter, id string) {
 	if filter == nil {
 		return
 	}
-	if filter.Metadata.Labels == nil {
-		filter.Metadata.Labels = &SpamFilterLabels{}
-	}
-	filter.Metadata.Labels.Dash0Comid = &id
+	setSpamFilterMetadataID(&filter.Metadata, id)
 }
 
-// SetSpamFilterIDIfAbsent sets the dash0.com/id label on a spam filter
-// definition only if it is not already set, initializing the labels struct
-// if needed.
+// SetSpamFilterIDIfAbsent sets the dash0.com/id label on a v1alpha1 spam filter only if it is not already set.
+// It initializes the labels struct if needed.
 func SetSpamFilterIDIfAbsent(filter *SpamFilter, id string) {
 	if filter == nil {
 		return
 	}
-	if filter.Metadata.Labels == nil {
-		filter.Metadata.Labels = &SpamFilterLabels{}
+	setSpamFilterMetadataIDIfAbsent(&filter.Metadata, id)
+}
+
+// StripSpamFilterV1Alpha2ServerFields removes the server-managed fields from a v1alpha2 spam filter, so that it can be sent in a create or update request.
+// It clears and keeps the same fields as [StripSpamFilterServerFields].
+func StripSpamFilterV1Alpha2ServerFields(filter *SpamFilterV1Alpha2) {
+	if filter == nil {
+		return
 	}
-	if filter.Metadata.Labels.Dash0Comid == nil {
-		filter.Metadata.Labels.Dash0Comid = &id
+	stripSpamFilterMetadataServerFields(&filter.Metadata)
+}
+
+// ClearSpamFilterV1Alpha2ID removes the ID from a v1alpha2 spam filter.
+func ClearSpamFilterV1Alpha2ID(filter *SpamFilterV1Alpha2) {
+	if filter == nil {
+		return
+	}
+	clearSpamFilterMetadataID(&filter.Metadata)
+}
+
+// GetSpamFilterV1Alpha2ID extracts the ID from a v1alpha2 spam filter.
+func GetSpamFilterV1Alpha2ID(filter *SpamFilterV1Alpha2) string {
+	if filter == nil {
+		return ""
+	}
+	return getSpamFilterMetadataID(&filter.Metadata)
+}
+
+// GetSpamFilterV1Alpha2Name extracts the name from a v1alpha2 spam filter.
+func GetSpamFilterV1Alpha2Name(filter *SpamFilterV1Alpha2) string {
+	if filter == nil {
+		return ""
+	}
+	return filter.Metadata.Name
+}
+
+// GetSpamFilterV1Alpha2Dataset extracts the dataset label from a v1alpha2 spam filter.
+func GetSpamFilterV1Alpha2Dataset(filter *SpamFilterV1Alpha2) string {
+	if filter == nil {
+		return ""
+	}
+	return getSpamFilterMetadataDataset(&filter.Metadata)
+}
+
+// SetSpamFilterV1Alpha2Dataset sets the dash0.com/dataset label on a v1alpha2 spam filter, initializing the labels struct if needed.
+func SetSpamFilterV1Alpha2Dataset(filter *SpamFilterV1Alpha2, dataset string) {
+	if filter == nil {
+		return
+	}
+	setSpamFilterMetadataDataset(&filter.Metadata, dataset)
+}
+
+// SetSpamFilterV1Alpha2ID sets the dash0.com/id label on a v1alpha2 spam filter, initializing the labels struct if needed.
+func SetSpamFilterV1Alpha2ID(filter *SpamFilterV1Alpha2, id string) {
+	if filter == nil {
+		return
+	}
+	setSpamFilterMetadataID(&filter.Metadata, id)
+}
+
+// SetSpamFilterV1Alpha2IDIfAbsent sets the dash0.com/id label on a v1alpha2 spam filter only if it is not already set.
+// It initializes the labels struct if needed.
+func SetSpamFilterV1Alpha2IDIfAbsent(filter *SpamFilterV1Alpha2, id string) {
+	if filter == nil {
+		return
+	}
+	setSpamFilterMetadataIDIfAbsent(&filter.Metadata, id)
+}
+
+// The v1alpha1 and v1alpha2 spam filters share SpamFilterMetadata, so both helper families delegate to the functions below.
+
+func stripSpamFilterMetadataServerFields(metadata *SpamFilterMetadata) {
+	if metadata.Labels != nil {
+		metadata.Labels.Dash0Comid = nil
+		metadata.Labels.Dash0Comsource = nil
+	}
+}
+
+func clearSpamFilterMetadataID(metadata *SpamFilterMetadata) {
+	if metadata.Labels != nil {
+		metadata.Labels.Dash0Comid = nil
+	}
+}
+
+func getSpamFilterMetadataID(metadata *SpamFilterMetadata) string {
+	if metadata.Labels == nil || metadata.Labels.Dash0Comid == nil {
+		return ""
+	}
+	return *metadata.Labels.Dash0Comid
+}
+
+func getSpamFilterMetadataDataset(metadata *SpamFilterMetadata) string {
+	if metadata.Labels == nil || metadata.Labels.Dash0Comdataset == nil {
+		return ""
+	}
+	return *metadata.Labels.Dash0Comdataset
+}
+
+func setSpamFilterMetadataDataset(metadata *SpamFilterMetadata, dataset string) {
+	if metadata.Labels == nil {
+		metadata.Labels = &SpamFilterLabels{}
+	}
+	metadata.Labels.Dash0Comdataset = &dataset
+}
+
+func setSpamFilterMetadataID(metadata *SpamFilterMetadata, id string) {
+	if metadata.Labels == nil {
+		metadata.Labels = &SpamFilterLabels{}
+	}
+	metadata.Labels.Dash0Comid = &id
+}
+
+func setSpamFilterMetadataIDIfAbsent(metadata *SpamFilterMetadata, id string) {
+	if metadata.Labels == nil {
+		metadata.Labels = &SpamFilterLabels{}
+	}
+	if metadata.Labels.Dash0Comid == nil {
+		metadata.Labels.Dash0Comid = &id
 	}
 }
