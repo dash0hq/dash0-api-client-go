@@ -75,6 +75,11 @@ type MockClient struct {
 	DeleteAuthTokenFunc    func(ctx context.Context, originOrID string) error
 	ListAuthTokensIterFunc func(ctx context.Context) *dash0.Iter[dash0.AuthTokenResponseDefinition]
 
+	// AWS metric scrape configs
+	GetAwsMetricScrapeConfigFunc    func(ctx context.Context, integrationID string) (*dash0.AwsMetricScrapeConfigDefinition, error)
+	UpdateAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string, cfg *dash0.AwsMetricScrapeConfigDefinition) (*dash0.AwsMetricScrapeConfigDefinition, error)
+	DeleteAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string) error
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -400,6 +405,29 @@ func (m *MockClient) DeleteDataset(ctx context.Context, originOrID string) error
 func (m *MockClient) ListDatasetsIter(ctx context.Context) *dash0.Iter[dash0.DatasetDefinition] {
 	if m.ListDatasetsIterFunc != nil {
 		return m.ListDatasetsIterFunc(ctx)
+	}
+	return nil
+}
+
+// AWS metric scrape configs
+
+func (m *MockClient) GetAwsMetricScrapeConfig(ctx context.Context, integrationID string) (*dash0.AwsMetricScrapeConfigDefinition, error) {
+	if m.GetAwsMetricScrapeConfigFunc != nil {
+		return m.GetAwsMetricScrapeConfigFunc(ctx, integrationID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateAwsMetricScrapeConfig(ctx context.Context, integrationID string, cfg *dash0.AwsMetricScrapeConfigDefinition) (*dash0.AwsMetricScrapeConfigDefinition, error) {
+	if m.UpdateAwsMetricScrapeConfigFunc != nil {
+		return m.UpdateAwsMetricScrapeConfigFunc(ctx, integrationID, cfg)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteAwsMetricScrapeConfig(ctx context.Context, integrationID string) error {
+	if m.DeleteAwsMetricScrapeConfigFunc != nil {
+		return m.DeleteAwsMetricScrapeConfigFunc(ctx, integrationID)
 	}
 	return nil
 }
