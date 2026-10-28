@@ -92,17 +92,9 @@ func NewListOptions(opts ...ListOption) ListOptions {
 
 // requireOriginPrefixOnly returns an error when o sets a filter other than OriginPrefix.
 // List methods whose endpoint filters by origin prefix alone call it, so an unsupported filter fails the call instead of being ignored.
+// It compares o against a value that holds only its OriginPrefix, so a filter added to ListOptions later is rejected without a change here.
 // The operation names the call in the error, for example "list check rules".
 func (o ListOptions) requireOriginPrefixOnly(operation string) error {
-	switch {
-	case o.Name != nil:
-		return fmt.Errorf("dash0: %s does not support the name filter", operation)
-	case o.Signal != nil:
-		return fmt.Errorf("dash0: %s does not support the signal filter", operation)
-	case o.Enabled != nil:
-		return fmt.Errorf("dash0: %s does not support the enabled filter", operation)
-	}
-	// Catches a filter added to ListOptions later that the cases above do not name yet.
 	if o != (ListOptions{OriginPrefix: o.OriginPrefix}) {
 		return fmt.Errorf("dash0: %s supports only the origin prefix filter", operation)
 	}

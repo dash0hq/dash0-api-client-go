@@ -64,6 +64,7 @@ func TestNewListOptions_SignalToMetricsFilters(t *testing.T) {
 }
 
 func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
+	const wantErr = "dash0: list check rules supports only the origin prefix filter"
 	tests := []struct {
 		name    string
 		opts    []ListOption
@@ -71,10 +72,17 @@ func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
 	}{
 		{"no options", nil, ""},
 		{"origin prefix", []ListOption{WithOriginPrefix("tf_")}, ""},
-		{"empty name", []ListOption{WithName("")}, ""},
-		{"name", []ListOption{WithName("checkout")}, "dash0: list check rules does not support the name filter"},
-		{"signal", []ListOption{WithSignal(SignalToMetricsSignalTypeSpans)}, "dash0: list check rules does not support the signal filter"},
-		{"enabled", []ListOption{WithEnabled(true)}, "dash0: list check rules does not support the enabled filter"},
+		{"empty origin prefix", []ListOption{WithOriginPrefix("")}, ""},
+		{"empty name and signal leave the filters unset", []ListOption{WithName(""), WithSignal("")}, ""},
+		{"name cleared by a later empty name", []ListOption{WithName("checkout"), WithName("")}, ""},
+		{"name", []ListOption{WithName("checkout")}, wantErr},
+		{"signal", []ListOption{WithSignal(SignalToMetricsSignalTypeSpans)}, wantErr},
+		{"enabled", []ListOption{WithEnabled(true)}, wantErr},
+		{"enabled false", []ListOption{WithEnabled(false)}, wantErr},
+		{"origin prefix with name", []ListOption{WithOriginPrefix("tf_"), WithName("checkout")}, wantErr},
+		{"origin prefix with signal", []ListOption{WithOriginPrefix("tf_"), WithSignal(SignalToMetricsSignalTypeLogs)}, wantErr},
+		{"origin prefix with enabled", []ListOption{WithOriginPrefix("tf_"), WithEnabled(true)}, wantErr},
+		{"every filter", []ListOption{WithOriginPrefix("tf_"), WithName("checkout"), WithSignal(SignalToMetricsSignalTypeSpans), WithEnabled(true)}, wantErr},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -93,7 +101,15 @@ func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
 	}
 }
 
-// TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField sets each ListOptions field other than OriginPrefix in turn, so a filter added later is rejected without a new test case.
+func TestListOptions_requireOriginPrefixOnly_namesTheOperation(t *testing.T) {
+	err := NewListOptions(WithName("checkout")).requireOriginPrefixOnly("list SLOs")
+	if err == nil {
+		t.Fatal("requireOriginPrefixOnly() = nil, want an error")
+	}
+	assertEqual(t, "error", err.Error(), "dash0: list SLOs supports only the origin prefix filter")
+}
+
+// TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField sets each ListOptions field other than OriginPrefix in turn, with and without an origin prefix, so a filter added later is rejected without a new test case.
 func TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField(t *testing.T) {
 	typ := reflect.TypeOf(ListOptions{})
 	for i := 0; i < typ.NumField(); i++ {
@@ -101,13 +117,19 @@ func TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField(t *testing.T
 		if field.Name == "OriginPrefix" {
 			continue
 		}
-		t.Run(field.Name, func(t *testing.T) {
-			var o ListOptions
-			value := reflect.ValueOf(&o).Elem().Field(i)
-			value.Set(reflect.New(value.Type().Elem()))
-			if err := o.requireOriginPrefixOnly("list check rules"); err == nil {
-				t.Errorf("requireOriginPrefixOnly() with %s set = nil, want an error", field.Name)
+		for _, prefix := range []*string{nil, Ptr("tf_")} {
+			name := field.Name
+			if prefix != nil {
+				name += " with origin prefix"
 			}
-		})
+			t.Run(name, func(t *testing.T) {
+				o := ListOptions{OriginPrefix: prefix}
+				value := reflect.ValueOf(&o).Elem().Field(i)
+				value.Set(reflect.New(value.Type().Elem()))
+				if err := o.requireOriginPrefixOnly("list check rules"); err == nil {
+					t.Errorf("requireOriginPrefixOnly() with %s set = nil, want an error", name)
+				}
+			})
+		}
 	}
 }
