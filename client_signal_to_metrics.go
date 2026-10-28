@@ -8,9 +8,8 @@ import (
 )
 
 // ListSignalToMetrics retrieves all signal-to-metrics rules.
-// Pass [WithOriginPrefix], [WithName], [WithSignal], or [WithEnabled] to have the server filter the result.
-// [WithName] matches rules whose display name (spec.display.name) or output metric name (spec.output.name) contains the given string, ignoring case, or whose ID equals it, ignoring case.
-// It does not search metadata.name.
+// Pass [WithOriginPrefix], [WithSignalToMetricsName], [WithSignal], or [WithEnabled] to have the server filter the result.
+// [WithSignalToMetricsName] searches the display name, the output metric name, and the ID.
 //
 // The endpoint is offset-paginated; ListSignalToMetrics follows pages until the server reports no more results.
 // An empty page that still reports more results is returned as an error rather than a truncated list.
@@ -82,7 +81,7 @@ func newSignalToMetricsListParams(dataset *string, options ListOptions) *GetApiS
 	return &GetApiSignalToMetricsParams{
 		Dataset:      dataset,
 		OriginPrefix: options.OriginPrefix,
-		Name:         options.Name,
+		Name:         options.SignalToMetricsName,
 		Signal:       options.Signal,
 		Enabled:      options.Enabled,
 	}

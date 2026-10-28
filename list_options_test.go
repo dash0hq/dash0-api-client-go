@@ -35,22 +35,22 @@ func TestNewListOptions(t *testing.T) {
 func TestNewListOptions_SignalToMetricsFilters(t *testing.T) {
 	t.Run("no options leave every filter unset", func(t *testing.T) {
 		got := NewListOptions()
-		if got.Name != nil || got.Signal != nil || got.Enabled != nil {
+		if got.SignalToMetricsName != nil || got.Signal != nil || got.Enabled != nil {
 			t.Errorf("NewListOptions() = %+v, want every filter nil", got)
 		}
 	})
 
 	t.Run("each option sets its filter", func(t *testing.T) {
-		got := NewListOptions(WithName("checkout"), WithSignal(SignalToMetricsSignalTypeLogs), WithEnabled(false))
-		assertPtrEqual(t, "Name", got.Name, "checkout")
+		got := NewListOptions(WithSignalToMetricsName("checkout"), WithSignal(SignalToMetricsSignalTypeLogs), WithEnabled(false))
+		assertPtrEqual(t, "SignalToMetricsName", got.SignalToMetricsName, "checkout")
 		assertPtrEqual(t, "Signal", got.Signal, SignalToMetricsSignalTypeLogs)
 		assertPtrEqual(t, "Enabled", got.Enabled, false)
 	})
 
 	t.Run("empty values clear an earlier name and signal", func(t *testing.T) {
-		got := NewListOptions(WithName("checkout"), WithSignal(SignalToMetricsSignalTypeLogs), WithName(""), WithSignal(""))
-		if got.Name != nil {
-			t.Errorf("Name = %q, want nil", *got.Name)
+		got := NewListOptions(WithSignalToMetricsName("checkout"), WithSignal(SignalToMetricsSignalTypeLogs), WithSignalToMetricsName(""), WithSignal(""))
+		if got.SignalToMetricsName != nil {
+			t.Errorf("SignalToMetricsName = %q, want nil", *got.SignalToMetricsName)
 		}
 		if got.Signal != nil {
 			t.Errorf("Signal = %q, want nil", *got.Signal)
@@ -73,16 +73,16 @@ func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
 		{"no options", nil, ""},
 		{"origin prefix", []ListOption{WithOriginPrefix("tf_")}, ""},
 		{"empty origin prefix", []ListOption{WithOriginPrefix("")}, ""},
-		{"empty name and signal leave the filters unset", []ListOption{WithName(""), WithSignal("")}, ""},
-		{"name cleared by a later empty name", []ListOption{WithName("checkout"), WithName("")}, ""},
-		{"name", []ListOption{WithName("checkout")}, wantErr},
+		{"empty name and signal leave the filters unset", []ListOption{WithSignalToMetricsName(""), WithSignal("")}, ""},
+		{"name cleared by a later empty name", []ListOption{WithSignalToMetricsName("checkout"), WithSignalToMetricsName("")}, ""},
+		{"name", []ListOption{WithSignalToMetricsName("checkout")}, wantErr},
 		{"signal", []ListOption{WithSignal(SignalToMetricsSignalTypeSpans)}, wantErr},
 		{"enabled", []ListOption{WithEnabled(true)}, wantErr},
 		{"enabled false", []ListOption{WithEnabled(false)}, wantErr},
-		{"origin prefix with name", []ListOption{WithOriginPrefix("tf_"), WithName("checkout")}, wantErr},
+		{"origin prefix with name", []ListOption{WithOriginPrefix("tf_"), WithSignalToMetricsName("checkout")}, wantErr},
 		{"origin prefix with signal", []ListOption{WithOriginPrefix("tf_"), WithSignal(SignalToMetricsSignalTypeLogs)}, wantErr},
 		{"origin prefix with enabled", []ListOption{WithOriginPrefix("tf_"), WithEnabled(true)}, wantErr},
-		{"every filter", []ListOption{WithOriginPrefix("tf_"), WithName("checkout"), WithSignal(SignalToMetricsSignalTypeSpans), WithEnabled(true)}, wantErr},
+		{"every filter", []ListOption{WithOriginPrefix("tf_"), WithSignalToMetricsName("checkout"), WithSignal(SignalToMetricsSignalTypeSpans), WithEnabled(true)}, wantErr},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -102,7 +102,7 @@ func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
 }
 
 func TestListOptions_requireOriginPrefixOnly_namesTheOperation(t *testing.T) {
-	err := NewListOptions(WithName("checkout")).requireOriginPrefixOnly("list SLOs")
+	err := NewListOptions(WithSignalToMetricsName("checkout")).requireOriginPrefixOnly("list SLOs")
 	if err == nil {
 		t.Fatal("requireOriginPrefixOnly() = nil, want an error")
 	}

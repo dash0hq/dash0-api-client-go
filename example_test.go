@@ -975,12 +975,12 @@ func ExampleWithOriginPrefix() {
 	// Output: dash0-operator_abc_
 }
 
-func ExampleWithName() {
-	// Pass the option to a signal-to-metrics list call to search by name:
+func ExampleWithSignalToMetricsName() {
+	// Pass the option to a signal-to-metrics list call to search the display name, output metric name, and ID:
 	//
-	//	rules, err := client.ListSignalToMetrics(ctx, dash0.Ptr("default"), dash0.WithName("checkout"))
-	opts := dash0.NewListOptions(dash0.WithName("checkout"))
-	fmt.Println(*opts.Name)
+	//	rules, err := client.ListSignalToMetrics(ctx, dash0.Ptr("default"), dash0.WithSignalToMetricsName("checkout"))
+	opts := dash0.NewListOptions(dash0.WithSignalToMetricsName("checkout"))
+	fmt.Println(*opts.SignalToMetricsName)
 	// Output: checkout
 }
 

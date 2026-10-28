@@ -396,7 +396,7 @@ func TestListCheckRules_OriginPrefix(t *testing.T) {
 
 func TestListCheckRules_RejectsUnsupportedFilters(t *testing.T) {
 	// The endpoint filters by origin prefix only, so ignoring another filter would return rules the caller excluded.
-	for filter, opt := range map[string]ListOption{"name": WithName("checkout"), "signal": WithSignal(SignalToMetricsSignalTypeSpans), "enabled": WithEnabled(false)} {
+	for filter, opt := range map[string]ListOption{"name": WithSignalToMetricsName("checkout"), "signal": WithSignal(SignalToMetricsSignalTypeSpans), "enabled": WithEnabled(false)} {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			t.Error("no request should reach the server")
 		}))

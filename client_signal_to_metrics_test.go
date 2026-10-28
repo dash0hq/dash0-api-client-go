@@ -174,7 +174,7 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		defer server.Close()
 
 		_, err := newTestClient(t, server.URL).ListSignalToMetrics(context.Background(), nil,
-			WithName("checkout"),
+			WithSignalToMetricsName("checkout"),
 			WithSignal(SignalToMetricsSignalTypeLogs),
 			WithEnabled(false),
 		)
@@ -196,7 +196,7 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		}))
 		defer server.Close()
 
-		_, err := newTestClient(t, server.URL).ListSignalToMetrics(context.Background(), nil, WithOriginPrefix(""), WithName(""), WithSignal(""))
+		_, err := newTestClient(t, server.URL).ListSignalToMetrics(context.Background(), nil, WithOriginPrefix(""), WithSignalToMetricsName(""), WithSignal(""))
 		if err != nil {
 			t.Fatalf("ListSignalToMetrics failed: %v", err)
 		}
@@ -224,7 +224,7 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		}))
 		defer server.Close()
 
-		got, err := newTestClient(t, server.URL).ListSignalToMetrics(context.Background(), nil, WithName("count"), WithEnabled(true))
+		got, err := newTestClient(t, server.URL).ListSignalToMetrics(context.Background(), nil, WithSignalToMetricsName("count"), WithEnabled(true))
 		if err != nil {
 			t.Fatalf("ListSignalToMetrics failed: %v", err)
 		}
@@ -1075,7 +1075,7 @@ func TestLiveAPI_SignalToMetricsTestImportAndCount(t *testing.T) {
 		}{
 			{"origin prefix", []ListOption{byPrefix}, []string{logsOrigin, spansOrigin}},
 			{"signal", []ListOption{byPrefix, WithSignal(SignalToMetricsSignalTypeLogs)}, []string{logsOrigin}},
-			{"name", []ListOption{byPrefix, WithName(spansOrigin)}, []string{spansOrigin}},
+			{"name", []ListOption{byPrefix, WithSignalToMetricsName(spansOrigin)}, []string{spansOrigin}},
 			{"enabled", []ListOption{byPrefix, WithEnabled(true)}, nil},
 			{"disabled", []ListOption{byPrefix, WithEnabled(false)}, []string{logsOrigin, spansOrigin}},
 		}

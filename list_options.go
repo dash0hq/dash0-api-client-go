@@ -13,10 +13,10 @@ type ListOptions struct {
 	// Nil means no filter.
 	OriginPrefix *string
 
-	// Name restricts results to assets that match the given name.
-	// Each list method that supports it documents how it matches.
+	// SignalToMetricsName restricts results to signal-to-metrics rules that match the given search string.
+	// See [WithSignalToMetricsName] for the fields it matches.
 	// Nil means no filter.
-	Name *string
+	SignalToMetricsName *string
 
 	// Signal restricts results to signal-to-metrics rules with the given source signal.
 	// Nil means no filter.
@@ -40,17 +40,19 @@ func WithOriginPrefix(prefix string) ListOption {
 	}
 }
 
-// WithName restricts a list call to assets that match name.
+// WithSignalToMetricsName restricts a list call to signal-to-metrics rules whose display name (spec.display.name) or output metric name (spec.output.name) contains name, ignoring case, or whose ID equals name, ignoring case.
+// It does not search metadata.name.
+// It sets the name query parameter of the signal-to-metrics list endpoint.
 // An empty name leaves the filter unset.
-// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], and [Client.CountSignalToMetrics], each of which documents how it matches.
+// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], and [Client.CountSignalToMetrics].
 // The other list methods return an error when given this option.
-func WithName(name string) ListOption {
+func WithSignalToMetricsName(name string) ListOption {
 	return func(o *ListOptions) {
 		if name == "" {
-			o.Name = nil
+			o.SignalToMetricsName = nil
 			return
 		}
-		o.Name = &name
+		o.SignalToMetricsName = &name
 	}
 }
 
