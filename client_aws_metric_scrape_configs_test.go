@@ -1,6 +1,7 @@
 package dash0
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -87,7 +88,8 @@ func TestUpdateAwsMetricScrapeConfig(t *testing.T) {
 		assertEqual(t, "path", r.URL.Path, "/api/aws-metric-scrape-configs/"+testIntegrationID)
 		var body AwsMetricScrapeConfigDefinition
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			t.Fatalf("decode request: %v", err)
+			t.Errorf("decode request: %v", err)
+			return
 		}
 		assertEqual(t, "apiVersion", string(body.ApiVersion), "dash0.com/v1alpha1")
 		assertEqual(t, "kind", string(body.Kind), "Dash0AwsMetricScrapeConfig")
@@ -124,6 +126,52 @@ func TestUpdateAwsMetricScrapeConfig_Errors(t *testing.T) {
 		if !errors.As(err, &apiErr) || apiErr.StatusCode != status {
 			t.Errorf("status %d: expected APIError, got %v", status, err)
 		}
+	}
+}
+
+func TestUpdateAwsMetricScrapeConfig_NilMetricsSentAsEmptyList(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		raw, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("read request: %v", err)
+			return
+		}
+		if !bytes.Contains(raw, []byte(`"metrics":[]`)) {
+			t.Errorf("metrics should be sent as [], body: %s", raw)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, awsMetricScrapeConfigJSON)
+	}))
+	defer server.Close()
+
+	cfg := &AwsMetricScrapeConfigDefinition{ApiVersion: AwsMetricScrapeConfigApiVersionDash0Comv1alpha1, Kind: Dash0AwsMetricScrapeConfig}
+	cfg.Spec.Namespaces = []AwsMetricScrapeConfigNamespace{{Namespace: "AWS/Lambda"}}
+	if _, err := newTestClient(t, server.URL).UpdateAwsMetricScrapeConfig(context.Background(), testIntegrationID, cfg); err != nil {
+		t.Fatalf("UpdateAwsMetricScrapeConfig failed: %v", err)
+	}
+	if cfg.Spec.Namespaces[0].Metrics != nil {
+		t.Error("the caller's config must not be modified")
+	}
+}
+
+func TestUpdateAwsMetricScrapeConfig_NilNamespacesSentAsEmptyList(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		raw, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("read request: %v", err)
+			return
+		}
+		if !bytes.Contains(raw, []byte(`"namespaces":[]`)) {
+			t.Errorf("namespaces should be sent as [], body: %s", raw)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, awsMetricScrapeConfigClearedJSON)
+	}))
+	defer server.Close()
+
+	cfg := &AwsMetricScrapeConfigDefinition{ApiVersion: AwsMetricScrapeConfigApiVersionDash0Comv1alpha1, Kind: Dash0AwsMetricScrapeConfig}
+	if _, err := newTestClient(t, server.URL).UpdateAwsMetricScrapeConfig(context.Background(), testIntegrationID, cfg); err != nil {
+		t.Fatalf("UpdateAwsMetricScrapeConfig failed: %v", err)
 	}
 }
 
@@ -179,6 +227,9 @@ func TestStripAwsMetricScrapeConfigServerFields(t *testing.T) {
 
 	StripAwsMetricScrapeConfigServerFields(&cfg)
 
+	if cfg.Metadata.Name != nil {
+		t.Errorf("Name should be nil, got %q", *cfg.Metadata.Name)
+	}
 	if cfg.Metadata.Annotations != nil {
 		t.Error("Annotations should be nil")
 	}
@@ -210,7 +261,19 @@ func TestSetAwsMetricScrapeConfigOrigin(t *testing.T) {
 	assertEqual(t, "origin", GetAwsMetricScrapeConfigOrigin(cfg), "tf_b")
 }
 
+func TestGetAwsMetricScrapeConfigIDAndName(t *testing.T) {
+	var cfg AwsMetricScrapeConfigDefinition
+	if err := json.Unmarshal([]byte(awsMetricScrapeConfigJSON), &cfg); err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, "id", GetAwsMetricScrapeConfigID(&cfg), testIntegrationID)
+	assertEqual(t, "name", GetAwsMetricScrapeConfigName(&cfg), "prod-account")
+}
+
 func TestAwsMetricScrapeConfigHelpers_Nil(t *testing.T) {
+	assertEqual(t, "id", GetAwsMetricScrapeConfigID(nil), "")
+	assertEqual(t, "name", GetAwsMetricScrapeConfigName(nil), "")
+	assertEqual(t, "id", GetAwsMetricScrapeConfigID(&AwsMetricScrapeConfigDefinition{}), "")
 	StripAwsMetricScrapeConfigServerFields(nil)
 	SetAwsMetricScrapeConfigOrigin(nil, "tf_a")
 	assertEqual(t, "origin", GetAwsMetricScrapeConfigOrigin(nil), "")

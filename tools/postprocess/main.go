@@ -92,6 +92,10 @@ var constRenames = map[string]string{
 	// Same flip for TeamApiVersion: another enum (AwsMetricScrapeConfigApiVersion)
 	// shares the "dash0.com/v1alpha1" value. compat.go keeps the bare name.
 	"Dash0Comv1alpha1": "TeamApiVersionDash0Comv1alpha1",
+	// Pinned before release so a future enum sharing these values cannot rename them.
+	"Inferred": "TopologyNodeKindInferred",
+	"Service":  "TopologyNodeKindService",
+	"Unknown":  "TopologyNodeKindUnknown",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

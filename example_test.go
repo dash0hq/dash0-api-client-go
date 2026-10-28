@@ -793,6 +793,41 @@ func ExampleStripAwsMetricScrapeConfigServerFields() {
 	// Output: tf_my-config true
 }
 
+func ExampleGetAwsMetricScrapeConfigID() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{
+			Labels: &dash0.AwsMetricScrapeConfigLabels{Dash0Comid: dash0.Ptr("491cb653-954b-4d0b-a84c-4b426b562938")},
+		},
+	}
+	fmt.Println(dash0.GetAwsMetricScrapeConfigID(cfg))
+	// Output: 491cb653-954b-4d0b-a84c-4b426b562938
+}
+
+func ExampleGetAwsMetricScrapeConfigName() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{Name: dash0.Ptr("prod-account")},
+	}
+	fmt.Println(dash0.GetAwsMetricScrapeConfigName(cfg))
+	// Output: prod-account
+}
+
+func ExampleGetAwsMetricScrapeConfigOrigin() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{
+			Labels: &dash0.AwsMetricScrapeConfigLabels{Dash0Comorigin: dash0.Ptr("tf_my-config")},
+		},
+	}
+	fmt.Println(dash0.GetAwsMetricScrapeConfigOrigin(cfg))
+	// Output: tf_my-config
+}
+
+func ExampleSetAwsMetricScrapeConfigOrigin() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{}
+	dash0.SetAwsMetricScrapeConfigOrigin(cfg, "tf_my-config")
+	fmt.Println(*cfg.Metadata.Labels.Dash0Comorigin)
+	// Output: tf_my-config
+}
+
 // Prometheus rule helpers
 
 func ExampleGetPrometheusRuleName() {

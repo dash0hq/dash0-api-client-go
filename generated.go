@@ -1747,9 +1747,9 @@ const (
 
 // Defines values for TopologyNodeKind.
 const (
-	Inferred TopologyNodeKind = "inferred"
-	Service  TopologyNodeKind = "service"
-	Unknown  TopologyNodeKind = "unknown"
+	TopologyNodeKindInferred TopologyNodeKind = "inferred"
+	TopologyNodeKindService  TopologyNodeKind = "service"
+	TopologyNodeKindUnknown  TopologyNodeKind = "unknown"
 )
 
 // Defines values for ViewAction.
