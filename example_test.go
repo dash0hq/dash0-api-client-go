@@ -1548,11 +1548,11 @@ func ExampleStripSpamFilterServerFields() {
 		},
 	}
 	dash0.StripSpamFilterServerFields(filter)
-	// The server-managed labels are gone, and the filter stays disabled.
-	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil, filter.Metadata.Labels.Dash0Comorigin == nil)
+	// The ID is gone, while the origin and the disabled state stay.
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil, *filter.Metadata.Labels.Dash0Comorigin)
 	fmt.Println(*filter.Metadata.Annotations.Dash0Comenabled)
 	// Output:
-	// true true
+	// true tf_health
 	// false
 }
 
@@ -1626,12 +1626,16 @@ func ExampleStripSpamFilterV1Alpha2ServerFields() {
 		Metadata: dash0.SpamFilterMetadata{
 			Name:        "Drop noisy health checks",
 			Annotations: &dash0.SpamFilterAnnotations{Dash0Comenabled: dash0.Ptr(dash0.False)},
-			Labels:      &dash0.SpamFilterLabels{Dash0Comdataset: dash0.Ptr("production")},
+			Labels: &dash0.SpamFilterLabels{
+				Dash0Comid:      dash0.Ptr("sf-123"),
+				Dash0Comdataset: dash0.Ptr("production"),
+			},
 		},
 	}
 	dash0.StripSpamFilterV1Alpha2ServerFields(filter)
-	fmt.Println(filter.Metadata.Labels.Dash0Comdataset == nil, *filter.Metadata.Annotations.Dash0Comenabled)
-	// Output: true false
+	// The ID is gone, while the dataset and the disabled state stay.
+	fmt.Println(filter.Metadata.Labels.Dash0Comid == nil, *filter.Metadata.Labels.Dash0Comdataset, *filter.Metadata.Annotations.Dash0Comenabled)
+	// Output: true production false
 }
 
 func ExampleClearSpamFilterV1Alpha2ID() {

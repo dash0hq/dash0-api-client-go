@@ -43,12 +43,10 @@ func assertSpamFilterMetadataStripped(t *testing.T, metadata SpamFilterMetadata)
 	if labels.Dash0Comsource != nil {
 		t.Error("Dash0Comsource should be nil")
 	}
-	if labels.Dash0Comorigin != nil {
-		t.Error("Dash0Comorigin should be nil")
-	}
-	if labels.Dash0Comdataset != nil {
-		t.Error("Dash0Comdataset should be nil")
-	}
+	// A filter recreated without its origin gets a new api-<uuid> one, so a later upsert by the old origin would create a second filter.
+	assertPtrEqual(t, "Dash0Comorigin", labels.Dash0Comorigin, "tf_health")
+	// Without the label, a write that passes no dataset parameter goes to the default dataset instead of the filter's own.
+	assertPtrEqual(t, "Dash0Comdataset", labels.Dash0Comdataset, "default")
 	// A filter sent without the annotation is enabled by default, so dropping it would re-enable a disabled filter.
 	assertPtrEqual(t, "Dash0Comenabled", metadata.Annotations.Dash0Comenabled, False)
 	if labels.Custom == nil || (*labels.Custom)["team"] != "platform" {
@@ -1260,8 +1258,9 @@ func TestLiveAPI_SpamFilters(t *testing.T) {
 	stamp := time.Now().UnixNano()
 	originV1Alpha1 := fmt.Sprintf("live-spam-filter-v1alpha1-%d", stamp)
 	originV1Alpha2 := fmt.Sprintf("live-spam-filter-v1alpha2-%d", stamp)
+	originRecreate := fmt.Sprintf("live-spam-filter-recreate-%d", stamp)
 	t.Cleanup(func() {
-		for _, origin := range []string{originV1Alpha1, originV1Alpha2} {
+		for _, origin := range []string{originV1Alpha1, originV1Alpha2, originRecreate} {
 			if err := client.DeleteSpamFilter(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
 				t.Logf("cleanup of %s failed: %v", origin, err)
 			}
@@ -1294,8 +1293,34 @@ func TestLiveAPI_SpamFilters(t *testing.T) {
 		got = getLiveSpamFilter[*SpamFilter](t, client, originV1Alpha1, dataset)
 		assertEqual(t, "name after update", got.Metadata.Name, originV1Alpha1+"-renamed")
 		assertLiveSpamFilterDisabled(t, "after strip and update", got.Metadata)
-		// Strip clears the origin from the body, and the server takes it from the path instead.
 		assertEqual(t, "origin after update", liveSpamFilterOrigin(got.Metadata), originV1Alpha1)
+	})
+
+	t.Run("a v1alpha1 filter recreated from a stripped copy keeps its origin", func(t *testing.T) {
+		filter := &SpamFilter{
+			Kind:     Dash0SpamFilter,
+			Metadata: SpamFilterMetadata{Name: originRecreate, Annotations: disabled()},
+			Spec:     SpamFilterSpec{Contexts: []TelemetryFilterContext{TelemetryFilterContextLog}, Filter: match},
+		}
+		if _, err := client.UpdateSpamFilter(ctx, originRecreate, filter, dataset); err != nil {
+			t.Fatalf("UpdateSpamFilter as upsert failed: %v", err)
+		}
+
+		got := getLiveSpamFilter[*SpamFilter](t, client, originRecreate, dataset)
+		StripSpamFilterServerFields(got)
+		if err := client.DeleteSpamFilter(ctx, originRecreate, dataset); err != nil {
+			t.Fatalf("DeleteSpamFilter failed: %v", err)
+		}
+		created, err := client.CreateSpamFilter(ctx, got, dataset)
+		if err != nil {
+			t.Fatalf("CreateSpamFilter from the stripped copy failed: %v", err)
+		}
+		assertEqual(t, "origin after create", liveSpamFilterOrigin(created.Metadata), originRecreate)
+
+		// The upsert by the original origin updates the recreated filter instead of adding a second one.
+		got = getLiveSpamFilter[*SpamFilter](t, client, originRecreate, dataset)
+		assertLiveSpamFilterDisabled(t, "after strip and create", got.Metadata)
+		assertEqual(t, "id after create", GetSpamFilterID(got), GetSpamFilterID(created))
 	})
 
 	t.Run("a disabled v1alpha2 filter keeps its version and stays disabled", func(t *testing.T) {

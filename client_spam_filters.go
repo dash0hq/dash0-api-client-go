@@ -319,10 +319,11 @@ func (c *client) ListSpamFiltersIter(ctx context.Context, dataset *string) *Iter
 }
 
 // StripSpamFilterServerFields removes the server-managed fields from a v1alpha1 spam filter, so that it can be sent in a create or update request.
-// It clears the dash0.com/id, dash0.com/source, dash0.com/dataset, and dash0.com/origin labels.
-// It keeps the dash0.com/enabled annotation and the custom labels, because the user sets them.
+// It clears the dash0.com/id and dash0.com/source labels.
+// It keeps the dash0.com/enabled annotation, the dash0.com/origin and dash0.com/dataset labels, and the custom labels.
 //
-// A caller that updates the filter by origin or ID must read them before stripping.
+// The origin is the filter's identity for an upsert by origin, so a filter recreated from a stripped copy keeps it and a later upsert by that origin finds it.
+// A caller that updates the filter by ID must read the ID before stripping.
 func StripSpamFilterServerFields(filter *SpamFilter) {
 	if filter == nil {
 		return
@@ -388,7 +389,7 @@ func SetSpamFilterIDIfAbsent(filter *SpamFilter, id string) {
 }
 
 // StripSpamFilterV1Alpha2ServerFields removes the server-managed fields from a v1alpha2 spam filter, so that it can be sent in a create or update request.
-// It clears the same fields as [StripSpamFilterServerFields] and keeps the dash0.com/enabled annotation and the custom labels.
+// It clears and keeps the same fields as [StripSpamFilterServerFields].
 func StripSpamFilterV1Alpha2ServerFields(filter *SpamFilterV1Alpha2) {
 	if filter == nil {
 		return
@@ -459,8 +460,6 @@ func stripSpamFilterMetadataServerFields(metadata *SpamFilterMetadata) {
 	if metadata.Labels != nil {
 		metadata.Labels.Dash0Comid = nil
 		metadata.Labels.Dash0Comsource = nil
-		metadata.Labels.Dash0Comdataset = nil
-		metadata.Labels.Dash0Comorigin = nil
 	}
 }
 
