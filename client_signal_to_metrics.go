@@ -8,7 +8,8 @@ import (
 )
 
 // ListSignalToMetrics retrieves all signal-to-metrics rules.
-// Pass [WithOriginPrefix] to restrict the result to rules whose origin starts with a given prefix.
+// Pass [WithOriginPrefix], [WithSignalToMetricsName], [WithSignal], or [WithEnabled] to have the server filter the result.
+// [WithSignalToMetricsName] searches the display name, the output metric name, and the ID.
 //
 // The endpoint is offset-paginated; ListSignalToMetrics follows pages until the server reports no more results.
 // An empty page that still reports more results is returned as an error rather than a truncated list.
@@ -19,10 +20,7 @@ func (c *client) ListSignalToMetrics(ctx context.Context, dataset *string, opts 
 	options := NewListOptions(opts...)
 	var all []SignalToMetricsDefinition
 	for {
-		params := &GetApiSignalToMetricsParams{
-			Dataset:      dataset,
-			OriginPrefix: options.OriginPrefix,
-		}
+		params := newSignalToMetricsListParams(dataset, options)
 		if len(all) > 0 {
 			params.Offset = Ptr(len(all))
 		}
@@ -46,6 +44,77 @@ func (c *client) ListSignalToMetrics(ctx context.Context, dataset *string, opts 
 		}
 	}
 	return toPointerSlice(all), nil
+}
+
+// CountSignalToMetrics returns how many signal-to-metrics rules match the filters, per source signal.
+// It accepts the same options as [Client.ListSignalToMetrics] and fetches a single rule instead of every page.
+// A rule whose definition has no recognized source signal is in neither count.
+//
+// The server computes the counts on a best-effort basis.
+// When it cannot, CountSignalToMetrics returns an error rather than zero counts.
+func (c *client) CountSignalToMetrics(ctx context.Context, dataset *string, opts ...ListOption) (*SignalToMetricsCounts, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
+	params := newSignalToMetricsListParams(dataset, NewListOptions(opts...))
+	// The server reports counts only for a paginated request, and only on the first page.
+	// The smallest page it accepts is 1.
+	params.Limit = Ptr(1)
+	resp, err := c.inner.GetApiSignalToMetricsWithResponse(ctx, params)
+	if err != nil {
+		return nil, fmt.Errorf("dash0: count signal-to-metrics failed: %w", err)
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
+	}
+	if resp.JSON200 == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
+	if resp.JSON200.Counts == nil {
+		return nil, fmt.Errorf("dash0: count signal-to-metrics failed: the server returned no counts")
+	}
+	return resp.JSON200.Counts, nil
+}
+
+// newSignalToMetricsListParams builds the list query for dataset and the resolved filters, without pagination.
+func newSignalToMetricsListParams(dataset *string, options ListOptions) *GetApiSignalToMetricsParams {
+	return &GetApiSignalToMetricsParams{
+		Dataset:      dataset,
+		OriginPrefix: options.OriginPrefix,
+		Name:         options.SignalToMetricsName,
+		Signal:       options.Signal,
+		Enabled:      options.Enabled,
+	}
+}
+
+// TestSignalToMetrics validates a signal-to-metrics rule and counts the signals its match filter selects over a time window.
+// The window defaults to the last 15 minutes when request.TimeRange is nil.
+// Nothing is persisted.
+//
+// A definition that fails validation returns an [*APIError] with status 400 whose message lists the failures; check it with [IsBadRequest].
+func (c *client) TestSignalToMetrics(ctx context.Context, request *SignalToMetricsTestRequest, dataset *string) (*SignalToMetricsTestResponse, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
+	if request == nil {
+		return nil, fmt.Errorf("dash0: test signal-to-metrics requires a non-nil request")
+	}
+	// The endpoint is a POST that writes nothing, so it is safe to retry.
+	ctx = withIdempotent(ctx)
+	params := &PostApiSignalToMetricsTestParams{
+		Dataset: dataset,
+	}
+	resp, err := c.inner.PostApiSignalToMetricsTestWithResponse(ctx, params, *request)
+	if err != nil {
+		return nil, fmt.Errorf("dash0: test signal-to-metrics failed: %w", err)
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
+	}
+	if resp.JSON200 == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
+	return resp.JSON200, nil
 }
 
 // GetSignalToMetrics retrieves a signal-to-metrics rule by origin or ID.

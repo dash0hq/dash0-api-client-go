@@ -9,13 +9,18 @@ import (
 
 // ListCheckRules retrieves all check rules.
 // Pass [WithOriginPrefix] to restrict the result to check rules whose origin starts with a given prefix.
+// Any other [ListOption] filter returns an error, because the endpoint does not support it.
 func (c *client) ListCheckRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*PrometheusAlertRuleApiListItem, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
+	options := NewListOptions(opts...)
+	if err := options.requireOriginPrefixOnly("list check rules"); err != nil {
+		return nil, err
+	}
 	params := &GetApiAlertingCheckRulesParams{
 		Dataset:      dataset,
-		OriginPrefix: NewListOptions(opts...).OriginPrefix,
+		OriginPrefix: options.OriginPrefix,
 	}
 	resp, err := c.inner.GetApiAlertingCheckRulesWithResponse(ctx, params)
 	if err != nil {

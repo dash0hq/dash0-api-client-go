@@ -25,7 +25,7 @@ import (
 // [dash0.ListOption] before calling their *Func field, so those fields cannot observe
 // [dash0.WithOriginPrefix].
 // Their signatures predate list options and are kept so existing mocks still compile.
-// ListSignalToMetricsFunc and ListSignalToMetricsIterFunc do receive the options.
+// ListSignalToMetricsFunc, ListSignalToMetricsIterFunc, and CountSignalToMetricsFunc do receive the options.
 type MockClient struct {
 	// Dashboards
 	ListDashboardsFunc     func(ctx context.Context, dataset *string) ([]*dash0.DashboardApiListItem, error)
@@ -111,6 +111,8 @@ type MockClient struct {
 	UpdateSignalToMetricsFunc   func(ctx context.Context, originOrID string, rule *dash0.SignalToMetricsDefinition, dataset *string) (*dash0.SignalToMetricsDefinition, error)
 	DeleteSignalToMetricsFunc   func(ctx context.Context, originOrID string, dataset *string) error
 	ListSignalToMetricsIterFunc func(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.SignalToMetricsDefinition]
+	CountSignalToMetricsFunc    func(ctx context.Context, dataset *string, opts ...dash0.ListOption) (*dash0.SignalToMetricsCounts, error)
+	TestSignalToMetricsFunc     func(ctx context.Context, request *dash0.SignalToMetricsTestRequest, dataset *string) (*dash0.SignalToMetricsTestResponse, error)
 
 	// Members
 	ListMembersFunc     func(ctx context.Context) ([]*dash0.MemberDefinition, error)
@@ -171,10 +173,11 @@ type MockClient struct {
 	GetFailedChecksIterFunc func(ctx context.Context, request *dash0.GetFailedChecksRequest) *dash0.Iter[dash0.Issue]
 
 	// Import
-	ImportCheckRuleFunc      func(ctx context.Context, rule *dash0.PrometheusAlertRule, dataset *string) (*dash0.PrometheusAlertRule, error)
-	ImportDashboardFunc      func(ctx context.Context, dashboard *dash0.DashboardDefinition, dataset *string) (*dash0.DashboardDefinition, error)
-	ImportSyntheticCheckFunc func(ctx context.Context, check *dash0.SyntheticCheckDefinition, dataset *string) (*dash0.SyntheticCheckDefinition, error)
-	ImportViewFunc           func(ctx context.Context, view *dash0.ViewDefinition, dataset *string) (*dash0.ViewDefinition, error)
+	ImportCheckRuleFunc       func(ctx context.Context, rule *dash0.PrometheusAlertRule, dataset *string) (*dash0.PrometheusAlertRule, error)
+	ImportDashboardFunc       func(ctx context.Context, dashboard *dash0.DashboardDefinition, dataset *string) (*dash0.DashboardDefinition, error)
+	ImportSyntheticCheckFunc  func(ctx context.Context, check *dash0.SyntheticCheckDefinition, dataset *string) (*dash0.SyntheticCheckDefinition, error)
+	ImportViewFunc            func(ctx context.Context, view *dash0.ViewDefinition, dataset *string) (*dash0.ViewDefinition, error)
+	ImportSignalToMetricsFunc func(ctx context.Context, rules []*dash0.SignalToMetricsDefinition, dataset string) (*dash0.SignalToMetricsBulkUpsertResponse, error)
 
 	// OTLP
 	SendLogsFunc    func(ctx context.Context, logs plog.Logs, dataset *string) error
@@ -649,6 +652,20 @@ func (m *MockClient) ListSignalToMetricsIter(ctx context.Context, dataset *strin
 	return nil
 }
 
+func (m *MockClient) CountSignalToMetrics(ctx context.Context, dataset *string, opts ...dash0.ListOption) (*dash0.SignalToMetricsCounts, error) {
+	if m.CountSignalToMetricsFunc != nil {
+		return m.CountSignalToMetricsFunc(ctx, dataset, opts...)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) TestSignalToMetrics(ctx context.Context, request *dash0.SignalToMetricsTestRequest, dataset *string) (*dash0.SignalToMetricsTestResponse, error) {
+	if m.TestSignalToMetricsFunc != nil {
+		return m.TestSignalToMetricsFunc(ctx, request, dataset)
+	}
+	return nil, nil
+}
+
 // Members
 
 func (m *MockClient) ListMembers(ctx context.Context) ([]*dash0.MemberDefinition, error) {
@@ -985,6 +1002,13 @@ func (m *MockClient) ImportSyntheticCheck(ctx context.Context, check *dash0.Synt
 func (m *MockClient) ImportView(ctx context.Context, view *dash0.ViewDefinition, dataset *string) (*dash0.ViewDefinition, error) {
 	if m.ImportViewFunc != nil {
 		return m.ImportViewFunc(ctx, view, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) ImportSignalToMetrics(ctx context.Context, rules []*dash0.SignalToMetricsDefinition, dataset string) (*dash0.SignalToMetricsBulkUpsertResponse, error) {
+	if m.ImportSignalToMetricsFunc != nil {
+		return m.ImportSignalToMetricsFunc(ctx, rules, dataset)
 	}
 	return nil, nil
 }

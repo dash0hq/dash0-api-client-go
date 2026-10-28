@@ -103,6 +103,8 @@ type Client interface {
 	UpdateSignalToMetrics(ctx context.Context, originOrID string, rule *SignalToMetricsDefinition, dataset *string) (*SignalToMetricsDefinition, error)
 	DeleteSignalToMetrics(ctx context.Context, originOrID string, dataset *string) error
 	ListSignalToMetricsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[SignalToMetricsDefinition]
+	CountSignalToMetrics(ctx context.Context, dataset *string, opts ...ListOption) (*SignalToMetricsCounts, error)
+	TestSignalToMetrics(ctx context.Context, request *SignalToMetricsTestRequest, dataset *string) (*SignalToMetricsTestResponse, error)
 
 	// Members
 	ListMembers(ctx context.Context) ([]*MemberDefinition, error)
@@ -174,6 +176,7 @@ type Client interface {
 	ImportDashboard(ctx context.Context, dashboard *DashboardDefinition, dataset *string) (*DashboardDefinition, error)
 	ImportSyntheticCheck(ctx context.Context, check *SyntheticCheckDefinition, dataset *string) (*SyntheticCheckDefinition, error)
 	ImportView(ctx context.Context, view *ViewDefinition, dataset *string) (*ViewDefinition, error)
+	ImportSignalToMetrics(ctx context.Context, rules []*SignalToMetricsDefinition, dataset string) (*SignalToMetricsBulkUpsertResponse, error)
 
 	// OTLP
 	SendLogs(ctx context.Context, logs plog.Logs, dataset *string) error

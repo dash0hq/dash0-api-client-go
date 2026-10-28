@@ -575,3 +575,20 @@ func TestListSLOs_OriginPrefix(t *testing.T) {
 		})
 	}
 }
+
+func TestListSLOs_RejectsUnsupportedFilters(t *testing.T) {
+	// The endpoint filters by origin prefix only, so ignoring another filter would return SLOs the caller excluded.
+	for filter, opt := range map[string]ListOption{"name": WithSignalToMetricsName("checkout"), "signal": WithSignal(SignalToMetricsSignalTypeSpans), "enabled": WithEnabled(false)} {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("no request should reach the server")
+		}))
+		c := newTestClient(t, server.URL)
+		if _, err := c.ListSLOs(context.Background(), nil, opt); err == nil {
+			t.Errorf("ListSLOs with the %s filter succeeded, want an error", filter)
+		}
+		if err := c.ListSLOsIter(context.Background(), nil, opt).Err(); err == nil {
+			t.Errorf("ListSLOsIter with the %s filter succeeded, want an error", filter)
+		}
+		server.Close()
+	}
+}

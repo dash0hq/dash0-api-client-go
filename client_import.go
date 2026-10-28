@@ -77,3 +77,39 @@ func (c *client) ImportView(ctx context.Context, view *ViewDefinition, dataset *
 	}
 	return resp.JSON200, nil
 }
+
+// ImportSignalToMetrics creates or updates signal-to-metrics rules in dataset, matching existing rules by their dash0.com/origin label.
+// Every rule must carry that label, so that repeated imports of the same rules update them instead of creating copies.
+// The import is atomic: when any rule fails validation, the server rejects the whole batch and changes nothing.
+// The API accepts at most 500 rules per call.
+//
+// Unlike the other imports, the dataset is required, so that rules cannot land in the default dataset by accident.
+func (c *client) ImportSignalToMetrics(ctx context.Context, rules []*SignalToMetricsDefinition, dataset string) (*SignalToMetricsBulkUpsertResponse, error) {
+	if err := c.requireAPI(); err != nil {
+		return nil, err
+	}
+	if dataset == "" {
+		return nil, fmt.Errorf("dash0: import signal-to-metrics requires a dataset")
+	}
+	items := make([]SignalToMetricsDefinition, len(rules))
+	for i, rule := range rules {
+		if rule == nil {
+			return nil, fmt.Errorf("dash0: import signal-to-metrics requires non-nil rules, but rule %d is nil", i)
+		}
+		items[i] = *rule
+	}
+	params := &PutApiImportSignalToMetricsParams{
+		Dataset: dataset,
+	}
+	resp, err := c.inner.PutApiImportSignalToMetricsWithResponse(ctx, params, SignalToMetricsBulkUpsertRequest{Items: items})
+	if err != nil {
+		return nil, fmt.Errorf("dash0: import signal-to-metrics failed: %w", err)
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return nil, newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
+	}
+	if resp.JSON200 == nil {
+		return nil, fmt.Errorf("dash0: unexpected nil response")
+	}
+	return resp.JSON200, nil
+}

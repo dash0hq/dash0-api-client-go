@@ -724,3 +724,20 @@ func TestListRecordingRules_OriginPrefix(t *testing.T) {
 		})
 	}
 }
+
+func TestListRecordingRules_RejectsUnsupportedFilters(t *testing.T) {
+	// The endpoint filters by origin prefix only, so ignoring another filter would return rules the caller excluded.
+	for filter, opt := range map[string]ListOption{"name": WithSignalToMetricsName("checkout"), "signal": WithSignal(SignalToMetricsSignalTypeSpans), "enabled": WithEnabled(false)} {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("no request should reach the server")
+		}))
+		c := newTestClient(t, server.URL)
+		if _, err := c.ListRecordingRules(context.Background(), nil, opt); err == nil {
+			t.Errorf("ListRecordingRules with the %s filter succeeded, want an error", filter)
+		}
+		if err := c.ListRecordingRulesIter(context.Background(), nil, opt).Err(); err == nil {
+			t.Errorf("ListRecordingRulesIter with the %s filter succeeded, want an error", filter)
+		}
+		server.Close()
+	}
+}
