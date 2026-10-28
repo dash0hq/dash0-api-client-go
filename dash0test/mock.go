@@ -148,16 +148,15 @@ type MockClient struct {
 	ListNotificationChannelsIterFunc func(ctx context.Context) *dash0.Iter[dash0.NotificationChannelDefinition]
 
 	// Spam Filters
-	ListSpamFiltersFunc           func(ctx context.Context, dataset *string) ([]*dash0.SpamFilter, error)
-	ListSpamFilterObjectsFunc     func(ctx context.Context, dataset *string) ([]dash0.SpamFilterObject, error)
-	GetSpamFilterFunc             func(ctx context.Context, originOrID string, dataset *string) (dash0.SpamFilterObject, error)
-	CreateSpamFilterFunc          func(ctx context.Context, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error)
-	UpdateSpamFilterFunc          func(ctx context.Context, originOrID string, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error)
-	CreateSpamFilterV1Alpha2Func  func(ctx context.Context, filter *dash0.SpamFilterV1Alpha2, dataset *string) (*dash0.SpamFilterV1Alpha2, error)
-	UpdateSpamFilterV1Alpha2Func  func(ctx context.Context, originOrID string, filter *dash0.SpamFilterV1Alpha2, dataset *string) (*dash0.SpamFilterV1Alpha2, error)
-	DeleteSpamFilterFunc          func(ctx context.Context, originOrID string, dataset *string) error
-	ListSpamFiltersIterFunc       func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilter]
-	ListSpamFilterObjectsIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilterObject]
+	ListSpamFiltersFunc          func(ctx context.Context, dataset *string) ([]*dash0.SpamFilter, error)
+	ListSpamFilterObjectsFunc    func(ctx context.Context, dataset *string) ([]dash0.SpamFilterObject, error)
+	GetSpamFilterFunc            func(ctx context.Context, originOrID string, dataset *string) (dash0.SpamFilterObject, error)
+	CreateSpamFilterFunc         func(ctx context.Context, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error)
+	UpdateSpamFilterFunc         func(ctx context.Context, originOrID string, filter *dash0.SpamFilter, dataset *string) (*dash0.SpamFilter, error)
+	CreateSpamFilterV1Alpha2Func func(ctx context.Context, filter *dash0.SpamFilterV1Alpha2, dataset *string) (*dash0.SpamFilterV1Alpha2, error)
+	UpdateSpamFilterV1Alpha2Func func(ctx context.Context, originOrID string, filter *dash0.SpamFilterV1Alpha2, dataset *string) (*dash0.SpamFilterV1Alpha2, error)
+	DeleteSpamFilterFunc         func(ctx context.Context, originOrID string, dataset *string) error
+	ListSpamFiltersIterFunc      func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilter]
 
 	// Spans
 	GetSpansFunc     func(ctx context.Context, request *dash0.GetSpansRequest) (*dash0.GetSpansResponse, error)
@@ -894,13 +893,6 @@ func (m *MockClient) DeleteSpamFilter(ctx context.Context, originOrID string, da
 func (m *MockClient) ListSpamFiltersIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilter] {
 	if m.ListSpamFiltersIterFunc != nil {
 		return m.ListSpamFiltersIterFunc(ctx, dataset)
-	}
-	return nil
-}
-
-func (m *MockClient) ListSpamFilterObjectsIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SpamFilterObject] {
-	if m.ListSpamFilterObjectsIterFunc != nil {
-		return m.ListSpamFilterObjectsIterFunc(ctx, dataset)
 	}
 	return nil
 }

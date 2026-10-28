@@ -1095,68 +1095,6 @@ func TestSpamFilters_Integration(t *testing.T) {
 			})
 		}
 	})
-
-	t.Run("ListSpamFilterObjectsIter yields each filter in its own version", func(t *testing.T) {
-		var gotURL *url.URL
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotURL = r.URL
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(`{"spamFilters": [
-				{
-					"apiVersion": "v1alpha1",
-					"kind": "Dash0SpamFilter",
-					"metadata": {"name": "v1 filter"},
-					"spec": {"contexts": ["log"], "filter": []}
-				},
-				{
-					"apiVersion": "v1alpha2",
-					"kind": "Dash0SpamFilter",
-					"metadata": {"name": "v2 filter"},
-					"spec": {"context": "span", "filter": []}
-				}
-			]}`))
-		}))
-		defer server.Close()
-
-		iter := newTestClient(t, server.URL).ListSpamFilterObjectsIter(context.Background(), nil)
-		var got []string
-		for iter.Next() {
-			switch filter := (*iter.Current()).(type) {
-			case *SpamFilter:
-				got = append(got, filter.Metadata.Name+" "+string(filter.Spec.Contexts[0]))
-			case *SpamFilterV1Alpha2:
-				got = append(got, filter.Metadata.Name+" "+string(filter.Spec.Context))
-			default:
-				t.Fatalf("unexpected type %T", filter)
-			}
-		}
-		if err := iter.Err(); err != nil {
-			t.Fatalf("iterator error: %v", err)
-		}
-
-		assertEqual(t, "path", gotURL.Path, "/api/spam-filters")
-		if len(got) != 2 {
-			t.Fatalf("expected 2 filters, got %d", len(got))
-		}
-		assertEqual(t, "filters[0]", got[0], "v1 filter log")
-		assertEqual(t, "filters[1]", got[1], "v2 filter span")
-	})
-
-	t.Run("ListSpamFilterObjectsIter surfaces the list error", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			writeAPIError(w, http.StatusInternalServerError, "boom")
-		}))
-		defer server.Close()
-
-		iter := newTestClient(t, server.URL).ListSpamFilterObjectsIter(context.Background(), nil)
-		if iter.Next() {
-			t.Error("Next() = true, want false on a failed list")
-		}
-		if !IsServerError(iter.Err()) {
-			t.Errorf("IsServerError(err) = false, want true (err = %v)", iter.Err())
-		}
-	})
 }
 
 func newTestSpamFilterV1Alpha2() SpamFilterV1Alpha2 {
@@ -1181,8 +1119,8 @@ func TestSpamFilters_APINotConfigured(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	if err := c.ListSpamFilterObjectsIter(ctx, nil).Err(); !errors.Is(err, ErrAPINotConfigured) {
-		t.Errorf("ListSpamFilterObjectsIter error = %v, want ErrAPINotConfigured", err)
+	if _, err := c.ListSpamFilterObjects(ctx, nil); !errors.Is(err, ErrAPINotConfigured) {
+		t.Errorf("ListSpamFilterObjects error = %v, want ErrAPINotConfigured", err)
 	}
 }
 
@@ -1377,18 +1315,18 @@ func TestLiveAPI_SpamFilters(t *testing.T) {
 			t.Fatalf("UpdateSpamFilterV1Alpha2 after strip failed: %v", err)
 		}
 
+		filters, err := client.ListSpamFilterObjects(ctx, dataset)
+		if err != nil {
+			t.Fatalf("ListSpamFilterObjects failed: %v", err)
+		}
 		var listed *SpamFilterV1Alpha2
-		iter := client.ListSpamFilterObjectsIter(ctx, dataset)
-		for iter.Next() {
-			if filter, ok := (*iter.Current()).(*SpamFilterV1Alpha2); ok && liveSpamFilterOrigin(filter.Metadata) == originV1Alpha2 {
+		for _, obj := range filters {
+			if filter, ok := obj.(*SpamFilterV1Alpha2); ok && liveSpamFilterOrigin(filter.Metadata) == originV1Alpha2 {
 				listed = filter
 			}
 		}
-		if err := iter.Err(); err != nil {
-			t.Fatalf("ListSpamFilterObjectsIter failed: %v", err)
-		}
 		if listed == nil {
-			t.Fatalf("ListSpamFilterObjectsIter did not yield %s as a v1alpha2 filter", originV1Alpha2)
+			t.Fatalf("ListSpamFilterObjects did not return %s as a v1alpha2 filter", originV1Alpha2)
 		}
 		assertEqual(t, "spec.context", string(listed.Spec.Context), string(TelemetryFilterContextSpan))
 		assertLiveSpamFilterDisabled(t, "in the list after strip and update", listed.Metadata)

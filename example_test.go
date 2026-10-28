@@ -1687,41 +1687,6 @@ func ExampleClient_ListSpamFilterObjects() {
 	// Drop health checks span
 }
 
-func ExampleClient_ListSpamFilterObjectsIter() {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(spamFilterListBody))
-	}))
-	defer server.Close()
-
-	client, err := dash0.NewClient(
-		dash0.WithApiUrl(server.URL),
-		dash0.WithAuthToken("auth_yourtoken"),
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func() { _ = client.Close(context.Background()) }()
-
-	iter := client.ListSpamFilterObjectsIter(context.Background(), nil)
-	for iter.Next() {
-		// Current returns a pointer to the interface value, so dereference it before the type switch.
-		switch filter := (*iter.Current()).(type) {
-		case *dash0.SpamFilter:
-			fmt.Println("v1alpha1:", dash0.GetSpamFilterName(filter))
-		case *dash0.SpamFilterV1Alpha2:
-			fmt.Println("v1alpha2:", dash0.GetSpamFilterV1Alpha2Name(filter))
-		}
-	}
-	if err := iter.Err(); err != nil {
-		log.Fatal(err)
-	}
-	// Output:
-	// v1alpha1: Drop debug logs
-	// v1alpha2: Drop health checks
-}
-
 func ExampleClient_GetSpamFilter() {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

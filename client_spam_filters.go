@@ -318,22 +318,10 @@ func (c *client) ListSpamFiltersIter(ctx context.Context, dataset *string) *Iter
 	return newIter(items, false, nil, nil)
 }
 
-// ListSpamFilterObjectsIter returns an iterator over all spam filters in their native apiVersion shape.
-// It wraps [Client.ListSpamFilterObjects], so v1alpha2 filters keep their spec.context scalar, unlike with [Client.ListSpamFiltersIter].
-// Current returns a pointer to the [SpamFilterObject]; dereference it and type-switch on the result.
-func (c *client) ListSpamFilterObjectsIter(ctx context.Context, dataset *string) *Iter[SpamFilterObject] {
-	items, err := c.ListSpamFilterObjects(ctx, dataset)
-	if err != nil {
-		return newIterWithError[SpamFilterObject](err)
-	}
-	return newIter(toPointerSlice(items), false, nil, nil)
-}
-
 // StripSpamFilterServerFields removes the server-managed fields from a v1alpha1 spam filter, so that it can be sent in a create or update request.
 // It clears the dash0.com/id, dash0.com/source, dash0.com/dataset, and dash0.com/origin labels.
 // It keeps the dash0.com/enabled annotation and the custom labels, because the user sets them.
 //
-// Unlike the Strip helpers of most other asset types, it also clears dash0.com/id.
 // A caller that updates the filter by origin or ID must read them before stripping.
 func StripSpamFilterServerFields(filter *SpamFilter) {
 	if filter == nil {
