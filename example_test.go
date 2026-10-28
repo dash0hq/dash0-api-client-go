@@ -510,6 +510,237 @@ func ExampleClearTimeSeriesAggregationID() {
 	// Output: true
 }
 
+// Sampling rules
+
+func ExampleClient_ListSamplingRules() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(dash0.GetSamplingRulesResponse{
+			SamplingRules: []dash0.SamplingDefinition{
+				{
+					Metadata: dash0.SamplingMetadata{Name: "keep-errors"},
+					Spec: dash0.SamplingSpec{
+						Enabled: true,
+						Display: &dash0.SamplingDisplay{Name: "Keep error traces"},
+					},
+				},
+			},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	rules, err := client.ListSamplingRules(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, rule := range rules {
+		fmt.Println(dash0.GetSamplingRuleName(rule), rule.Spec.Enabled)
+	}
+	// Output: Keep error traces true
+}
+
+func ExampleClient_CreateSamplingRule() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var rule dash0.SamplingDefinition
+		_ = json.NewDecoder(r.Body).Decode(&rule)
+		dash0.SetSamplingRuleID(&rule, "sr-123")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	// Keep every trace that contains an error span.
+	var conditions dash0.SamplingCondition
+	if err := conditions.FromSamplingConditionError(dash0.SamplingConditionError{
+		Kind: dash0.SamplingConditionErrorKindError,
+	}); err != nil {
+		log.Fatal(err)
+	}
+	rule := &dash0.SamplingDefinition{
+		Kind:     dash0.Dash0Sampling,
+		Metadata: dash0.SamplingMetadata{Name: "keep-errors"},
+		Spec: dash0.SamplingSpec{
+			Enabled:    true,
+			Display:    &dash0.SamplingDisplay{Name: "Keep error traces"},
+			Conditions: conditions,
+		},
+	}
+	created, err := client.CreateSamplingRule(context.Background(), rule, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetSamplingRuleID(created))
+	// Output: sr-123
+}
+
+func ExampleClient_UpdateSamplingRule() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var rule dash0.SamplingDefinition
+		if r.Method == http.MethodPut {
+			_ = json.NewDecoder(r.Body).Decode(&rule)
+		} else {
+			rule = dash0.SamplingDefinition{
+				Metadata: dash0.SamplingMetadata{
+					Name: "keep-errors",
+					Labels: &dash0.SamplingLabels{
+						Dash0Comid:      dash0.Ptr("sr-123"),
+						Dash0Comversion: dash0.Ptr("3"),
+					},
+				},
+				Spec: dash0.SamplingSpec{Enabled: true},
+			}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	// Fetch the rule, drop the server-managed fields, and send it back disabled.
+	rule, err := client.GetSamplingRule(context.Background(), "sr-123", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dash0.StripSamplingRuleServerFields(rule)
+	rule.Spec.Enabled = false
+	updated, err := client.UpdateSamplingRule(context.Background(), dash0.GetSamplingRuleID(rule), rule, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetSamplingRuleID(updated), updated.Spec.Enabled)
+	// Output: sr-123 false
+}
+
+// Sampling rule helpers
+
+func ExampleGetSamplingRuleName() {
+	rule := &dash0.SamplingDefinition{
+		Spec: dash0.SamplingSpec{
+			Display: &dash0.SamplingDisplay{Name: "Keep error traces"},
+		},
+	}
+	fmt.Println(dash0.GetSamplingRuleName(rule))
+	// Output: Keep error traces
+}
+
+func ExampleGetSamplingRuleName_fallback() {
+	// Falls back to metadata.name when the spec carries no display block.
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{Name: "keep-errors"},
+	}
+	fmt.Println(dash0.GetSamplingRuleName(rule))
+	// Output: keep-errors
+}
+
+func ExampleGetSamplingRuleID() {
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{
+			Labels: &dash0.SamplingLabels{Dash0Comid: dash0.Ptr("sr-123")},
+		},
+	}
+	fmt.Println(dash0.GetSamplingRuleID(rule))
+	// Output: sr-123
+}
+
+func ExampleGetSamplingRuleDataset() {
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{
+			Labels: &dash0.SamplingLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Println(dash0.GetSamplingRuleDataset(rule))
+	// Output: production
+}
+
+func ExampleSetSamplingRuleDataset() {
+	rule := &dash0.SamplingDefinition{}
+	dash0.SetSamplingRuleDataset(rule, "production")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comdataset)
+	// Output: production
+}
+
+func ExampleSetSamplingRuleID() {
+	rule := &dash0.SamplingDefinition{}
+	dash0.SetSamplingRuleID(rule, "sr-456")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comid)
+	// Output: sr-456
+}
+
+func ExampleSetSamplingRuleIDIfAbsent() {
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{
+			Labels: &dash0.SamplingLabels{Dash0Comid: dash0.Ptr("existing")},
+		},
+	}
+	// Does not overwrite an existing ID.
+	dash0.SetSamplingRuleIDIfAbsent(rule, "sr-456")
+	fmt.Println(*rule.Metadata.Labels.Dash0Comid)
+	// Output: existing
+}
+
+func ExampleStripSamplingRuleServerFields() {
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{
+			Name: "keep-errors",
+			Labels: &dash0.SamplingLabels{
+				Dash0Comid:      dash0.Ptr("sr-123"),
+				Dash0Comversion: dash0.Ptr("2"),
+			},
+		},
+		Spec: dash0.SamplingSpec{Enabled: true},
+	}
+	dash0.StripSamplingRuleServerFields(rule)
+	// The version is server-assigned and is cleared.
+	// The ID and the user-set enabled flag are preserved, so the rule round-trips unchanged on update.
+	fmt.Println(rule.Metadata.Labels.Dash0Comversion == nil)
+	fmt.Println(dash0.GetSamplingRuleID(rule))
+	fmt.Println(rule.Spec.Enabled)
+	// Output:
+	// true
+	// sr-123
+	// true
+}
+
+func ExampleClearSamplingRuleID() {
+	rule := &dash0.SamplingDefinition{
+		Metadata: dash0.SamplingMetadata{
+			Labels: &dash0.SamplingLabels{Dash0Comid: dash0.Ptr("sr-123")},
+		},
+	}
+	dash0.ClearSamplingRuleID(rule)
+	fmt.Println(rule.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
 func ExampleGetSignalToMetricsName() {
 	rule := &dash0.SignalToMetricsDefinition{
 		Spec: dash0.SignalToMetricsSpec{
@@ -766,6 +997,66 @@ func ExampleStripSLOServerFields() {
 	dash0.StripSLOServerFields(slo)
 	fmt.Println(id, dash0.GetSLOID(slo) == "", slo.Metadata.Labels.Dash0Comversion == nil)
 	// Output: slo_01k5vpx97efdnrkqan15b41k84 true true
+}
+
+// AWS metric scrape config helpers
+
+func ExampleStripAwsMetricScrapeConfigServerFields() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		ApiVersion: dash0.AwsMetricScrapeConfigApiVersionDash0Comv1alpha1,
+		Kind:       dash0.Dash0AwsMetricScrapeConfig,
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{
+			Labels: &dash0.AwsMetricScrapeConfigLabels{
+				Dash0Comid:      dash0.Ptr("491cb653-954b-4d0b-a84c-4b426b562938"),
+				Dash0Comdataset: dash0.Ptr("default"),
+				Dash0Comorigin:  dash0.Ptr("tf_my-config"),
+			},
+		},
+		Spec: dash0.AwsMetricScrapeConfigSpec{
+			Namespaces: []dash0.AwsMetricScrapeConfigNamespace{
+				{Namespace: "AWS/Lambda", Metrics: []string{"Errors", "Invocations"}},
+			},
+		},
+	}
+	// Strip a fetched config before comparing it with the desired one or sending it back.
+	dash0.StripAwsMetricScrapeConfigServerFields(cfg)
+	fmt.Println(dash0.GetAwsMetricScrapeConfigOrigin(cfg), cfg.Metadata.Labels.Dash0Comid == nil)
+	// Output: tf_my-config true
+}
+
+func ExampleGetAwsMetricScrapeConfigID() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{
+			Labels: &dash0.AwsMetricScrapeConfigLabels{Dash0Comid: dash0.Ptr("491cb653-954b-4d0b-a84c-4b426b562938")},
+		},
+	}
+	fmt.Println(dash0.GetAwsMetricScrapeConfigID(cfg))
+	// Output: 491cb653-954b-4d0b-a84c-4b426b562938
+}
+
+func ExampleGetAwsMetricScrapeConfigName() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{Name: dash0.Ptr("prod-account")},
+	}
+	fmt.Println(dash0.GetAwsMetricScrapeConfigName(cfg))
+	// Output: prod-account
+}
+
+func ExampleGetAwsMetricScrapeConfigOrigin() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{
+		Metadata: dash0.AwsMetricScrapeConfigMetadata{
+			Labels: &dash0.AwsMetricScrapeConfigLabels{Dash0Comorigin: dash0.Ptr("tf_my-config")},
+		},
+	}
+	fmt.Println(dash0.GetAwsMetricScrapeConfigOrigin(cfg))
+	// Output: tf_my-config
+}
+
+func ExampleSetAwsMetricScrapeConfigOrigin() {
+	cfg := &dash0.AwsMetricScrapeConfigDefinition{}
+	dash0.SetAwsMetricScrapeConfigOrigin(cfg, "tf_my-config")
+	fmt.Println(*cfg.Metadata.Labels.Dash0Comorigin)
+	// Output: tf_my-config
 }
 
 // Prometheus rule helpers

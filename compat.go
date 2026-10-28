@@ -194,6 +194,9 @@ package dash0
 //
 // The [ViewType] constants are unchanged: the prefixed names ([ViewTypeLogs], [ViewTypeSpans], and so on) stay canonical, and the bare names stay deprecated aliases.
 // Code generation now pins the prefixed names, so they no longer depend on whether another enum in the spec shares their values.
+//
+// The [TeamApiVersion] constant is now [TeamApiVersionDash0Comv1alpha1], because [AwsMetricScrapeConfigApiVersion] shares its value.
+// The bare Dash0Comv1alpha1 stays as a deprecated alias.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -279,6 +282,11 @@ const GcpCloudStorage = ViewTypeGcpCloudStorage
 //
 // Deprecated: since v1.25.0. Use [ViewTypeGcpPubsub] instead.
 const GcpPubsub = ViewTypeGcpPubsub
+
+// Dash0Comv1alpha1 is a deprecated alias for [TeamApiVersionDash0Comv1alpha1].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [TeamApiVersionDash0Comv1alpha1] instead.
+const Dash0Comv1alpha1 = TeamApiVersionDash0Comv1alpha1
 
 // Logs is a deprecated alias for [ViewTypeLogs].
 //

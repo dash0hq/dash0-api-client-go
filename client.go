@@ -67,6 +67,11 @@ type Client interface {
 	DeleteAuthToken(ctx context.Context, originOrID string) error
 	ListAuthTokensIter(ctx context.Context) *Iter[AuthTokenResponseDefinition]
 
+	// AWS metric scrape configs
+	GetAwsMetricScrapeConfig(ctx context.Context, integrationID string) (*AwsMetricScrapeConfigDefinition, error)
+	UpdateAwsMetricScrapeConfig(ctx context.Context, integrationID string, cfg *AwsMetricScrapeConfigDefinition) (*AwsMetricScrapeConfigDefinition, error)
+	DeleteAwsMetricScrapeConfig(ctx context.Context, integrationID string) error
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)

@@ -180,6 +180,16 @@ const (
 	AuthTokenResponseDefinitionKindDash0AuthToken AuthTokenResponseDefinitionKind = "Dash0AuthToken"
 )
 
+// Defines values for AwsMetricScrapeConfigApiVersion.
+const (
+	AwsMetricScrapeConfigApiVersionDash0Comv1alpha1 AwsMetricScrapeConfigApiVersion = "dash0.com/v1alpha1"
+)
+
+// Defines values for AwsMetricScrapeConfigKind.
+const (
+	Dash0AwsMetricScrapeConfig AwsMetricScrapeConfigKind = "Dash0AwsMetricScrapeConfig"
+)
+
 // Defines values for AxisScale.
 const (
 	AxisScaleLinear AxisScale = "linear"
@@ -1326,6 +1336,22 @@ const (
 	ScheduledAgenticWorkflowTriggerKindWebhook                        ScheduledAgenticWorkflowTriggerKind = "webhook"
 )
 
+// Defines values for ServiceStatistic.
+const (
+	ServiceStatisticCount        ServiceStatistic = "count"
+	ServiceStatisticDuration     ServiceStatistic = "duration"
+	ServiceStatisticDurationAvg  ServiceStatistic = "duration.avg"
+	ServiceStatisticDurationMax  ServiceStatistic = "duration.max"
+	ServiceStatisticDurationMin  ServiceStatistic = "duration.min"
+	ServiceStatisticDurationP50  ServiceStatistic = "duration.p50"
+	ServiceStatisticDurationP75  ServiceStatistic = "duration.p75"
+	ServiceStatisticDurationP90  ServiceStatistic = "duration.p90"
+	ServiceStatisticDurationP95  ServiceStatistic = "duration.p95"
+	ServiceStatisticDurationP99  ServiceStatistic = "duration.p99"
+	ServiceStatisticDurationSum  ServiceStatistic = "duration.sum"
+	ServiceStatisticStatusCounts ServiceStatistic = "statusCounts"
+)
+
 // Defines values for SignalRestriction.
 const (
 	SignalRestrictionRestricted   SignalRestriction = "restricted"
@@ -1367,9 +1393,11 @@ const (
 	SignalTypeSessionReplays                SignalType = "sessionReplays"
 	SignalTypeSignalControlEdgeLogs         SignalType = "signalControlEdgeLogs"
 	SignalTypeSignalControlEdgeMetrics      SignalType = "signalControlEdgeMetrics"
+	SignalTypeSignalControlEdgeProfiles     SignalType = "signalControlEdgeProfiles"
 	SignalTypeSignalControlEdgeTraces       SignalType = "signalControlEdgeTraces"
 	SignalTypeSignalControlManagedLogs      SignalType = "signalControlManagedLogs"
 	SignalTypeSignalControlManagedMetrics   SignalType = "signalControlManagedMetrics"
+	SignalTypeSignalControlManagedProfiles  SignalType = "signalControlManagedProfiles"
 	SignalTypeSignalControlManagedTraces    SignalType = "signalControlManagedTraces"
 	SignalTypeSignalControlManagedWebEvents SignalType = "signalControlManagedWebEvents"
 	SignalTypeSpans                         SignalType = "spans"
@@ -1656,7 +1684,7 @@ const (
 
 // Defines values for TeamApiVersion.
 const (
-	Dash0Comv1alpha1 TeamApiVersion = "dash0.com/v1alpha1"
+	TeamApiVersionDash0Comv1alpha1 TeamApiVersion = "dash0.com/v1alpha1"
 )
 
 // Defines values for TeamDefinitionV1Alpha1Kind.
@@ -1704,6 +1732,24 @@ const (
 	TimingTypeResponse   TimingType = "response"
 	TimingTypeSsl        TimingType = "ssl"
 	TimingTypeTotal      TimingType = "total"
+)
+
+// Defines values for TopologyEdgeStatistic.
+const (
+	TopologyEdgeStatisticCount        TopologyEdgeStatistic = "count"
+	TopologyEdgeStatisticDuration     TopologyEdgeStatistic = "duration"
+	TopologyEdgeStatisticDurationAvg  TopologyEdgeStatistic = "duration.avg"
+	TopologyEdgeStatisticDurationP50  TopologyEdgeStatistic = "duration.p50"
+	TopologyEdgeStatisticDurationP75  TopologyEdgeStatistic = "duration.p75"
+	TopologyEdgeStatisticDurationP90  TopologyEdgeStatistic = "duration.p90"
+	TopologyEdgeStatisticStatusCounts TopologyEdgeStatistic = "statusCounts"
+)
+
+// Defines values for TopologyNodeKind.
+const (
+	TopologyNodeKindInferred TopologyNodeKind = "inferred"
+	TopologyNodeKindService  TopologyNodeKind = "service"
+	TopologyNodeKindUnknown  TopologyNodeKind = "unknown"
 )
 
 // Defines values for ViewAction.
@@ -2340,6 +2386,14 @@ type AgenticWorkflowSandbox struct {
 	// must export it to $DASH0_AGENT_ENV, which is visible to the agent and the model.
 	EnvVars *map[string]string `json:"envVars,omitempty"`
 
+	// EnvironmentId The sandbox environment the automation's runs start from: its setup script, variables and
+	// secrets. Accepts an environment's id or origin and is stored as the id. Omitted on a
+	// write, the stored value is kept; an empty string clears it.
+	//
+	// An environment named here wins over `setupScript` and `envVars`, which are then dropped
+	// from the stored definition.
+	EnvironmentId *string `json:"environmentId,omitempty"`
+
 	// NetworkLevel Controls outbound network access for the sandbox running this thread.
 	// - `no_network`: Block all outbound network access.
 	// - `trusted_only`: Allow outbound access only to a curated list of trusted addresses.
@@ -2766,6 +2820,105 @@ type AuthTokenSpec struct {
 
 // AuthTokenUpdateRequest defines model for AuthTokenUpdateRequest.
 type AuthTokenUpdateRequest = AuthTokenDefinition
+
+// AwsMetricScrapeConfigAnnotations Server-managed and ignored on write. Absent for an integration whose config was never written
+// or has been cleared.
+type AwsMetricScrapeConfigAnnotations struct {
+	// Dash0ComcreatedAt When the config was first written after being unconfigured or cleared. Set by the server.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComupdatedAt When the config last changed; writing an identical config leaves it unchanged. Set by the server.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// AwsMetricScrapeConfigApiVersion Version of the document format. Required on write; a missing or unknown value is rejected.
+type AwsMetricScrapeConfigApiVersion string
+
+// AwsMetricScrapeConfigDefinition The CloudWatch metric scrape configuration of one AWS integration. There is exactly one
+// document per integration, and a write replaces it as a whole.
+type AwsMetricScrapeConfigDefinition struct {
+	// ApiVersion Version of the document format. Required on write; a missing or unknown value is rejected.
+	ApiVersion AwsMetricScrapeConfigApiVersion `json:"apiVersion"`
+	Kind       AwsMetricScrapeConfigKind       `json:"kind"`
+	Metadata   AwsMetricScrapeConfigMetadata   `json:"metadata"`
+	Spec       AwsMetricScrapeConfigSpec       `json:"spec"`
+}
+
+// AwsMetricScrapeConfigKind defines model for AwsMetricScrapeConfigKind.
+type AwsMetricScrapeConfigKind string
+
+// AwsMetricScrapeConfigLabels `dash0.com/origin` may be set on write; every other label is server-managed and ignored on
+// write.
+type AwsMetricScrapeConfigLabels struct {
+	// Dash0Comdataset The dataset the AWS integration belongs to.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid The AWS integration's `dash0.com/id`, the same id as in the request path.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier of the client managing this config, such as a Terraform resource id.
+	// Stored by the first write that sets it and immutable afterwards: a later write with a
+	// different value keeps the stored one. Cleared when the config is cleared. Recorded for
+	// ownership only; it locks nothing yet. Unlike on most resources, the origin is not an
+	// address: the config is looked up by the integration id alone. Origins starting with
+	// `slo_` or `check_rule_` are reserved for Dash0 and rejected. When an API token without
+	// a user omits it, the server stores `api-<uuid>`.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// AwsMetricScrapeConfigMetadata defines model for AwsMetricScrapeConfigMetadata.
+type AwsMetricScrapeConfigMetadata struct {
+	// Annotations Server-managed and ignored on write. Absent for an integration whose config was never written
+	// or has been cleared.
+	Annotations *AwsMetricScrapeConfigAnnotations `json:"annotations,omitempty"`
+
+	// Labels `dash0.com/origin` may be set on write; every other label is server-managed and ignored on
+	// write.
+	Labels *AwsMetricScrapeConfigLabels `json:"labels,omitempty"`
+
+	// Name The AWS integration's name. Read-only and ignored on write.
+	Name *string `json:"name,omitempty"`
+}
+
+// AwsMetricScrapeConfigNamespace defines model for AwsMetricScrapeConfigNamespace.
+type AwsMetricScrapeConfigNamespace struct {
+	Filter *FilterCriteria `json:"filter,omitempty"`
+
+	// Metrics CloudWatch metric names collected from the namespace. Returned sorted ascending, in byte
+	// order. A name with leading or trailing whitespace, or one listed twice, is rejected.
+	Metrics []string `json:"metrics"`
+
+	// Namespace CloudWatch namespace, such as `AWS/EC2`. Each namespace may appear once. A name with leading
+	// or trailing whitespace is rejected.
+	Namespace string `json:"namespace"`
+}
+
+// AwsMetricScrapeConfigSpec defines model for AwsMetricScrapeConfigSpec.
+type AwsMetricScrapeConfigSpec struct {
+	IntegrationFilter *FilterCriteria `json:"integrationFilter,omitempty"`
+
+	// Namespaces The complete set of namespaces to scrape. A namespace absent from this list is not scraped,
+	// and an empty array stops all scraping. Returned sorted by namespace, in byte order.
+	Namespaces []AwsMetricScrapeConfigNamespace `json:"namespaces"`
+}
 
 // AxisScale defines model for AxisScale.
 type AxisScale string
@@ -3962,6 +4115,104 @@ type GetTeamResponse struct {
 	// `spec.display.name` are persisted independently.
 	Team  TeamDefinitionV1Alpha1 `json:"team"`
 	Views []AccessibleAsset      `json:"views"`
+}
+
+// GetTopologyRequest Request for `POST /api/topology`. Returns the service topology for the
+// time range: one node per `service.namespace` + `service.name` pair, and
+// one edge per observed direction of calls between two nodes.
+//
+// Grouping is not client-selectable, and deliberately so. The connection
+// metric carries only `service.name` and `service.namespace` from the
+// calling side of a call, so no other grouping can identify a caller;
+// offering a `groupBy` would return a silently wrong graph for every
+// other value. `POST /api/resources/grouped` is the endpoint that takes
+// an arbitrary grouping.
+//
+// The node half is the same aggregation `POST /api/services/catalog`
+// serves, so a node's `statistics` match that endpoint's entry for the
+// same service, same time range and same filter. The edge half has no
+// other endpoint.
+type GetTopologyRequest struct {
+	// Dataset Optional dataset to query across. Defaults to whatever is configured to be the default dataset for the organization.
+	Dataset *Dataset `json:"dataset,omitempty"`
+
+	// EdgeStatistics Statistics to compute per edge, from the connection metric.
+	// Defaults to `count`, `statusCounts` and `duration.p50`. An empty
+	// array returns edge endpoints only, which is the cheapest way to
+	// fetch the graph's shape.
+	//
+	// This selects what each edge carries, never which edges exist: the
+	// same time range and filter return the same nodes and edges whatever
+	// is requested here. An edge whose duration cannot be determined — a
+	// connection observed with no completed calls in the range — is
+	// returned without that statistic rather than omitted.
+	EdgeStatistics *[]TopologyEdgeStatistic `json:"edgeStatistics,omitempty"`
+
+	// Filter Selects services by **resource** attributes. Applied to both halves
+	// of the graph, but they are not the same predicate, and the
+	// difference shows in the response. Read both limits below before
+	// relying on this field.
+	//
+	// **The edge half filters on the called service only.** An edge's
+	// attributes are the callee's: the connection metric carries the
+	// caller as nothing but `service.name` and `service.namespace`, so
+	// there is no caller-side attribute to match on. An edge is returned
+	// when its `target` matches, whatever its `source` is. A caller
+	// outside the filter still comes back as a node — as `inferred`,
+	// since it is not in the filtered service list — while the matching
+	// service's own outbound edges are absent, their targets having not
+	// matched. Filtering by `service.name` returns that service's inbound
+	// traffic, not its neighbourhood.
+	//
+	// **Beyond resource attributes, two keys behave differently from the
+	// rest.** `dash0.operation.name` and `dash0.operation.type` are
+	// carried on the connection metric, copied from the server span, so
+	// they do filter edges — by the *callee's* operation, keeping the
+	// edges whose inbound calls had that operation. The result is a graph
+	// of who calls that operation, which is a narrower thing than the
+	// node half returns for the same criterion.
+	//
+	// Every other non-resource key — `http.route` and the span attributes
+	// generally — is accepted, is applied correctly to the node half, and
+	// matches no connection series, so the response is the filtered
+	// services with no edges at all. That is not rejected, and is
+	// indistinguishable from a tenant whose filtered services make no
+	// calls.
+	//
+	// A `400` is returned only for a criterion that cannot be parsed, not
+	// for one that is merely inapplicable to edges.
+	Filter *FilterCriteria `json:"filter,omitempty"`
+
+	// NodeLimit Maximum number of services read from the service list. When more
+	// match, the list is truncated and the response carries a `warnings`
+	// entry naming the limit.
+	//
+	// **This caps the services that carry statistics, not the size of the
+	// graph.** It bounds neither the edges nor the nodes synthesized from
+	// them, so a response can contain more than `nodeLimit` nodes.
+	// Truncation punches no holes: a service dropped here still appears
+	// as an `inferred` node wherever an edge references it, without
+	// statistics of its own.
+	//
+	// **The cut is by identity, not by traffic.** The service list is
+	// ordered by `service.namespace` then `service.name`, both ascending,
+	// so services with no namespace sort first and survive the cut. On a
+	// tenant whose un-namespaced peers — hosts, external endpoints —
+	// exceed the limit, the namespaced services are the ones that lose
+	// their statistics, however busy they are. Raise the limit or narrow
+	// `filter`; there is no way to ask for the busiest services instead.
+	NodeLimit *int `json:"nodeLimit,omitempty"`
+
+	// NodeStatistics Statistics to compute per node, from the node's own RED metrics.
+	// Defaults to `count`, `statusCounts` and `duration.p50`. An empty
+	// array returns node identities only.
+	//
+	// Same vocabulary and same cost rules as
+	// `GetServiceCatalogRequest.statistics`.
+	NodeStatistics *[]ServiceStatistic `json:"nodeStatistics,omitempty"`
+
+	// TimeRange A range of time between two time references.
+	TimeRange TimeReferenceRange `json:"timeRange"`
 }
 
 // GetTraceIdsRequest Request to retrieve unique trace IDs of traces that contain at least one span matching the
@@ -6833,7 +7084,7 @@ type PrometheusAlertRule struct {
 	// Metadata Server-populated metadata for the alert rule. Read-only on responses; ignored on write.
 	Metadata *PrometheusAlertRuleMetadata `json:"metadata,omitempty"`
 
-	// Name Human-readable and templatable name for the check. In Prometheus alerting rules this is called "alert".
+	// Name Human-readable name for the check. Dash0 does not expand templates in the name. Use the summary for a title that names each failing series. In Prometheus alerting rules this is called "alert".
 	Name string `json:"name"`
 
 	// Thresholds Thresholds to use for the `$__threshold` variable in the expression field.
@@ -6875,8 +7126,10 @@ type PrometheusAlertRule_Annotations struct {
 	Sharing *string `json:"sharing,omitempty"`
 
 	// Summary Human-readable and templatable summary for the check that allows you to customize the way the check
-	// is textually described in short form in the Dash0 UI, in notifications, etc. Limited to 255
-	// characters.
+	// is textually described in short form in the Dash0 UI, in notifications, etc. Templates in the summary
+	// can read `$labels`, the labels of each failing series. Notifications use the rendered summary as
+	// their title, except the email subject, which uses the name. When the summary is empty, notifications
+	// use the name. Limited to 255 characters.
 	Summary              *string           `json:"summary,omitempty"`
 	AdditionalProperties map[string]string `json:"-"`
 }
@@ -6892,7 +7145,7 @@ type PrometheusAlertRuleApiListItem struct {
 	// However in a future version, this field will only return the actual check rule ID.
 	Id string `json:"id"`
 
-	// Name Human-readable and templatable name for the check. In Prometheus alerting rules this is called "alert".
+	// Name Human-readable name for the check. Dash0 does not expand templates in the name. Use the summary for a title that names each failing series. In Prometheus alerting rules this is called "alert".
 	Name *string `json:"name,omitempty"`
 
 	// Origin User defined origin for getting/updating/deleting the alert rule through the API.
@@ -7803,6 +8056,108 @@ type SecretRef struct {
 // - latest: We will always upgrade to the latest and greatest
 // - vX.X.X: A SEMVER version. We will automatically upgrade up to that version (inclusive)
 type SemanticConventionUpgrades = string
+
+// ServiceDurationStatistic Duration distribution of the requests attributed to the entry.
+// `duration` is `null` when the server declined to compute any duration
+// statistic, or when no request carried duration data.
+type ServiceDurationStatistic struct {
+	Duration *ServiceDurationSummary `json:"duration"`
+}
+
+// ServiceDurationSummary Duration distribution over the requests attributed to the entry. All
+// fields are in seconds.
+//
+// Every field is optional because `ServiceStatistic` selects duration
+// fields individually, so any subset of the nine can be absent. An absent
+// field was not requested or could not be computed; it is never a zero or
+// a sentinel.
+//
+// Deliberately not `common.yml#/components/schemas/DurationSummary`,
+// which requires all nine fields and therefore cannot express a partial
+// selection such as `duration.avg` alone.
+type ServiceDurationSummary struct {
+	Avg *float64 `json:"avg,omitempty"`
+	Max *float64 `json:"max,omitempty"`
+	Min *float64 `json:"min,omitempty"`
+	P50 *float64 `json:"p50,omitempty"`
+	P75 *float64 `json:"p75,omitempty"`
+	P90 *float64 `json:"p90,omitempty"`
+	P95 *float64 `json:"p95,omitempty"`
+	P99 *float64 `json:"p99,omitempty"`
+	Sum *float64 `json:"sum,omitempty"`
+}
+
+// ServiceRedStatistics defines model for ServiceRedStatistics.
+type ServiceRedStatistics struct {
+	Count        *int                    `json:"count"`
+	Duration     *ServiceDurationSummary `json:"duration"`
+	StatusCounts *StatusCounts           `json:"statusCounts"`
+}
+
+// ServiceRef Identifies a service: an OpenTelemetry resource grouped by
+// `service.namespace` + `service.name`.
+//
+// Field names are unprefixed because the property carrying this object
+// already qualifies them (`service.name`, not `service.serviceName`).
+// That is a deliberate divergence from `StarredServiceRef`, whose
+// prefixed names are already shipped to clients and cannot be renamed
+// without a breaking change, so the two stay separate rather than being
+// consolidated.
+type ServiceRef struct {
+	// Name The value of the `service.name` resource attribute.
+	Name string `json:"name"`
+
+	// Namespace The value of the `service.namespace` resource attribute. An
+	// absent namespace is represented as an empty string.
+	Namespace string `json:"namespace"`
+}
+
+// ServiceStatistic Selects which statistics the server computes. The unit of selection is
+// the measurement, not the response field, which is why the granularity
+// differs between the status breakdown and the duration distribution.
+//
+//   - `count`: total request count.
+//   - `statusCounts`: the per-status request breakdown, as a whole. It has
+//     no leaf members: `unset`, `ok` and `error` are a closed partition of
+//     OTel's `StatusCode`, produced by a single aggregate over the status
+//     key, so requesting a proper subset saves nothing. Leaf members would
+//     advertise configurability this endpoint cannot deliver.
+//   - `duration`: prefix alias for all nine duration fields.
+//   - `duration.min`, `duration.max`, `duration.sum`, `duration.avg`,
+//     `duration.p50`, `duration.p75`, `duration.p90`, `duration.p95`,
+//     `duration.p99`: individually selectable. Unlike the status breakdown
+//     these are an open set of distinct aggregate functions — each is its
+//     own aggregate, and a tenth (say `p999`) could be added without
+//     disturbing the existing nine.
+//
+// Four rules govern the vocabulary. None is expressible in OpenAPI, so
+// this description is where they live.
+//
+//  1. **`duration` means all nine fields.** It previously meant only the
+//     four scalars, alongside a separate `durationPercentiles` member;
+//     both are gone, and "scalars only" is now those four leaves spelled
+//     out.
+//  2. **The list is a set.** Duplicates and overlaps collapse:
+//     `["duration", "duration.p99"]` is the same request as
+//     `["duration"]`, not an error. `uniqueItems` is deliberately not set:
+//     it would reject a repeated member rather than collapse it.
+//  3. **Cost is documented, never encoded.** Naming any `duration.p*` pays
+//     an exponential-histogram bucket read; `count`, `statusCounts` and the
+//     four scalar duration fields come off scalar columns. That is guidance
+//     for callers, not a viability constraint: no member implies any other,
+//     and the server never widens a request to a superset.
+//  4. **Ordering requires coverage, not an exact match.** An alias covers
+//     its leaves, so ordering by `duration.p99` is satisfied by either
+//     `duration.p99` or `duration`, and ordering by `statusCounts.error` is
+//     satisfied by `statusCounts`. An ordering key the requested set does
+//     not cover is rejected with `400`, rather than silently added, so a
+//     sort can never widen the query beyond what was asked for; the error
+//     message names both the offending ordering key and the statistic
+//     that would have covered it. Note that `statusCounts` does not cover
+//     `count`, even though the three counts sum to it, which is why
+//     `errorRate` requires both — rejected the same way, naming `count`
+//     and `statusCounts` as what is missing.
+type ServiceStatistic string
 
 // SettingsPerOrganizationAndDatasetInfo defines model for SettingsPerOrganizationAndDatasetInfo.
 type SettingsPerOrganizationAndDatasetInfo struct {
@@ -9084,6 +9439,25 @@ type SslCertificateAssertionSpec struct {
 	Value Duration `json:"value"`
 }
 
+// StatusCountStatistic Per-status breakdown of the records matching the entry. Signal-agnostic
+// fragment — applies to any signal whose records carry an OTel status
+// code, and to metric-derived request counts.
+type StatusCountStatistic struct {
+	StatusCounts *StatusCounts `json:"statusCounts"`
+}
+
+// StatusCounts Per-status count breakdown. Field names match the OTel span status codes
+// (`StatusCode`: 0 = unset, 1 = ok, 2 = error).
+//
+// The status vocabulary is OTel's; the unit being counted is whatever the
+// enclosing entry counts, which is not necessarily spans. Each composing
+// schema documents its own unit.
+type StatusCounts struct {
+	Error int `json:"error"`
+	Ok    int `json:"ok"`
+	Unset int `json:"unset"`
+}
+
 // StringAssertionOperator defines model for StringAssertionOperator.
 type StringAssertionOperator string
 
@@ -9909,6 +10283,219 @@ type TimingType string
 // TlsSettings defines model for TlsSettings.
 type TlsSettings struct {
 	AllowInsecure bool `json:"allowInsecure"`
+}
+
+// TopologyEdge One direction of calls between two nodes, aggregated over the whole
+// time range. `source` and `target` are service identities that each
+// match exactly one `nodes[].service`; join on `(namespace, name)`.
+//
+// There is no opaque edge or node identifier: the identity is the key. A
+// pair of services calling each other both ways appears as two edges.
+type TopologyEdge struct {
+	// Source Identifies a service: an OpenTelemetry resource grouped by
+	// `service.namespace` + `service.name`.
+	//
+	// Field names are unprefixed because the property carrying this object
+	// already qualifies them (`service.name`, not `service.serviceName`).
+	// That is a deliberate divergence from `StarredServiceRef`, whose
+	// prefixed names are already shipped to clients and cannot be renamed
+	// without a breaking change, so the two stay separate rather than being
+	// consolidated.
+	Source ServiceRef `json:"source"`
+
+	// Statistics RED statistics for one edge: total `count`, the per-status breakdown
+	// (`statusCounts`), and the duration distribution (`duration`). A field
+	// the server declined to compute is absent: the key is omitted rather
+	// than sent as `null`, so a strict client should test for presence.
+	//
+	// The error rate is intentionally not carried, matching
+	// `services.yml#/components/schemas/ServiceRedStatistics`: it is
+	// derivable as `statusCounts.error / count`, and `count` may be `0`, in
+	// which case there is no rate to show.
+	//
+	// **These numbers are not comparable to the target node's.** Two
+	// independent reasons, both expected rather than defects:
+	//
+	// 1. *Different histograms.* An edge's `duration` is read from an
+	//    explicit-bucket histogram and interpolated within a bucket, while a
+	//    node's comes from an exponential histogram and is near-exact. The
+	//    same service's node `duration.p50` and its inbound edges'
+	//    `duration.p50` will differ, sometimes substantially.
+	// 2. *Different populations.* A node's `count` is every request the
+	//    service served. An edge's `count` is only the calls whose caller
+	//    could be identified, and is scaled by the sampling compensation
+	//    factor. Inbound edge counts therefore do not sum to the node count,
+	//    and are usually lower.
+	//
+	// Measured from the server side of each call.
+	Statistics TopologyEdgeStatistics `json:"statistics"`
+
+	// Target Identifies a service: an OpenTelemetry resource grouped by
+	// `service.namespace` + `service.name`.
+	//
+	// Field names are unprefixed because the property carrying this object
+	// already qualifies them (`service.name`, not `service.serviceName`).
+	// That is a deliberate divergence from `StarredServiceRef`, whose
+	// prefixed names are already shipped to clients and cannot be renamed
+	// without a breaking change, so the two stay separate rather than being
+	// consolidated.
+	Target ServiceRef `json:"target"`
+}
+
+// TopologyEdgeDurationStatistic Duration distribution of the calls on the edge. `duration` is absent —
+// the key is omitted, not sent as `null` — when the server computed no
+// duration statistic, or when no call on the edge carried duration data.
+type TopologyEdgeDurationStatistic struct {
+	Duration *TopologyEdgeDurationSummary `json:"duration,omitempty"`
+}
+
+// TopologyEdgeDurationSummary Duration distribution over the calls on one edge. All fields are in
+// seconds.
+//
+// Every field is optional because `TopologyEdgeStatistic` selects
+// duration fields individually, so any subset of the four can be absent.
+// An absent field was not requested or could not be computed; it is never
+// a zero or a sentinel.
+//
+// Deliberately neither `common.yml#/components/schemas/DurationSummary`
+// nor `services.yml#/components/schemas/ServiceDurationSummary`: both
+// carry nine fields, five of which this metric cannot support.
+type TopologyEdgeDurationSummary struct {
+	Avg *float64 `json:"avg,omitempty"`
+	P50 *float64 `json:"p50,omitempty"`
+	P75 *float64 `json:"p75,omitempty"`
+	P90 *float64 `json:"p90,omitempty"`
+}
+
+// TopologyEdgeStatistic Selects which statistics the server computes per edge.
+//
+// Deliberately a subset of
+// `services.yml#/components/schemas/ServiceStatistic`. `duration.min`,
+// `duration.max`, `duration.sum`, `duration.p95` and `duration.p99` are
+// absent because the connection metric is an explicit-bucket histogram
+// whose boundaries reach 1200s in a handful of steps; a p99 read off it
+// is a bucket boundary rather than a measurement.
+//
+//   - `count`: total request count on the edge.
+//   - `statusCounts`: the per-status request breakdown, as a whole. It has
+//     no leaf members, matching `ServiceStatistic`: the three counts are a
+//     closed partition produced by a single aggregate.
+//   - `duration`: prefix alias for all four duration fields.
+//   - `duration.avg`, `duration.p50`, `duration.p75`, `duration.p90`:
+//     individually selectable.
+//
+// The same three rules as `ServiceStatistic` govern the vocabulary: the
+// list is a set, so duplicates and overlaps collapse rather than erroring;
+// no member implies any other, and the server never widens a request to a
+// superset; and cost is documented, never encoded.
+//
+// Cost here is steeper than on the node side. `count` and `statusCounts`
+// are one query together. `duration.avg` is one more. **Each named
+// percentile is one more query on top of that**, and each reads the full
+// bucket set for every connection in the time range. Naming all three
+// percentiles costs four more queries than naming none.
+type TopologyEdgeStatistic string
+
+// TopologyEdgeStatistics defines model for TopologyEdgeStatistics.
+type TopologyEdgeStatistics struct {
+	Count        *int                         `json:"count"`
+	Duration     *TopologyEdgeDurationSummary `json:"duration,omitempty"`
+	StatusCounts *StatusCounts                `json:"statusCounts"`
+}
+
+// TopologyNode One service in the topology. `service` is the identity; join edges to
+// nodes on `(namespace, name)`.
+type TopologyNode struct {
+	// Kind - `service`: a service that reported telemetry of its own. Its
+	//   `statistics` are read from its own RED metrics.
+	// - `inferred`: a peer named only by an edge, so it has no RED metrics
+	//   here and `statistics` is absent; read its edges instead. Four causes,
+	//   and the response does not distinguish them: a peer that reports no
+	//   telemetry at all, such as a database, a broker or a third-party API;
+	//   a service whose own telemetry did not arrive; a service past
+	//   `nodeLimit`; and a service excluded by `filter` but still calling one
+	//   that matched. The last two are ordinary services — `inferred` here
+	//   means "not in this response's service list", not "not a service".
+	// - `unknown`: the placeholder for calls that arrived with no
+	//   identifiable caller, such as a root `SERVER` span or a request whose
+	//   trace context was broken in transit. At most one per response, and
+	//   not a real peer. It exists so the traffic it carries is visible
+	//   rather than silently dropped.
+	Kind TopologyNodeKind `json:"kind"`
+
+	// Service Identifies a service: an OpenTelemetry resource grouped by
+	// `service.namespace` + `service.name`.
+	//
+	// Field names are unprefixed because the property carrying this object
+	// already qualifies them (`service.name`, not `service.serviceName`).
+	// That is a deliberate divergence from `StarredServiceRef`, whose
+	// prefixed names are already shipped to clients and cannot be renamed
+	// without a breaking change, so the two stay separate rather than being
+	// consolidated.
+	Service ServiceRef `json:"service"`
+
+	// Statistics Absent — the key is omitted, not sent as `null` — when the node has
+	// no RED metrics of its own. Always so for `inferred` and `unknown`
+	// nodes, and for a `service` node whose statistics could not be
+	// computed.
+	Statistics *ServiceRedStatistics `json:"statistics,omitempty"`
+}
+
+// TopologyNodeKind - `service`: a service that reported telemetry of its own. Its
+//
+//		`statistics` are read from its own RED metrics.
+//	  - `inferred`: a peer named only by an edge, so it has no RED metrics
+//	    here and `statistics` is absent; read its edges instead. Four causes,
+//	    and the response does not distinguish them: a peer that reports no
+//	    telemetry at all, such as a database, a broker or a third-party API;
+//	    a service whose own telemetry did not arrive; a service past
+//	    `nodeLimit`; and a service excluded by `filter` but still calling one
+//	    that matched. The last two are ordinary services — `inferred` here
+//	    means "not in this response's service list", not "not a service".
+//	  - `unknown`: the placeholder for calls that arrived with no
+//	    identifiable caller, such as a root `SERVER` span or a request whose
+//	    trace context was broken in transit. At most one per response, and
+//	    not a real peer. It exists so the traffic it carries is visible
+//	    rather than silently dropped.
+type TopologyNodeKind string
+
+// TopologyResponse The service topology for the requested time range.
+//
+// Not paginated. A page of a graph is not a graph: an edge whose endpoint
+// fell on another page cannot be rendered, and neither half can be
+// ordered in a way that keeps the other half whole. Coverage is bounded
+// by `nodeLimit` and by the server's series limit instead, and both
+// report through `warnings`.
+type TopologyResponse struct {
+	Edges []TopologyEdge `json:"edges"`
+
+	// ExecutionTime A fixed point in time represented as an RFC 3339 date-time string.
+	//
+	// **Format**: `YYYY-MM-DDTHH:MM:SSZ` (UTC) or `YYYY-MM-DDTHH:MM:SS±HH:MM` (with timezone offset)
+	//
+	// **Examples**:
+	// - `2024-01-15T14:30:00Z`
+	// - `2024-01-15T14:30:00+08:00`
+	ExecutionTime FixedTime      `json:"executionTime"`
+	Nodes         []TopologyNode `json:"nodes"`
+	TimeRange     TimeRange      `json:"timeRange"`
+
+	// Warnings Conditions that left the graph incomplete but did not fail the
+	// request: node truncation at `nodeLimit`, series-limit truncation on
+	// the edge queries, edges dropped because an endpoint could not be
+	// resolved, and statistics skipped because their query failed.
+	//
+	// An empty or absent array means the graph is complete for the
+	// requested time range. A non-empty one means it is not, and the
+	// entries say why.
+	Warnings *[]string `json:"warnings,omitempty"`
+}
+
+// TotalCountStatistic Total number of signal records matching the entry. Signal-agnostic
+// fragment — applies to logs, spans, metrics, and any other signal
+// type.
+type TotalCountStatistic struct {
+	Count *int `json:"count"`
 }
 
 // TracingSettings defines model for TracingSettings.
@@ -10756,6 +11343,9 @@ type PostApiAuthTokensJSONRequestBody = AuthTokenCreateRequest
 // PutApiAuthTokensOriginOrIdJSONRequestBody defines body for PutApiAuthTokensOriginOrId for application/json ContentType.
 type PutApiAuthTokensOriginOrIdJSONRequestBody = AuthTokenUpdateRequest
 
+// PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody defines body for PutApiAwsMetricScrapeConfigsIntegrationId for application/json ContentType.
+type PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody = AwsMetricScrapeConfigDefinition
+
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
 
@@ -10893,6 +11483,9 @@ type PostApiTimeSeriesAggregationsJSONRequestBody = TimeSeriesAggregationDefinit
 
 // PutApiTimeSeriesAggregationsOriginOrIdJSONRequestBody defines body for PutApiTimeSeriesAggregationsOriginOrId for application/json ContentType.
 type PutApiTimeSeriesAggregationsOriginOrIdJSONRequestBody = TimeSeriesAggregationDefinition
+
+// PostApiTopologyJSONRequestBody defines body for PostApiTopology for application/json ContentType.
+type PostApiTopologyJSONRequestBody = GetTopologyRequest
 
 // PostApiTraceDetailsJSONRequestBody defines body for PostApiTraceDetails for application/json ContentType.
 type PostApiTraceDetailsJSONRequestBody = GetTraceRequest
@@ -13874,6 +14467,17 @@ type ClientInterface interface {
 
 	PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteApiAwsMetricScrapeConfigsIntegrationId request
+	DeleteApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAwsMetricScrapeConfigsIntegrationId request
+	GetApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsMetricScrapeConfigsIntegrationIdWithBody request with any body
+	PutApiAwsMetricScrapeConfigsIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiDashboards request
 	GetApiDashboards(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -14254,6 +14858,11 @@ type ClientInterface interface {
 
 	PutApiTimeSeriesAggregationsOriginOrId(ctx context.Context, originOrId string, params *PutApiTimeSeriesAggregationsOriginOrIdParams, body PutApiTimeSeriesAggregationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostApiTopologyWithBody request with any body
+	PostApiTopologyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiTopology(ctx context.Context, body PostApiTopologyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostApiTraceDetailsWithBody request with any body
 	PostApiTraceDetailsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -14597,6 +15206,54 @@ func (c *generatedClient) PutApiAuthTokensOriginOrIdWithBody(ctx context.Context
 
 func (c *generatedClient) PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiAuthTokensOriginOrIdRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAwsMetricScrapeConfigsIntegrationIdRequest(c.Server, integrationId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAwsMetricScrapeConfigsIntegrationIdRequest(c.Server, integrationId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsMetricScrapeConfigsIntegrationIdRequestWithBody(c.Server, integrationId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsMetricScrapeConfigsIntegrationIdRequest(c.Server, integrationId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -16311,6 +16968,30 @@ func (c *generatedClient) PutApiTimeSeriesAggregationsOriginOrId(ctx context.Con
 	return c.Client.Do(req)
 }
 
+func (c *generatedClient) PostApiTopologyWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTopologyRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiTopology(ctx context.Context, body PostApiTopologyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTopologyRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *generatedClient) PostApiTraceDetailsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiTraceDetailsRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -17458,6 +18139,121 @@ func NewPutApiAuthTokensOriginOrIdRequestWithBody(server string, originOrId stri
 	}
 
 	operationPath := fmt.Sprintf("/api/auth-tokens/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiAwsMetricScrapeConfigsIntegrationIdRequest generates requests for DeleteApiAwsMetricScrapeConfigsIntegrationId
+func NewDeleteApiAwsMetricScrapeConfigsIntegrationIdRequest(server string, integrationId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "integrationId", runtime.ParamLocationPath, integrationId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-metric-scrape-configs/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAwsMetricScrapeConfigsIntegrationIdRequest generates requests for GetApiAwsMetricScrapeConfigsIntegrationId
+func NewGetApiAwsMetricScrapeConfigsIntegrationIdRequest(server string, integrationId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "integrationId", runtime.ParamLocationPath, integrationId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-metric-scrape-configs/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAwsMetricScrapeConfigsIntegrationIdRequest calls the generic PutApiAwsMetricScrapeConfigsIntegrationId builder with application/json body
+func NewPutApiAwsMetricScrapeConfigsIntegrationIdRequest(server string, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAwsMetricScrapeConfigsIntegrationIdRequestWithBody(server, integrationId, "application/json", bodyReader)
+}
+
+// NewPutApiAwsMetricScrapeConfigsIntegrationIdRequestWithBody generates requests for PutApiAwsMetricScrapeConfigsIntegrationId with any type of body
+func NewPutApiAwsMetricScrapeConfigsIntegrationIdRequestWithBody(server string, integrationId openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "integrationId", runtime.ParamLocationPath, integrationId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-metric-scrape-configs/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -22718,6 +23514,46 @@ func NewPutApiTimeSeriesAggregationsOriginOrIdRequestWithBody(server string, ori
 	return req, nil
 }
 
+// NewPostApiTopologyRequest calls the generic PostApiTopology builder with application/json body
+func NewPostApiTopologyRequest(server string, body PostApiTopologyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTopologyRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiTopologyRequestWithBody generates requests for PostApiTopology with any type of body
+func NewPostApiTopologyRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/topology")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewPostApiTraceDetailsRequest calls the generic PostApiTraceDetails builder with application/json body
 func NewPostApiTraceDetailsRequest(server string, body PostApiTraceDetailsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -23502,6 +24338,17 @@ type ClientWithResponsesInterface interface {
 
 	PutApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error)
 
+	// DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse request
+	DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse, error)
+
+	// GetApiAwsMetricScrapeConfigsIntegrationIdWithResponse request
+	GetApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsMetricScrapeConfigsIntegrationIdResponse, error)
+
+	// PutApiAwsMetricScrapeConfigsIntegrationIdWithBodyWithResponse request with any body
+	PutApiAwsMetricScrapeConfigsIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error)
+
+	PutApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error)
+
 	// GetApiDashboardsWithResponse request
 	GetApiDashboardsWithResponse(ctx context.Context, params *GetApiDashboardsParams, reqEditors ...RequestEditorFn) (*GetApiDashboardsResponse, error)
 
@@ -23881,6 +24728,11 @@ type ClientWithResponsesInterface interface {
 	PutApiTimeSeriesAggregationsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTimeSeriesAggregationsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTimeSeriesAggregationsOriginOrIdResponse, error)
 
 	PutApiTimeSeriesAggregationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTimeSeriesAggregationsOriginOrIdParams, body PutApiTimeSeriesAggregationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTimeSeriesAggregationsOriginOrIdResponse, error)
+
+	// PostApiTopologyWithBodyWithResponse request with any body
+	PostApiTopologyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTopologyResponse, error)
+
+	PostApiTopologyWithResponse(ctx context.Context, body PostApiTopologyJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTopologyResponse, error)
 
 	// PostApiTraceDetailsWithBodyWithResponse request with any body
 	PostApiTraceDetailsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error)
@@ -24350,6 +25202,74 @@ func (r PutApiAuthTokensOriginOrIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutApiAuthTokensOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAwsMetricScrapeConfigsIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AwsMetricScrapeConfigDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAwsMetricScrapeConfigsIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAwsMetricScrapeConfigsIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiAwsMetricScrapeConfigsIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *AwsMetricScrapeConfigDefinition
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAwsMetricScrapeConfigsIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAwsMetricScrapeConfigsIntegrationIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -26568,6 +27488,29 @@ func (r PutApiTimeSeriesAggregationsOriginOrIdResponse) StatusCode() int {
 	return 0
 }
 
+type PostApiTopologyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *TopologyResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTopologyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTopologyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostApiTraceDetailsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -27060,6 +28003,41 @@ func (c *ClientWithResponses) PutApiAuthTokensOriginOrIdWithResponse(ctx context
 		return nil, err
 	}
 	return ParsePutApiAuthTokensOriginOrIdResponse(rsp)
+}
+
+// DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse request returning *DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse
+func (c *ClientWithResponses) DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	rsp, err := c.DeleteApiAwsMetricScrapeConfigsIntegrationId(ctx, integrationId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp)
+}
+
+// GetApiAwsMetricScrapeConfigsIntegrationIdWithResponse request returning *GetApiAwsMetricScrapeConfigsIntegrationIdResponse
+func (c *ClientWithResponses) GetApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	rsp, err := c.GetApiAwsMetricScrapeConfigsIntegrationId(ctx, integrationId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsMetricScrapeConfigsIntegrationIdWithBodyWithResponse request with arbitrary body returning *PutApiAwsMetricScrapeConfigsIntegrationIdResponse
+func (c *ClientWithResponses) PutApiAwsMetricScrapeConfigsIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsMetricScrapeConfigsIntegrationIdWithBody(ctx, integrationId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsMetricScrapeConfigsIntegrationId(ctx, integrationId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp)
 }
 
 // GetApiDashboardsWithResponse request returning *GetApiDashboardsResponse
@@ -28294,6 +29272,23 @@ func (c *ClientWithResponses) PutApiTimeSeriesAggregationsOriginOrIdWithResponse
 	return ParsePutApiTimeSeriesAggregationsOriginOrIdResponse(rsp)
 }
 
+// PostApiTopologyWithBodyWithResponse request with arbitrary body returning *PostApiTopologyResponse
+func (c *ClientWithResponses) PostApiTopologyWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTopologyResponse, error) {
+	rsp, err := c.PostApiTopologyWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTopologyResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiTopologyWithResponse(ctx context.Context, body PostApiTopologyJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTopologyResponse, error) {
+	rsp, err := c.PostApiTopology(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTopologyResponse(rsp)
+}
+
 // PostApiTraceDetailsWithBodyWithResponse request with arbitrary body returning *PostApiTraceDetailsResponse
 func (c *ClientWithResponses) PostApiTraceDetailsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTraceDetailsResponse, error) {
 	rsp, err := c.PostApiTraceDetailsWithBody(ctx, contentType, body, reqEditors...)
@@ -29096,6 +30091,98 @@ func ParsePutApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*PutApiAuthTok
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiAwsMetricScrapeConfigsIntegrationIdResponse parses an HTTP response from a DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse call
+func ParseDeleteApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp *http.Response) (*DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAwsMetricScrapeConfigsIntegrationIdResponse parses an HTTP response from a GetApiAwsMetricScrapeConfigsIntegrationIdWithResponse call
+func ParseGetApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp *http.Response) (*GetApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAwsMetricScrapeConfigsIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsMetricScrapeConfigDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse parses an HTTP response from a PutApiAwsMetricScrapeConfigsIntegrationIdWithResponse call
+func ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp *http.Response) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAwsMetricScrapeConfigsIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsMetricScrapeConfigDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
@@ -32292,6 +33379,39 @@ func ParsePutApiTimeSeriesAggregationsOriginOrIdResponse(rsp *http.Response) (*P
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTopologyResponse parses an HTTP response from a PostApiTopologyWithResponse call
+func ParsePostApiTopologyResponse(rsp *http.Response) (*PostApiTopologyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTopologyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TopologyResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
