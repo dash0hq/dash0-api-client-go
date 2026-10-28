@@ -1017,6 +1017,50 @@ func TestSignalToMetricsDefinition_JSONRoundTrip(t *testing.T) {
 		}
 	}`
 
+	assertSignalToMetricsJSONRoundTrip(t, input)
+}
+
+func TestSignalToMetricsDefinition_JSONRoundTrip_OutputTypes(t *testing.T) {
+	tests := []struct {
+		name   string
+		signal string
+		output string
+	}{
+		{
+			name:   "sum",
+			signal: "logs",
+			output: `{"name": "payload_bytes", "interval": "1m", "type": "sum", "value": "Double(attributes[\"payload.size\"])", "monotonic": false}`,
+		},
+		{
+			name:   "gauge",
+			signal: "logs",
+			output: `{"name": "queue_depth", "interval": "1m", "type": "gauge", "value": "Double(attributes[\"queue.depth\"])"}`,
+		},
+		{
+			name:   "exponential-histogram",
+			signal: "spans",
+			output: `{"name": "batch_size", "interval": "1m", "type": "exponential-histogram", "value": "Double(attributes[\"batch.size\"])", "maxSize": 80, "count": "Double(attributes[\"batch.count\"])"}`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			input := `{
+				"kind": "Dash0SignalToMetrics",
+				"metadata": {"name": "typed-rule"},
+				"spec": {
+					"enabled": true,
+					"display": {"name": "Typed rule"},
+					"match": {"signal": "` + tt.signal + `", "filters": []},
+					"output": ` + tt.output + `
+				}
+			}`
+			assertSignalToMetricsJSONRoundTrip(t, input)
+		})
+	}
+}
+
+func assertSignalToMetricsJSONRoundTrip(t *testing.T, input string) {
+	t.Helper()
 	var rule SignalToMetricsDefinition
 	if err := json.Unmarshal([]byte(input), &rule); err != nil {
 		t.Fatalf("unmarshal into SignalToMetricsDefinition: %v", err)

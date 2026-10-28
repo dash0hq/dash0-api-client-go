@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -257,6 +258,69 @@ func TestLiveAPI(t *testing.T) {
 		}
 		if len(remaining) != 0 {
 			t.Errorf("ListSignalToMetrics after delete returned %d rules, want 0", len(remaining))
+		}
+	})
+
+	t.Run("SignalToMetricsOutputTypes", func(t *testing.T) {
+		dataset := Ptr("default")
+		prefix := fmt.Sprintf("live-s2m-output-type-%d_", time.Now().UnixNano())
+		value := `attributes["http.request.body.size"]`
+		tests := []struct {
+			outputType SignalToMetricsOutputType
+			setFields  func(output *SignalToMetricsOutput)
+		}{
+			{SignalToMetricsOutputTypeSum, func(output *SignalToMetricsOutput) { output.Monotonic = Ptr(true) }},
+			{SignalToMetricsOutputTypeGauge, func(output *SignalToMetricsOutput) {}},
+			{SignalToMetricsOutputTypeExponentialHistogram, func(output *SignalToMetricsOutput) { output.MaxSize = Ptr(int32(80)) }},
+		}
+		for _, tt := range tests {
+			t.Run(string(tt.outputType), func(t *testing.T) {
+				origin := prefix + string(tt.outputType)
+				t.Cleanup(func() {
+					if err := client.DeleteSignalToMetrics(context.Background(), origin, dataset); err != nil && !IsNotFound(err) {
+						t.Logf("cleanup of %s failed: %v", origin, err)
+					}
+				})
+				output := SignalToMetricsOutput{
+					Name:     "live_s2m_output_type",
+					Interval: "1m",
+					Type:     Ptr(tt.outputType),
+					Value:    Ptr(value),
+				}
+				tt.setFields(&output)
+				rule := &SignalToMetricsDefinition{
+					Kind:     Dash0SignalToMetrics,
+					Metadata: SignalToMetricsMetadata{Name: origin},
+					Spec: SignalToMetricsSpec{
+						Enabled: false,
+						Display: SignalToMetricsDisplay{Name: origin},
+						Match: SignalToMetricsMatch{
+							Signal:  SignalToMetricsSignalTypeSpans,
+							Filters: FilterCriteria{{Key: "service.name", Operator: "is_set"}},
+						},
+						Output: output,
+					},
+				}
+
+				_, err := client.UpdateSignalToMetrics(ctx, origin, rule, dataset)
+				// Saving a typed rule depends on a per-organization feature flag.
+				if IsBadRequest(err) && strings.Contains(err.Error(), "not enabled") {
+					t.Skipf("output types are not enabled for this organization: %v", err)
+				}
+				if err != nil {
+					t.Fatalf("UpdateSignalToMetrics as upsert failed: %v", err)
+				}
+
+				got, err := client.GetSignalToMetrics(ctx, origin, dataset)
+				if err != nil {
+					t.Fatalf("GetSignalToMetrics failed: %v", err)
+				}
+				if got.Spec.Output.Type == nil {
+					t.Fatal("spec.output.type is missing after the round trip")
+				}
+				assertEqual(t, "spec.output.type", string(*got.Spec.Output.Type), string(tt.outputType))
+				assertEqual(t, "spec.output.value", StringValue(got.Spec.Output.Value), value)
+			})
 		}
 	})
 

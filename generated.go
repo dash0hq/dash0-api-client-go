@@ -1365,9 +1365,9 @@ const (
 
 // Defines values for SignalToMetricsOutputType.
 const (
-	ExponentialHistogram SignalToMetricsOutputType = "exponential-histogram"
-	Gauge                SignalToMetricsOutputType = "gauge"
-	Sum                  SignalToMetricsOutputType = "sum"
+	SignalToMetricsOutputTypeExponentialHistogram SignalToMetricsOutputType = "exponential-histogram"
+	SignalToMetricsOutputTypeGauge                SignalToMetricsOutputType = "gauge"
+	SignalToMetricsOutputTypeSum                  SignalToMetricsOutputType = "sum"
 )
 
 // Defines values for SignalToMetricsSignalType.

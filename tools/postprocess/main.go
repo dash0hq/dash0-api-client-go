@@ -89,6 +89,10 @@ var constRenames = map[string]string{
 	"Spans":                "ViewTypeSpans",
 	"Sql":                  "ViewTypeSql",
 	"WebEvents":            "ViewTypeWebEvents",
+	// Prefixed from the first release, so a later enum sharing a value renames nothing.
+	"ExponentialHistogram": "SignalToMetricsOutputTypeExponentialHistogram",
+	"Gauge":                "SignalToMetricsOutputTypeGauge",
+	"Sum":                  "SignalToMetricsOutputTypeSum",
 	// Same flip for TeamApiVersion: another enum (AwsMetricScrapeConfigApiVersion)
 	// shares the "dash0.com/v1alpha1" value. compat.go keeps the bare name.
 	"Dash0Comv1alpha1": "TeamApiVersionDash0Comv1alpha1",
