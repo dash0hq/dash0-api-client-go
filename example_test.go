@@ -2411,3 +2411,98 @@ func ExampleStripAuthTokenServerFields() {
 	fmt.Println(*token.Metadata.Labels.Dash0Comorigin, token.Metadata.Labels.Dash0Comsource == nil)
 	// Output: ci true
 }
+
+// Agent0 Custom Skills
+
+func ExampleClient_UpdateCustomSkill() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var skill dash0.SkillDefinition
+		_ = json.NewDecoder(r.Body).Decode(&skill)
+		skill.Metadata.Name = dash0.Ptr("incident-response")
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(skill)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(
+		dash0.WithApiUrl(server.URL),
+		dash0.WithAuthToken("auth_yourtoken"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	skill := &dash0.SkillDefinition{
+		Kind: dash0.Dash0Skill,
+		Spec: dash0.SkillSpec{
+			Files: []dash0.SkillFile{{
+				RelativePath: "SKILL.md",
+				Content:      "---\nname: incident-response\ndescription: Triage an incident.\n---\n",
+			}},
+			Permissions: &[]dash0.SkillPermission{
+				{Role: dash0.Ptr("basic_member"), Actions: []dash0.CustomSkillAction{dash0.CustomSkillRead}},
+			},
+		},
+	}
+	updated, err := client.UpdateCustomSkill(context.Background(), "tf_incident-response", skill)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetCustomSkillName(updated))
+	// Output: incident-response
+}
+
+func ExampleStripCustomSkillServerFields() {
+	skill := &dash0.SkillDefinition{
+		Metadata: dash0.SkillMetadata{
+			Name:   dash0.Ptr("incident-response"),
+			Labels: &dash0.SkillLabels{Dash0Comorigin: dash0.Ptr("tf_incident-response"), Dash0Comversion: dash0.Ptr("3")},
+		},
+		Spec: dash0.SkillSpec{
+			Permissions: &[]dash0.SkillPermission{
+				{Role: dash0.Ptr("admin"), Actions: []dash0.CustomSkillAction{dash0.CustomSkillRead, dash0.CustomSkillDelete}},
+				{Role: dash0.Ptr("basic_member"), Actions: []dash0.CustomSkillAction{dash0.CustomSkillRead}},
+			},
+		},
+	}
+	dash0.StripCustomSkillServerFields(skill)
+	fmt.Println(dash0.GetCustomSkillOrigin(skill), skill.Metadata.Labels.Dash0Comversion == nil, len(*skill.Spec.Permissions))
+	// Output: tf_incident-response true 1
+}
+
+func ExampleGetCustomSkillID() {
+	skill := &dash0.SkillDefinition{}
+	dash0.SetCustomSkillID(skill, "skill_01")
+	fmt.Println(dash0.GetCustomSkillID(skill))
+	// Output: skill_01
+}
+
+func ExampleGetCustomSkillName() {
+	skill := &dash0.SkillDefinition{Metadata: dash0.SkillMetadata{Name: dash0.Ptr("incident-response")}}
+	fmt.Println(dash0.GetCustomSkillName(skill))
+	// Output: incident-response
+}
+
+func ExampleSetCustomSkillIDIfAbsent() {
+	skill := &dash0.SkillDefinition{}
+	dash0.SetCustomSkillIDIfAbsent(skill, "skill_01")
+	dash0.SetCustomSkillIDIfAbsent(skill, "skill_02")
+	fmt.Println(dash0.GetCustomSkillID(skill))
+	// Output: skill_01
+}
+
+func ExampleClearCustomSkillID() {
+	skill := &dash0.SkillDefinition{}
+	dash0.SetCustomSkillID(skill, "skill_01")
+	dash0.ClearCustomSkillID(skill)
+	fmt.Println(dash0.GetCustomSkillID(skill) == "")
+	// Output: true
+}
+
+func ExampleSetCustomSkillOrigin() {
+	skill := &dash0.SkillDefinition{}
+	dash0.SetCustomSkillOrigin(skill, "tf_incident-response")
+	fmt.Println(dash0.GetCustomSkillOrigin(skill))
+	// Output: tf_incident-response
+}
