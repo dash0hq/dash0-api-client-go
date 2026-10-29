@@ -369,3 +369,15 @@ OTTLStatements
 ObservedPatternEntry
 SettingsPerOrganizationAndDatasetInfo.ObservedPatterns
 SettingsPerOrganizationAndDatasetInfo.TelemetryTransformationRuleSettings
+
+# <NEXT_RELEASE>: the API renamed the Linear label trigger kind from
+# linear.label_added to linear.issue_labeled and rejects the old value, so
+# every constant and type named after it is gone. No shim: an alias to the
+# new constant would silently change the value sent on the wire.
+*LinearLabelAdded*
+
+# <NEXT_RELEASE>: SkillSourceProvider shares the github and gitlab values
+# with DarkplaneProvider, so oapi-codegen prefixed the DarkplaneProvider
+# constants. compat.go re-declares the bare names as deprecated aliases.
+Github
+Gitlab

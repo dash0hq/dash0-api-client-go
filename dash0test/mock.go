@@ -25,7 +25,7 @@ import (
 // [dash0.ListOption] before calling their *Func field, so those fields cannot observe
 // [dash0.WithOriginPrefix].
 // Their signatures predate list options and are kept so existing mocks still compile.
-// ListSignalToMetricsFunc, ListSignalToMetricsIterFunc, and CountSignalToMetricsFunc do receive the options.
+// ListSignalToMetricsFunc, ListSignalToMetricsIterFunc, CountSignalToMetricsFunc, ListCustomSkillsFunc, and ListCustomSkillsIterFunc do receive the options.
 type MockClient struct {
 	// Dashboards
 	ListDashboardsFunc     func(ctx context.Context, dataset *string) ([]*dash0.DashboardApiListItem, error)
@@ -140,6 +140,14 @@ type MockClient struct {
 	UpdateRecordingRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.RecordingRule, dataset *string) (*dash0.RecordingRule, error)
 	DeleteRecordingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListRecordingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.RecordingRule]
+
+	// Agent0 Custom Skills
+	ListCustomSkillsFunc     func(ctx context.Context, opts ...dash0.ListOption) ([]*dash0.SkillDefinition, error)
+	GetCustomSkillFunc       func(ctx context.Context, originOrID string) (*dash0.SkillDefinition, error)
+	CreateCustomSkillFunc    func(ctx context.Context, skill *dash0.SkillDefinition) (*dash0.SkillDefinition, error)
+	UpdateCustomSkillFunc    func(ctx context.Context, originOrID string, skill *dash0.SkillDefinition) (*dash0.SkillDefinition, error)
+	DeleteCustomSkillFunc    func(ctx context.Context, originOrID string) error
+	ListCustomSkillsIterFunc func(ctx context.Context, opts ...dash0.ListOption) *dash0.Iter[dash0.SkillDefinition]
 
 	// Notification Channels
 	ListNotificationChannelsFunc     func(ctx context.Context) ([]*dash0.NotificationChannelDefinition, error)
@@ -815,6 +823,50 @@ func (m *MockClient) DeleteRecordingRule(ctx context.Context, originOrID string,
 func (m *MockClient) ListRecordingRulesIter(ctx context.Context, dataset *string, _ ...dash0.ListOption) *dash0.Iter[dash0.RecordingRule] {
 	if m.ListRecordingRulesIterFunc != nil {
 		return m.ListRecordingRulesIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Agent0 Custom Skills
+
+func (m *MockClient) ListCustomSkills(ctx context.Context, opts ...dash0.ListOption) ([]*dash0.SkillDefinition, error) {
+	if m.ListCustomSkillsFunc != nil {
+		return m.ListCustomSkillsFunc(ctx, opts...)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetCustomSkill(ctx context.Context, originOrID string) (*dash0.SkillDefinition, error) {
+	if m.GetCustomSkillFunc != nil {
+		return m.GetCustomSkillFunc(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateCustomSkill(ctx context.Context, skill *dash0.SkillDefinition) (*dash0.SkillDefinition, error) {
+	if m.CreateCustomSkillFunc != nil {
+		return m.CreateCustomSkillFunc(ctx, skill)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateCustomSkill(ctx context.Context, originOrID string, skill *dash0.SkillDefinition) (*dash0.SkillDefinition, error) {
+	if m.UpdateCustomSkillFunc != nil {
+		return m.UpdateCustomSkillFunc(ctx, originOrID, skill)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteCustomSkill(ctx context.Context, originOrID string) error {
+	if m.DeleteCustomSkillFunc != nil {
+		return m.DeleteCustomSkillFunc(ctx, originOrID)
+	}
+	return nil
+}
+
+func (m *MockClient) ListCustomSkillsIter(ctx context.Context, opts ...dash0.ListOption) *dash0.Iter[dash0.SkillDefinition] {
+	if m.ListCustomSkillsIterFunc != nil {
+		return m.ListCustomSkillsIterFunc(ctx, opts...)
 	}
 	return nil
 }

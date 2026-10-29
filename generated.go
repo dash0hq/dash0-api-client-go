@@ -118,7 +118,7 @@ const (
 	AgenticWorkflowTriggerKindGitlabMergeRequest             AgenticWorkflowTriggerKind = "gitlab.merge_request"
 	AgenticWorkflowTriggerKindGitlabNote                     AgenticWorkflowTriggerKind = "gitlab.note"
 	AgenticWorkflowTriggerKindLinearComment                  AgenticWorkflowTriggerKind = "linear.comment"
-	AgenticWorkflowTriggerKindLinearLabelAdded               AgenticWorkflowTriggerKind = "linear.label_added"
+	AgenticWorkflowTriggerKindLinearIssueLabeled             AgenticWorkflowTriggerKind = "linear.issue_labeled"
 	AgenticWorkflowTriggerKindManual                         AgenticWorkflowTriggerKind = "manual"
 	AgenticWorkflowTriggerKindSchedule                       AgenticWorkflowTriggerKind = "schedule"
 	AgenticWorkflowTriggerKindSlackBotFailedCheckNew         AgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -213,6 +213,13 @@ const (
 	Ui               CrdSource = "ui"
 )
 
+// Defines values for CustomSkillAction.
+const (
+	CustomSkillDelete CustomSkillAction = "custom_skill:delete"
+	CustomSkillRead   CustomSkillAction = "custom_skill:read"
+	CustomSkillWrite  CustomSkillAction = "custom_skill:write"
+)
+
 // Defines values for DarkplaneAutoApprovalDecision.
 const (
 	Approve DarkplaneAutoApprovalDecision = "approve"
@@ -249,8 +256,8 @@ const (
 
 // Defines values for DarkplaneProvider.
 const (
-	Github DarkplaneProvider = "github"
-	Gitlab DarkplaneProvider = "gitlab"
+	DarkplaneProviderGithub DarkplaneProvider = "github"
+	DarkplaneProviderGitlab DarkplaneProvider = "gitlab"
 )
 
 // Defines values for DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind.
@@ -273,7 +280,7 @@ const (
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabMergeRequest             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabNote                     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "gitlab.note"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearComment                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.comment"
-	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearLabelAdded               DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.label_added"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueLabeled             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindManual                         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "manual"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSchedule                       DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "schedule"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSlackBotFailedCheckNew         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -335,7 +342,7 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest             FailedCheckAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	FailedCheckAgenticWorkflowTriggerKindGitlabNote                     FailedCheckAgenticWorkflowTriggerKind = "gitlab.note"
 	FailedCheckAgenticWorkflowTriggerKindLinearComment                  FailedCheckAgenticWorkflowTriggerKind = "linear.comment"
-	FailedCheckAgenticWorkflowTriggerKindLinearLabelAdded               FailedCheckAgenticWorkflowTriggerKind = "linear.label_added"
+	FailedCheckAgenticWorkflowTriggerKindLinearIssueLabeled             FailedCheckAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	FailedCheckAgenticWorkflowTriggerKindManual                         FailedCheckAgenticWorkflowTriggerKind = "manual"
 	FailedCheckAgenticWorkflowTriggerKindSchedule                       FailedCheckAgenticWorkflowTriggerKind = "schedule"
 	FailedCheckAgenticWorkflowTriggerKindSlackBotFailedCheckNew         FailedCheckAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -422,7 +429,7 @@ const (
 	GitHubCheckRunAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubCheckRunAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubCheckRunAgenticWorkflowTriggerKindGitlabNote                     GitHubCheckRunAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearComment                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubCheckRunAgenticWorkflowTriggerKindLinearLabelAdded               GitHubCheckRunAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubCheckRunAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubCheckRunAgenticWorkflowTriggerKindManual                         GitHubCheckRunAgenticWorkflowTriggerKind = "manual"
 	GitHubCheckRunAgenticWorkflowTriggerKindSchedule                       GitHubCheckRunAgenticWorkflowTriggerKind = "schedule"
 	GitHubCheckRunAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubCheckRunAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -474,7 +481,7 @@ const (
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubCheckSuiteAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabNote                     GitHubCheckSuiteAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearComment                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearLabelAdded               GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindManual                         GitHubCheckSuiteAgenticWorkflowTriggerKind = "manual"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindSchedule                       GitHubCheckSuiteAgenticWorkflowTriggerKind = "schedule"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubCheckSuiteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -525,7 +532,7 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubDeploymentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubDeploymentAgenticWorkflowTriggerKindGitlabNote                     GitHubDeploymentAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubDeploymentAgenticWorkflowTriggerKindLinearLabelAdded               GitHubDeploymentAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubDeploymentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubDeploymentAgenticWorkflowTriggerKindManual                         GitHubDeploymentAgenticWorkflowTriggerKind = "manual"
 	GitHubDeploymentAgenticWorkflowTriggerKindSchedule                       GitHubDeploymentAgenticWorkflowTriggerKind = "schedule"
 	GitHubDeploymentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubDeploymentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -554,7 +561,7 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabNote                     GitHubDeploymentStatusAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearLabelAdded               GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindManual                         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "manual"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindSchedule                       GitHubDeploymentStatusAgenticWorkflowTriggerKind = "schedule"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -583,7 +590,7 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubIssueCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGitlabNote                     GitHubIssueCommentAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearComment                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubIssueCommentAgenticWorkflowTriggerKindLinearLabelAdded               GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubIssueCommentAgenticWorkflowTriggerKindManual                         GitHubIssueCommentAgenticWorkflowTriggerKind = "manual"
 	GitHubIssueCommentAgenticWorkflowTriggerKindSchedule                       GitHubIssueCommentAgenticWorkflowTriggerKind = "schedule"
 	GitHubIssueCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubIssueCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -612,7 +619,7 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPullRequestAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubPullRequestAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPullRequestAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPullRequestAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPullRequestAgenticWorkflowTriggerKindManual                         GitHubPullRequestAgenticWorkflowTriggerKind = "manual"
 	GitHubPullRequestAgenticWorkflowTriggerKindSchedule                       GitHubPullRequestAgenticWorkflowTriggerKind = "schedule"
 	GitHubPullRequestAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPullRequestAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -641,7 +648,7 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestReviewAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "manual"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindSchedule                       GitHubPullRequestReviewAgenticWorkflowTriggerKind = "schedule"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -670,7 +677,7 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "manual"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindSchedule                       GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "schedule"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -699,7 +706,7 @@ const (
 	GitHubPushAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPushAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPushAgenticWorkflowTriggerKindGitlabNote                     GitHubPushAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubPushAgenticWorkflowTriggerKindLinearComment                  GitHubPushAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubPushAgenticWorkflowTriggerKindLinearLabelAdded               GitHubPushAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubPushAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPushAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPushAgenticWorkflowTriggerKindManual                         GitHubPushAgenticWorkflowTriggerKind = "manual"
 	GitHubPushAgenticWorkflowTriggerKindSchedule                       GitHubPushAgenticWorkflowTriggerKind = "schedule"
 	GitHubPushAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPushAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -728,7 +735,7 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubReleaseAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubReleaseAgenticWorkflowTriggerKindGitlabNote                     GitHubReleaseAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearComment                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubReleaseAgenticWorkflowTriggerKindLinearLabelAdded               GitHubReleaseAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubReleaseAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubReleaseAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubReleaseAgenticWorkflowTriggerKindManual                         GitHubReleaseAgenticWorkflowTriggerKind = "manual"
 	GitHubReleaseAgenticWorkflowTriggerKindSchedule                       GitHubReleaseAgenticWorkflowTriggerKind = "schedule"
 	GitHubReleaseAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubReleaseAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -800,7 +807,7 @@ const (
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearLabelAdded               GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindManual                         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "manual"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "schedule"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -829,7 +836,7 @@ const (
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowJobAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowJobAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearLabelAdded               GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindManual                         GitHubWorkflowJobAgenticWorkflowTriggerKind = "manual"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowJobAgenticWorkflowTriggerKind = "schedule"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowJobAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -869,7 +876,7 @@ const (
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowRunAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowRunAgenticWorkflowTriggerKind = "gitlab.note"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.comment"
-	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearLabelAdded               GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.label_added"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindManual                         GitHubWorkflowRunAgenticWorkflowTriggerKind = "manual"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowRunAgenticWorkflowTriggerKind = "schedule"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowRunAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -911,7 +918,7 @@ const (
 	GitLabMergeRequestAgenticWorkflowTriggerKindGitlabMergeRequest             GitLabMergeRequestAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGitlabNote                     GitLabMergeRequestAgenticWorkflowTriggerKind = "gitlab.note"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearComment                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.comment"
-	GitLabMergeRequestAgenticWorkflowTriggerKindLinearLabelAdded               GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.label_added"
+	GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueLabeled             GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitLabMergeRequestAgenticWorkflowTriggerKindManual                         GitLabMergeRequestAgenticWorkflowTriggerKind = "manual"
 	GitLabMergeRequestAgenticWorkflowTriggerKindSchedule                       GitLabMergeRequestAgenticWorkflowTriggerKind = "schedule"
 	GitLabMergeRequestAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitLabMergeRequestAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -940,7 +947,7 @@ const (
 	GitLabNoteAgenticWorkflowTriggerKindGitlabMergeRequest             GitLabNoteAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitLabNoteAgenticWorkflowTriggerKindGitlabNote                     GitLabNoteAgenticWorkflowTriggerKind = "gitlab.note"
 	GitLabNoteAgenticWorkflowTriggerKindLinearComment                  GitLabNoteAgenticWorkflowTriggerKind = "linear.comment"
-	GitLabNoteAgenticWorkflowTriggerKindLinearLabelAdded               GitLabNoteAgenticWorkflowTriggerKind = "linear.label_added"
+	GitLabNoteAgenticWorkflowTriggerKindLinearIssueLabeled             GitLabNoteAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitLabNoteAgenticWorkflowTriggerKindManual                         GitLabNoteAgenticWorkflowTriggerKind = "manual"
 	GitLabNoteAgenticWorkflowTriggerKindSchedule                       GitLabNoteAgenticWorkflowTriggerKind = "schedule"
 	GitLabNoteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitLabNoteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1033,7 +1040,7 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindGitlabMergeRequest             LinearCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearCommentAgenticWorkflowTriggerKindGitlabNote                     LinearCommentAgenticWorkflowTriggerKind = "gitlab.note"
 	LinearCommentAgenticWorkflowTriggerKindLinearComment                  LinearCommentAgenticWorkflowTriggerKind = "linear.comment"
-	LinearCommentAgenticWorkflowTriggerKindLinearLabelAdded               LinearCommentAgenticWorkflowTriggerKind = "linear.label_added"
+	LinearCommentAgenticWorkflowTriggerKindLinearIssueLabeled             LinearCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearCommentAgenticWorkflowTriggerKindManual                         LinearCommentAgenticWorkflowTriggerKind = "manual"
 	LinearCommentAgenticWorkflowTriggerKindSchedule                       LinearCommentAgenticWorkflowTriggerKind = "schedule"
 	LinearCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1051,47 +1058,54 @@ const (
 	LinearCommentTriggerVariableNameLinearIssueUrl    LinearCommentTriggerVariableName = "linear.issue.url"
 )
 
-// Defines values for LinearLabelAddedAgenticWorkflowTriggerKind.
+// Defines values for LinearIssueLabeledAgenticWorkflowTriggerKind.
 const (
-	LinearLabelAddedAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearLabelAddedAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
-	LinearLabelAddedAgenticWorkflowTriggerKindFailedCheckNew                 LinearLabelAddedAgenticWorkflowTriggerKind = "failed_check.new"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubCheckRun                 LinearLabelAddedAgenticWorkflowTriggerKind = "github.check_run"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubCheckSuite               LinearLabelAddedAgenticWorkflowTriggerKind = "github.check_suite"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubDeployment               LinearLabelAddedAgenticWorkflowTriggerKind = "github.deployment"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearLabelAddedAgenticWorkflowTriggerKind = "github.deployment_status"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubIssueComment             LinearLabelAddedAgenticWorkflowTriggerKind = "github.issue_comment"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequest              LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequestReview        LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request_review"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearLabelAddedAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubPush                     LinearLabelAddedAgenticWorkflowTriggerKind = "github.push"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubRelease                  LinearLabelAddedAgenticWorkflowTriggerKind = "github.release"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_dispatch"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowJob              LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_job"
-	LinearLabelAddedAgenticWorkflowTriggerKindGithubWorkflowRun              LinearLabelAddedAgenticWorkflowTriggerKind = "github.workflow_run"
-	LinearLabelAddedAgenticWorkflowTriggerKindGitlabMergeRequest             LinearLabelAddedAgenticWorkflowTriggerKind = "gitlab.merge_request"
-	LinearLabelAddedAgenticWorkflowTriggerKindGitlabNote                     LinearLabelAddedAgenticWorkflowTriggerKind = "gitlab.note"
-	LinearLabelAddedAgenticWorkflowTriggerKindLinearComment                  LinearLabelAddedAgenticWorkflowTriggerKind = "linear.comment"
-	LinearLabelAddedAgenticWorkflowTriggerKindLinearLabelAdded               LinearLabelAddedAgenticWorkflowTriggerKind = "linear.label_added"
-	LinearLabelAddedAgenticWorkflowTriggerKindManual                         LinearLabelAddedAgenticWorkflowTriggerKind = "manual"
-	LinearLabelAddedAgenticWorkflowTriggerKindSchedule                       LinearLabelAddedAgenticWorkflowTriggerKind = "schedule"
-	LinearLabelAddedAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearLabelAddedAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
-	LinearLabelAddedAgenticWorkflowTriggerKindSlackBotMessage                LinearLabelAddedAgenticWorkflowTriggerKind = "slack_bot.message"
-	LinearLabelAddedAgenticWorkflowTriggerKindSlackBotReaction               LinearLabelAddedAgenticWorkflowTriggerKind = "slack_bot.reaction"
-	LinearLabelAddedAgenticWorkflowTriggerKindWebhook                        LinearLabelAddedAgenticWorkflowTriggerKind = "webhook"
+	LinearIssueLabeledAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearIssueLabeledAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	LinearIssueLabeledAgenticWorkflowTriggerKindFailedCheckNew                 LinearIssueLabeledAgenticWorkflowTriggerKind = "failed_check.new"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubCheckRun                 LinearIssueLabeledAgenticWorkflowTriggerKind = "github.check_run"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubCheckSuite               LinearIssueLabeledAgenticWorkflowTriggerKind = "github.check_suite"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubDeployment               LinearIssueLabeledAgenticWorkflowTriggerKind = "github.deployment"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearIssueLabeledAgenticWorkflowTriggerKind = "github.deployment_status"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubIssueComment             LinearIssueLabeledAgenticWorkflowTriggerKind = "github.issue_comment"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequest              LinearIssueLabeledAgenticWorkflowTriggerKind = "github.pull_request"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequestReview        LinearIssueLabeledAgenticWorkflowTriggerKind = "github.pull_request_review"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearIssueLabeledAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPush                     LinearIssueLabeledAgenticWorkflowTriggerKind = "github.push"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubRelease                  LinearIssueLabeledAgenticWorkflowTriggerKind = "github.release"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearIssueLabeledAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowJob              LinearIssueLabeledAgenticWorkflowTriggerKind = "github.workflow_job"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowRun              LinearIssueLabeledAgenticWorkflowTriggerKind = "github.workflow_run"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGitlabMergeRequest             LinearIssueLabeledAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	LinearIssueLabeledAgenticWorkflowTriggerKindGitlabNote                     LinearIssueLabeledAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearIssueLabeledAgenticWorkflowTriggerKindLinearComment                  LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.comment"
+	LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueLabeled             LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.issue_labeled"
+	LinearIssueLabeledAgenticWorkflowTriggerKindManual                         LinearIssueLabeledAgenticWorkflowTriggerKind = "manual"
+	LinearIssueLabeledAgenticWorkflowTriggerKindSchedule                       LinearIssueLabeledAgenticWorkflowTriggerKind = "schedule"
+	LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearIssueLabeledAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotMessage                LinearIssueLabeledAgenticWorkflowTriggerKind = "slack_bot.message"
+	LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotReaction               LinearIssueLabeledAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	LinearIssueLabeledAgenticWorkflowTriggerKindWebhook                        LinearIssueLabeledAgenticWorkflowTriggerKind = "webhook"
 )
 
-// Defines values for LinearLabelAddedTriggerVariableName.
+// Defines values for LinearIssueLabeledTriggerVariableName.
 const (
-	LinearLabelAddedTriggerVariableNameLinearActorName     LinearLabelAddedTriggerVariableName = "linear.actor.name"
-	LinearLabelAddedTriggerVariableNameLinearIssueId       LinearLabelAddedTriggerVariableName = "linear.issue.id"
-	LinearLabelAddedTriggerVariableNameLinearIssueTeamId   LinearLabelAddedTriggerVariableName = "linear.issue.team_id"
-	LinearLabelAddedTriggerVariableNameLinearIssueTeamKey  LinearLabelAddedTriggerVariableName = "linear.issue.team_key"
-	LinearLabelAddedTriggerVariableNameLinearIssueTeamName LinearLabelAddedTriggerVariableName = "linear.issue.team_name"
-	LinearLabelAddedTriggerVariableNameLinearIssueTitle    LinearLabelAddedTriggerVariableName = "linear.issue.title"
-	LinearLabelAddedTriggerVariableNameLinearIssueUrl      LinearLabelAddedTriggerVariableName = "linear.issue.url"
-	LinearLabelAddedTriggerVariableNameLinearLabelColor    LinearLabelAddedTriggerVariableName = "linear.label.color"
-	LinearLabelAddedTriggerVariableNameLinearLabelId       LinearLabelAddedTriggerVariableName = "linear.label.id"
-	LinearLabelAddedTriggerVariableNameLinearLabelName     LinearLabelAddedTriggerVariableName = "linear.label.name"
+	LinearIssueLabeledTriggerVariableNameLinearAction        LinearIssueLabeledTriggerVariableName = "linear.action"
+	LinearIssueLabeledTriggerVariableNameLinearActorName     LinearIssueLabeledTriggerVariableName = "linear.actor.name"
+	LinearIssueLabeledTriggerVariableNameLinearIssueId       LinearIssueLabeledTriggerVariableName = "linear.issue.id"
+	LinearIssueLabeledTriggerVariableNameLinearIssueTeamId   LinearIssueLabeledTriggerVariableName = "linear.issue.team_id"
+	LinearIssueLabeledTriggerVariableNameLinearIssueTeamKey  LinearIssueLabeledTriggerVariableName = "linear.issue.team_key"
+	LinearIssueLabeledTriggerVariableNameLinearIssueTeamName LinearIssueLabeledTriggerVariableName = "linear.issue.team_name"
+	LinearIssueLabeledTriggerVariableNameLinearIssueTitle    LinearIssueLabeledTriggerVariableName = "linear.issue.title"
+	LinearIssueLabeledTriggerVariableNameLinearIssueUrl      LinearIssueLabeledTriggerVariableName = "linear.issue.url"
+	LinearIssueLabeledTriggerVariableNameLinearLabelColor    LinearIssueLabeledTriggerVariableName = "linear.label.color"
+	LinearIssueLabeledTriggerVariableNameLinearLabelId       LinearIssueLabeledTriggerVariableName = "linear.label.id"
+	LinearIssueLabeledTriggerVariableNameLinearLabelName     LinearIssueLabeledTriggerVariableName = "linear.label.name"
+)
+
+// Defines values for LinearLabelAction.
+const (
+	Added   LinearLabelAction = "added"
+	Removed LinearLabelAction = "removed"
 )
 
 // Defines values for LogRecordExportFormat.
@@ -1122,7 +1136,7 @@ const (
 	ManualAgenticWorkflowTriggerKindGitlabMergeRequest             ManualAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	ManualAgenticWorkflowTriggerKindGitlabNote                     ManualAgenticWorkflowTriggerKind = "gitlab.note"
 	ManualAgenticWorkflowTriggerKindLinearComment                  ManualAgenticWorkflowTriggerKind = "linear.comment"
-	ManualAgenticWorkflowTriggerKindLinearLabelAdded               ManualAgenticWorkflowTriggerKind = "linear.label_added"
+	ManualAgenticWorkflowTriggerKindLinearIssueLabeled             ManualAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	ManualAgenticWorkflowTriggerKindManual                         ManualAgenticWorkflowTriggerKind = "manual"
 	ManualAgenticWorkflowTriggerKindSchedule                       ManualAgenticWorkflowTriggerKind = "schedule"
 	ManualAgenticWorkflowTriggerKindSlackBotFailedCheckNew         ManualAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1327,7 +1341,7 @@ const (
 	ScheduledAgenticWorkflowTriggerKindGitlabMergeRequest             ScheduledAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	ScheduledAgenticWorkflowTriggerKindGitlabNote                     ScheduledAgenticWorkflowTriggerKind = "gitlab.note"
 	ScheduledAgenticWorkflowTriggerKindLinearComment                  ScheduledAgenticWorkflowTriggerKind = "linear.comment"
-	ScheduledAgenticWorkflowTriggerKindLinearLabelAdded               ScheduledAgenticWorkflowTriggerKind = "linear.label_added"
+	ScheduledAgenticWorkflowTriggerKindLinearIssueLabeled             ScheduledAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	ScheduledAgenticWorkflowTriggerKindManual                         ScheduledAgenticWorkflowTriggerKind = "manual"
 	ScheduledAgenticWorkflowTriggerKindSchedule                       ScheduledAgenticWorkflowTriggerKind = "schedule"
 	ScheduledAgenticWorkflowTriggerKindSlackBotFailedCheckNew         ScheduledAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1387,6 +1401,9 @@ const (
 const (
 	SignalTypeAgent0Credits                 SignalType = "agent0Credits"
 	SignalTypeCodeAgentCommitters           SignalType = "codeAgentCommitters"
+	SignalTypeExtendedRetentionLogs         SignalType = "extendedRetentionLogs"
+	SignalTypeExtendedRetentionSpans        SignalType = "extendedRetentionSpans"
+	SignalTypeExtendedRetentionWebEvents    SignalType = "extendedRetentionWebEvents"
 	SignalTypeLogs                          SignalType = "logs"
 	SignalTypeMetricDataPoints              SignalType = "metricDataPoints"
 	SignalTypeProfiles                      SignalType = "profiles"
@@ -1403,6 +1420,17 @@ const (
 	SignalTypeSpans                         SignalType = "spans"
 	SignalTypeSyntheticApiChecks            SignalType = "syntheticApiChecks"
 	SignalTypeWebEvents                     SignalType = "webEvents"
+)
+
+// Defines values for SkillDefinitionKind.
+const (
+	Dash0Skill SkillDefinitionKind = "Dash0Skill"
+)
+
+// Defines values for SkillSourceProvider.
+const (
+	SkillSourceProviderGithub SkillSourceProvider = "github"
+	SkillSourceProviderGitlab SkillSourceProvider = "gitlab"
 )
 
 // Defines values for SlackBotFailedCheckAgenticWorkflowTriggerKind.
@@ -1425,7 +1453,7 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotFailedCheckAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabNote                     SlackBotFailedCheckAgenticWorkflowTriggerKind = "gitlab.note"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearComment                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.comment"
-	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearLabelAdded               SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.label_added"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueLabeled             SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindManual                         SlackBotFailedCheckAgenticWorkflowTriggerKind = "manual"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindSchedule                       SlackBotFailedCheckAgenticWorkflowTriggerKind = "schedule"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindSlackBotFailedCheckNew         SlackBotFailedCheckAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1454,7 +1482,7 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotMessageAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	SlackBotMessageAgenticWorkflowTriggerKindGitlabNote                     SlackBotMessageAgenticWorkflowTriggerKind = "gitlab.note"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearComment                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.comment"
-	SlackBotMessageAgenticWorkflowTriggerKindLinearLabelAdded               SlackBotMessageAgenticWorkflowTriggerKind = "linear.label_added"
+	SlackBotMessageAgenticWorkflowTriggerKindLinearIssueLabeled             SlackBotMessageAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	SlackBotMessageAgenticWorkflowTriggerKindManual                         SlackBotMessageAgenticWorkflowTriggerKind = "manual"
 	SlackBotMessageAgenticWorkflowTriggerKindSchedule                       SlackBotMessageAgenticWorkflowTriggerKind = "schedule"
 	SlackBotMessageAgenticWorkflowTriggerKindSlackBotFailedCheckNew         SlackBotMessageAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1483,7 +1511,7 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotReactionAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	SlackBotReactionAgenticWorkflowTriggerKindGitlabNote                     SlackBotReactionAgenticWorkflowTriggerKind = "gitlab.note"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearComment                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.comment"
-	SlackBotReactionAgenticWorkflowTriggerKindLinearLabelAdded               SlackBotReactionAgenticWorkflowTriggerKind = "linear.label_added"
+	SlackBotReactionAgenticWorkflowTriggerKindLinearIssueLabeled             SlackBotReactionAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	SlackBotReactionAgenticWorkflowTriggerKindManual                         SlackBotReactionAgenticWorkflowTriggerKind = "manual"
 	SlackBotReactionAgenticWorkflowTriggerKindSchedule                       SlackBotReactionAgenticWorkflowTriggerKind = "schedule"
 	SlackBotReactionAgenticWorkflowTriggerKindSlackBotFailedCheckNew         SlackBotReactionAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1873,7 +1901,7 @@ const (
 	GitlabMergeRequest             WebhookAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitlabNote                     WebhookAgenticWorkflowTriggerKind = "gitlab.note"
 	LinearComment                  WebhookAgenticWorkflowTriggerKind = "linear.comment"
-	LinearLabelAdded               WebhookAgenticWorkflowTriggerKind = "linear.label_added"
+	LinearIssueLabeled             WebhookAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	Manual                         WebhookAgenticWorkflowTriggerKind = "manual"
 	Schedule                       WebhookAgenticWorkflowTriggerKind = "schedule"
 	SlackBotFailedCheckNew         WebhookAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2527,7 +2555,7 @@ type AgenticWorkflowTriggerDelivery string
 // - `gitlab.note`: Triggered when a comment is created on a GitLab merge request, issue, commit, or snippet.
 // - `darkplane.pull_request.evaluation`: Triggered after a successful terminal, non-experiment Darkplane AutoMerge evaluation run.
 // - `linear.comment`: Triggered when the Dash0 agent is @mentioned or delegated in a Linear comment whose text contains the configured keyword.
-// - `linear.label_added`: Triggered when a specific Linear label is added to an issue, optionally scoped to one or more Linear teams.
+// - `linear.issue_labeled`: Triggered when a specific Linear label is added to (or, with `actions`, removed from) an issue, in the configured teams.
 // - `webhook`: Triggered via an external webhook call.
 // - `manual`: Triggered manually via the UI. Runtime-only — not valid in `spec.triggers[]`.
 type AgenticWorkflowTriggerKind string
@@ -3086,6 +3114,9 @@ type CursorPagination struct {
 	// Limit The maximum number of results to return. If not set, there is a default limit to the number of results returned.
 	Limit *int64 `json:"limit,omitempty"`
 }
+
+// CustomSkillAction defines model for CustomSkillAction.
+type CustomSkillAction string
 
 // D0QLWarnings defines model for D0QLWarnings.
 type D0QLWarnings = []string
@@ -6287,10 +6318,16 @@ type LinearCommentAgenticWorkflowTriggerSpec struct {
 // - `linear.comment.user`: Display name of the user who left the comment.
 type LinearCommentTriggerVariableName string
 
-// LinearLabelAddedAgenticWorkflowTrigger defines model for LinearLabelAddedAgenticWorkflowTrigger.
-type LinearLabelAddedAgenticWorkflowTrigger struct {
-	Kind LinearLabelAddedAgenticWorkflowTriggerKind `json:"kind"`
-	Spec LinearLabelAddedAgenticWorkflowTriggerSpec `json:"spec"`
+// LinearIssueLabeledAgenticWorkflowTrigger defines model for LinearIssueLabeledAgenticWorkflowTrigger.
+type LinearIssueLabeledAgenticWorkflowTrigger struct {
+	Kind LinearIssueLabeledAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec Dash0 derives `linear.issue_labeled` from a Linear Issue `update` webhook whose label set
+	// changed, so its actions are `added` and `removed` rather than Linear's own
+	// `create | update | remove`. Linear's own `IssueLabel` webhook reports a label definition
+	// being created, updated or removed and is a different event. The event has no content
+	// author, so the spec carries sender filters only.
+	Spec LinearIssueLabeledAgenticWorkflowTriggerSpec `json:"spec"`
 
 	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
 	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
@@ -6302,28 +6339,30 @@ type LinearLabelAddedAgenticWorkflowTrigger struct {
 	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
 }
 
-// LinearLabelAddedAgenticWorkflowTriggerKind defines model for LinearLabelAddedAgenticWorkflowTrigger.Kind.
-type LinearLabelAddedAgenticWorkflowTriggerKind string
+// LinearIssueLabeledAgenticWorkflowTriggerKind defines model for LinearIssueLabeledAgenticWorkflowTrigger.Kind.
+type LinearIssueLabeledAgenticWorkflowTriggerKind string
 
-// LinearLabelAddedAgenticWorkflowTriggerSpec defines model for LinearLabelAddedAgenticWorkflowTriggerSpec.
-type LinearLabelAddedAgenticWorkflowTriggerSpec struct {
-	// AllTeams When true, the automation deliberately matches the configured label added to issues
-	// in every team of the connected Linear workspace, now and in the future. Mutually
-	// exclusive with a non-empty `teamIds` list. This flag exists to distinguish an
-	// explicit "all teams" choice from an unconfigured trigger: a Linear label-added
-	// trigger with neither `allTeams` nor `teamIds` set is rejected on write as an
-	// accidental match-everything catch-all, mirroring `allOrganizations` on GitHub
-	// triggers.
+// LinearIssueLabeledAgenticWorkflowTriggerSpec defines model for LinearIssueLabeledAgenticWorkflowTriggerSpec.
+type LinearIssueLabeledAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of label actions to filter on. When omitted or empty, only `added`
+	// matches, so triggers written without this field keep firing as before.
+	Actions *[]LinearLabelAction `json:"actions,omitempty"`
+
+	// AllTeams When true, the automation deliberately matches issues in every team of the connected
+	// Linear workspace, now and in the future. Mutually exclusive with a non-empty `teamIds`
+	// list. This flag distinguishes an explicit "all teams" choice from an unconfigured
+	// trigger, mirroring `allOrganizations` on GitHub triggers.
 	AllTeams *bool `json:"allTeams,omitempty"`
 
 	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
 	// This is in addition to the built-in variables that are always available.
-	AvailableVariables *[]LinearLabelAddedTriggerVariableName `json:"availableVariables,omitempty"`
+	AvailableVariables *[]LinearIssueLabeledTriggerVariableName `json:"availableVariables,omitempty"`
 
-	// LabelId The Linear label UUID that must be added to an issue for the trigger to fire. This is
-	// the sole matching key — matched case-insensitively against the label ID reported on
-	// the webhook event. If a label is re-created in Linear (new UUID, same name), update
-	// this field to re-point the trigger at the new label.
+	// LabelId The Linear label UUID that must be added to (or, with `actions`, removed from) an
+	// issue for the trigger to fire. This is the sole matching key — matched
+	// case-insensitively against the label ID reported on the webhook event. If a label is
+	// re-created in Linear (new UUID, same name), update this field to re-point the
+	// trigger at the new label.
 	LabelId string `json:"labelId"`
 
 	// LabelName Optional Linear label name corresponding to `labelId`, stored for UI display and
@@ -6336,14 +6375,25 @@ type LinearLabelAddedAgenticWorkflowTriggerSpec struct {
 	// populated.
 	LabelName *string `json:"labelName,omitempty"`
 
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
+	// or complete email. An actor without an email matches on its UUID only. Mutually
+	// exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
+	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
+	// match by ID only. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
 	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all.
+	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// Linear trigger kinds carry a team scope; projects and initiatives have none.
 	TeamIds *[]string `json:"teamIds,omitempty"`
 }
 
-// LinearLabelAddedTriggerVariableName Variables provided by the `linear.label_added` trigger.
+// LinearIssueLabeledTriggerVariableName Variables provided by the `linear.issue_labeled` trigger.
 //
 // - `linear.issue.id`: The Linear issue identifier (e.g., `ENG-123`).
 // - `linear.issue.title`: Title of the Linear issue.
@@ -6351,11 +6401,47 @@ type LinearLabelAddedAgenticWorkflowTriggerSpec struct {
 // - `linear.issue.team_id`: UUID of the Linear team that owns the issue.
 // - `linear.issue.team_key`: Short key of the Linear team (e.g., `ENG`).
 // - `linear.issue.team_name`: Display name of the Linear team.
-// - `linear.label.id`: UUID of the label that was added.
-// - `linear.label.name`: Name of the label that was added.
-// - `linear.label.color`: Hex color of the label that was added.
-// - `linear.actor.name`: Display name of the user who added the label, when known.
-type LinearLabelAddedTriggerVariableName string
+// - `linear.label.id`: UUID of the label that was added or removed.
+// - `linear.label.name`: Name of the label that was added or removed, when known.
+// - `linear.label.color`: Hex color of the label that was added or removed, when known.
+// - `linear.actor.name`: Display name of the user who added or removed the label, when known.
+// - `linear.action`: What happened to the label: `added` or `removed`.
+type LinearIssueLabeledTriggerVariableName string
+
+// LinearLabelAction What happened to a label on a Linear issue.
+//
+// - `added`: The label was added to the issue.
+// - `removed`: The label was removed from the issue.
+type LinearLabelAction string
+
+// LinearSenderFilters defines model for LinearSenderFilters.
+type LinearSenderFilters struct {
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
+	// or complete email. An actor without an email matches on its UUID only. Mutually
+	// exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
+	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
+	// match by ID only. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+}
+
+// LinearTeamScope defines model for LinearTeamScope.
+type LinearTeamScope struct {
+	// AllTeams When true, the automation deliberately matches issues in every team of the connected
+	// Linear workspace, now and in the future. Mutually exclusive with a non-empty `teamIds`
+	// list. This flag distinguishes an explicit "all teams" choice from an unconfigured
+	// trigger, mirroring `allOrganizations` on GitHub triggers.
+	AllTeams *bool `json:"allTeams,omitempty"`
+
+	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
+	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
+	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
+	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// Linear trigger kinds carry a team scope; projects and initiatives have none.
+	TeamIds *[]string `json:"teamIds,omitempty"`
+}
 
 // LogRecord defines model for LogRecord.
 type LogRecord struct {
@@ -8496,6 +8582,157 @@ type SignalToMetricsTestResponse struct {
 
 // SignalType Enumeration of valid signal types in Dash0.
 type SignalType string
+
+// SkillAnnotations defines model for SkillAnnotations.
+type SkillAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the skill was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComcreatedBy The Dash0 user ID of the user who created the skill, matching the member's `dash0.com/userId` label. Editing or sharing the skill does not change it. Absent when the skill was created with an API token or by a desired-state source. Set by the server; read-only.
+	Dash0ComcreatedBy *string `json:"dash0.com/created-by,omitempty"`
+
+	// Dash0ComcreatorAvatarUrl Avatar URL of the user in `dash0.com/created-by`. Resolved on every read. Absent when the user has no avatar, `dash0.com/created-by` is absent, or the user has since been deleted. Set by the server; read-only.
+	Dash0ComcreatorAvatarUrl *string `json:"dash0.com/creator-avatar-url,omitempty"`
+
+	// Dash0ComcreatorName Display name of the user in `dash0.com/created-by`: their first and last name, or their email when neither is set. Resolved on every read, so it follows later profile changes. Absent when `dash0.com/created-by` is absent or the user has since been deleted. Set by the server; read-only.
+	Dash0ComcreatorName *string `json:"dash0.com/creator-name,omitempty"`
+
+	// Dash0ComdeletedAt Soft-delete timestamp. Present when the skill has been deleted but not yet purged. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0Comenabled Whether the skill is active for the user it was read for, `"true"` or `"false"`. A user's own choice wins; without one, the skill is on if any grant that applies to them turns it on by default. The author's grant does; a grant a user adds when sharing does not, so a recipient enables a shared skill themselves. On a create or update by a user, `"false"` disables the skill for that user only and `"true"` enables it, neither appends a version, and a value matching the user's current state stores nothing. A machine token has no user to scope a choice to, so it may send `"true"` but gets 400 for `"false"`. `PUT /api/agent0/custom-skills/{originOrId}/disabled` does the same without an update. A disabled skill drops off the catalogue the worker loads into that user's sandbox.
+	Dash0Comenabled *string `json:"dash0.com/enabled,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// SkillCreateRequest defines model for SkillCreateRequest.
+type SkillCreateRequest = SkillDefinition
+
+// SkillDefinition defines model for SkillDefinition.
+type SkillDefinition struct {
+	Kind     SkillDefinitionKind `json:"kind"`
+	Metadata SkillMetadata       `json:"metadata"`
+	Spec     SkillSpec           `json:"spec"`
+}
+
+// SkillDefinitionKind defines model for SkillDefinition.Kind.
+type SkillDefinitionKind string
+
+// SkillFile defines model for SkillFile.
+type SkillFile struct {
+	// Content Contents of the file.
+	Content string `json:"content"`
+
+	// RelativePath Path of the file relative to the skill root (e.g. `SKILL.md`).
+	RelativePath string `json:"relativePath"`
+}
+
+// SkillLabels defines model for SkillLabels.
+type SkillLabels struct {
+	// Dash0Comid Unique internal ID of the skill. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for skills managed as code (e.g. a Terraform resource ID or a `dash0 apply` document). Set on create and immutable afterwards; use it as the `originOrId` path parameter to upsert the skill with PUT. Empty for skills created in the Dash0 UI.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+
+	// Dash0Comversion Current version of the skill. Needs to be set when updating a skill to prevent conflicting writes.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// SkillListResponse defines model for SkillListResponse.
+type SkillListResponse struct {
+	Skills []SkillDefinition `json:"skills"`
+}
+
+// SkillMetadata defines model for SkillMetadata.
+type SkillMetadata struct {
+	Annotations *SkillAnnotations `json:"annotations,omitempty"`
+	Labels      *SkillLabels      `json:"labels,omitempty"`
+
+	// Name Name of the skill, extracted from the `name` field in the `SKILL.md` frontmatter. Unique within the organization. Server-derived and read-only: any value supplied on a write is ignored.
+	Name *string `json:"name,omitempty"`
+}
+
+// SkillPermission A grant of actions on a skill to one user, team or organization role.
+type SkillPermission struct {
+	Actions []CustomSkillAction `json:"actions"`
+
+	// DefaultEnabled Whether the skill is on for the users this grant matches who have not turned it on or off themselves. When omitted, an existing grant keeps its value, and a new grant is on unless a user shares it under author permissions, where recipients turn it on themselves. The author's own grant on a new skill is always on. A default can be set to false only in organizations where custom skills belong to their author; elsewhere that answers 400, and setting it to true restores a grant left off. Admins may set it on any grant; members only on a grant for a team they belong to or on their own user grant. Changing it on any other grant answers 403.
+	DefaultEnabled *bool `json:"defaultEnabled,omitempty"`
+
+	// Role An organization role: `admin` or `basic_member`.
+	Role *string `json:"role,omitempty"`
+
+	// TeamId ID of a team in the organization.
+	TeamId *string `json:"teamId,omitempty"`
+
+	// UserId ID of a user in the organization.
+	UserId *string `json:"userId,omitempty"`
+}
+
+// SkillResponse defines model for SkillResponse.
+type SkillResponse = SkillDefinition
+
+// SkillSource The repository a skill was imported from.
+type SkillSource struct {
+	// Name The skill's name in the repository, as its `SKILL.md` frontmatter read when the skill was last imported or refreshed. Differs from `metadata.name` when the skill was renamed in Dash0: a refresh keeps the Dash0 name and writes it into the refreshed `SKILL.md`, and only updates this field. Defaults to the frontmatter name on create when absent.
+	Name *string `json:"name,omitempty"`
+
+	// Path Path of the skill root within the repository, relative to the repository root (e.g. `skills/incident-response`).
+	Path string `json:"path"`
+
+	// Provider - `github`: The repository is hosted on GitHub.
+	// - `gitlab`: The repository is hosted on GitLab.
+	Provider SkillSourceProvider `json:"provider"`
+
+	// Ref The branch, tag or commit the skill was imported from (e.g. `v1.0.0`), as named by the imported URL. Absent when the skill was imported from the repository's default branch. A refresh re-reads the skill from this ref.
+	Ref *string `json:"ref,omitempty"`
+
+	// RepositoryUrl URL of the repository the skill was imported from (e.g. `https://github.com/dash0hq/agent-skills`).
+	RepositoryUrl string `json:"repositoryUrl"`
+}
+
+// SkillSourceProvider - `github`: The repository is hosted on GitHub.
+// - `gitlab`: The repository is hosted on GitLab.
+type SkillSourceProvider string
+
+// SkillSpec defines model for SkillSpec.
+type SkillSpec struct {
+	// Files The files that make up the skill, each keyed by its path relative to the skill root. Must include a `SKILL.md` in the OpenCode skill format; the server reads the skill's name from its frontmatter.
+	Files []SkillFile `json:"files"`
+
+	// Permissions Who may read, edit and delete the skill. Each entry grants actions to exactly one user, team or organization role. On create, the entries are added to the default grants. On update, a present list replaces the stored grants exactly as sent and an absent one leaves them unchanged. The `admin` role always holds read, edit and delete, except on skills with a `dash0.com/origin`, where it holds read and delete. An `admin` entry can set only its `defaultEnabled`. A skill managed by Terraform, the Dash0 operator or the Dash0 platform accepts no `custom_skill:write` grant. When a user sends the list for a skill that accepts write grants, at least one entry must hold read, edit and delete.
+	Permissions *[]SkillPermission `json:"permissions,omitempty"`
+
+	// PermittedActions What the calling user may do with the skill. Set by the server; read-only. Absent for callers without a user identity.
+	PermittedActions *[]CustomSkillAction `json:"permittedActions,omitempty"`
+
+	// Source The repository a skill was imported from.
+	Source *SkillSource `json:"source,omitempty"`
+}
+
+// SkillUpdateRequest defines model for SkillUpdateRequest.
+type SkillUpdateRequest = SkillDefinition
 
 // SlackBotConfig defines model for SlackBotConfig.
 type SlackBotConfig struct {
@@ -10800,6 +11037,18 @@ type WebhookConfig struct {
 	Url             string             `json:"url"`
 }
 
+// GetApiAgent0CustomSkillsParams defines parameters for GetApiAgent0CustomSkills.
+type GetApiAgent0CustomSkillsParams struct {
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+
+	// Enabled Filter by whether the skill is on for the calling user. When omitted, skills are returned whether they are on or off.
+	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
+
+	// Name Filter by exact skill name.
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+}
+
 // GetApiAgenticWorkflowsParams defines parameters for GetApiAgenticWorkflows.
 type GetApiAgenticWorkflowsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -11321,6 +11570,12 @@ type GetOauthAuthorizeParams struct {
 	// Prompt Space-separated list of prompt directives. Supported value: "consent".
 	Prompt *string `form:"prompt,omitempty" json:"prompt,omitempty"`
 }
+
+// PostApiAgent0CustomSkillsJSONRequestBody defines body for PostApiAgent0CustomSkills for application/json ContentType.
+type PostApiAgent0CustomSkillsJSONRequestBody = SkillCreateRequest
+
+// PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody defines body for PutApiAgent0CustomSkillsOriginOrId for application/json ContentType.
+type PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody = SkillUpdateRequest
 
 // PostApiAgenticWorkflowsJSONRequestBody defines body for PostApiAgenticWorkflows for application/json ContentType.
 type PostApiAgenticWorkflowsJSONRequestBody = AgenticWorkflowCreateRequest
@@ -12648,22 +12903,22 @@ func (t *AgenticWorkflowTrigger) MergeLinearCommentAgenticWorkflowTrigger(v Line
 	return err
 }
 
-// AsLinearLabelAddedAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a LinearLabelAddedAgenticWorkflowTrigger
-func (t AgenticWorkflowTrigger) AsLinearLabelAddedAgenticWorkflowTrigger() (LinearLabelAddedAgenticWorkflowTrigger, error) {
-	var body LinearLabelAddedAgenticWorkflowTrigger
+// AsLinearIssueLabeledAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a LinearIssueLabeledAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsLinearIssueLabeledAgenticWorkflowTrigger() (LinearIssueLabeledAgenticWorkflowTrigger, error) {
+	var body LinearIssueLabeledAgenticWorkflowTrigger
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromLinearLabelAddedAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided LinearLabelAddedAgenticWorkflowTrigger
-func (t *AgenticWorkflowTrigger) FromLinearLabelAddedAgenticWorkflowTrigger(v LinearLabelAddedAgenticWorkflowTrigger) error {
+// FromLinearIssueLabeledAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided LinearIssueLabeledAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromLinearIssueLabeledAgenticWorkflowTrigger(v LinearIssueLabeledAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeLinearLabelAddedAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearLabelAddedAgenticWorkflowTrigger
-func (t *AgenticWorkflowTrigger) MergeLinearLabelAddedAgenticWorkflowTrigger(v LinearLabelAddedAgenticWorkflowTrigger) error {
+// MergeLinearIssueLabeledAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearIssueLabeledAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeLinearIssueLabeledAgenticWorkflowTrigger(v LinearIssueLabeledAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -14405,6 +14660,25 @@ type ClientInterface interface {
 	// GetWellKnownOauthProtectedResource request
 	GetWellKnownOauthProtectedResource(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiAgent0CustomSkills request
+	GetApiAgent0CustomSkills(ctx context.Context, params *GetApiAgent0CustomSkillsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiAgent0CustomSkillsWithBody request with any body
+	PostApiAgent0CustomSkillsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiAgent0CustomSkills(ctx context.Context, body PostApiAgent0CustomSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiAgent0CustomSkillsOriginOrId request
+	DeleteApiAgent0CustomSkillsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAgent0CustomSkillsOriginOrId request
+	GetApiAgent0CustomSkillsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAgent0CustomSkillsOriginOrIdWithBody request with any body
+	PutApiAgent0CustomSkillsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PutApiAgent0CustomSkillsOriginOrId(ctx context.Context, originOrId string, body PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiAgenticWorkflows request
 	GetApiAgenticWorkflows(ctx context.Context, params *GetApiAgenticWorkflowsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -14930,6 +15204,90 @@ func (c *generatedClient) GetWellKnownOauthAuthorizationServer(ctx context.Conte
 
 func (c *generatedClient) GetWellKnownOauthProtectedResource(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetWellKnownOauthProtectedResourceRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiAgent0CustomSkills(ctx context.Context, params *GetApiAgent0CustomSkillsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAgent0CustomSkillsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAgent0CustomSkillsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAgent0CustomSkillsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PostApiAgent0CustomSkills(ctx context.Context, body PostApiAgent0CustomSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiAgent0CustomSkillsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) DeleteApiAgent0CustomSkillsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAgent0CustomSkillsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) GetApiAgent0CustomSkillsOriginOrId(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAgent0CustomSkillsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAgent0CustomSkillsOriginOrIdWithBody(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAgent0CustomSkillsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *generatedClient) PutApiAgent0CustomSkillsOriginOrId(ctx context.Context, originOrId string, body PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAgent0CustomSkillsOriginOrIdRequest(c.Server, originOrId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -17282,6 +17640,242 @@ func NewGetWellKnownOauthProtectedResourceRequest(server string) (*http.Request,
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewGetApiAgent0CustomSkillsRequest generates requests for GetApiAgent0CustomSkills
+func NewGetApiAgent0CustomSkillsRequest(server string, params *GetApiAgent0CustomSkillsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/agent0/custom-skills")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "originPrefix", runtime.ParamLocationQuery, *params.OriginPrefix); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Enabled != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "enabled", runtime.ParamLocationQuery, *params.Enabled); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "name", runtime.ParamLocationQuery, *params.Name); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiAgent0CustomSkillsRequest calls the generic PostApiAgent0CustomSkills builder with application/json body
+func NewPostApiAgent0CustomSkillsRequest(server string, body PostApiAgent0CustomSkillsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiAgent0CustomSkillsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiAgent0CustomSkillsRequestWithBody generates requests for PostApiAgent0CustomSkills with any type of body
+func NewPostApiAgent0CustomSkillsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/agent0/custom-skills")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiAgent0CustomSkillsOriginOrIdRequest generates requests for DeleteApiAgent0CustomSkillsOriginOrId
+func NewDeleteApiAgent0CustomSkillsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/agent0/custom-skills/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAgent0CustomSkillsOriginOrIdRequest generates requests for GetApiAgent0CustomSkillsOriginOrId
+func NewGetApiAgent0CustomSkillsOriginOrIdRequest(server string, originOrId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/agent0/custom-skills/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAgent0CustomSkillsOriginOrIdRequest calls the generic PutApiAgent0CustomSkillsOriginOrId builder with application/json body
+func NewPutApiAgent0CustomSkillsOriginOrIdRequest(server string, originOrId string, body PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAgent0CustomSkillsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiAgent0CustomSkillsOriginOrIdRequestWithBody generates requests for PutApiAgent0CustomSkillsOriginOrId with any type of body
+func NewPutApiAgent0CustomSkillsOriginOrIdRequestWithBody(server string, originOrId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "originOrId", runtime.ParamLocationPath, originOrId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/agent0/custom-skills/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -24276,6 +24870,25 @@ type ClientWithResponsesInterface interface {
 	// GetWellKnownOauthProtectedResourceWithResponse request
 	GetWellKnownOauthProtectedResourceWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetWellKnownOauthProtectedResourceResponse, error)
 
+	// GetApiAgent0CustomSkillsWithResponse request
+	GetApiAgent0CustomSkillsWithResponse(ctx context.Context, params *GetApiAgent0CustomSkillsParams, reqEditors ...RequestEditorFn) (*GetApiAgent0CustomSkillsResponse, error)
+
+	// PostApiAgent0CustomSkillsWithBodyWithResponse request with any body
+	PostApiAgent0CustomSkillsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAgent0CustomSkillsResponse, error)
+
+	PostApiAgent0CustomSkillsWithResponse(ctx context.Context, body PostApiAgent0CustomSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAgent0CustomSkillsResponse, error)
+
+	// DeleteApiAgent0CustomSkillsOriginOrIdWithResponse request
+	DeleteApiAgent0CustomSkillsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiAgent0CustomSkillsOriginOrIdResponse, error)
+
+	// GetApiAgent0CustomSkillsOriginOrIdWithResponse request
+	GetApiAgent0CustomSkillsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiAgent0CustomSkillsOriginOrIdResponse, error)
+
+	// PutApiAgent0CustomSkillsOriginOrIdWithBodyWithResponse request with any body
+	PutApiAgent0CustomSkillsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAgent0CustomSkillsOriginOrIdResponse, error)
+
+	PutApiAgent0CustomSkillsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAgent0CustomSkillsOriginOrIdResponse, error)
+
 	// GetApiAgenticWorkflowsWithResponse request
 	GetApiAgenticWorkflowsWithResponse(ctx context.Context, params *GetApiAgenticWorkflowsParams, reqEditors ...RequestEditorFn) (*GetApiAgenticWorkflowsResponse, error)
 
@@ -24827,6 +25440,120 @@ func (r GetWellKnownOauthProtectedResourceResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetWellKnownOauthProtectedResourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAgent0CustomSkillsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillListResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAgent0CustomSkillsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAgent0CustomSkillsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiAgent0CustomSkillsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiAgent0CustomSkillsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiAgent0CustomSkillsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteApiAgent0CustomSkillsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAgent0CustomSkillsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAgent0CustomSkillsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiAgent0CustomSkillsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAgent0CustomSkillsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAgent0CustomSkillsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutApiAgent0CustomSkillsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *SkillResponse
+	JSONDefault  *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAgent0CustomSkillsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAgent0CustomSkillsOriginOrIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -27805,6 +28532,67 @@ func (c *ClientWithResponses) GetWellKnownOauthProtectedResourceWithResponse(ctx
 	return ParseGetWellKnownOauthProtectedResourceResponse(rsp)
 }
 
+// GetApiAgent0CustomSkillsWithResponse request returning *GetApiAgent0CustomSkillsResponse
+func (c *ClientWithResponses) GetApiAgent0CustomSkillsWithResponse(ctx context.Context, params *GetApiAgent0CustomSkillsParams, reqEditors ...RequestEditorFn) (*GetApiAgent0CustomSkillsResponse, error) {
+	rsp, err := c.GetApiAgent0CustomSkills(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAgent0CustomSkillsResponse(rsp)
+}
+
+// PostApiAgent0CustomSkillsWithBodyWithResponse request with arbitrary body returning *PostApiAgent0CustomSkillsResponse
+func (c *ClientWithResponses) PostApiAgent0CustomSkillsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiAgent0CustomSkillsResponse, error) {
+	rsp, err := c.PostApiAgent0CustomSkillsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAgent0CustomSkillsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiAgent0CustomSkillsWithResponse(ctx context.Context, body PostApiAgent0CustomSkillsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiAgent0CustomSkillsResponse, error) {
+	rsp, err := c.PostApiAgent0CustomSkills(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiAgent0CustomSkillsResponse(rsp)
+}
+
+// DeleteApiAgent0CustomSkillsOriginOrIdWithResponse request returning *DeleteApiAgent0CustomSkillsOriginOrIdResponse
+func (c *ClientWithResponses) DeleteApiAgent0CustomSkillsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*DeleteApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiAgent0CustomSkillsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAgent0CustomSkillsOriginOrIdResponse(rsp)
+}
+
+// GetApiAgent0CustomSkillsOriginOrIdWithResponse request returning *GetApiAgent0CustomSkillsOriginOrIdResponse
+func (c *ClientWithResponses) GetApiAgent0CustomSkillsOriginOrIdWithResponse(ctx context.Context, originOrId string, reqEditors ...RequestEditorFn) (*GetApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiAgent0CustomSkillsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAgent0CustomSkillsOriginOrIdResponse(rsp)
+}
+
+// PutApiAgent0CustomSkillsOriginOrIdWithBodyWithResponse request with arbitrary body returning *PutApiAgent0CustomSkillsOriginOrIdResponse
+func (c *ClientWithResponses) PutApiAgent0CustomSkillsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiAgent0CustomSkillsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAgent0CustomSkillsOriginOrIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutApiAgent0CustomSkillsOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAgent0CustomSkillsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiAgent0CustomSkillsOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAgent0CustomSkillsOriginOrIdResponse(rsp)
+}
+
 // GetApiAgenticWorkflowsWithResponse request returning *GetApiAgenticWorkflowsResponse
 func (c *ClientWithResponses) GetApiAgenticWorkflowsWithResponse(ctx context.Context, params *GetApiAgenticWorkflowsParams, reqEditors ...RequestEditorFn) (*GetApiAgenticWorkflowsResponse, error) {
 	rsp, err := c.GetApiAgenticWorkflows(ctx, params, reqEditors...)
@@ -29510,6 +30298,164 @@ func ParseGetWellKnownOauthProtectedResourceResponse(rsp *http.Response) (*GetWe
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest OAuthProtectedResourceMetadata
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAgent0CustomSkillsResponse parses an HTTP response from a GetApiAgent0CustomSkillsWithResponse call
+func ParseGetApiAgent0CustomSkillsResponse(rsp *http.Response) (*GetApiAgent0CustomSkillsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAgent0CustomSkillsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiAgent0CustomSkillsResponse parses an HTTP response from a PostApiAgent0CustomSkillsWithResponse call
+func ParsePostApiAgent0CustomSkillsResponse(rsp *http.Response) (*PostApiAgent0CustomSkillsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiAgent0CustomSkillsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiAgent0CustomSkillsOriginOrIdResponse parses an HTTP response from a DeleteApiAgent0CustomSkillsOriginOrIdWithResponse call
+func ParseDeleteApiAgent0CustomSkillsOriginOrIdResponse(rsp *http.Response) (*DeleteApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAgent0CustomSkillsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAgent0CustomSkillsOriginOrIdResponse parses an HTTP response from a GetApiAgent0CustomSkillsOriginOrIdWithResponse call
+func ParseGetApiAgent0CustomSkillsOriginOrIdResponse(rsp *http.Response) (*GetApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAgent0CustomSkillsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAgent0CustomSkillsOriginOrIdResponse parses an HTTP response from a PutApiAgent0CustomSkillsOriginOrIdWithResponse call
+func ParsePutApiAgent0CustomSkillsOriginOrIdResponse(rsp *http.Response) (*PutApiAgent0CustomSkillsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAgent0CustomSkillsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SkillResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

@@ -133,6 +133,14 @@ type Client interface {
 	DeleteRecordingRule(ctx context.Context, originOrID string, dataset *string) error
 	ListRecordingRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[RecordingRule]
 
+	// Agent0 Custom Skills
+	ListCustomSkills(ctx context.Context, opts ...ListOption) ([]*SkillDefinition, error)
+	GetCustomSkill(ctx context.Context, originOrID string) (*SkillDefinition, error)
+	CreateCustomSkill(ctx context.Context, skill *SkillDefinition) (*SkillDefinition, error)
+	UpdateCustomSkill(ctx context.Context, originOrID string, skill *SkillDefinition) (*SkillDefinition, error)
+	DeleteCustomSkill(ctx context.Context, originOrID string) error
+	ListCustomSkillsIter(ctx context.Context, opts ...ListOption) *Iter[SkillDefinition]
+
 	// Notification Channels
 	ListNotificationChannels(ctx context.Context) ([]*NotificationChannelDefinition, error)
 	GetNotificationChannel(ctx context.Context, originOrID string) (*NotificationChannelDefinition, error)
