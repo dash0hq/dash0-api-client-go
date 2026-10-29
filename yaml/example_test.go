@@ -314,3 +314,19 @@ func ExampleWithAnnotationsUnfiltered() {
 	fmt.Println(equivalent)
 	// Output: false
 }
+
+func ExampleUnmarshalStrict() {
+	// A typo would otherwise be dropped, and the token stored as unrestricted.
+	data := []byte(`kind: Dash0AuthToken
+metadata:
+  name: ci
+spec:
+  scope:
+    datasets:
+      restrction: restricted
+`)
+	var token dash0.AuthTokenDefinition
+	err := dash0yaml.UnmarshalStrict(data, &token)
+	fmt.Println(err)
+	// Output: unknown field "spec.scope.datasets.restrction"
+}
