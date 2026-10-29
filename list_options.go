@@ -29,7 +29,7 @@ type ListOptions struct {
 
 // WithOriginPrefix restricts a list call to assets whose dash0.com/origin starts with prefix.
 // An empty prefix leaves the filter unset.
-// Supported by [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], [Client.ListSignalToMetrics], [Client.CountSignalToMetrics], and their Iter variants.
+// Supported by [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], [Client.ListSignalToMetrics], [Client.CountSignalToMetrics], [Client.ListCustomSkills], and their Iter variants.
 func WithOriginPrefix(prefix string) ListOption {
 	return func(o *ListOptions) {
 		if prefix == "" {
@@ -71,7 +71,8 @@ func WithSignal(signal SignalToMetricsSignalType) ListOption {
 }
 
 // WithEnabled restricts a list call to assets whose enabled state is enabled.
-// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], and [Client.CountSignalToMetrics].
+// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], [Client.CountSignalToMetrics], [Client.ListCustomSkills], and [Client.ListCustomSkillsIter].
+// A custom skill is on or off per user, so for an API token without a user every readable skill counts as enabled.
 // The other list methods return an error when given this option.
 func WithEnabled(enabled bool) ListOption {
 	return func(o *ListOptions) {
