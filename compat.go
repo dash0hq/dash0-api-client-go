@@ -197,6 +197,15 @@ package dash0
 //
 // The [TeamApiVersion] constant is now [TeamApiVersionDash0Comv1alpha1], because [AwsMetricScrapeConfigApiVersion] shares its value.
 // The bare Dash0Comv1alpha1 stays as a deprecated alias.
+//
+// # Migration guide (v1.28.x to <NEXT_RELEASE>)
+//
+// The API renamed the Linear label trigger kind from linear.label_added to linear.issue_labeled and no longer accepts the old value.
+// Every *LinearLabelAdded constant, the LinearLabelAddedAgenticWorkflowTriggerSpec and LinearLabelAddedTriggerVariableName types, and the deprecated WebhookAgenticWorkflowTriggerKindLinearLabelAdded alias are gone.
+// Use [LinearIssueLabeled] and [LinearIssueLabeledAgenticWorkflowTriggerSpec] instead.
+//
+// The [DarkplaneProvider] constants are now [DarkplaneProviderGithub] and [DarkplaneProviderGitlab], because [SkillSourceProvider] shares their values.
+// The bare Github and Gitlab stay as deprecated aliases.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
@@ -287,6 +296,16 @@ const GcpPubsub = ViewTypeGcpPubsub
 //
 // Deprecated: since v1.28.0. Use [TeamApiVersionDash0Comv1alpha1] instead.
 const Dash0Comv1alpha1 = TeamApiVersionDash0Comv1alpha1
+
+// Github is a deprecated alias for [DarkplaneProviderGithub].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneProviderGithub] instead.
+const Github = DarkplaneProviderGithub
+
+// Gitlab is a deprecated alias for [DarkplaneProviderGitlab].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneProviderGitlab] instead.
+const Gitlab = DarkplaneProviderGitlab
 
 // Logs is a deprecated alias for [ViewTypeLogs].
 //
