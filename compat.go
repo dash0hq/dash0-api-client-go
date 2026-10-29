@@ -508,11 +508,6 @@ const WebhookAgenticWorkflowTriggerKindGitlabNote = GitlabNote
 // Deprecated: since v1.26.0. Use [LinearComment] instead.
 const WebhookAgenticWorkflowTriggerKindLinearComment = LinearComment
 
-// WebhookAgenticWorkflowTriggerKindLinearLabelAdded is a deprecated alias for [LinearLabelAdded].
-//
-// Deprecated: since v1.26.0. Use [LinearLabelAdded] instead.
-const WebhookAgenticWorkflowTriggerKindLinearLabelAdded = LinearLabelAdded
-
 // WebhookAgenticWorkflowTriggerKindManual is a deprecated alias for [Manual].
 //
 // Deprecated: since v1.26.0. Use [Manual] instead.
