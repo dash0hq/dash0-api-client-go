@@ -186,7 +186,7 @@ package dash0
 // Use the constants ([IngestLogs], [AsteriskRead], and so on) or convert a string with AuthTokenAction(s).
 // The API now rejects unknown actions with 400.
 //
-// # Migration guide (v1.27.x to <NEXT_RELEASE>)
+// # Migration guide (v1.27.x to v1.28.0)
 //
 // The public spec no longer exposes two fields of the edge collector settings, so [SettingsPerOrganizationAndDatasetInfo] lost TelemetryTransformationRuleSettings and ObservedPatterns.
 // The types only these fields referenced are gone too: every TelemetryTransformationRule* type and constant, Dash0TelemetryTransformationRule, ObservedPatternEntry, and the OTTLConditions, OTTLStatement, and OTTLStatements aliases.
@@ -285,7 +285,7 @@ const GcpPubsub = ViewTypeGcpPubsub
 
 // Dash0Comv1alpha1 is a deprecated alias for [TeamApiVersionDash0Comv1alpha1].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [TeamApiVersionDash0Comv1alpha1] instead.
+// Deprecated: since v1.28.0. Use [TeamApiVersionDash0Comv1alpha1] instead.
 const Dash0Comv1alpha1 = TeamApiVersionDash0Comv1alpha1
 
 // Logs is a deprecated alias for [ViewTypeLogs].
