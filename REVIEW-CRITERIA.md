@@ -86,7 +86,7 @@ Evaluates whether changes preserve the public API contract and whether breaking 
 
 - Are removed or renamed symbols aliased in `compat.go` with `// Deprecated: since <NEXT_RELEASE>` doc comments?
   Aliases let existing consumer code compile while surfacing migration guidance via Go tooling.
-- Are unavoidable breaking changes (generated struct field type changes, interface expansions) listed in `api_compatibility_exceptions.txt` with a version comment and rationale?
+- Are unavoidable breaking changes (generated struct field type changes, changed interface method signatures) listed in `api_compatibility_exceptions.txt` with a version comment and rationale?
 - Does `make api-compat` pass?
   This runs `gorelease` and filters through the exceptions file.
   New unallowed incompatible changes must be either fixed or explicitly excepted.
