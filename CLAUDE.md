@@ -87,7 +87,7 @@ Keep helpers co-located with their domain's CRUD methods.
 | `iterator.go` | Generic pagination iterator |
 | `context.go` | Context helpers (idempotent POST marking) |
 | `errors.go` | `APIError` type and helpers (`IsNotFound`, `IsUnauthorized`, etc.) |
-| `prometheus_types.go` | Prometheus CRD types (`PrometheusRules`, `PrometheusRule`, `PromDuration`) and `FormatDuration` |
+| `prometheus_types.go` | Prometheus CRD types (`PrometheusRules`, `PrometheusRule`) and `FormatDuration` |
 | `prometheus_alert_rules.go` | Prometheus rule helpers (`Get*`/`Set*`/`Clear*`, `ConvertPrometheusRuleToPrometheusAlertRule`) |
 | `perses_types.go` | Perses CRD types (`PersesDashboard`, `PersesDashboardMetadata`) |
 | `perses_dashboards.go` | Perses dashboard helpers (`Get*`/`Set*`/`Clear*`, `ConvertPersesDashboardToDashboard`) |
@@ -124,7 +124,7 @@ It checks full type signatures (not just symbol names), covering both hand-writt
 The build fails if unallowed incompatible changes are detected.
 
 Intentional breaking changes (e.g., from upstream OpenAPI spec updates) must be listed in `api_compatibility_exceptions.txt`, one symbol per line.
-Clear this file when cutting a new release tag.
+The prepare-release workflow replaces `<NEXT_RELEASE>` in this file with the version, and the entries stay after a release.
 
 When introducing a breaking change:
 
@@ -144,7 +144,47 @@ make api-compat
 
 ### Code review
 
-See [REVIEW-CRITERIA.md](REVIEW-CRITERIA.md) for the review lenses used on this codebase: abstraction cleanliness, reusability, and encapsulation.
+See [REVIEW-CRITERIA.md](REVIEW-CRITERIA.md) for the review lenses used on this codebase: abstraction cleanliness, reusability, encapsulation, and backwards compatibility.
+
+## Rules `make` does not check
+
+`make` can pass while any of these is broken.
+
+### Code generation
+
+- CI deletes `generated.go` and regenerates it from the live dev spec.
+  A change that needs a spec not yet on dev stays a draft until `make generate` on a clean tree gives no diff.
+- A regen can pull in unrelated spec changes.
+  List every symbol change outside your target in the PR body.
+- Pin every new enum constant with a bare name (`Added`, `Service`) in `tools/postprocess` `constRenames` in the same PR.
+  After a release the same fix needs an alias and an exception.
+  A `constRenames` key that matches nothing is ignored without a warning, so check each key matches one constant.
+
+### API compatibility
+
+- `make api-compat` filters out methods added to the `Client` interface (the `: added` lines).
+  Add a migration note in `compat.go` for them, because custom `Client` implementations stop compiling.
+- `make api-compat` matches each line in `api_compatibility_exceptions.txt` as a prefix, and `*` matches anything, so a short line allows every symbol that starts with it.
+  Write the full symbol name, and add no line for a symbol gorelease does not report.
+- Run `make api-compat` on a committed, clean tree and read the raw gorelease output.
+
+### Server fidelity
+
+- `Strip<Asset>ServerFields` removes the fields the spec marks read-only and keeps every field the caller sets, such as `dash0.com/origin`, `dash0.com/enabled`, and `spec.slug`.
+  Check the spec text in `generated.go`, not the doc comment.
+  Changing what Strip keeps is a breaking change.
+- Send `[]`, not `null`, for arrays the spec does not mark nullable.
+- Create and Update accept every success status the spec lists for the endpoint, such as 201 on a PUT upsert.
+- Check `JSON200` for nil before returning it, because it is nil when the response is not JSON.
+- A page that is empty but reports more data returns an error, never a short list.
+- YAML marshal and unmarshal must round-trip every annotation the backend lifts into typed fields, with a test.
+
+### Tests
+
+- Each new test must fail when the change is reverted.
+- Use `t.Errorf` and return inside `httptest` handlers, never `t.Fatal`.
+- Use `errors.As` for typed errors.
+- In live tests, register cleanup before the Create call.
 
 ## Prose rules
 
@@ -257,7 +297,7 @@ mock := &dash0test.MockClient{
 
 **Integration tests**: Every `client_*.go` file that contains CRUD methods must have integration tests in its corresponding `client_*_test.go` file.
 Integration tests use `net/http/httptest.NewServer` to spin up a mock HTTP server, verify request path, method, headers, and body, then assert on the parsed response.
-Cover all CRUD operations (List, Get, Create, Update, Delete) plus error paths (404, 400, 403) and alternative success status codes (201 for Create, 204 for Delete).
+Cover all CRUD operations (List, Get, Create, Update, Delete) plus error paths (404, 400, 403) and alternative success status codes (201 for Create, 201 for Update when the spec lists it, 204 for Delete).
 
 **Example tests**: Each package has a single `example_test.go` file containing `Example*` functions.
 When adding a new public function or method, add a corresponding `Example` function in `example_test.go`.
