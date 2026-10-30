@@ -87,7 +87,7 @@ Keep helpers co-located with their domain's CRUD methods.
 | `iterator.go` | Generic pagination iterator |
 | `context.go` | Context helpers (idempotent POST marking) |
 | `errors.go` | `APIError` type and helpers (`IsNotFound`, `IsUnauthorized`, etc.) |
-| `prometheus_types.go` | Prometheus CRD types (`PrometheusRules`, `PrometheusRule`, `PromDuration`) and `FormatDuration` |
+| `prometheus_types.go` | Prometheus CRD types (`PrometheusRules`, `PrometheusRule`) and `FormatDuration` |
 | `prometheus_alert_rules.go` | Prometheus rule helpers (`Get*`/`Set*`/`Clear*`, `ConvertPrometheusRuleToPrometheusAlertRule`) |
 | `perses_types.go` | Perses CRD types (`PersesDashboard`, `PersesDashboardMetadata`) |
 | `perses_dashboards.go` | Perses dashboard helpers (`Get*`/`Set*`/`Clear*`, `ConvertPersesDashboardToDashboard`) |
@@ -124,7 +124,7 @@ It checks full type signatures (not just symbol names), covering both hand-writt
 The build fails if unallowed incompatible changes are detected.
 
 Intentional breaking changes (e.g., from upstream OpenAPI spec updates) must be listed in `api_compatibility_exceptions.txt`, one symbol per line.
-Clear this file when cutting a new release tag.
+The prepare-release workflow replaces `<NEXT_RELEASE>` in this file with the version, and the entries stay after a release.
 
 When introducing a breaking change:
 
@@ -146,10 +146,9 @@ make api-compat
 
 See [REVIEW-CRITERIA.md](REVIEW-CRITERIA.md) for the review lenses used on this codebase: abstraction cleanliness, reusability, encapsulation, and backwards compatibility.
 
-## Rules that broke things before
+## Rules `make` does not check
 
-Each rule below comes from a bug or a broken release.
-Follow them even when `make` passes.
+`make` can pass while any of these is broken.
 
 ### Code generation
 
@@ -163,10 +162,10 @@ Follow them even when `make` passes.
 
 ### API compatibility
 
-- `make api-compat` does not report new or changed `Client` interface methods.
+- `make api-compat` filters out methods added to the `Client` interface (the `: added` lines).
   Add a migration note in `compat.go` for them, because custom `Client` implementations stop compiling.
-- Each line in `api_compatibility_exceptions.txt` is one exact symbol.
-  No wildcards and no prefixes, and no line for a symbol gorelease does not report.
+- `make api-compat` matches each line in `api_compatibility_exceptions.txt` as a prefix, and `*` matches anything, so a short line allows every symbol that starts with it.
+  Write the full symbol name, and add no line for a symbol gorelease does not report.
 - Run `make api-compat` on a committed, clean tree and read the raw gorelease output.
 
 ### Server fidelity
