@@ -2,6 +2,7 @@
 
 # Variables
 OPENAPI_URL := https://api.eu-west-1.aws.dash0-dev.com/openapi.yaml
+GORELEASE := golang.org/x/exp/cmd/gorelease@v0.0.0-20261014143641-f0251eb4aa3e
 OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.8.1
 PREPROCESSED_SPEC := .openapi.preprocessed.yaml
 
@@ -65,17 +66,23 @@ tidy:
 # If unallowed incompatible changes remain, the target fails.
 api-compat:
 	@echo "Checking API compatibility..."
-	@go run golang.org/x/exp/cmd/gorelease@latest 2>&1 | tee /tmp/gorelease-output.txt; \
-	INCOMPAT=$$(awk '/^## incompatible changes/{found=1;next} /^## compatible changes/{found=0} found' /tmp/gorelease-output.txt | grep -v '^$$' | grep -v ': added$$'); \
+	@go run $(GORELEASE) > /tmp/gorelease-output.txt 2>&1; \
+	cat /tmp/gorelease-output.txt; \
+	if ! grep -q '^# summary' /tmp/gorelease-output.txt; then \
+		echo ""; \
+		echo "gorelease did not finish its report, so compatibility is unknown."; \
+		exit 1; \
+	fi; \
+	INCOMPAT=$$(awk '/^## incompatible changes/{found=1;next} /^#/{found=0} found' /tmp/gorelease-output.txt | grep -v '^$$' | grep -v ': added$$'); \
 	if [ -z "$$INCOMPAT" ]; then \
 		echo "No incompatible changes detected."; \
 		exit 0; \
 	fi; \
 	if [ -f api_compatibility_exceptions.txt ]; then \
-		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/(/\\(/g; s/)/\\)/g; s/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$$$/$$$$/' | paste -sd'|' -); \
+		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/(/\\(/g; s/)/\\)/g; s/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$/$$/' | paste -sd'|' -); \
 		UNALLOWED=$$(echo "$$INCOMPAT" | while IFS= read -r line; do \
 			SYMBOL=$$(echo "$$line" | sed 's/:.*//' | tr -d ' '); \
-			if ! echo "$$SYMBOL" | grep -qE "$$PATTERNS"; then \
+			if [ -z "$$PATTERNS" ] || ! echo "$$SYMBOL" | grep -qE "$$PATTERNS"; then \
 				echo "  $$line"; \
 			fi; \
 		done); \

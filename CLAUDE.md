@@ -124,7 +124,7 @@ It checks full type signatures (not just symbol names), covering both hand-writt
 The build fails if unallowed incompatible changes are detected.
 
 Intentional breaking changes (e.g., from upstream OpenAPI spec updates) must be listed in `api_compatibility_exceptions.txt`, one symbol per line.
-Clear this file when cutting a new release tag.
+The prepare-release workflow clears this file in the release commit, so each entry only covers the release it ships in.
 
 When introducing a breaking change:
 
