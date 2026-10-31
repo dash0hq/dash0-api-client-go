@@ -856,7 +856,7 @@ func ExampleClient_TestSignalToMetrics() {
 	// Leave TimeRange nil to test against the last 15 minutes.
 	result, err := client.TestSignalToMetrics(context.Background(), &dash0.SignalToMetricsTestRequest{
 		Definition: rule,
-		TimeRange:  &dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange:  &dash0.TimeReferenceRange{From: dash0.TimeReferenceFromString("now-1h"), To: dash0.TimeReferenceFromString("now")},
 	}, nil)
 	if dash0.IsBadRequest(err) {
 		// The definition failed validation, and the error message lists why.
@@ -2057,7 +2057,7 @@ func ExampleClient_GetFailedChecks() {
 	defer func() { _ = client.Close(context.Background()) }()
 
 	resp, err := client.GetFailedChecks(context.Background(), &dash0.GetFailedChecksRequest{
-		TimeRange:  dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange:  dash0.TimeReferenceRange{From: dash0.TimeReferenceFromString("now-1h"), To: dash0.TimeReferenceFromString("now")},
 		Pagination: &dash0.CursorPagination{Limit: dash0.Int64(50)},
 	})
 	if err != nil {
@@ -2079,7 +2079,7 @@ func ExampleClient_GetFailedChecksIter() {
 	defer func() { _ = client.Close(context.Background()) }()
 
 	iter := client.GetFailedChecksIter(context.Background(), &dash0.GetFailedChecksRequest{
-		TimeRange:  dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange:  dash0.TimeReferenceRange{From: dash0.TimeReferenceFromString("now-1h"), To: dash0.TimeReferenceFromString("now")},
 		Pagination: &dash0.CursorPagination{Limit: dash0.Int64(100)},
 	})
 	for iter.Next() {
@@ -2286,7 +2286,7 @@ func ExampleWithAuthTokenProvider() {
 
 func ExampleGetDatasetID() {
 	dataset := &dash0.DatasetDefinition{
-		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: "staging"}},
+		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: dash0.String("staging")}},
 	}
 	fmt.Println(dash0.GetDatasetID(dataset))
 	// Output: staging
@@ -2315,7 +2315,7 @@ func ExampleSetDatasetIDIfAbsent() {
 
 func ExampleClearDatasetID() {
 	dataset := &dash0.DatasetDefinition{
-		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: "staging"}},
+		Metadata: dash0.DatasetMetadata{Labels: &dash0.DatasetLabels{Dash0Comid: dash0.String("staging")}},
 	}
 	dash0.ClearDatasetID(dataset)
 	fmt.Println(dash0.GetDatasetID(dataset) == "")
@@ -2325,7 +2325,7 @@ func ExampleClearDatasetID() {
 func ExampleStripDatasetServerFields() {
 	dataset := &dash0.DatasetDefinition{
 		Metadata: dash0.DatasetMetadata{
-			Labels: &dash0.DatasetLabels{Dash0Comid: "staging", Dash0Comversion: dash0.Ptr("3")},
+			Labels: &dash0.DatasetLabels{Dash0Comid: dash0.String("staging"), Dash0Comversion: dash0.Ptr("3")},
 		},
 	}
 	dash0.StripDatasetServerFields(dataset)

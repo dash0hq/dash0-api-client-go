@@ -75,3 +75,11 @@ func toPointerSlice[T any](slice []T) []*T {
 	}
 	return result
 }
+
+// TimeReferenceFromString returns a [TimeReference] holding v as a JSON string,
+// such as "now-30m", "now" or an RFC 3339 timestamp.
+func TimeReferenceFromString(v string) TimeReference {
+	var t TimeReference
+	_ = t.FromRelativeTime(v) // marshalling a string cannot fail
+	return t
+}

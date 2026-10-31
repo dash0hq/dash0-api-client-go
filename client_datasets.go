@@ -150,13 +150,13 @@ func GetDatasetID(dataset *DatasetDefinition) string {
 	if dataset == nil {
 		return ""
 	}
-	if dataset.Spec.Slug != "" {
-		return dataset.Spec.Slug
+	if dataset.Spec.Slug != nil && *dataset.Spec.Slug != "" {
+		return *dataset.Spec.Slug
 	}
-	if dataset.Metadata.Labels == nil {
+	if dataset.Metadata.Labels == nil || dataset.Metadata.Labels.Dash0Comid == nil {
 		return ""
 	}
-	return dataset.Metadata.Labels.Dash0Comid
+	return *dataset.Metadata.Labels.Dash0Comid
 }
 
 // GetDatasetName extracts the name from a dataset definition.
@@ -176,8 +176,8 @@ func SetDatasetID(dataset *DatasetDefinition, id string) {
 	if dataset.Metadata.Labels == nil {
 		dataset.Metadata.Labels = &DatasetLabels{}
 	}
-	dataset.Spec.Slug = id
-	dataset.Metadata.Labels.Dash0Comid = id
+	dataset.Spec.Slug = &id
+	dataset.Metadata.Labels.Dash0Comid = &id
 }
 
 // SetDatasetIDIfAbsent sets the slug on a dataset definition, like [SetDatasetID], only if neither spec.slug nor the dash0.com/id label is set.
@@ -193,8 +193,8 @@ func ClearDatasetID(dataset *DatasetDefinition) {
 	if dataset == nil {
 		return
 	}
-	dataset.Spec.Slug = ""
+	dataset.Spec.Slug = nil
 	if dataset.Metadata.Labels != nil {
-		dataset.Metadata.Labels.Dash0Comid = ""
+		dataset.Metadata.Labels.Dash0Comid = nil
 	}
 }

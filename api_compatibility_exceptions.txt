@@ -369,3 +369,45 @@ OTTLStatements
 ObservedPatternEntry
 SettingsPerOrganizationAndDatasetInfo.ObservedPatterns
 SettingsPerOrganizationAndDatasetInfo.TelemetryTransformationRuleSettings
+
+# <NEXT_RELEASE>: the API no longer has the linear.label_added agentic
+# workflow trigger, so its trigger type, kind and variable names are gone,
+# along with the matching value on every other trigger kind enum.
+LinearLabelAdded*
+*AgenticWorkflowTriggerKindLinearLabelAdded
+(*AgenticWorkflowTrigger).FromLinearLabelAddedAgenticWorkflowTrigger
+(*AgenticWorkflowTrigger).MergeLinearLabelAddedAgenticWorkflowTrigger
+AgenticWorkflowTrigger.AsLinearLabelAddedAgenticWorkflowTrigger
+
+# <NEXT_RELEASE>: GET /api/edge/settings now takes an If-None-Match header,
+# so the generated edge settings methods gained a params argument.
+(*ClientWithResponses).GetApiEdgeSettingsWithResponse
+(*generatedClient).GetApiEdgeSettings
+ClientInterface.GetApiEdgeSettings
+ClientWithResponsesInterface.GetApiEdgeSettingsWithResponse
+NewGetApiEdgeSettingsRequest
+
+# <NEXT_RELEASE>: the published spec no longer carries x-go-* code generation
+# hints, so these types follow the schema. Accepted break until v2: dataset
+# slug fields are optional (*string), PinnedRetentionClass is its own enum,
+# and TimeReference is a oneOf union, which makes the request types that embed
+# it non-comparable. See the migration guide in compat.go.
+DatasetSpec.Slug
+DatasetLabels.Dash0Comid
+PinnedRetentionClass
+DatasetMetricsSettings.Retention
+DatasetProfilingSettings.Retention
+DatasetRetention.Metrics
+DatasetRetention.Profiles
+TimeReference
+TimeReferenceRange
+TimeReferenceRange.From
+TimeReferenceRange.To
+ExecuteSqlRequest
+GetFailedChecksRequest
+GetLogRecordsRequest
+GetSpansRequest
+GetTopologyRequest
+GetTraceIdsRequest
+LogRecordsDownloadRequest
+Sampling

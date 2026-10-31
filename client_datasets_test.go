@@ -14,7 +14,7 @@ func newTestDataset(slug string) *DatasetDefinition {
 	return &DatasetDefinition{
 		ApiVersion: "dash0.com/v1alpha1",
 		Kind:       Dash0Dataset,
-		Metadata:   DatasetMetadata{Name: "Staging", Labels: &DatasetLabels{Dash0Comid: slug}},
+		Metadata:   DatasetMetadata{Name: "Staging", Labels: &DatasetLabels{Dash0Comid: String(slug)}},
 	}
 }
 
@@ -159,7 +159,7 @@ func TestCreateDataset_Slug(t *testing.T) {
 	defer server.Close()
 
 	d := &DatasetDefinition{ApiVersion: "dash0.com/v1alpha1", Kind: Dash0Dataset, Metadata: DatasetMetadata{Name: "Staging"}}
-	d.Spec.Slug = "stg"
+	d.Spec.Slug = String("stg")
 	created, err := newTestClient(t, server.URL).CreateDataset(context.Background(), d)
 	if err != nil {
 		t.Fatalf("CreateDataset() error = %v", err)
@@ -169,7 +169,7 @@ func TestCreateDataset_Slug(t *testing.T) {
 	if _, ok := got["metadata"].(map[string]any)["labels"]; ok {
 		t.Errorf("request carries labels: %v", got["metadata"])
 	}
-	assertEqual(t, "response slug", created.Spec.Slug, "stg")
+	assertEqual(t, "response slug", StringValue(created.Spec.Slug), "stg")
 }
 
 func TestCreateDataset_400(t *testing.T) {
@@ -254,7 +254,7 @@ func TestStripDatasetServerFields(t *testing.T) {
 		Metadata: DatasetMetadata{
 			Annotations: &DatasetAnnotations{Dash0ComcreatedAt: &now},
 			Labels: &DatasetLabels{
-				Dash0Comid:      "staging",
+				Dash0Comid:      String("staging"),
 				Dash0Comorigin:  &origin,
 				Dash0Comversion: &version,
 				Dash0Comsource:  &source,
@@ -269,7 +269,7 @@ func TestStripDatasetServerFields(t *testing.T) {
 		d.Metadata.Labels.Dash0Comsource != nil || d.Spec.PermittedActions != nil {
 		t.Errorf("server fields were not stripped: %+v", d)
 	}
-	assertEqual(t, "slug", d.Metadata.Labels.Dash0Comid, "staging")
+	assertEqual(t, "slug", StringValue(d.Metadata.Labels.Dash0Comid), "staging")
 	assertPtrEqual(t, "origin", d.Metadata.Labels.Dash0Comorigin, "tf-staging")
 }
 
@@ -290,12 +290,12 @@ func TestDatasetHelpers(t *testing.T) {
 }
 
 func TestDatasetHelpers_SlugSources(t *testing.T) {
-	onlySpec := func() *DatasetDefinition { return &DatasetDefinition{Spec: DatasetSpec{Slug: "from-spec"}} }
+	onlySpec := func() *DatasetDefinition { return &DatasetDefinition{Spec: DatasetSpec{Slug: String("from-spec")}} }
 	onlyLabel := func() *DatasetDefinition {
-		return &DatasetDefinition{Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comid: "from-label"}}}
+		return &DatasetDefinition{Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comid: String("from-label")}}}
 	}
 	both := func() *DatasetDefinition {
-		return &DatasetDefinition{Spec: DatasetSpec{Slug: "staging"}, Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comid: "staging"}}}
+		return &DatasetDefinition{Spec: DatasetSpec{Slug: String("staging")}, Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comid: String("staging")}}}
 	}
 	for name, tc := range map[string]struct {
 		dataset func() *DatasetDefinition
@@ -311,17 +311,17 @@ func TestDatasetHelpers_SlugSources(t *testing.T) {
 
 			SetDatasetIDIfAbsent(d, "other")
 			assertEqual(t, "after IfAbsent", GetDatasetID(d), tc.want)
-			if d.Metadata.Labels != nil && d.Metadata.Labels.Dash0Comid != "" && d.Metadata.Labels.Dash0Comid != tc.want {
-				t.Errorf("IfAbsent wrote a label that does not match the slug: %q", d.Metadata.Labels.Dash0Comid)
+			if d.Metadata.Labels != nil && StringValue(d.Metadata.Labels.Dash0Comid) != "" && StringValue(d.Metadata.Labels.Dash0Comid) != tc.want {
+				t.Errorf("IfAbsent wrote a label that does not match the slug: %q", StringValue(d.Metadata.Labels.Dash0Comid))
 			}
 
 			SetDatasetID(d, "renamed")
-			assertEqual(t, "spec.slug after Set", d.Spec.Slug, "renamed")
-			assertEqual(t, "label after Set", d.Metadata.Labels.Dash0Comid, "renamed")
+			assertEqual(t, "spec.slug after Set", StringValue(d.Spec.Slug), "renamed")
+			assertEqual(t, "label after Set", StringValue(d.Metadata.Labels.Dash0Comid), "renamed")
 
 			ClearDatasetID(d)
-			assertEqual(t, "spec.slug after Clear", d.Spec.Slug, "")
-			assertEqual(t, "label after Clear", d.Metadata.Labels.Dash0Comid, "")
+			assertEqual(t, "spec.slug after Clear", StringValue(d.Spec.Slug), "")
+			assertEqual(t, "label after Clear", StringValue(d.Metadata.Labels.Dash0Comid), "")
 		})
 	}
 }

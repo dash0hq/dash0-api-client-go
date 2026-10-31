@@ -327,8 +327,8 @@ func TestLiveAPI(t *testing.T) {
 	t.Run("GetSpans", func(t *testing.T) {
 		request := GetSpansRequest{
 			TimeRange: TimeReferenceRange{
-				From: "now-5m",
-				To:   "now",
+				From: TimeReferenceFromString("now-5m"),
+				To:   TimeReferenceFromString("now"),
 			},
 			Pagination: &CursorPagination{
 				Limit: Int64(10),
@@ -350,8 +350,8 @@ func TestLiveAPI(t *testing.T) {
 	t.Run("GetLogRecords", func(t *testing.T) {
 		request := GetLogRecordsRequest{
 			TimeRange: TimeReferenceRange{
-				From: "now-5m",
-				To:   "now",
+				From: TimeReferenceFromString("now-5m"),
+				To:   TimeReferenceFromString("now"),
 			},
 			Pagination: &CursorPagination{
 				Limit: Int64(10),
@@ -373,8 +373,8 @@ func TestLiveAPI(t *testing.T) {
 	t.Run("GetSpansIter", func(t *testing.T) {
 		request := &GetSpansRequest{
 			TimeRange: TimeReferenceRange{
-				From: "now-5m",
-				To:   "now",
+				From: TimeReferenceFromString("now-5m"),
+				To:   TimeReferenceFromString("now"),
 			},
 			Pagination: &CursorPagination{
 				Limit: Int64(10),
@@ -399,8 +399,8 @@ func TestLiveAPI(t *testing.T) {
 	t.Run("GetLogRecordsIter", func(t *testing.T) {
 		request := &GetLogRecordsRequest{
 			TimeRange: TimeReferenceRange{
-				From: "now-5m",
-				To:   "now",
+				From: TimeReferenceFromString("now-5m"),
+				To:   TimeReferenceFromString("now"),
 			},
 			Pagination: &CursorPagination{
 				Limit: Int64(10),

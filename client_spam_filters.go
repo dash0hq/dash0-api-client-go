@@ -192,7 +192,7 @@ func decodeSpamFilterObject(body []byte) (SpamFilterObject, error) {
 			return nil, fmt.Errorf("dash0: failed to decode v1alpha1 spam filter response: %w", err)
 		}
 		return &def, nil
-	case string(V1alpha2):
+	case string(SpamFilterApiVersionV1Alpha2V1alpha2):
 		var def SpamFilterV1Alpha2
 		if err := json.Unmarshal(body, &def); err != nil {
 			return nil, fmt.Errorf("dash0: failed to decode v1alpha2 spam filter response: %w", err)
