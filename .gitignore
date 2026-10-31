@@ -28,3 +28,6 @@ go.work.sum
 # OTel Collector binary cache (integration tests)
 testdata/.cache/
 
+
+# Spec written by tools/preprocess during make generate
+.openapi.preprocessed.yaml

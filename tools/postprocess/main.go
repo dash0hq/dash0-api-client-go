@@ -208,6 +208,15 @@ func renameConsts(file *ast.File) {
 
 	// Walk the AST and rename only identifiers at collected positions.
 	ast.Inspect(file, func(n ast.Node) bool {
+		if cc, ok := n.(*ast.CaseClause); ok {
+			for _, expr := range cc.List {
+				if ident, ok := expr.(*ast.Ident); ok {
+					if replacement, found := constRenames[ident.Name]; found {
+						ident.Name = replacement
+					}
+				}
+			}
+		}
 		if ident, ok := n.(*ast.Ident); ok {
 			if constPositions[ident.Pos()] {
 				if replacement, found := constRenames[ident.Name]; found {
