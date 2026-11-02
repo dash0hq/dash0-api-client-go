@@ -15,8 +15,8 @@ func (c *client) ListCustomSkills(ctx context.Context, opts ...ListOption) ([]*S
 		return nil, err
 	}
 	options := NewListOptions(opts...)
-	if options != (ListOptions{OriginPrefix: options.OriginPrefix, Enabled: options.Enabled}) {
-		return nil, fmt.Errorf("dash0: list custom skills supports only the origin prefix and enabled filters")
+	if err := options.requireOnly("list custom skills", filterOriginPrefix, filterEnabled); err != nil {
+		return nil, err
 	}
 	params := &GetApiAgent0CustomSkillsParams{
 		OriginPrefix: options.OriginPrefix,

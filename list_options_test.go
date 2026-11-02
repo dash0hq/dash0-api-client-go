@@ -63,7 +63,7 @@ func TestNewListOptions_SignalToMetricsFilters(t *testing.T) {
 	})
 }
 
-func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
+func TestListOptions_requireOnly_originPrefix(t *testing.T) {
 	const wantErr = "dash0: list check rules supports only the origin prefix filter"
 	tests := []struct {
 		name    string
@@ -86,31 +86,31 @@ func TestListOptions_requireOriginPrefixOnly(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NewListOptions(tt.opts...).requireOriginPrefixOnly("list check rules")
+			err := NewListOptions(tt.opts...).requireOnly("list check rules", filterOriginPrefix)
 			if tt.wantErr == "" {
 				if err != nil {
-					t.Errorf("requireOriginPrefixOnly() = %v, want nil", err)
+					t.Errorf("requireOnly() = %v, want nil", err)
 				}
 				return
 			}
 			if err == nil {
-				t.Fatalf("requireOriginPrefixOnly() = nil, want %q", tt.wantErr)
+				t.Fatalf("requireOnly() = nil, want %q", tt.wantErr)
 			}
 			assertEqual(t, "error", err.Error(), tt.wantErr)
 		})
 	}
 }
 
-func TestListOptions_requireOriginPrefixOnly_namesTheOperation(t *testing.T) {
-	err := NewListOptions(WithSignalToMetricsName("checkout")).requireOriginPrefixOnly("list SLOs")
+func TestListOptions_requireOnly_namesTheOperation(t *testing.T) {
+	err := NewListOptions(WithSignalToMetricsName("checkout")).requireOnly("list SLOs", filterOriginPrefix)
 	if err == nil {
-		t.Fatal("requireOriginPrefixOnly() = nil, want an error")
+		t.Fatal("requireOnly() = nil, want an error")
 	}
 	assertEqual(t, "error", err.Error(), "dash0: list SLOs supports only the origin prefix filter")
 }
 
-// TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField sets each ListOptions field other than OriginPrefix in turn, with and without an origin prefix, so a filter added later is rejected without a new test case.
-func TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField(t *testing.T) {
+// TestListOptions_requireOnly_originPrefix_rejectsEveryOtherField sets each ListOptions field other than OriginPrefix in turn, with and without an origin prefix, so a filter added later is rejected without a new test case.
+func TestListOptions_requireOnly_originPrefix_rejectsEveryOtherField(t *testing.T) {
 	typ := reflect.TypeOf(ListOptions{})
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
@@ -126,10 +126,41 @@ func TestListOptions_requireOriginPrefixOnly_rejectsEveryOtherField(t *testing.T
 				o := ListOptions{OriginPrefix: prefix}
 				value := reflect.ValueOf(&o).Elem().Field(i)
 				value.Set(reflect.New(value.Type().Elem()))
-				if err := o.requireOriginPrefixOnly("list check rules"); err == nil {
-					t.Errorf("requireOriginPrefixOnly() with %s set = nil, want an error", name)
+				if err := o.requireOnly("list check rules", filterOriginPrefix); err == nil {
+					t.Errorf("requireOnly() with %s set = nil, want an error", name)
 				}
 			})
 		}
+	}
+}
+
+func TestListOptions_requireOnly_originPrefixAndEnabled(t *testing.T) {
+	const wantErr = "dash0: list custom skills supports only the origin prefix and enabled filters"
+	tests := []struct {
+		name    string
+		opts    []ListOption
+		wantErr string
+	}{
+		{"no options", nil, ""},
+		{"origin prefix", []ListOption{WithOriginPrefix("tf_")}, ""},
+		{"enabled", []ListOption{WithEnabled(false)}, ""},
+		{"origin prefix and enabled", []ListOption{WithOriginPrefix("tf_"), WithEnabled(true)}, ""},
+		{"name", []ListOption{WithSignalToMetricsName("checkout")}, wantErr},
+		{"signal with both allowed filters", []ListOption{WithOriginPrefix("tf_"), WithEnabled(true), WithSignal(SignalToMetricsSignalTypeSpans)}, wantErr},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := NewListOptions(tt.opts...).requireOnly("list custom skills", filterOriginPrefix, filterEnabled)
+			if tt.wantErr == "" {
+				if err != nil {
+					t.Errorf("requireOnly() = %v, want nil", err)
+				}
+				return
+			}
+			if err == nil {
+				t.Fatalf("requireOnly() = nil, want %q", tt.wantErr)
+			}
+			assertEqual(t, "error", err.Error(), tt.wantErr)
+		})
 	}
 }

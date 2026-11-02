@@ -20,7 +20,7 @@ func (c *client) ListSLOs(ctx context.Context, dataset *string, opts ...ListOpti
 		return nil, err
 	}
 	options := NewListOptions(opts...)
-	if err := options.requireOriginPrefixOnly("list SLOs"); err != nil {
+	if err := options.requireOnly("list SLOs", filterOriginPrefix); err != nil {
 		return nil, err
 	}
 	params := &GetApiSlosParams{
