@@ -180,12 +180,7 @@ func Normalize(data []byte, additionalIgnoredFields []string, preservedAnnotatio
 		return nil, err
 	}
 
-	encoded, err := sigsyaml.Marshal(parsed)
-	if err != nil {
-		return nil, fmt.Errorf("error encoding document: %w", err)
-	}
-
-	return []byte(strings.TrimSuffix(string(encoded), "\n")), nil
+	return marshalNormalized(parsed)
 }
 
 // normalizeToMap does Normalize's parsing and field-stripping work but
@@ -693,22 +688,10 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 	// thresholds, small counts, and durations) -- if one ever does, this
 	// decode path would need to switch to a precision-preserving number
 	// type end-to-end.
-	parsedA, err := normalizeToMap(a, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	parsedA, parsedB, err := normalizePair(a, b, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
-		return false, fmt.Errorf("error normalizing first document: %w", err)
+		return false, err
 	}
-	parsedB, err := normalizeToMap(b, additionalIgnoredFields, preservedAnnotationKeys, opts...)
-	if err != nil {
-		return false, fmt.Errorf("error normalizing second document: %w", err)
-	}
-
-	// Strip zero-value fields from B that are absent in A. This prevents
-	// API-enriched defaults (e.g. "enabled": false, "retries": null) from
-	// being treated as drift when the reference doesn't set those fields.
-	// If the reference explicitly set a zero value, it will be present in A
-	// and preserved.
-	stripAbsentZeroValues(parsedA, parsedB)
-	stripAbsentWellKnownLabels(parsedA, parsedB, resolveOptions(opts).AnnotationsRoot)
 
 	cmpOptions := []cmp.Option{
 		// Ignore slice order only for fields that are semantically sets
@@ -746,6 +729,96 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 	return cmp.Equal(parsedA, parsedB, cmpOptions...), nil
 }
 
+// NormalizePair normalizes reference and target the way Equivalent compares
+// them, including the target fields dropped because reference leaves them
+// out, so a diff rendered from the result shows only what Equivalent counts
+// as drift. Slice order and duration formatting are tolerated only by
+// Equivalent's comparison, so they can still show up here next to a real
+// change.
+func NormalizePair(reference, target []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (normalizedReference, normalizedTarget []byte, err error) {
+	parsedReference, parsedTarget, err := normalizePair(reference, target, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	if err != nil {
+		return nil, nil, err
+	}
+	alignEquivalentDurations(parsedReference, parsedTarget)
+	if normalizedReference, err = marshalNormalized(parsedReference); err != nil {
+		return nil, nil, err
+	}
+	if normalizedTarget, err = marshalNormalized(parsedTarget); err != nil {
+		return nil, nil, err
+	}
+	return normalizedReference, normalizedTarget, nil
+}
+
+// alignEquivalentDurations gives each target duration the reference's
+// spelling when the two are the same duration ("1m0s" and "1m"), so a
+// rendered diff does not show a change Equivalent ignores.
+func alignEquivalentDurations(reference, target any) {
+	switch referenceValue := reference.(type) {
+	case map[string]any:
+		targetMap, ok := target.(map[string]any)
+		if !ok {
+			return
+		}
+		for key, value := range referenceValue {
+			referenceText, isText := value.(string)
+			targetText, targetIsText := targetMap[key].(string)
+			if isText && targetIsText && durationComparisonFields[key] {
+				referenceDuration, errReference := parseDuration(referenceText)
+				targetDuration, errTarget := parseDuration(targetText)
+				if errReference == nil && errTarget == nil && referenceDuration == targetDuration {
+					targetMap[key] = referenceText
+				}
+				continue
+			}
+			alignEquivalentDurations(value, targetMap[key])
+		}
+	case []any:
+		targetSlice, ok := target.([]any)
+		if !ok {
+			return
+		}
+		for index := 0; index < min(len(referenceValue), len(targetSlice)); index++ {
+			alignEquivalentDurations(referenceValue[index], targetSlice[index])
+		}
+	}
+}
+
+func marshalNormalized(parsed map[string]any) ([]byte, error) {
+	encoded, err := sigsyaml.Marshal(parsed)
+	if err != nil {
+		return nil, fmt.Errorf("error encoding document: %w", err)
+	}
+	return []byte(strings.TrimSuffix(string(encoded), "\n")), nil
+}
+
+func normalizePair(a, b []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (map[string]any, map[string]any, error) {
+	parsedA, err := normalizeToMap(a, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error normalizing first document: %w", err)
+	}
+	parsedB, err := normalizeToMap(b, additionalIgnoredFields, preservedAnnotationKeys, opts...)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error normalizing second document: %w", err)
+	}
+
+	// Strip zero-value fields from B that are absent in A. This prevents
+	// API-enriched defaults (e.g. "enabled": false, "retries": null) from
+	// being treated as drift when the reference doesn't set those fields.
+	// If the reference explicitly set a zero value, it will be present in A
+	// and preserved.
+	stripAbsentZeroValues(parsedA, parsedB)
+	root := resolveOptions(opts).AnnotationsRoot
+	stripAbsentWellKnownLabels(parsedA, parsedB, root)
+	if root != "metadata" {
+		// A flat document (a CheckRule) still gets the server's labels under metadata.
+		stripAbsentWellKnownLabels(parsedA, parsedB, "metadata")
+	}
+	stripAbsentServerDefaults(parsedA, parsedB, root)
+
+	return parsedA, parsedB, nil
+}
+
 // stripAbsentWellKnownLabels removes, from target's labels map (found at
 // root, or the document root when root == ""), any wellKnownLabelKeys key
 // that reference's labels map doesn't declare. Unlike stripAbsentZeroValues,
@@ -757,10 +830,7 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 // normally -- a mismatch there is exactly the case this function must not
 // hide, since it can mean the resource's identity or ownership changed.
 func stripAbsentWellKnownLabels(reference, target map[string]any, root string) {
-	refParent, ok := mapAtRoot(reference, root)
-	if !ok {
-		return
-	}
+	refParent, _ := mapAtRoot(reference, root)
 	targetParent, ok := mapAtRoot(target, root)
 	if !ok {
 		return
@@ -778,6 +848,68 @@ func stripAbsentWellKnownLabels(reference, target map[string]any, root string) {
 	if len(targetLabels) == 0 {
 		delete(targetParent, "labels")
 	}
+	if root != "" && isEmpty(targetParent) {
+		deleteAtRoot(target, root)
+	}
+}
+
+// serverDefaultAnnotations are the annotation values the API stores when a
+// document leaves the key out.
+var serverDefaultAnnotations = map[string]string{
+	"dash0.com/enabled": "true",
+}
+
+// flatDocumentServerDefaults are the field values the API stores for a check
+// rule, the one flat-document kind, that leaves the field out.
+var flatDocumentServerDefaults = map[string]string{
+	"enabled":  "true",
+	"interval": "1m",
+}
+
+// stripAbsentServerDefaults removes, from target, the server defaults that
+// reference leaves out, so a document that omits a defaulted field matches
+// the stored asset. A value reference sets is still compared.
+func stripAbsentServerDefaults(reference, target map[string]any, root string) {
+	targetParent, ok := mapAtRoot(target, root)
+	if !ok {
+		return
+	}
+	refParent, _ := mapAtRoot(reference, root)
+	refAnnotations, _ := refParent["annotations"].(map[string]any)
+	if targetAnnotations, ok := targetParent["annotations"].(map[string]any); ok {
+		for key, value := range serverDefaultAnnotations {
+			if _, set := refAnnotations[key]; !set && targetAnnotations[key] == value {
+				delete(targetAnnotations, key)
+			}
+		}
+		if len(targetAnnotations) == 0 {
+			delete(targetParent, "annotations")
+		}
+	}
+	if root != "" {
+		if isEmpty(targetParent) {
+			deleteAtRoot(target, root)
+		}
+		return
+	}
+	for key, value := range flatDocumentServerDefaults {
+		if _, set := reference[key]; !set && isServerDefault(key, target[key], value) {
+			delete(target, key)
+		}
+	}
+}
+
+func isServerDefault(key string, value any, serverDefault string) bool {
+	if !durationComparisonFields[key] {
+		return value != nil && fmt.Sprint(value) == serverDefault
+	}
+	text, ok := value.(string)
+	if !ok {
+		return false
+	}
+	got, err := parseDuration(text)
+	want, _ := parseDuration(serverDefault)
+	return err == nil && got == want
 }
 
 // stripAbsentZeroValues removes keys from target that don't exist in
