@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build commands
 
 ```bash
-make              # Clean, generate, tidy, fmt, lint, build, test-unit, api-compat (full cycle)
+make              # Clean, generate, tidy, fmt, lint, build, test-unit (full cycle; run make api-compat on a committed tree)
 make test         # Run all tests (unit + collector)
 make test-unit    # Run unit tests with race detection and coverage
 make lint         # Run golangci-lint
@@ -124,7 +124,7 @@ It checks full type signatures (not just symbol names), covering both hand-writt
 The build fails if unallowed incompatible changes are detected.
 
 Intentional breaking changes (e.g., from upstream OpenAPI spec updates) must be listed in `api_compatibility_exceptions.txt`, one symbol per line.
-Clear this file when cutting a new release tag.
+The prepare-release workflow clears this file in the release commit, so each entry only covers the release it ships in.
 
 When introducing a breaking change:
 
