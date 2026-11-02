@@ -9,7 +9,7 @@ PREPROCESSED_SPEC := .openapi.preprocessed.yaml
 .PHONY: all generate build test test-unit test-collector lint clean tidy api-compat help
 
 # Default target
-all: clean generate tidy fmt lint build test-unit api-compat
+all: clean generate tidy fmt lint build test-unit
 
 # Generate code from OpenAPI spec
 generate:

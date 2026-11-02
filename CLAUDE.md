@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build commands
 
 ```bash
-make              # Clean, generate, tidy, fmt, lint, build, test-unit, api-compat (full cycle)
+make              # Clean, generate, tidy, fmt, lint, build, test-unit (full cycle; run make api-compat on a committed tree)
 make test         # Run all tests (unit + collector)
 make test-unit    # Run unit tests with race detection and coverage
 make lint         # Run golangci-lint
