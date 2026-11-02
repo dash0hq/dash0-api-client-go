@@ -488,3 +488,10 @@ func TestDeleteDataset_Errors(t *testing.T) {
 		})
 	}
 }
+
+func TestSetDatasetID_FieldsDoNotShareStorage(t *testing.T) {
+	d := &DatasetDefinition{}
+	SetDatasetID(d, "staging")
+	*d.Spec.Slug = "renamed"
+	assertEqual(t, "label after writing through spec.slug", StringValue(d.Metadata.Labels.Dash0Comid), "staging")
+}

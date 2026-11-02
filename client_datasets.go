@@ -176,8 +176,8 @@ func SetDatasetID(dataset *DatasetDefinition, id string) {
 	if dataset.Metadata.Labels == nil {
 		dataset.Metadata.Labels = &DatasetLabels{}
 	}
-	dataset.Spec.Slug = &id
-	dataset.Metadata.Labels.Dash0Comid = &id
+	dataset.Spec.Slug = Ptr(id)
+	dataset.Metadata.Labels.Dash0Comid = Ptr(id)
 }
 
 // SetDatasetIDIfAbsent sets the slug on a dataset definition, like [SetDatasetID], only if neither spec.slug nor the dash0.com/id label is set.
