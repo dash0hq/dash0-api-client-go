@@ -29,7 +29,7 @@ func (c *client) GetSpans(ctx context.Context, request *GetSpansRequest) (*GetSp
 // Example:
 //
 //	iter := client.GetSpansIter(ctx, &dash0.GetSpansRequest{
-//	    TimeRange: dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+//	    TimeRange: dash0.TimeReferenceRange{From: dash0.TimeReferenceFromString("now-1h"), To: dash0.TimeReferenceFromString("now")},
 //	    Pagination: &dash0.CursorPagination{Limit: dash0.Int64(100)},
 //	})
 //	for iter.Next() {

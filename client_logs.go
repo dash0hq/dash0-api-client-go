@@ -29,7 +29,7 @@ func (c *client) GetLogRecords(ctx context.Context, request *GetLogRecordsReques
 // Example:
 //
 //	iter := client.GetLogRecordsIter(ctx, &dash0.GetLogRecordsRequest{
-//	    TimeRange: dash0.TimeReferenceRange{From: "now-1h", To: "now"},
+//	    TimeRange: dash0.TimeReferenceRange{From: dash0.TimeReferenceFromString("now-1h"), To: dash0.TimeReferenceFromString("now")},
 //	    Pagination: &dash0.CursorPagination{Limit: dash0.Int64(100)},
 //	})
 //	for iter.Next() {

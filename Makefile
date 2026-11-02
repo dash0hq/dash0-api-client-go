@@ -2,7 +2,8 @@
 
 # Variables
 OPENAPI_URL := https://api.eu-west-1.aws.dash0-dev.com/openapi.yaml
-OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@1401fbe26ce7e128e9963786742490ff444e3795
+OAPI_CODEGEN := go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.8.1
+PREPROCESSED_SPEC := .openapi.preprocessed.yaml
 
 .PHONY: all generate build test test-unit test-collector lint clean tidy api-compat help
 
@@ -11,8 +12,11 @@ all: clean generate tidy fmt lint build test-unit api-compat
 
 # Generate code from OpenAPI spec
 generate:
+	@echo "Preprocessing OpenAPI spec..."
+	@go run ./tools/preprocess $(OPENAPI_URL) $(PREPROCESSED_SPEC)
 	@echo "Generating code from OpenAPI spec..."
-	$(OAPI_CODEGEN) --config=oapi-codegen.yaml $(OPENAPI_URL)
+	$(OAPI_CODEGEN) --config=oapi-codegen.yaml $(PREPROCESSED_SPEC)
+	@rm -f $(PREPROCESSED_SPEC)
 	@echo "Post-processing generated code..."
 	@go run ./tools/postprocess generated.go
 

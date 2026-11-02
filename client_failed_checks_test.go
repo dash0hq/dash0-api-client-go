@@ -72,7 +72,7 @@ func TestGetFailedChecks_Success(t *testing.T) {
 
 	dataset := "production"
 	resp, err := client.GetFailedChecks(context.Background(), &GetFailedChecksRequest{
-		TimeRange:  TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange:  TimeReferenceRange{From: TimeReferenceFromString("now-1h"), To: TimeReferenceFromString("now")},
 		Dataset:    &dataset,
 		Pagination: &CursorPagination{Limit: Int64(50)},
 	})
@@ -172,7 +172,7 @@ func TestGetFailedChecks_APIError(t *testing.T) {
 	}
 
 	_, err = client.GetFailedChecks(context.Background(), &GetFailedChecksRequest{
-		TimeRange: TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange: TimeReferenceRange{From: TimeReferenceFromString("now-1h"), To: TimeReferenceFromString("now")},
 	})
 	if err == nil {
 		t.Fatal("expected error, got nil")
@@ -224,7 +224,7 @@ func TestGetFailedChecksIter_Pagination(t *testing.T) {
 	}
 
 	iter := client.GetFailedChecksIter(context.Background(), &GetFailedChecksRequest{
-		TimeRange: TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange: TimeReferenceRange{From: TimeReferenceFromString("now-1h"), To: TimeReferenceFromString("now")},
 	})
 
 	var ids []string
@@ -268,7 +268,7 @@ func TestGetFailedChecksUsesTheProviderToken(t *testing.T) {
 	defer func() { _ = client.Close(context.Background()) }()
 
 	if _, err := client.GetFailedChecks(context.Background(), &GetFailedChecksRequest{
-		TimeRange: TimeReferenceRange{From: "now-1h", To: "now"},
+		TimeRange: TimeReferenceRange{From: TimeReferenceFromString("now-1h"), To: TimeReferenceFromString("now")},
 	}); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

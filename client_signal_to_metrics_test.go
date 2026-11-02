@@ -728,7 +728,7 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 
 		request := &SignalToMetricsTestRequest{
 			Definition: rule,
-			TimeRange:  &TimeReferenceRange{From: "now-1h", To: "now"},
+			TimeRange:  &TimeReferenceRange{From: TimeReferenceFromString("now-1h"), To: TimeReferenceFromString("now")},
 		}
 		got, err := newTestClient(t, server.URL).TestSignalToMetrics(context.Background(), request, nil)
 		if err != nil {
@@ -744,8 +744,10 @@ func TestSignalToMetrics_Integration(t *testing.T) {
 		if gotBody.TimeRange == nil {
 			t.Fatal("body.TimeRange is nil, want the requested range")
 		}
-		assertEqual(t, "body.TimeRange.From", fmt.Sprint(gotBody.TimeRange.From), "now-1h")
-		assertEqual(t, "body.TimeRange.To", fmt.Sprint(gotBody.TimeRange.To), "now")
+		from, _ := gotBody.TimeRange.From.AsRelativeTime()
+		to, _ := gotBody.TimeRange.To.AsRelativeTime()
+		assertEqual(t, "body.TimeRange.From", from, "now-1h")
+		assertEqual(t, "body.TimeRange.To", to, "now")
 		if got.MatchedCount != 42 {
 			t.Errorf("MatchedCount = %d, want 42", got.MatchedCount)
 		}
@@ -1010,7 +1012,7 @@ func TestLiveAPI_SignalToMetricsTestImportAndCount(t *testing.T) {
 	t.Run("TestSignalToMetrics counts the signals a valid rule matches", func(t *testing.T) {
 		request := &SignalToMetricsTestRequest{
 			Definition: *newRule(spansOrigin, SignalToMetricsSignalTypeSpans),
-			TimeRange:  &TimeReferenceRange{From: "now-5m", To: "now"},
+			TimeRange:  &TimeReferenceRange{From: TimeReferenceFromString("now-5m"), To: TimeReferenceFromString("now")},
 		}
 		result, err := client.TestSignalToMetrics(ctx, request, &dataset)
 		if err != nil {
