@@ -73,6 +73,11 @@ api-compat:
 		echo "gorelease did not finish its report, so compatibility is unknown."; \
 		exit 1; \
 	fi; \
+	if grep -q '^## errors in release version' /tmp/gorelease-output.txt; then \
+		echo ""; \
+		echo "The release version does not build, so compatibility is unknown."; \
+		exit 1; \
+	fi; \
 	INCOMPAT=$$(awk '/^## incompatible changes/{found=1;next} /^#/{found=0} found' /tmp/gorelease-output.txt | grep -v '^$$' | grep -v ': added$$'); \
 	if [ -z "$$INCOMPAT" ]; then \
 		echo "No incompatible changes detected."; \
