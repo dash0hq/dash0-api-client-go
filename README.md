@@ -148,8 +148,8 @@ For endpoints that return paginated results, use iterators to automatically fetc
 // Iterate over all spans in a time range
 iter := client.GetSpansIter(ctx, &dash0.GetSpansRequest{
     TimeRange: dash0.TimeReferenceRange{
-        From: "now-1h",
-        To:   "now",
+        From: dash0.TimeReferenceFromString("now-1h"),
+        To:   dash0.TimeReferenceFromString("now"),
     },
 })
 
