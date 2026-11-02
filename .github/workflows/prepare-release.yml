@@ -102,7 +102,7 @@ jobs:
 
       - name: Clear API compatibility exceptions
         run: |
-          awk 'NF == 0 { exit } { print }' api_compatibility_exceptions.txt > exceptions.tmp
+          awk '!/^#/ { exit } { print } END { print "" }' api_compatibility_exceptions.txt > exceptions.tmp
           mv exceptions.tmp api_compatibility_exceptions.txt
 
       - name: Build

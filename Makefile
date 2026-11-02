@@ -81,7 +81,7 @@ api-compat:
 	if [ -f api_compatibility_exceptions.txt ]; then \
 		PATTERNS=$$(grep -v '^\s*#' api_compatibility_exceptions.txt | grep -v '^\s*$$' | sed 's/(/\\(/g; s/)/\\)/g; s/\./\\./g; s/\*/.*/g' | sed 's/^/^/; s/$$/$$/' | paste -sd'|' -); \
 		UNALLOWED=$$(echo "$$INCOMPAT" | while IFS= read -r line; do \
-			SYMBOL=$$(echo "$$line" | sed 's/:.*//' | tr -d ' '); \
+			SYMBOL=$$(echo "$$line" | sed 's/, method set of .*//; s/:.*//' | tr -d ' '); \
 			if [ -z "$$PATTERNS" ] || ! echo "$$SYMBOL" | grep -qE "$$PATTERNS"; then \
 				echo "  $$line"; \
 			fi; \
