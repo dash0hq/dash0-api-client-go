@@ -284,7 +284,6 @@ const (
 	AgenticWorkflowTriggerKindLinearIssue                    AgenticWorkflowTriggerKind = "linear.issue"
 	AgenticWorkflowTriggerKindLinearIssueAttachment          AgenticWorkflowTriggerKind = "linear.issue_attachment"
 	AgenticWorkflowTriggerKindLinearIssueComment             AgenticWorkflowTriggerKind = "linear.issue_comment"
-	AgenticWorkflowTriggerKindLinearIssueLabeled             AgenticWorkflowTriggerKind = "linear.issue_labeled"
 	AgenticWorkflowTriggerKindLinearProject                  AgenticWorkflowTriggerKind = "linear.project"
 	AgenticWorkflowTriggerKindLinearProjectUpdate            AgenticWorkflowTriggerKind = "linear.project_update"
 	AgenticWorkflowTriggerKindManual                         AgenticWorkflowTriggerKind = "manual"
@@ -345,8 +344,6 @@ func (e AgenticWorkflowTriggerKind) Valid() bool {
 	case AgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case AgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case AgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case AgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -794,7 +791,6 @@ const (
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssue                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.issue"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueAttachment          DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueComment             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.issue_comment"
-	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueLabeled             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProject                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.project"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProjectUpdate            DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.project_update"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindManual                         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "manual"
@@ -855,8 +851,6 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -1004,7 +998,6 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindLinearIssue                    FailedCheckAgenticWorkflowTriggerKind = "linear.issue"
 	FailedCheckAgenticWorkflowTriggerKindLinearIssueAttachment          FailedCheckAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	FailedCheckAgenticWorkflowTriggerKindLinearIssueComment             FailedCheckAgenticWorkflowTriggerKind = "linear.issue_comment"
-	FailedCheckAgenticWorkflowTriggerKindLinearIssueLabeled             FailedCheckAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	FailedCheckAgenticWorkflowTriggerKindLinearProject                  FailedCheckAgenticWorkflowTriggerKind = "linear.project"
 	FailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate            FailedCheckAgenticWorkflowTriggerKind = "linear.project_update"
 	FailedCheckAgenticWorkflowTriggerKindManual                         FailedCheckAgenticWorkflowTriggerKind = "manual"
@@ -1065,8 +1058,6 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 	case FailedCheckAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case FailedCheckAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -1289,7 +1280,6 @@ const (
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearIssue                    GitHubCheckRunAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubCheckRunAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueComment             GitHubCheckRunAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubCheckRunAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearProject                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.project"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubCheckRunAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubCheckRunAgenticWorkflowTriggerKindManual                         GitHubCheckRunAgenticWorkflowTriggerKind = "manual"
@@ -1350,8 +1340,6 @@ func (e GitHubCheckRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -1469,7 +1457,6 @@ const (
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssue                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueComment             GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProject                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.project"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindManual                         GitHubCheckSuiteAgenticWorkflowTriggerKind = "manual"
@@ -1530,8 +1517,6 @@ func (e GitHubCheckSuiteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -1646,7 +1631,6 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearIssue                    GitHubDeploymentAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubDeploymentAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueComment             GitHubDeploymentAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubDeploymentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearProject                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.project"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubDeploymentAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubDeploymentAgenticWorkflowTriggerKindManual                         GitHubDeploymentAgenticWorkflowTriggerKind = "manual"
@@ -1708,8 +1692,6 @@ func (e GitHubDeploymentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -1757,7 +1739,6 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssue                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueComment             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProject                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.project"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindManual                         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "manual"
@@ -1819,8 +1800,6 @@ func (e GitHubDeploymentStatusAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -1868,7 +1847,6 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssue                    GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueComment             GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearProject                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.project"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubIssueCommentAgenticWorkflowTriggerKindManual                         GitHubIssueCommentAgenticWorkflowTriggerKind = "manual"
@@ -1930,8 +1908,6 @@ func (e GitHubIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -1979,7 +1955,6 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearIssue                    GitHubPullRequestAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubPullRequestAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueComment             GitHubPullRequestAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPullRequestAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearProject                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPullRequestAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubPullRequestAgenticWorkflowTriggerKindManual                         GitHubPullRequestAgenticWorkflowTriggerKind = "manual"
@@ -2041,8 +2016,6 @@ func (e GitHubPullRequestAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -2090,7 +2063,6 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssue                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueComment             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProject                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "manual"
@@ -2152,8 +2124,6 @@ func (e GitHubPullRequestReviewAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -2201,7 +2171,6 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssue                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueComment             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProject                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "manual"
@@ -2263,8 +2232,6 @@ func (e GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -2312,7 +2279,6 @@ const (
 	GitHubPushAgenticWorkflowTriggerKindLinearIssue                    GitHubPushAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubPushAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubPushAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubPushAgenticWorkflowTriggerKindLinearIssueComment             GitHubPushAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubPushAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubPushAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubPushAgenticWorkflowTriggerKindLinearProject                  GitHubPushAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPushAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPushAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubPushAgenticWorkflowTriggerKindManual                         GitHubPushAgenticWorkflowTriggerKind = "manual"
@@ -2374,8 +2340,6 @@ func (e GitHubPushAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubPushAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubPushAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -2423,7 +2387,6 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindLinearIssue                    GitHubReleaseAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubReleaseAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearIssueComment             GitHubReleaseAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubReleaseAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubReleaseAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearProject                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.project"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubReleaseAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubReleaseAgenticWorkflowTriggerKindManual                         GitHubReleaseAgenticWorkflowTriggerKind = "manual"
@@ -2484,8 +2447,6 @@ func (e GitHubReleaseAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubReleaseAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case GitHubReleaseAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -2663,7 +2624,6 @@ const (
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssue                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueComment             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProject                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.project"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindManual                         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "manual"
@@ -2725,8 +2685,6 @@ func (e GitHubWorkflowDispatchAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -2774,7 +2732,6 @@ const (
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssue                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueComment             GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProject                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.project"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindManual                         GitHubWorkflowJobAgenticWorkflowTriggerKind = "manual"
@@ -2835,8 +2792,6 @@ func (e GitHubWorkflowJobAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -2918,7 +2873,6 @@ const (
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssue                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.issue"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueAttachment          GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueComment             GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueLabeled             GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProject                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.project"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.project_update"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindManual                         GitHubWorkflowRunAgenticWorkflowTriggerKind = "manual"
@@ -2979,8 +2933,6 @@ func (e GitHubWorkflowRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -3068,7 +3020,6 @@ const (
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssue                    GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.issue"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueAttachment          GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueComment             GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueLabeled             GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearProject                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.project"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearProjectUpdate            GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.project_update"
 	GitLabMergeRequestAgenticWorkflowTriggerKindManual                         GitLabMergeRequestAgenticWorkflowTriggerKind = "manual"
@@ -3130,8 +3081,6 @@ func (e GitLabMergeRequestAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -3179,7 +3128,6 @@ const (
 	GitLabNoteAgenticWorkflowTriggerKindLinearIssue                    GitLabNoteAgenticWorkflowTriggerKind = "linear.issue"
 	GitLabNoteAgenticWorkflowTriggerKindLinearIssueAttachment          GitLabNoteAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	GitLabNoteAgenticWorkflowTriggerKindLinearIssueComment             GitLabNoteAgenticWorkflowTriggerKind = "linear.issue_comment"
-	GitLabNoteAgenticWorkflowTriggerKindLinearIssueLabeled             GitLabNoteAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	GitLabNoteAgenticWorkflowTriggerKindLinearProject                  GitLabNoteAgenticWorkflowTriggerKind = "linear.project"
 	GitLabNoteAgenticWorkflowTriggerKindLinearProjectUpdate            GitLabNoteAgenticWorkflowTriggerKind = "linear.project_update"
 	GitLabNoteAgenticWorkflowTriggerKindManual                         GitLabNoteAgenticWorkflowTriggerKind = "manual"
@@ -3240,8 +3188,6 @@ func (e GitLabNoteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitLabNoteAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case GitLabNoteAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -3482,7 +3428,6 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindLinearIssue                    LinearCommentAgenticWorkflowTriggerKind = "linear.issue"
 	LinearCommentAgenticWorkflowTriggerKindLinearIssueAttachment          LinearCommentAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearCommentAgenticWorkflowTriggerKindLinearIssueComment             LinearCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearCommentAgenticWorkflowTriggerKindLinearIssueLabeled             LinearCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearCommentAgenticWorkflowTriggerKindLinearProject                  LinearCommentAgenticWorkflowTriggerKind = "linear.project"
 	LinearCommentAgenticWorkflowTriggerKindLinearProjectUpdate            LinearCommentAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearCommentAgenticWorkflowTriggerKindManual                         LinearCommentAgenticWorkflowTriggerKind = "manual"
@@ -3544,8 +3489,6 @@ func (e LinearCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case LinearCommentAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case LinearCommentAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -3593,7 +3536,6 @@ const (
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearIssue                    LinearCommentReactionAgenticWorkflowTriggerKind = "linear.issue"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueAttachment          LinearCommentReactionAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueComment             LinearCommentReactionAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueLabeled             LinearCommentReactionAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearProject                  LinearCommentReactionAgenticWorkflowTriggerKind = "linear.project"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearProjectUpdate            LinearCommentReactionAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearCommentReactionAgenticWorkflowTriggerKindManual                         LinearCommentReactionAgenticWorkflowTriggerKind = "manual"
@@ -3654,8 +3596,6 @@ func (e LinearCommentReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -3779,7 +3719,6 @@ const (
 	LinearInitiativeAgenticWorkflowTriggerKindLinearIssue                    LinearInitiativeAgenticWorkflowTriggerKind = "linear.issue"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearIssueAttachment          LinearInitiativeAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearIssueComment             LinearInitiativeAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearInitiativeAgenticWorkflowTriggerKindLinearIssueLabeled             LinearInitiativeAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearProject                  LinearInitiativeAgenticWorkflowTriggerKind = "linear.project"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearProjectUpdate            LinearInitiativeAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearInitiativeAgenticWorkflowTriggerKindManual                         LinearInitiativeAgenticWorkflowTriggerKind = "manual"
@@ -3840,8 +3779,6 @@ func (e LinearInitiativeAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearInitiativeAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -3926,7 +3863,6 @@ const (
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssue                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.issue"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueAttachment          LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueComment             LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueLabeled             LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProject                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.project"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProjectUpdate            LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindManual                         LinearInitiativeUpdateAgenticWorkflowTriggerKind = "manual"
@@ -3987,8 +3923,6 @@ func (e LinearInitiativeUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -4076,7 +4010,6 @@ const (
 	LinearIssueAgenticWorkflowTriggerKindLinearIssue                    LinearIssueAgenticWorkflowTriggerKind = "linear.issue"
 	LinearIssueAgenticWorkflowTriggerKindLinearIssueAttachment          LinearIssueAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearIssueAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearIssueAgenticWorkflowTriggerKindLinearIssueLabeled             LinearIssueAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearIssueAgenticWorkflowTriggerKindLinearProject                  LinearIssueAgenticWorkflowTriggerKind = "linear.project"
 	LinearIssueAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearIssueAgenticWorkflowTriggerKindManual                         LinearIssueAgenticWorkflowTriggerKind = "manual"
@@ -4138,8 +4071,6 @@ func (e LinearIssueAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case LinearIssueAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case LinearIssueAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -4187,7 +4118,6 @@ const (
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssue                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.issue"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueAttachment          LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueLabeled             LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProject                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.project"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindManual                         LinearIssueAttachmentAgenticWorkflowTriggerKind = "manual"
@@ -4248,8 +4178,6 @@ func (e LinearIssueAttachmentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -4352,7 +4280,6 @@ const (
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearIssue                    LinearIssueCommentAgenticWorkflowTriggerKind = "linear.issue"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueAttachment          LinearIssueCommentAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueLabeled             LinearIssueCommentAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearProject                  LinearIssueCommentAgenticWorkflowTriggerKind = "linear.project"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueCommentAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearIssueCommentAgenticWorkflowTriggerKindManual                         LinearIssueCommentAgenticWorkflowTriggerKind = "manual"
@@ -4413,8 +4340,6 @@ func (e LinearIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -4479,162 +4404,6 @@ func (e LinearIssueCommentTriggerVariableName) Valid() bool {
 	case LinearIssueCommentTriggerVariableNameLinearIssueTitle:
 		return true
 	case LinearIssueCommentTriggerVariableNameLinearIssueUrl:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for LinearIssueLabeledAgenticWorkflowTriggerKind.
-const (
-	LinearIssueLabeledAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearIssueLabeledAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
-	LinearIssueLabeledAgenticWorkflowTriggerKindFailedCheckNew                 LinearIssueLabeledAgenticWorkflowTriggerKind = "failed_check.new"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubCheckRun                 LinearIssueLabeledAgenticWorkflowTriggerKind = "github.check_run"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubCheckSuite               LinearIssueLabeledAgenticWorkflowTriggerKind = "github.check_suite"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubDeployment               LinearIssueLabeledAgenticWorkflowTriggerKind = "github.deployment"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearIssueLabeledAgenticWorkflowTriggerKind = "github.deployment_status"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubIssueComment             LinearIssueLabeledAgenticWorkflowTriggerKind = "github.issue_comment"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequest              LinearIssueLabeledAgenticWorkflowTriggerKind = "github.pull_request"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequestReview        LinearIssueLabeledAgenticWorkflowTriggerKind = "github.pull_request_review"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearIssueLabeledAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubPush                     LinearIssueLabeledAgenticWorkflowTriggerKind = "github.push"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubRelease                  LinearIssueLabeledAgenticWorkflowTriggerKind = "github.release"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearIssueLabeledAgenticWorkflowTriggerKind = "github.workflow_dispatch"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowJob              LinearIssueLabeledAgenticWorkflowTriggerKind = "github.workflow_job"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowRun              LinearIssueLabeledAgenticWorkflowTriggerKind = "github.workflow_run"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGitlabMergeRequest             LinearIssueLabeledAgenticWorkflowTriggerKind = "gitlab.merge_request"
-	LinearIssueLabeledAgenticWorkflowTriggerKindGitlabNote                     LinearIssueLabeledAgenticWorkflowTriggerKind = "gitlab.note"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearComment                  LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.comment"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearCommentReaction          LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.comment_reaction"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearInitiative               LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.initiative"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearInitiativeUpdate         LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.initiative_update"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssue                    LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.issue"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueAttachment          LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.issue_attachment"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueLabeled             LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.issue_labeled"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearProject                  LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.project"
-	LinearIssueLabeledAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueLabeledAgenticWorkflowTriggerKind = "linear.project_update"
-	LinearIssueLabeledAgenticWorkflowTriggerKindManual                         LinearIssueLabeledAgenticWorkflowTriggerKind = "manual"
-	LinearIssueLabeledAgenticWorkflowTriggerKindSchedule                       LinearIssueLabeledAgenticWorkflowTriggerKind = "schedule"
-	LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearIssueLabeledAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
-	LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotMessage                LinearIssueLabeledAgenticWorkflowTriggerKind = "slack_bot.message"
-	LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotReaction               LinearIssueLabeledAgenticWorkflowTriggerKind = "slack_bot.reaction"
-	LinearIssueLabeledAgenticWorkflowTriggerKindWebhook                        LinearIssueLabeledAgenticWorkflowTriggerKind = "webhook"
-)
-
-// Valid indicates whether the value is a known member of the LinearIssueLabeledAgenticWorkflowTriggerKind enum.
-func (e LinearIssueLabeledAgenticWorkflowTriggerKind) Valid() bool {
-	switch e {
-	case LinearIssueLabeledAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindFailedCheckNew:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubCheckRun:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubCheckSuite:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubDeployment:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubDeploymentStatus:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubIssueComment:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequest:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequestReview:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubPush:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubRelease:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowDispatch:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowJob:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGithubWorkflowRun:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGitlabMergeRequest:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindGitlabNote:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearComment:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearCommentReaction:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearInitiative:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearInitiativeUpdate:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssue:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueAttachment:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearProject:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindLinearProjectUpdate:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindManual:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindSchedule:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotMessage:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindSlackBotReaction:
-		return true
-	case LinearIssueLabeledAgenticWorkflowTriggerKindWebhook:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for LinearIssueLabeledTriggerVariableName.
-const (
-	LinearIssueLabeledTriggerVariableNameLinearAction        LinearIssueLabeledTriggerVariableName = "linear.action"
-	LinearIssueLabeledTriggerVariableNameLinearActorName     LinearIssueLabeledTriggerVariableName = "linear.actor.name"
-	LinearIssueLabeledTriggerVariableNameLinearIssueId       LinearIssueLabeledTriggerVariableName = "linear.issue.id"
-	LinearIssueLabeledTriggerVariableNameLinearIssueTeamId   LinearIssueLabeledTriggerVariableName = "linear.issue.team_id"
-	LinearIssueLabeledTriggerVariableNameLinearIssueTeamKey  LinearIssueLabeledTriggerVariableName = "linear.issue.team_key"
-	LinearIssueLabeledTriggerVariableNameLinearIssueTeamName LinearIssueLabeledTriggerVariableName = "linear.issue.team_name"
-	LinearIssueLabeledTriggerVariableNameLinearIssueTitle    LinearIssueLabeledTriggerVariableName = "linear.issue.title"
-	LinearIssueLabeledTriggerVariableNameLinearIssueUrl      LinearIssueLabeledTriggerVariableName = "linear.issue.url"
-	LinearIssueLabeledTriggerVariableNameLinearLabelColor    LinearIssueLabeledTriggerVariableName = "linear.label.color"
-	LinearIssueLabeledTriggerVariableNameLinearLabelId       LinearIssueLabeledTriggerVariableName = "linear.label.id"
-	LinearIssueLabeledTriggerVariableNameLinearLabelName     LinearIssueLabeledTriggerVariableName = "linear.label.name"
-)
-
-// Valid indicates whether the value is a known member of the LinearIssueLabeledTriggerVariableName enum.
-func (e LinearIssueLabeledTriggerVariableName) Valid() bool {
-	switch e {
-	case LinearIssueLabeledTriggerVariableNameLinearAction:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearActorName:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearIssueId:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearIssueTeamId:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearIssueTeamKey:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearIssueTeamName:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearIssueTitle:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearIssueUrl:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearLabelColor:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearLabelId:
-		return true
-	case LinearIssueLabeledTriggerVariableNameLinearLabelName:
 		return true
 	default:
 		return false
@@ -4707,24 +4476,6 @@ func (e LinearIssueTriggerVariableName) Valid() bool {
 	}
 }
 
-// Defines values for LinearLabelAction.
-const (
-	Added   LinearLabelAction = "added"
-	Removed LinearLabelAction = "removed"
-)
-
-// Valid indicates whether the value is a known member of the LinearLabelAction enum.
-func (e LinearLabelAction) Valid() bool {
-	switch e {
-	case Added:
-		return true
-	case Removed:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for LinearProjectAgenticWorkflowTriggerKind.
 const (
 	LinearProjectAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearProjectAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
@@ -4751,7 +4502,6 @@ const (
 	LinearProjectAgenticWorkflowTriggerKindLinearIssue                    LinearProjectAgenticWorkflowTriggerKind = "linear.issue"
 	LinearProjectAgenticWorkflowTriggerKindLinearIssueAttachment          LinearProjectAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearProjectAgenticWorkflowTriggerKindLinearIssueComment             LinearProjectAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearProjectAgenticWorkflowTriggerKindLinearIssueLabeled             LinearProjectAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearProjectAgenticWorkflowTriggerKindLinearProject                  LinearProjectAgenticWorkflowTriggerKind = "linear.project"
 	LinearProjectAgenticWorkflowTriggerKindLinearProjectUpdate            LinearProjectAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearProjectAgenticWorkflowTriggerKindManual                         LinearProjectAgenticWorkflowTriggerKind = "manual"
@@ -4812,8 +4562,6 @@ func (e LinearProjectAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearProjectAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -4898,7 +4646,6 @@ const (
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssue                    LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.issue"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueAttachment          LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueComment             LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.issue_comment"
-	LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueLabeled             LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearProject                  LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.project"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearProjectUpdate            LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.project_update"
 	LinearProjectUpdateAgenticWorkflowTriggerKindManual                         LinearProjectUpdateAgenticWorkflowTriggerKind = "manual"
@@ -4959,8 +4706,6 @@ func (e LinearProjectUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -5093,7 +4838,6 @@ const (
 	ManualAgenticWorkflowTriggerKindLinearIssue                    ManualAgenticWorkflowTriggerKind = "linear.issue"
 	ManualAgenticWorkflowTriggerKindLinearIssueAttachment          ManualAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	ManualAgenticWorkflowTriggerKindLinearIssueComment             ManualAgenticWorkflowTriggerKind = "linear.issue_comment"
-	ManualAgenticWorkflowTriggerKindLinearIssueLabeled             ManualAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	ManualAgenticWorkflowTriggerKindLinearProject                  ManualAgenticWorkflowTriggerKind = "linear.project"
 	ManualAgenticWorkflowTriggerKindLinearProjectUpdate            ManualAgenticWorkflowTriggerKind = "linear.project_update"
 	ManualAgenticWorkflowTriggerKindManual                         ManualAgenticWorkflowTriggerKind = "manual"
@@ -5154,8 +4898,6 @@ func (e ManualAgenticWorkflowTriggerKind) Valid() bool {
 	case ManualAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case ManualAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case ManualAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case ManualAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -5747,7 +5489,6 @@ const (
 	ScheduledAgenticWorkflowTriggerKindLinearIssue                    ScheduledAgenticWorkflowTriggerKind = "linear.issue"
 	ScheduledAgenticWorkflowTriggerKindLinearIssueAttachment          ScheduledAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	ScheduledAgenticWorkflowTriggerKindLinearIssueComment             ScheduledAgenticWorkflowTriggerKind = "linear.issue_comment"
-	ScheduledAgenticWorkflowTriggerKindLinearIssueLabeled             ScheduledAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	ScheduledAgenticWorkflowTriggerKindLinearProject                  ScheduledAgenticWorkflowTriggerKind = "linear.project"
 	ScheduledAgenticWorkflowTriggerKindLinearProjectUpdate            ScheduledAgenticWorkflowTriggerKind = "linear.project_update"
 	ScheduledAgenticWorkflowTriggerKindManual                         ScheduledAgenticWorkflowTriggerKind = "manual"
@@ -5808,8 +5549,6 @@ func (e ScheduledAgenticWorkflowTriggerKind) Valid() bool {
 	case ScheduledAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case ScheduledAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -6107,7 +5846,6 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssue                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.issue"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueAttachment          SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueComment             SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.issue_comment"
-	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueLabeled             SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProject                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.project"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate            SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.project_update"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindManual                         SlackBotFailedCheckAgenticWorkflowTriggerKind = "manual"
@@ -6169,8 +5907,6 @@ func (e SlackBotFailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -6218,7 +5954,6 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindLinearIssue                    SlackBotMessageAgenticWorkflowTriggerKind = "linear.issue"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearIssueAttachment          SlackBotMessageAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearIssueComment             SlackBotMessageAgenticWorkflowTriggerKind = "linear.issue_comment"
-	SlackBotMessageAgenticWorkflowTriggerKindLinearIssueLabeled             SlackBotMessageAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearProject                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.project"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearProjectUpdate            SlackBotMessageAgenticWorkflowTriggerKind = "linear.project_update"
 	SlackBotMessageAgenticWorkflowTriggerKindManual                         SlackBotMessageAgenticWorkflowTriggerKind = "manual"
@@ -6280,8 +6015,6 @@ func (e SlackBotMessageAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindLinearIssueComment:
 		return true
-	case SlackBotMessageAgenticWorkflowTriggerKindLinearIssueLabeled:
-		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindLinearProjectUpdate:
@@ -6329,7 +6062,6 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindLinearIssue                    SlackBotReactionAgenticWorkflowTriggerKind = "linear.issue"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearIssueAttachment          SlackBotReactionAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearIssueComment             SlackBotReactionAgenticWorkflowTriggerKind = "linear.issue_comment"
-	SlackBotReactionAgenticWorkflowTriggerKindLinearIssueLabeled             SlackBotReactionAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearProject                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.project"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearProjectUpdate            SlackBotReactionAgenticWorkflowTriggerKind = "linear.project_update"
 	SlackBotReactionAgenticWorkflowTriggerKindManual                         SlackBotReactionAgenticWorkflowTriggerKind = "manual"
@@ -6390,8 +6122,6 @@ func (e SlackBotReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case SlackBotReactionAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case SlackBotReactionAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -7523,7 +7253,6 @@ const (
 	WebhookAgenticWorkflowTriggerKindLinearIssue                    WebhookAgenticWorkflowTriggerKind = "linear.issue"
 	WebhookAgenticWorkflowTriggerKindLinearIssueAttachment          WebhookAgenticWorkflowTriggerKind = "linear.issue_attachment"
 	WebhookAgenticWorkflowTriggerKindLinearIssueComment             WebhookAgenticWorkflowTriggerKind = "linear.issue_comment"
-	WebhookAgenticWorkflowTriggerKindLinearIssueLabeled             WebhookAgenticWorkflowTriggerKind = "linear.issue_labeled"
 	WebhookAgenticWorkflowTriggerKindLinearProject                  WebhookAgenticWorkflowTriggerKind = "linear.project"
 	WebhookAgenticWorkflowTriggerKindLinearProjectUpdate            WebhookAgenticWorkflowTriggerKind = "linear.project_update"
 	WebhookAgenticWorkflowTriggerKindManual                         WebhookAgenticWorkflowTriggerKind = "manual"
@@ -7584,8 +7313,6 @@ func (e WebhookAgenticWorkflowTriggerKind) Valid() bool {
 	case WebhookAgenticWorkflowTriggerKindLinearIssueAttachment:
 		return true
 	case WebhookAgenticWorkflowTriggerKindLinearIssueComment:
-		return true
-	case WebhookAgenticWorkflowTriggerKindLinearIssueLabeled:
 		return true
 	case WebhookAgenticWorkflowTriggerKindLinearProject:
 		return true
@@ -8235,7 +7962,6 @@ type AgenticWorkflowTriggerDelivery string
 // - `darkplane.pull_request.evaluation`: Triggered after a successful terminal, non-experiment Darkplane AutoMerge evaluation run.
 // - `linear.comment`: Triggered when the Dash0 agent is @mentioned or delegated in a Linear comment whose text contains the configured keyword.
 // - `linear.issue_comment`: Triggered when a comment is created, updated, or removed on a Linear issue, in the configured teams.
-// - `linear.issue_labeled`: Triggered when a specific Linear label is added to (or, with `actions`, removed from) an issue, in the configured teams.
 // - `linear.issue`: Triggered when a Linear issue is created, updated or removed in the selected teams. `actions` narrows which; omitted, every action matches.
 // - `linear.issue_attachment`: Triggered when an attachment (for example a GitHub pull request, Sentry issue, or Slack thread link) is added to, changed on or removed from a Linear issue in the selected teams.
 // - `linear.comment_reaction`: Triggered when an emoji reaction is added to or removed from a comment on a Linear issue in the selected teams. `actions` narrows which; omitted, both match.
@@ -8614,6 +8340,8 @@ type AwsMetricScrapeConfigMetadata struct {
 type AwsMetricScrapeConfigNamespace struct {
 	// Filter Conditions for this namespace only, restricted to tags (`dash0.cloud.tags.<tag name>`) and
 	// `cloud.region`. An empty array means the same as an absent key, and neither is returned.
+	// Scraping ignores tag conditions unless the namespace supports both resource discovery
+	// and metric-to-resource association. Region conditions are supported for every namespace.
 	Filter *FilterCriteria `json:"filter,omitempty"`
 
 	// Metrics CloudWatch metric names collected from the namespace. Returned sorted ascending, in byte
@@ -8627,8 +8355,11 @@ type AwsMetricScrapeConfigNamespace struct {
 
 // AwsMetricScrapeConfigSpec defines model for AwsMetricScrapeConfigSpec.
 type AwsMetricScrapeConfigSpec struct {
-	// IntegrationFilter Conditions applied to every namespace, restricted to tags (`dash0.cloud.tags.<tag name>`) and
-	// `cloud.region`. An empty array means the same as an absent key, and neither is returned.
+	// IntegrationFilter Conditions restricted to tags (`dash0.cloud.tags.<tag name>`) and `cloud.region`.
+	// Region conditions apply to every namespace. Tag conditions apply only to namespaces
+	// that support both resource discovery and metric-to-resource association.
+	// Other namespaces, including custom namespaces and CWAgent, ignore integration-wide tag conditions.
+	// An empty array means the same as an absent key, and neither is returned.
 	IntegrationFilter *FilterCriteria `json:"integrationFilter,omitempty"`
 
 	// Namespaces The complete set of namespaces to scrape. A namespace absent from this list is not scraped,
@@ -9471,12 +9202,16 @@ type FixedTimeUnix = string
 type GenAIAttributeRedaction string
 
 // GenAIAttributeRedactionSettings Fine-grained redaction policies for GenAI attributes, applied by the Collector before export.
-// Conversation content, tool-call I/O and tool-call error messages are controlled independently,
-// e.g. to keep conversation content private while still storing tool input/output.
+// Conversation names, conversation content, tool-call I/O and tool-call error messages are
+// controlled independently, e.g. to keep conversation content private while still storing names.
 type GenAIAttributeRedactionSettings struct {
 	// Conversation Redaction of conversation content: `gen_ai.input.messages`, `gen_ai.output.messages`,
 	// and `gen_ai.system_instructions`.
 	Conversation *GenAIAttributeRedaction `json:"conversation,omitempty"`
+
+	// ConversationName Redaction of the conversation name: `gen_ai.conversation.name`.
+	// The conversation ID is preserved. Defaults to `disabled` when omitted.
+	ConversationName *GenAIAttributeRedaction `json:"conversationName,omitempty"`
 
 	// Errors Redaction of tool-call error messages: the span status message and `exception.message`
 	// attributes on spans, span events and log records that carry a `gen_ai.tool.name`
@@ -10752,7 +10487,7 @@ type GitHubPullRequestAgenticWorkflowTrigger struct {
 	// request (`github.pull_request`).
 	Delivery *AgenticWorkflowTriggerDelivery             `json:"delivery,omitempty"`
 	Kind     GitHubPullRequestAgenticWorkflowTriggerKind `json:"kind"`
-	Spec     GitHubAgenticWorkflowTriggerSpec            `json:"spec"`
+	Spec     GitHubPullRequestAgenticWorkflowTriggerSpec `json:"spec"`
 
 	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
 	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
@@ -10766,6 +10501,133 @@ type GitHubPullRequestAgenticWorkflowTrigger struct {
 
 // GitHubPullRequestAgenticWorkflowTriggerKind defines model for GitHubPullRequestAgenticWorkflowTrigger.Kind.
 type GitHubPullRequestAgenticWorkflowTriggerKind string
+
+// GitHubPullRequestAgenticWorkflowTriggerSpec defines model for GitHubPullRequestAgenticWorkflowTriggerSpec.
+type GitHubPullRequestAgenticWorkflowTriggerSpec struct {
+	// Accounts Deprecated: use `organizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `organizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	Accounts *[]string `json:"accounts,omitempty"`
+
+	// Actions Optional list of GitHub event actions to filter on.
+	// When specified, only events with a matching action trigger the workflow.
+	// When omitted, events with any action match.
+	//
+	// Note: `github.deployment`, `github.deployment_status`, `github.push`, and `github.workflow_dispatch` fire no action field; this filter has no effect for those trigger kinds. `github.deployment_status` filters on `states` instead.
+	//
+	// Valid values per trigger kind:
+	// - `github.pull_request`: `assigned`, `auto_merge_disabled`, `auto_merge_enabled`, `closed`, `converted_to_draft`, `demilestoned`, `dequeued`, `edited`, `enqueued`, `labeled`, `locked`, `milestoned`, `opened`, `ready_for_review`, `reopened`, `review_request_removed`, `review_requested`, `synchronize`, `unassigned`, `unlabeled`, `unlocked`
+	// - `github.pull_request_review`: `dismissed`, `edited`, `submitted`
+	// - `github.pull_request_review_comment`: `created`, `deleted`, `edited`
+	// - `github.issue_comment`: `created`, `deleted`, `edited`, `pinned`, `unpinned`
+	// - `github.release`: `created`, `deleted`, `edited`, `prereleased`, `published`, `released`, `unpublished`
+	// - `github.workflow_run`: `completed`, `requested`, `in_progress`
+	// - `github.workflow_job`: `queued`, `waiting`, `in_progress`, `completed`
+	// - `github.check_run`: `completed`, `created`, `requested_action`, `rerequested`
+	// - `github.check_suite`: `completed`, `requested`, `rerequested`
+	Actions *[]string `json:"actions,omitempty"`
+
+	// AllAccounts Deprecated: use `allOrganizations` instead. Kept for backwards compatibility; reads
+	// mirror the value of `allOrganizations` and writes are folded into it.
+	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
+	AllAccounts *bool `json:"allAccounts,omitempty"`
+
+	// AllOrganizations When true, the automation deliberately matches events from every organization, now and
+	// in the future. Mutually exclusive with a non-empty `organizations` list. This flag
+	// exists to distinguish an explicit "all organizations" choice from an unconfigured
+	// trigger: a GitHub trigger with no `organizations`, no `allOrganizations`, no
+	// `repositories`, no `allRepositories`, and (for comment kinds) no `keyword` is rejected
+	// on write as an accidental match-everything catch-all.
+	//
+	// `organizations`/`allOrganizations` and `repositories`/`allRepositories` are independent
+	// alternatives, not nested: an event matching either the organization filter or the
+	// repository filter triggers the automation.
+	//
+	// Replaces the deprecated `allAccounts` field. When both are set, they must carry the
+	// same value; requests where they contradict each other are rejected.
+	AllOrganizations *bool `json:"allOrganizations,omitempty"`
+
+	// AllRepositories When true, the automation deliberately matches events from every repository, now and
+	// in the future. Mutually exclusive with a non-empty `repositories` list. This flag
+	// exists to distinguish an explicit "all repositories" choice from an unconfigured
+	// trigger, mirroring `allOrganizations`.
+	AllRepositories *bool `json:"allRepositories,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression matched against the complete event-specific author
+	// login. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of exact content-author logins. The author is event-specific: for
+	// example, the pull request, review, comment, release, deployment, workflow run, or push
+	// head-commit author. Rejected on `github.workflow_job`, `github.workflow_dispatch`,
+	// `github.check_run`, and `github.check_suite`, whose events carry no author. Matching
+	// is case-insensitive.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// BranchRegex Optional RE2 regular expression matched against the complete head branch name, the
+	// branch the pull request comes from, not the base branch it merges into. Mutually
+	// exclusive with `branches`. A pull request from a fork never matches.
+	BranchRegex *string `json:"branchRegex,omitempty"`
+
+	// Branches Optional list of exact head branch names, that is the branch the pull request
+	// comes from (for example `claude/fix-login`), not the base branch it merges into.
+	// Matching is case-sensitive. A pull request from a fork never matches.
+	Branches *[]string `json:"branches,omitempty"`
+
+	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
+	// filter; it has no effect for other trigger kinds. The `deployment_status` event payload may
+	// carry an associated `check_run`; when specified, only events whose `check_run.status` matches
+	// trigger the automation. When omitted, any check run status (or none) matches.
+	//
+	// Valid values: `queued`, `in_progress`, `completed`, `waiting`, `pending`.
+	CheckRunStatuses *[]string `json:"checkRunStatuses,omitempty"`
+
+	// Labels Optional list of label names. The trigger fires when the pull request carries at
+	// least one of them at the time of the event. Matching is exact and case-sensitive.
+	// A pull request without labels never matches a non-empty list.
+	Labels *[]string `json:"labels,omitempty"`
+
+	// Organizations Optional list of GitHub organization logins to filter on (e.g., `my-org`). An
+	// "organization" here is the account the Dash0 GitHub App is installed on — usually a
+	// GitHub organization, but a personal account for personal installations.
+	// When specified, only events from these organizations trigger the automation.
+	// When omitted, events from any organization match.
+	//
+	// Replaces the deprecated `accounts` field. When both are set, they must carry the
+	// same values; requests where they contradict each other are rejected.
+	Organizations *[]string `json:"organizations,omitempty"`
+
+	// Repositories Optional list of repository full names to filter on (e.g., `owner/repo`).
+	// When specified, only events from these repositories trigger the automation.
+	// When omitted, events from any repository match.
+	Repositories *[]string `json:"repositories,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression matched against the complete top-level sender login.
+	// Mutually exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of exact GitHub logins from the webhook's top-level `sender` field.
+	// The sender is the account that triggered the webhook and can represent a person, bot,
+	// or an App's bot account. Matching is case-insensitive.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// States Optional list of deployment statuses to filter on. Only `github.deployment_status` uses
+	// this filter; it has no effect for other trigger kinds. When specified, only
+	// deployment-status events whose `state` matches trigger the automation. When omitted, any
+	// status matches.
+	//
+	// Valid values: `error`, `failure`, `inactive`, `pending`, `success`, `queued`, `in_progress`.
+	States *[]string `json:"states,omitempty"`
+
+	// TitleRegex Optional RE2 regular expression matched against the complete pull request title at
+	// the time of the event. Matching is case-sensitive unless the pattern includes a
+	// flag such as `(?i)`.
+	TitleRegex *string `json:"titleRegex,omitempty"`
+}
 
 // GitHubPullRequestReviewAgenticWorkflowTrigger defines model for GitHubPullRequestReviewAgenticWorkflowTrigger.
 type GitHubPullRequestReviewAgenticWorkflowTrigger struct {
@@ -11909,11 +11771,17 @@ type LinearCommentAgenticWorkflowTriggerSpec struct {
 	AvailableVariables *[]LinearCommentTriggerVariableName `json:"availableVariables,omitempty"`
 
 	// Keyword A command or keyword that the Linear comment must contain. Evaluated as a
-	// case-insensitive substring match (e.g., `investigate` matches any comment
+	// case-insensitive whole-word match (e.g., `investigate` matches any comment
 	// containing "investigate"). The trigger fires only when the Dash0 agent is
 	// @mentioned or delegated on the issue and the comment contains this keyword;
-	// mentions without the keyword fall through to the normal Agent0 chat reply.
-	Keyword string `json:"keyword"`
+	// mentions without the keyword fall through to the normal Agent0 chat reply. Mutually
+	// exclusive with `keywordRegex`.
+	Keyword *string `json:"keyword,omitempty"`
+
+	// KeywordRegex Optional RE2 regular expression matched against the complete comment body.
+	// Mutually exclusive with `keyword`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	KeywordRegex *string `json:"keywordRegex,omitempty"`
 }
 
 // LinearCommentReactionAgenticWorkflowTrigger defines model for LinearCommentReactionAgenticWorkflowTrigger.
@@ -12177,6 +12045,11 @@ type LinearInitiativeUpdateAgenticWorkflowTriggerSpec struct {
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]LinearInitiativeUpdateTriggerVariableName `json:"availableVariables,omitempty"`
 
+	// InitiativeIds Optional list of Linear initiative UUIDs. When non-empty, the trigger fires only
+	// when the update was posted to one of these initiatives. When omitted or empty,
+	// updates of every initiative match.
+	InitiativeIds *[]string `json:"initiativeIds,omitempty"`
+
 	// NameRegex Optional RE2 regular expression matched against the complete name of the project or
 	// initiative. For a project or initiative update, it matches the name of the project
 	// or initiative the update was posted to. Matching is case-sensitive unless the
@@ -12267,6 +12140,12 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// the issue carries at least one of these labels at the time of the event. To react
 	// to a label being added or removed, use `addedLabelIds` or `removedLabelIds`.
 	LabelIds *[]string `json:"labelIds,omitempty"`
+
+	// ProjectIds Optional list of Linear project UUIDs. When non-empty, the trigger fires only when
+	// the issue's project is one of them. An issue without a project never matches a
+	// non-empty list. When omitted or empty, issues match whatever their project.
+	// Combined with every other filter as AND.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
 
 	// RemovedLabelIds Optional list of Linear label UUIDs. When non-empty, the trigger fires only when
 	// an `update` removed at least one of these labels: it was in the issue's previous
@@ -12496,101 +12375,6 @@ type LinearIssueCommentAgenticWorkflowTriggerSpec struct {
 // - `linear.action`: What happened to the comment: `create`, `update`, or `remove`.
 type LinearIssueCommentTriggerVariableName string
 
-// LinearIssueLabeledAgenticWorkflowTrigger defines model for LinearIssueLabeledAgenticWorkflowTrigger.
-type LinearIssueLabeledAgenticWorkflowTrigger struct {
-	Kind LinearIssueLabeledAgenticWorkflowTriggerKind `json:"kind"`
-
-	// Spec Dash0 derives `linear.issue_labeled` from a Linear Issue `update` webhook whose label set
-	// changed, so its actions are `added` and `removed` rather than Linear's own
-	// `create | update | remove`. Linear's own `IssueLabel` webhook reports a label definition
-	// being created, updated or removed and is a different event. The event has no content
-	// author, so the spec carries sender filters only.
-	Spec LinearIssueLabeledAgenticWorkflowTriggerSpec `json:"spec"`
-
-	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
-	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
-	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
-	// or the event framing when it continues an existing one. When omitted, the
-	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
-	// continue) is used instead. The automation-level standing prompt is injected only once,
-	// on spawn, and is not re-sent on continue.
-	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
-}
-
-// LinearIssueLabeledAgenticWorkflowTriggerKind defines model for LinearIssueLabeledAgenticWorkflowTrigger.Kind.
-type LinearIssueLabeledAgenticWorkflowTriggerKind string
-
-// LinearIssueLabeledAgenticWorkflowTriggerSpec Dash0 derives `linear.issue_labeled` from a Linear Issue `update` webhook whose label set
-// changed, so its actions are `added` and `removed` rather than Linear's own
-// `create | update | remove`. Linear's own `IssueLabel` webhook reports a label definition
-// being created, updated or removed and is a different event. The event has no content
-// author, so the spec carries sender filters only.
-type LinearIssueLabeledAgenticWorkflowTriggerSpec struct {
-	// Actions Optional list of label actions to filter on. When omitted or empty, only `added`
-	// matches, so triggers written without this field keep firing as before.
-	Actions *[]LinearLabelAction `json:"actions,omitempty"`
-
-	// AllTeams When true, the automation deliberately matches issues in every team of the connected
-	// Linear workspace, now and in the future. Mutually exclusive with a non-empty `teamIds`
-	// list. This flag distinguishes an explicit "all teams" choice from an unconfigured
-	// trigger, mirroring `allOrganizations` on GitHub triggers.
-	AllTeams *bool `json:"allTeams,omitempty"`
-
-	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
-	// This is in addition to the built-in variables that are always available.
-	AvailableVariables *[]LinearIssueLabeledTriggerVariableName `json:"availableVariables,omitempty"`
-
-	// LabelId The Linear label UUID that must be added to (or, with `actions`, removed from) an
-	// issue for the trigger to fire. This is the sole matching key — matched
-	// case-insensitively against the label ID reported on the webhook event. If a label is
-	// re-created in Linear (new UUID, same name), update this field to re-point the
-	// trigger at the new label.
-	LabelId string `json:"labelId"`
-
-	// LabelName Optional Linear label name corresponding to `labelId`, stored for UI display and
-	// exposed to prompts as the `linear.label.name` template variable. Does not
-	// participate in matching — the trigger fires on `labelId` only, so a same-named
-	// label in a different team never hijacks a trigger scoped to a specific label.
-	// Clients that already know the name at write time (the workflow editor, Terraform
-	// authors) should send it so the workflow-list view renders a human-readable label;
-	// programmatic API callers may omit it and get a UUID-only display until the field is
-	// populated.
-	LabelName *string `json:"labelName,omitempty"`
-
-	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
-	// or complete email. An actor without an email matches on its UUID only. Mutually
-	// exclusive with `senders`.
-	SenderRegex *string `json:"senderRegex,omitempty"`
-
-	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
-	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
-	// match by ID only. Mutually exclusive with `senderRegex`.
-	Senders *[]string `json:"senders,omitempty"`
-
-	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
-	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
-	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
-	// Linear trigger kinds carry this scope. `linear.project` has its own optional `teamIds`
-	// filter, where an empty list matches every team; initiatives have no team filter.
-	TeamIds *[]string `json:"teamIds,omitempty"`
-}
-
-// LinearIssueLabeledTriggerVariableName Variables provided by the `linear.issue_labeled` trigger.
-//
-// - `linear.issue.id`: The Linear issue identifier (e.g., `ENG-123`).
-// - `linear.issue.title`: Title of the Linear issue.
-// - `linear.issue.url`: URL of the Linear issue.
-// - `linear.issue.team_id`: UUID of the Linear team that owns the issue.
-// - `linear.issue.team_key`: Short key of the Linear team (e.g., `ENG`).
-// - `linear.issue.team_name`: Display name of the Linear team.
-// - `linear.label.id`: UUID of the label that was added or removed.
-// - `linear.label.name`: Name of the label that was added or removed, when known.
-// - `linear.label.color`: Hex color of the label that was added or removed, when known.
-// - `linear.actor.name`: Display name of the user who added or removed the label, when known.
-// - `linear.action`: What happened to the label: `added` or `removed`.
-type LinearIssueLabeledTriggerVariableName string
-
 // LinearIssueTriggerVariableName Variables provided by the `linear.issue` trigger.
 //
 // - `linear.action`: The webhook action: `create`, `update`, or `remove`.
@@ -12612,12 +12396,6 @@ type LinearIssueLabeledTriggerVariableName string
 // - `linear.issue.team_key`: Short key of the Linear team (e.g., `ENG`).
 // - `linear.issue.team_name`: Display name of the Linear team.
 type LinearIssueTriggerVariableName string
-
-// LinearLabelAction What happened to a label on a Linear issue.
-//
-// - `added`: The label was added to the issue.
-// - `removed`: The label was removed from the issue.
-type LinearLabelAction string
 
 // LinearProjectAgenticWorkflowTrigger defines model for LinearProjectAgenticWorkflowTrigger.
 type LinearProjectAgenticWorkflowTrigger struct {
@@ -12733,6 +12511,11 @@ type LinearProjectUpdateAgenticWorkflowTriggerSpec struct {
 	// or initiative the update was posted to. Matching is case-sensitive unless the
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
+
+	// ProjectIds Optional list of Linear project UUIDs. When non-empty, the trigger fires only when
+	// the update was posted to one of these projects. When omitted or empty, updates of
+	// every project match.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
 
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
 	// or complete email. An actor without an email matches on its UUID only. Mutually
@@ -15130,7 +14913,7 @@ type SkillLabels struct {
 	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 
-	// Dash0Comversion Current version of the skill. Needs to be set when updating a skill to prevent conflicting writes.
+	// Dash0Comversion Current version of the skill. Optional on update: when set, an update whose version no longer matches the stored one is rejected, which prevents conflicting writes; when omitted, the update applies without that check.
 	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
 }
 
@@ -15196,7 +14979,7 @@ type SkillSpec struct {
 	// Files The files that make up the skill, each keyed by its path relative to the skill root. Must include a `SKILL.md` in the OpenCode skill format; the server reads the skill's name from its frontmatter.
 	Files []SkillFile `json:"files"`
 
-	// Permissions Who may read, edit and delete the skill. Each entry grants actions to exactly one user, team or organization role. On create, the entries are added to the default grants. On update, a present list replaces the stored grants exactly as sent and an absent one leaves them unchanged. The `admin` role always holds read, edit and delete, except on skills with a `dash0.com/origin`, where it holds read and delete. An `admin` entry can set only its `defaultEnabled`. A skill managed by Terraform, the Dash0 operator or the Dash0 platform accepts no `custom_skill:write` grant. When a user sends the list for a skill that accepts write grants, at least one entry must hold read, edit and delete.
+	// Permissions Who may read, edit and delete the skill. Each entry grants actions to exactly one user, team or organization role. On create, the entries are added to the default grants. On update, a present list replaces the stored grants exactly as sent and an absent one leaves them unchanged. The `admin` role always holds read, edit and delete, except on skills with a `dash0.com/origin`, where it holds read and delete. An `admin` entry can set only its `defaultEnabled`. A skill managed by Terraform, the Dash0 operator or the Dash0 platform accepts no `custom_skill:write` grant. When a user sends the list for a skill with a `dash0.com/origin` that accepts write grants, at least one entry must hold read, edit and delete; on a skill without an origin, the `admin` grant already does.
 	Permissions *[]SkillPermission `json:"permissions,omitempty"`
 
 	// PermittedActions What the calling user may do with the skill. Set by the server; read-only. Absent for callers without a user identity.
@@ -19491,32 +19274,6 @@ func (t *AgenticWorkflowTrigger) FromLinearIssueCommentAgenticWorkflowTrigger(v 
 
 // MergeLinearIssueCommentAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearIssueCommentAgenticWorkflowTrigger
 func (t *AgenticWorkflowTrigger) MergeLinearIssueCommentAgenticWorkflowTrigger(v LinearIssueCommentAgenticWorkflowTrigger) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsLinearIssueLabeledAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a LinearIssueLabeledAgenticWorkflowTrigger
-func (t AgenticWorkflowTrigger) AsLinearIssueLabeledAgenticWorkflowTrigger() (LinearIssueLabeledAgenticWorkflowTrigger, error) {
-	var body LinearIssueLabeledAgenticWorkflowTrigger
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromLinearIssueLabeledAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided LinearIssueLabeledAgenticWorkflowTrigger
-func (t *AgenticWorkflowTrigger) FromLinearIssueLabeledAgenticWorkflowTrigger(v LinearIssueLabeledAgenticWorkflowTrigger) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeLinearIssueLabeledAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearIssueLabeledAgenticWorkflowTrigger
-func (t *AgenticWorkflowTrigger) MergeLinearIssueLabeledAgenticWorkflowTrigger(v LinearIssueLabeledAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err

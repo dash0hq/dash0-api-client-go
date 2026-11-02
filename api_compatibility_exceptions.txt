@@ -411,3 +411,9 @@ GetTopologyRequest
 GetTraceIdsRequest
 LogRecordsDownloadRequest
 Sampling
+
+# <NEXT_RELEASE>: Linear mention triggers can match a keywordRegex instead of
+# a keyword, so keyword is optional, and GitHub pull request triggers have
+# their own spec type for the title, label and head branch filters.
+LinearCommentAgenticWorkflowTriggerSpec.Keyword
+GitHubPullRequestAgenticWorkflowTrigger.Spec
