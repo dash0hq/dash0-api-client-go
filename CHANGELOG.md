@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.29.0
+
+
+### Bug Fixes
+- generate from the OpenAPI 3.1 spec with oapi-codegen v2.8.1 (#70)
+
+### CI
+- fail when the release version does not build (#73)
+- fail closed and clear exceptions at each release (#71)
+
+### Features
+- wrap the Agent0 custom skills endpoints (#66)
+
 ## v1.28.0
 
 
