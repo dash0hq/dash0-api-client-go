@@ -1,6 +1,9 @@
 package dash0
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // ListOption configures optional filters on List* methods.
 // Each option names the list methods that support it.
@@ -29,7 +32,7 @@ type ListOptions struct {
 
 // WithOriginPrefix restricts a list call to assets whose dash0.com/origin starts with prefix.
 // An empty prefix leaves the filter unset.
-// Supported by [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], [Client.ListSignalToMetrics], [Client.CountSignalToMetrics], and their Iter variants.
+// Supported by [Client.ListCheckRules], [Client.ListRecordingRules], [Client.ListSLOs], [Client.ListSignalToMetrics], [Client.CountSignalToMetrics], [Client.ListCustomSkills], and their Iter variants.
 func WithOriginPrefix(prefix string) ListOption {
 	return func(o *ListOptions) {
 		if prefix == "" {
@@ -71,7 +74,8 @@ func WithSignal(signal SignalToMetricsSignalType) ListOption {
 }
 
 // WithEnabled restricts a list call to assets whose enabled state is enabled.
-// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], and [Client.CountSignalToMetrics].
+// Supported by [Client.ListSignalToMetrics], [Client.ListSignalToMetricsIter], [Client.CountSignalToMetrics], [Client.ListCustomSkills], and [Client.ListCustomSkillsIter].
+// A custom skill is on or off per user, so for an API token without a user every readable skill counts as enabled.
 // The other list methods return an error when given this option.
 func WithEnabled(enabled bool) ListOption {
 	return func(o *ListOptions) {
@@ -92,13 +96,47 @@ func NewListOptions(opts ...ListOption) ListOptions {
 	return o
 }
 
-// requireOriginPrefixOnly returns an error when o sets a filter other than OriginPrefix.
-// List methods whose endpoint filters by origin prefix alone call it, so an unsupported filter fails the call instead of being ignored.
-// It compares o against a value that holds only its OriginPrefix, so a filter added to ListOptions later is rejected without a change here.
-// The operation names the call in the error, for example "list check rules".
-func (o ListOptions) requireOriginPrefixOnly(operation string) error {
-	if o != (ListOptions{OriginPrefix: o.OriginPrefix}) {
-		return fmt.Errorf("dash0: %s supports only the origin prefix filter", operation)
+// listFilter names a [ListOptions] field that a list method supports.
+type listFilter int
+
+const (
+	filterOriginPrefix listFilter = iota
+	filterEnabled
+)
+
+func (f listFilter) String() string {
+	switch f {
+	case filterOriginPrefix:
+		return "origin prefix"
+	case filterEnabled:
+		return "enabled"
+	default:
+		return fmt.Sprintf("listFilter(%d)", int(f))
 	}
-	return nil
+}
+
+// requireOnly returns an error when o sets a filter that is not in allowed.
+// List methods call it with the filters their endpoint supports, so an unsupported filter fails the call instead of being ignored.
+// It compares o against a value that holds only the allowed fields, so a filter added to ListOptions later is rejected without a change here.
+// The operation names the call in the error, for example "list check rules".
+func (o ListOptions) requireOnly(operation string, allowed ...listFilter) error {
+	var kept ListOptions
+	names := make([]string, 0, len(allowed))
+	for _, filter := range allowed {
+		switch filter {
+		case filterOriginPrefix:
+			kept.OriginPrefix = o.OriginPrefix
+		case filterEnabled:
+			kept.Enabled = o.Enabled
+		}
+		names = append(names, filter.String())
+	}
+	if o == kept {
+		return nil
+	}
+	noun := "filter"
+	if len(names) > 1 {
+		noun = "filters"
+	}
+	return fmt.Errorf("dash0: %s supports only the %s %s", operation, strings.Join(names, " and "), noun)
 }

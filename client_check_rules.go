@@ -15,7 +15,7 @@ func (c *client) ListCheckRules(ctx context.Context, dataset *string, opts ...Li
 		return nil, err
 	}
 	options := NewListOptions(opts...)
-	if err := options.requireOriginPrefixOnly("list check rules"); err != nil {
+	if err := options.requireOnly("list check rules", filterOriginPrefix); err != nil {
 		return nil, err
 	}
 	params := &GetApiAlertingCheckRulesParams{

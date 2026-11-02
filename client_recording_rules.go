@@ -18,7 +18,7 @@ func (c *client) ListRecordingRules(ctx context.Context, dataset *string, opts .
 		return nil, err
 	}
 	options := NewListOptions(opts...)
-	if err := options.requireOriginPrefixOnly("list recording rules"); err != nil {
+	if err := options.requireOnly("list recording rules", filterOriginPrefix); err != nil {
 		return nil, err
 	}
 	params := &GetApiRecordingRulesParams{
