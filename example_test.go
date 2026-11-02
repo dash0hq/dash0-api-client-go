@@ -2478,6 +2478,14 @@ func ExampleGetCustomSkillID() {
 	// Output: skill_01
 }
 
+func ExampleSetCustomSkillID() {
+	skill := &dash0.SkillDefinition{}
+	dash0.SetCustomSkillID(skill, "skill_01")
+	dash0.SetCustomSkillID(skill, "skill_02")
+	fmt.Println(dash0.GetCustomSkillID(skill))
+	// Output: skill_02
+}
+
 func ExampleGetCustomSkillName() {
 	skill := &dash0.SkillDefinition{Metadata: dash0.SkillMetadata{Name: dash0.Ptr("incident-response")}}
 	fmt.Println(dash0.GetCustomSkillName(skill))
@@ -2505,4 +2513,14 @@ func ExampleSetCustomSkillOrigin() {
 	dash0.SetCustomSkillOrigin(skill, "tf_incident-response")
 	fmt.Println(dash0.GetCustomSkillOrigin(skill))
 	// Output: tf_incident-response
+}
+
+func ExampleGetCustomSkillOrigin() {
+	skill := &dash0.SkillDefinition{}
+	fmt.Printf("%q\n", dash0.GetCustomSkillOrigin(skill))
+	dash0.SetCustomSkillOrigin(skill, "tf_incident-response")
+	fmt.Println(dash0.GetCustomSkillOrigin(skill))
+	// Output:
+	// ""
+	// tf_incident-response
 }
