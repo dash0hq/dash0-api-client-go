@@ -2385,3 +2385,111 @@ spec:
 		}
 	}
 }
+
+// TestEquivalent_ServerDefaultsAbsentFromReference covers the values the API
+// stores when the local document leaves a field out. Each one matches when the
+// reference omits it, and still counts as drift when the reference sets another
+// value.
+func TestEquivalent_ServerDefaultsAbsentFromReference(t *testing.T) {
+	tests := []struct {
+		name       string
+		opts       []Option
+		reference  string
+		stored     string
+		equivalent bool
+	}{
+		{
+			name:       "check rule source label under metadata",
+			opts:       []Option{WithFlatDocument()},
+			reference:  "name: r\nexpression: up\n",
+			stored:     "name: r\nexpression: up\nmetadata:\n  labels:\n    dash0.com/source: api\n",
+			equivalent: true,
+		},
+		{
+			name:       "check rule enabled and interval defaults",
+			opts:       []Option{WithFlatDocument()},
+			reference:  "name: r\nexpression: up\n",
+			stored:     "name: r\nexpression: up\nenabled: true\ninterval: 1m0s\n",
+			equivalent: true,
+		},
+		{
+			name:       "check rule interval set by the reference",
+			opts:       []Option{WithFlatDocument()},
+			reference:  "name: r\nexpression: up\ninterval: 5m\n",
+			stored:     "name: r\nexpression: up\ninterval: 1m0s\n",
+			equivalent: false,
+		},
+		{
+			name:       "check rule interval that is not the default",
+			opts:       []Option{WithFlatDocument()},
+			reference:  "name: r\nexpression: up\n",
+			stored:     "name: r\nexpression: up\ninterval: 5m\n",
+			equivalent: false,
+		},
+		{
+			name:       "check rule defaults need the flat document shape",
+			opts:       []Option{WithAnnotationsRoot("")},
+			reference:  "name: r\nexpression: up\n",
+			stored:     "name: r\nexpression: up\nenabled: true\ninterval: 1m0s\n",
+			equivalent: false,
+		},
+		{
+			name:       "metadata label kept when the reference has no metadata",
+			reference:  "name: r\n",
+			stored:     "name: r\nmetadata:\n  labels:\n    dash0.com/id: x\n",
+			equivalent: false,
+		},
+		{
+			name:       "metadata label kept for a document rooted elsewhere",
+			opts:       []Option{WithAnnotationsRoot("spec")},
+			reference:  "spec:\n  query: up\n",
+			stored:     "spec:\n  query: up\nmetadata:\n  labels:\n    dash0.com/source: api\n",
+			equivalent: false,
+		},
+		{
+			name:       "enabled annotation default",
+			reference:  "metadata:\n  name: s\n",
+			stored:     "metadata:\n  name: s\n  annotations:\n    dash0.com/enabled: \"true\"\n",
+			equivalent: true,
+		},
+		{
+			name:       "enabled annotation that is not the default",
+			reference:  "metadata:\n  name: s\n",
+			stored:     "metadata:\n  name: s\n  annotations:\n    dash0.com/enabled: \"false\"\n",
+			equivalent: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := Equivalent([]byte(tt.reference), []byte(tt.stored), nil, nil, tt.opts...)
+			require.NoError(t, err)
+			assert.Equal(t, tt.equivalent, result)
+		})
+	}
+}
+
+func TestNormalizePair_DropsServerDefaultsButKeepsChange(t *testing.T) {
+	reference := "metadata:\n  name: new\n"
+	stored := "metadata:\n  name: old\n  labels:\n    dash0.com/source: api\n  annotations:\n    dash0.com/enabled: \"true\"\n"
+
+	normalizedReference, normalizedStored, err := NormalizePair([]byte(reference), []byte(stored), nil, nil)
+	require.NoError(t, err)
+	assert.Equal(t, "metadata:\n  name: new", string(normalizedReference))
+	assert.Equal(t, "metadata:\n  name: old", string(normalizedStored))
+}
+
+func TestNormalizePair_AlignsEquivalentDurations(t *testing.T) {
+	reference := "interval: 1m\nspec:\n  groups:\n  - interval: 2m\n"
+	stored := "interval: 1m0s\nspec:\n  groups:\n  - interval: 5m0s\n"
+
+	_, normalizedStored, err := NormalizePair([]byte(reference), []byte(stored), nil, nil)
+	require.NoError(t, err)
+	assert.Equal(t, "interval: 1m\nspec:\n  groups:\n  - interval: 5m0s", string(normalizedStored), "a different duration keeps its own spelling")
+}
+
+func TestNormalizePair_ErrorNamesTheInvalidSide(t *testing.T) {
+	_, _, err := NormalizePair([]byte("a: ["), []byte("a: 1"), nil, nil)
+	assert.ErrorContains(t, err, "reference document")
+	_, _, err = NormalizePair([]byte("a: 1"), []byte("a: ["), nil, nil)
+	assert.ErrorContains(t, err, "target document")
+}
