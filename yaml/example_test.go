@@ -245,6 +245,28 @@ func ExampleWithFlatDocument() {
 	// false
 }
 
+func ExampleNormalizePair() {
+	// The local check rule leaves out enabled and interval, and the stored
+	// one has the server defaults for both. NormalizePair drops them, so a
+	// diff of the result shows only the name change.
+	reference := []byte("id: rule-1\nname: new-name\nexpression: up == 0\n")
+	stored := []byte("id: rule-1\nname: old-name\nexpression: up == 0\nenabled: true\ninterval: 1m0s\n")
+
+	normalizedReference, normalizedStored, err := dash0yaml.NormalizePair(reference, stored, nil, nil, dash0yaml.WithFlatDocument())
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(normalizedReference))
+	fmt.Println(string(normalizedStored))
+	// Output:
+	// expression: up == 0
+	// id: rule-1
+	// name: new-name
+	// expression: up == 0
+	// id: rule-1
+	// name: old-name
+}
+
 func ExampleConditionallyIgnoredFields() {
 	fields := dash0yaml.ConditionallyIgnoredFields()
 	fmt.Println(fields)

@@ -2427,6 +2427,26 @@ func TestEquivalent_ServerDefaultsAbsentFromReference(t *testing.T) {
 			equivalent: false,
 		},
 		{
+			name:       "check rule defaults need the flat document shape",
+			opts:       []Option{WithAnnotationsRoot("")},
+			reference:  "name: r\nexpression: up\n",
+			stored:     "name: r\nexpression: up\nenabled: true\ninterval: 1m0s\n",
+			equivalent: false,
+		},
+		{
+			name:       "metadata label kept when the reference has no metadata",
+			reference:  "name: r\n",
+			stored:     "name: r\nmetadata:\n  labels:\n    dash0.com/id: x\n",
+			equivalent: false,
+		},
+		{
+			name:       "metadata label kept for a document rooted elsewhere",
+			opts:       []Option{WithAnnotationsRoot("spec")},
+			reference:  "spec:\n  query: up\n",
+			stored:     "spec:\n  query: up\nmetadata:\n  labels:\n    dash0.com/source: api\n",
+			equivalent: false,
+		},
+		{
 			name:       "enabled annotation default",
 			reference:  "metadata:\n  name: s\n",
 			stored:     "metadata:\n  name: s\n  annotations:\n    dash0.com/enabled: \"true\"\n",
@@ -2465,4 +2485,11 @@ func TestNormalizePair_AlignsEquivalentDurations(t *testing.T) {
 	_, normalizedStored, err := NormalizePair([]byte(reference), []byte(stored), nil, nil)
 	require.NoError(t, err)
 	assert.Equal(t, "interval: 1m\nspec:\n  groups:\n  - interval: 5m0s", string(normalizedStored), "a different duration keeps its own spelling")
+}
+
+func TestNormalizePair_ErrorNamesTheInvalidSide(t *testing.T) {
+	_, _, err := NormalizePair([]byte("a: ["), []byte("a: 1"), nil, nil)
+	assert.ErrorContains(t, err, "reference document")
+	_, _, err = NormalizePair([]byte("a: 1"), []byte("a: ["), nil, nil)
+	assert.ErrorContains(t, err, "target document")
 }

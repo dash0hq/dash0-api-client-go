@@ -732,9 +732,9 @@ func Equivalent(a, b []byte, additionalIgnoredFields []string, preservedAnnotati
 // NormalizePair normalizes reference and target the way Equivalent compares
 // them, including the target fields dropped because reference leaves them
 // out, so a diff rendered from the result shows only what Equivalent counts
-// as drift. Slice order and duration formatting are tolerated only by
-// Equivalent's comparison, so they can still show up here next to a real
-// change.
+// as drift. Equal durations get the reference's spelling. Slice order is
+// tolerated only by Equivalent's comparison, so a reorder can still show up
+// here next to a real change.
 func NormalizePair(reference, target []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (normalizedReference, normalizedTarget []byte, err error) {
 	parsedReference, parsedTarget, err := normalizePair(reference, target, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
@@ -795,11 +795,11 @@ func marshalNormalized(parsed map[string]any) ([]byte, error) {
 func normalizePair(a, b []byte, additionalIgnoredFields []string, preservedAnnotationKeys []string, opts ...Option) (map[string]any, map[string]any, error) {
 	parsedA, err := normalizeToMap(a, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error normalizing first document: %w", err)
+		return nil, nil, fmt.Errorf("error normalizing reference document: %w", err)
 	}
 	parsedB, err := normalizeToMap(b, additionalIgnoredFields, preservedAnnotationKeys, opts...)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error normalizing second document: %w", err)
+		return nil, nil, fmt.Errorf("error normalizing target document: %w", err)
 	}
 
 	// Strip zero-value fields from B that are absent in A. This prevents
@@ -808,13 +808,18 @@ func normalizePair(a, b []byte, additionalIgnoredFields []string, preservedAnnot
 	// If the reference explicitly set a zero value, it will be present in A
 	// and preserved.
 	stripAbsentZeroValues(parsedA, parsedB)
-	root := resolveOptions(opts).AnnotationsRoot
-	stripAbsentWellKnownLabels(parsedA, parsedB, root)
-	if root != "metadata" {
-		// A flat document (a CheckRule) still gets the server's labels under metadata.
-		stripAbsentWellKnownLabels(parsedA, parsedB, "metadata")
+	o := resolveOptions(opts)
+	root := o.AnnotationsRoot
+	// flat is the WithFlatDocument shape, a check rule. Its server defaults
+	// apply only there, not to WithAnnotationsRoot("") on its own.
+	flat := root == "" && o.AnnotationsUnfiltered
+	stripAbsentWellKnownLabels(parsedA, parsedB, root, false)
+	if flat {
+		// A check rule has no metadata of its own, but the server still adds
+		// its labels under metadata.
+		stripAbsentWellKnownLabels(parsedA, parsedB, "metadata", true)
 	}
-	stripAbsentServerDefaults(parsedA, parsedB, root)
+	stripAbsentServerDefaults(parsedA, parsedB, root, flat)
 
 	return parsedA, parsedB, nil
 }
@@ -829,8 +834,14 @@ func normalizePair(a, b []byte, additionalIgnoredFields []string, preservedAnnot
 // as drift. A key present in both maps is left untouched and compared
 // normally -- a mismatch there is exactly the case this function must not
 // hide, since it can mean the resource's identity or ownership changed.
-func stripAbsentWellKnownLabels(reference, target map[string]any, root string) {
-	refParent, _ := mapAtRoot(reference, root)
+//
+// A reference with nothing at root keeps every target label, unless
+// referenceParentOptional is set.
+func stripAbsentWellKnownLabels(reference, target map[string]any, root string, referenceParentOptional bool) {
+	refParent, ok := mapAtRoot(reference, root)
+	if !ok && !referenceParentOptional {
+		return
+	}
 	targetParent, ok := mapAtRoot(target, root)
 	if !ok {
 		return
@@ -869,7 +880,8 @@ var flatDocumentServerDefaults = map[string]string{
 // stripAbsentServerDefaults removes, from target, the server defaults that
 // reference leaves out, so a document that omits a defaulted field matches
 // the stored asset. A value reference sets is still compared.
-func stripAbsentServerDefaults(reference, target map[string]any, root string) {
+// The flatDocumentServerDefaults apply only when flat is set.
+func stripAbsentServerDefaults(reference, target map[string]any, root string, flat bool) {
 	targetParent, ok := mapAtRoot(target, root)
 	if !ok {
 		return
@@ -886,10 +898,10 @@ func stripAbsentServerDefaults(reference, target map[string]any, root string) {
 			delete(targetParent, "annotations")
 		}
 	}
-	if root != "" {
-		if isEmpty(targetParent) {
-			deleteAtRoot(target, root)
-		}
+	if root != "" && isEmpty(targetParent) {
+		deleteAtRoot(target, root)
+	}
+	if !flat {
 		return
 	}
 	for key, value := range flatDocumentServerDefaults {
