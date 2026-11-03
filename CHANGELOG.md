@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.30.0
+
+
+### Bug Fixes
+- ignore server defaults the reference leaves out, add NormalizePair (#74)
+
 ## v1.29.0
 
 
