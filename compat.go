@@ -210,6 +210,16 @@ package dash0
 // [Client] gained [Client.ListGenerativeAiEvaluations], [Client.GetGenerativeAiEvaluation], [Client.CreateGenerativeAiEvaluation], [Client.UpdateGenerativeAiEvaluation], [Client.DeleteGenerativeAiEvaluation], and [Client.ListGenerativeAiEvaluationsIter].
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
+//
+// # Migration guide (<NEXT_RELEASE>)
+//
+// [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
+// Custom [Client] implementations and wrappers must add all 6 methods.
+// dash0test.MockClient implements them through new ListTelemetryTransformationRulesFunc, GetTelemetryTransformationRuleFunc, CreateTelemetryTransformationRuleFunc, UpdateTelemetryTransformationRuleFunc, DeleteTelemetryTransformationRuleFunc, and ListTelemetryTransformationRulesIterFunc fields.
+//
+// List responses omit spec.examples, so fetch the full rule with [Client.GetTelemetryTransformationRule] before updating it.
+// PUT replaces the whole rule, and omitting spec.examples removes the stored examples.
+// Preserve dash0.com/updated-at from GET as the concurrency token for PUT; [StripTelemetryTransformationRuleServerFields] keeps it and spec.examples intact.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //

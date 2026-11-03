@@ -784,6 +784,288 @@ func ExampleClearSamplingRuleID() {
 	// Output: true
 }
 
+// Telemetry transformation rules
+
+const telemetryTransformationRuleExampleBody = `{
+	"kind": "Dash0TelemetryTransformationRule",
+	"metadata": {
+		"name": "normalize-logs",
+		"labels": {"dash0.com/id": "ttr-123", "dash0.com/origin": "tf_normalize-logs", "dash0.com/dataset": "production", "dash0.com/source": "terraform"},
+		"annotations": {"dash0.com/created-at": "2026-10-27T14:00:00Z", "dash0.com/updated-at": "2026-10-27T14:03:08.123456789Z"}
+	},
+	"spec": {
+		"enabled": true, "signal": "logs", "context": "log", "priority": 200,
+		"display": {"name": "Normalize logs"},
+		"conditions": ["severity_number < 9"],
+		"transformations": [{"name": "Normalize severity", "statements": ["set(severity_text, \"INFO\")"]}],
+		"examples": [{"name": "demo log", "otlp": {"resourceLogs": [{"resource": {}, "scopeLogs": [{"scope": {"name": "demo"}, "logRecords": [{"severityNumber": 5, "body": {"stringValue": "demo"}}]}]}]}}]
+	}
+}`
+
+func ExampleClient_ListTelemetryTransformationRules() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var rule dash0.TelemetryTransformationRuleDefinition
+		_ = json.Unmarshal([]byte(telemetryTransformationRuleExampleBody), &rule)
+		// The list endpoint omits examples; use a single GET before a replacement PUT.
+		rule.Spec.Examples = nil
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(dash0.TelemetryTransformationRuleListResponse{
+			TelemetryTransformationRules: []dash0.TelemetryTransformationRuleDefinition{rule},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	rules, err := client.ListTelemetryTransformationRules(context.Background(), dash0.Ptr("production"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, rule := range rules {
+		fmt.Println(dash0.GetTelemetryTransformationRuleName(rule), rule.Spec.Examples == nil)
+	}
+	// Output: Normalize logs true
+}
+
+func ExampleClient_GetTelemetryTransformationRule() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(telemetryTransformationRuleExampleBody))
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	rule, err := client.GetTelemetryTransformationRule(context.Background(), "tf_normalize-logs", dash0.Ptr("production"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetTelemetryTransformationRuleName(rule), (*rule.Spec.Examples)[0].Name)
+	// Output: Normalize logs demo log
+}
+
+func ExampleClient_CreateTelemetryTransformationRule() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var rule dash0.TelemetryTransformationRuleDefinition
+		_ = json.NewDecoder(r.Body).Decode(&rule)
+		dash0.SetTelemetryTransformationRuleID(&rule, "ttr-123")
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	rule := &dash0.TelemetryTransformationRuleDefinition{
+		Kind: dash0.TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule,
+		Metadata: dash0.TelemetryTransformationRuleMetadata{
+			Name:   "normalize-logs",
+			Labels: &dash0.TelemetryTransformationRuleLabels{Dash0Comorigin: dash0.Ptr("tf_normalize-logs")},
+		},
+		Spec: dash0.TelemetryTransformationRuleSpec{
+			Enabled: true,
+			Signal:  dash0.TelemetryTransformationRuleSignalTypeLogs,
+			Context: dash0.TelemetryTransformationRuleContextLog,
+			Transformations: []dash0.TelemetryTransformationRuleTransformation{
+				{Name: "Normalize severity", Statements: dash0.OTTLStatements{`set(severity_text, "INFO")`}},
+			},
+		},
+	}
+	created, err := client.CreateTelemetryTransformationRule(context.Background(), rule, dash0.Ptr("production"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetTelemetryTransformationRuleID(created))
+	// Output: ttr-123
+}
+
+func ExampleClient_UpdateTelemetryTransformationRule() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodGet {
+			_, _ = w.Write([]byte(telemetryTransformationRuleExampleBody))
+			return
+		}
+		var rule dash0.TelemetryTransformationRuleDefinition
+		_ = json.NewDecoder(r.Body).Decode(&rule)
+		if rule.Metadata.Annotations == nil || rule.Metadata.Annotations.Dash0ComupdatedAt == nil ||
+			rule.Metadata.Annotations.Dash0ComupdatedAt.Format(time.RFC3339Nano) != "2026-10-27T14:03:08.123456789Z" {
+			http.Error(w, "missing or stale updated-at", http.StatusBadRequest)
+			return
+		}
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	// PUT replaces the whole rule; a list item omits examples and would remove them.
+	rule, err := client.GetTelemetryTransformationRule(context.Background(), "ttr-123", dash0.Ptr("production"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	dash0.StripTelemetryTransformationRuleServerFields(rule)
+	rule.Spec.Enabled = false
+	updated, err := client.UpdateTelemetryTransformationRule(context.Background(), "ttr-123", rule, dash0.Ptr("production"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(updated.Spec.Enabled, (*updated.Spec.Examples)[0].Name,
+		updated.Metadata.Annotations.Dash0ComupdatedAt.Format(time.RFC3339Nano))
+	// Output: false demo log 2026-10-27T14:03:08.123456789Z
+}
+
+func ExampleClient_DeleteTelemetryTransformationRule() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	if err := client.DeleteTelemetryTransformationRule(context.Background(), "ttr-123", dash0.Ptr("production")); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("deleted")
+	// Output: deleted
+}
+
+func ExampleClient_ListTelemetryTransformationRulesIter() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var rule dash0.TelemetryTransformationRuleDefinition
+		_ = json.Unmarshal([]byte(telemetryTransformationRuleExampleBody), &rule)
+		rule.Spec.Examples = nil
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(dash0.TelemetryTransformationRuleListResponse{
+			TelemetryTransformationRules: []dash0.TelemetryTransformationRuleDefinition{rule},
+		})
+	}))
+	defer server.Close()
+
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close(context.Background()) }()
+
+	iter := client.ListTelemetryTransformationRulesIter(context.Background(), dash0.Ptr("production"))
+	for iter.Next() {
+		fmt.Println(dash0.GetTelemetryTransformationRuleName(iter.Current()))
+	}
+	if err := iter.Err(); err != nil {
+		log.Fatal(err)
+	}
+	// Output: Normalize logs
+}
+
+func ExampleStripTelemetryTransformationRuleServerFields() {
+	dash0.StripTelemetryTransformationRuleServerFields(nil)
+	var rule dash0.TelemetryTransformationRuleDefinition
+	if err := json.Unmarshal([]byte(telemetryTransformationRuleExampleBody), &rule); err != nil {
+		log.Fatal(err)
+	}
+	dash0.StripTelemetryTransformationRuleServerFields(&rule)
+	fmt.Println(rule.Metadata.Annotations.Dash0ComcreatedAt == nil, rule.Metadata.Labels.Dash0Comsource == nil)
+	fmt.Println(rule.Metadata.Annotations.Dash0ComupdatedAt.Format(time.RFC3339Nano))
+	fmt.Println((*rule.Spec.Examples)[0].Name)
+	// Output:
+	// true true
+	// 2026-10-27T14:03:08.123456789Z
+	// demo log
+}
+
+func ExampleGetTelemetryTransformationRuleID() {
+	rule := &dash0.TelemetryTransformationRuleDefinition{
+		Metadata: dash0.TelemetryTransformationRuleMetadata{
+			Labels: &dash0.TelemetryTransformationRuleLabels{Dash0Comid: dash0.Ptr("ttr-123")},
+		},
+	}
+	fmt.Printf("%s %q\n", dash0.GetTelemetryTransformationRuleID(rule), dash0.GetTelemetryTransformationRuleID(nil))
+	// Output: ttr-123 ""
+}
+
+func ExampleSetTelemetryTransformationRuleID() {
+	dash0.SetTelemetryTransformationRuleID(nil, "ttr-456")
+	rule := &dash0.TelemetryTransformationRuleDefinition{}
+	dash0.SetTelemetryTransformationRuleID(rule, "ttr-123")
+	dash0.SetTelemetryTransformationRuleID(rule, "ttr-456")
+	fmt.Println(dash0.GetTelemetryTransformationRuleID(rule))
+	// Output: ttr-456
+}
+
+func ExampleClearTelemetryTransformationRuleID() {
+	dash0.ClearTelemetryTransformationRuleID(nil)
+	rule := &dash0.TelemetryTransformationRuleDefinition{}
+	dash0.SetTelemetryTransformationRuleID(rule, "ttr-123")
+	dash0.ClearTelemetryTransformationRuleID(rule)
+	fmt.Println(dash0.GetTelemetryTransformationRuleID(rule) == "")
+	// Output: true
+}
+
+func ExampleSetTelemetryTransformationRuleIDIfAbsent() {
+	dash0.SetTelemetryTransformationRuleIDIfAbsent(nil, "ttr-123")
+	rule := &dash0.TelemetryTransformationRuleDefinition{}
+	dash0.SetTelemetryTransformationRuleIDIfAbsent(rule, "ttr-123")
+	dash0.SetTelemetryTransformationRuleIDIfAbsent(rule, "ttr-456")
+	fmt.Println(dash0.GetTelemetryTransformationRuleID(rule))
+	// Output: ttr-123
+}
+
+func ExampleGetTelemetryTransformationRuleName() {
+	rule := &dash0.TelemetryTransformationRuleDefinition{
+		Metadata: dash0.TelemetryTransformationRuleMetadata{Name: "normalize-logs"},
+		Spec: dash0.TelemetryTransformationRuleSpec{
+			Display: &dash0.TelemetryTransformationRuleDisplay{Name: "Normalize logs"},
+		},
+	}
+	fmt.Println(dash0.GetTelemetryTransformationRuleName(rule))
+	rule.Spec.Display = nil
+	fmt.Println(dash0.GetTelemetryTransformationRuleName(rule))
+	fmt.Printf("%q\n", dash0.GetTelemetryTransformationRuleName(nil))
+	// Output:
+	// Normalize logs
+	// normalize-logs
+	// ""
+}
+
+func ExampleGetTelemetryTransformationRuleDataset() {
+	rule := &dash0.TelemetryTransformationRuleDefinition{
+		Metadata: dash0.TelemetryTransformationRuleMetadata{
+			Labels: &dash0.TelemetryTransformationRuleLabels{Dash0Comdataset: dash0.Ptr("production")},
+		},
+	}
+	fmt.Printf("%s %q\n", dash0.GetTelemetryTransformationRuleDataset(rule), dash0.GetTelemetryTransformationRuleDataset(nil))
+	// Output: production ""
+}
+
+func ExampleSetTelemetryTransformationRuleDataset() {
+	dash0.SetTelemetryTransformationRuleDataset(nil, "production")
+	rule := &dash0.TelemetryTransformationRuleDefinition{}
+	dash0.SetTelemetryTransformationRuleDataset(rule, "production")
+	fmt.Println(dash0.GetTelemetryTransformationRuleDataset(rule))
+	// Output: production
+}
+
 // Signal-to-metrics
 
 func ExampleClient_CountSignalToMetrics() {
