@@ -204,6 +204,16 @@ package dash0
 // [TimeReference] is a union: build it with [TimeReferenceFromString]. [PinnedRetentionClass] is its own enum.
 // Bare enum names such as [Manual], [V1alpha2] and [N30d] stay as deprecated aliases. LinearLabelAdded* is gone.
 // GetApiEdgeSettings takes a *[GetApiEdgeSettingsParams]; pass nil to keep the old request.
+//
+// # Migration guide (<NEXT_RELEASE>)
+//
+// [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
+// Custom [Client] implementations and wrappers must add all 6 methods.
+// dash0test.MockClient implements them through new ListTelemetryTransformationRulesFunc, GetTelemetryTransformationRuleFunc, CreateTelemetryTransformationRuleFunc, UpdateTelemetryTransformationRuleFunc, DeleteTelemetryTransformationRuleFunc, and ListTelemetryTransformationRulesIterFunc fields.
+//
+// List responses omit spec.examples, so fetch the full rule with [Client.GetTelemetryTransformationRule] before updating it.
+// PUT replaces the whole rule, and omitting spec.examples removes the stored examples.
+// Preserve dash0.com/updated-at from GET as the concurrency token for PUT; [StripTelemetryTransformationRuleServerFields] keeps it and spec.examples intact.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //

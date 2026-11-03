@@ -1,8 +1,10 @@
 package yaml
 
 import (
+	"encoding/json"
 	"testing"
 
+	dash0 "github.com/dash0hq/dash0-api-client-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	sigsyaml "sigs.k8s.io/yaml"
@@ -73,4 +75,76 @@ func TestToJSON_Errors(t *testing.T) {
 		_, err := ToJSON([]byte(in))
 		assert.Error(t, err, in)
 	}
+}
+
+func TestUnmarshal_TelemetryTransformationRuleRoundTrip(t *testing.T) {
+	const input = `kind: Dash0TelemetryTransformationRule
+metadata:
+  name: redact-checkout
+  labels:
+    dash0.com/id: rule-71
+    dash0.com/origin: terraform-checkout-19
+    dash0.com/dataset: production
+    dash0.com/source: terraform
+  annotations:
+    dash0.com/created-at: "2026-10-25T10:00:00Z"
+    dash0.com/updated-at: "2026-10-27T14:03:08.123456789Z"
+    dash0.com/deleted-at: "2026-10-26T12:00:00Z"
+spec:
+  enabled: true
+  signal: logs
+  context: log
+  priority: 100
+  display:
+    name: Redact checkout secrets
+  conditions:
+    - 'severity_number > 9'
+  transformations:
+    - name: redact
+      statements:
+        - 'delete_key(attributes, "password")'
+    - name: tag
+      statements:
+        - 'set(attributes["team"], "payments")'
+  examples:
+    - name: checkout warning
+      otlp:
+        resourceLogs:
+          - scopeLogs:
+              - logRecords:
+                  - timeUnixNano: "1793109788123456789"
+                    body: {stringValue: Payment accepted}
+                    attributes:
+                      - key: order.id
+                        value: {intValue: "9007199254740993"}
+`
+	const want = `{
+  "kind":"Dash0TelemetryTransformationRule",
+  "metadata":{
+    "name":"redact-checkout",
+    "labels":{"dash0.com/id":"rule-71","dash0.com/origin":"terraform-checkout-19","dash0.com/dataset":"production","dash0.com/source":"terraform"},
+    "annotations":{"dash0.com/created-at":"2026-10-25T10:00:00Z","dash0.com/updated-at":"2026-10-27T14:03:08.123456789Z","dash0.com/deleted-at":"2026-10-26T12:00:00Z"}
+  },
+  "spec":{
+    "enabled":true,"signal":"logs","context":"log","priority":100,"display":{"name":"Redact checkout secrets"},
+    "conditions":["severity_number > 9"],
+    "transformations":[{"name":"redact","statements":["delete_key(attributes, \"password\")"]},{"name":"tag","statements":["set(attributes[\"team\"], \"payments\")"]}],
+    "examples":[{"name":"checkout warning","otlp":{"resourceLogs":[{"scopeLogs":[{"logRecords":[{"timeUnixNano":"1793109788123456789","body":{"stringValue":"Payment accepted"},"attributes":[{"key":"order.id","value":{"intValue":"9007199254740993"}}]}]}]}]}}]
+  }
+}`
+	kind, err := DetectKind([]byte(input))
+	require.NoError(t, err)
+	assert.Equal(t, "Dash0TelemetryTransformationRule", kind)
+	var rule dash0.TelemetryTransformationRuleDefinition
+	require.NoError(t, Unmarshal([]byte(input), &rule))
+	got, err := json.Marshal(rule)
+	require.NoError(t, err)
+	assert.JSONEq(t, want, string(got))
+	encoded, err := sigsyaml.Marshal(rule)
+	require.NoError(t, err)
+	var roundTrip dash0.TelemetryTransformationRuleDefinition
+	require.NoError(t, Unmarshal(encoded, &roundTrip))
+	got, err = json.Marshal(roundTrip)
+	require.NoError(t, err)
+	assert.JSONEq(t, want, string(got))
 }

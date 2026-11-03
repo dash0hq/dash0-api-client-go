@@ -88,6 +88,14 @@ type Client interface {
 	DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIter(ctx context.Context, dataset *string) *Iter[SamplingDefinition]
 
+	// Telemetry transformation rules
+	ListTelemetryTransformationRules(ctx context.Context, dataset *string) ([]*TelemetryTransformationRuleDefinition, error)
+	GetTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) (*TelemetryTransformationRuleDefinition, error)
+	CreateTelemetryTransformationRule(ctx context.Context, rule *TelemetryTransformationRuleDefinition, dataset *string) (*TelemetryTransformationRuleDefinition, error)
+	UpdateTelemetryTransformationRule(ctx context.Context, originOrID string, rule *TelemetryTransformationRuleDefinition, dataset *string) (*TelemetryTransformationRuleDefinition, error)
+	DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) error
+	ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string) *Iter[TelemetryTransformationRuleDefinition]
+
 	// Time Series Aggregations
 	ListTimeSeriesAggregations(ctx context.Context, dataset *string) ([]*TimeSeriesAggregationDefinition, error)
 	GetTimeSeriesAggregation(ctx context.Context, originOrID string, dataset *string) (*TimeSeriesAggregationDefinition, error)
