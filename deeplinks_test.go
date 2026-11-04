@@ -28,6 +28,25 @@ func TestAppBaseURL(t *testing.T) {
 		{"empty", "", ""},
 		{"single-label host", "https://localhost", ""},
 		{"unparseable", "://nope", ""},
+
+		// A trailing dot is legal and makes the name fully qualified. Splitting
+		// on it leaves an empty final label that displaces a real one, which
+		// would point the user at the unrelated host "app.com.".
+		{"fully qualified host", "https://api.dash0.com.", "https://app.dash0.com"},
+
+		// Hostnames are case-insensitive, so the link resolves either way, but
+		// it is rendered back to users and should not shout.
+		{"uppercase host", "https://API.DASH0.COM", "https://app.dash0.com"},
+		{"mixed case host", "https://Api.Dash0-Dev.com", "https://app.dash0-dev.com"},
+
+		// An IPv4 address has dots and would otherwise be split into labels,
+		// yielding "app.0.1" for localhost. IPv6 has none and is caught by the
+		// label count, but both must be rejected for the same reason.
+		{"ipv4 loopback", "http://127.0.0.1:8080", ""},
+		{"ipv4 private", "http://10.0.0.5", ""},
+		{"ipv4 without port", "https://192.168.1.1", ""},
+		{"ipv6 loopback", "http://[::1]:8080", ""},
+		{"ipv6 full", "http://[2001:db8::1]:8080", ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

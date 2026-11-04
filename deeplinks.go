@@ -3,6 +3,7 @@ package dash0
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/url"
 	"strings"
 )
@@ -59,8 +60,13 @@ const (
 // It takes the registrable domain (the last two labels) of the API host and
 // prefixes "app.". For example "https://api.us-west-2.aws.dash0.com" yields
 // "https://app.dash0.com" and "https://api.dash0-dev.com" yields
-// "https://app.dash0-dev.com". It returns an empty string if the API URL is
-// empty or cannot be parsed into a host with at least two labels.
+// "https://app.dash0-dev.com".
+//
+// It returns an empty string when no app host can be derived: an empty or
+// unparseable API URL, a host with fewer than two labels such as "localhost",
+// or an IP address. Callers treat an empty result as "no deep link available"
+// and omit the link, which is always better than rendering one that does not
+// lead to the caller's Dash0 organization.
 func AppBaseURL(apiURL string) string {
 	if apiURL == "" {
 		return ""
@@ -81,12 +87,32 @@ func AppBaseURL(apiURL string) string {
 
 // domainSuffix extracts the last two labels from a hostname.
 // For example, "api.us-west-2.aws.dash0.com" returns "dash0.com".
+//
+// It returns an empty string for a hostname no app host can be derived from.
+// An IP address is rejected rather than split into labels: the last two octets
+// of "127.0.0.1" would otherwise yield the nonsense host "app.0.1". IPv6
+// addresses contain no dots and would be rejected by the label count anyway,
+// but are checked explicitly so the reason is the address, not the spelling.
 func domainSuffix(hostname string) string {
+	// A trailing dot makes a name fully qualified and is legal in a URL, but it
+	// produces an empty final label that would displace a real one: the last two
+	// labels of "api.dash0.com." are "com" and "", yielding the unrelated host
+	// "app.com." rather than "app.dash0.com".
+	hostname = strings.TrimSuffix(hostname, ".")
+
+	if net.ParseIP(hostname) != nil {
+		return ""
+	}
+
 	parts := strings.Split(hostname, ".")
 	if len(parts) < 2 {
 		return ""
 	}
-	return strings.Join(parts[len(parts)-2:], ".")
+
+	// Hostnames are case-insensitive, so the derived link resolves either way,
+	// but lowercasing keeps it from being rendered back to a user in whatever
+	// case the API URL happened to use.
+	return strings.ToLower(strings.Join(parts[len(parts)-2:], "."))
 }
 
 // DeeplinkURL constructs a Dash0 web app deep link for the given asset type and
