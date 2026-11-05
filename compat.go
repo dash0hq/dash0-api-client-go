@@ -204,6 +204,14 @@ package dash0
 // [TimeReference] is a union: build it with [TimeReferenceFromString]. [PinnedRetentionClass] is its own enum.
 // Bare enum names such as [Manual], [V1alpha2] and [N30d] stay as deprecated aliases. LinearLabelAdded* is gone.
 // GetApiEdgeSettings takes a *[GetApiEdgeSettingsParams]; pass nil to keep the old request.
+//
+// # Migration guide (v1.30.x to <NEXT_RELEASE>)
+//
+// [Client] gained [Client.ListGenerativeAiEvaluations], [Client.GetGenerativeAiEvaluation],
+// [Client.CreateGenerativeAiEvaluation], [Client.UpdateGenerativeAiEvaluation],
+// [Client.DeleteGenerativeAiEvaluation], and [Client.ListGenerativeAiEvaluationsIter].
+// Custom [Client] implementations and wrappers must add them.
+// dash0test.MockClient implements them through new *Func fields.
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //

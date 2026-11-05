@@ -141,6 +141,14 @@ type Client interface {
 	DeleteCustomSkill(ctx context.Context, originOrID string) error
 	ListCustomSkillsIter(ctx context.Context, opts ...ListOption) *Iter[SkillDefinition]
 
+	// Generative AI Evaluations
+	ListGenerativeAiEvaluations(ctx context.Context, dataset *string, opts ...ListOption) ([]*GenerativeAiEvaluationDefinition, error)
+	GetGenerativeAiEvaluation(ctx context.Context, originOrID string, dataset *string) (*GenerativeAiEvaluationDefinition, error)
+	CreateGenerativeAiEvaluation(ctx context.Context, evaluation *GenerativeAiEvaluationDefinition, dataset *string) (*GenerativeAiEvaluationDefinition, error)
+	UpdateGenerativeAiEvaluation(ctx context.Context, originOrID string, evaluation *GenerativeAiEvaluationDefinition, dataset *string) (*GenerativeAiEvaluationDefinition, error)
+	DeleteGenerativeAiEvaluation(ctx context.Context, originOrID string, dataset *string) error
+	ListGenerativeAiEvaluationsIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[GenerativeAiEvaluationDefinition]
+
 	// Notification Channels
 	ListNotificationChannels(ctx context.Context) ([]*NotificationChannelDefinition, error)
 	GetNotificationChannel(ctx context.Context, originOrID string) (*NotificationChannelDefinition, error)
