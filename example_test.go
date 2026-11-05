@@ -1155,6 +1155,106 @@ func ExampleStripSLOServerFields() {
 	// Output: slo_01k5vpx97efdnrkqan15b41k84 true true
 }
 
+// Generative AI evaluation helpers
+
+func ExampleGetGenerativeAiEvaluationName() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{Name: "answer-relevance"},
+		Spec: dash0.GenerativeAiEvaluationSpec{
+			Display: dash0.GenerativeAiEvaluationDisplay{Name: "Answer relevance"},
+		},
+	}
+	fmt.Println(dash0.GetGenerativeAiEvaluationName(evaluation))
+	// Output: Answer relevance
+}
+
+func ExampleGetGenerativeAiEvaluationID() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{
+			Labels: &dash0.GenerativeAiEvaluationLabels{Dash0Comid: dash0.Ptr("eval_01k9z3d4q5r6s7t8u9v0w1x2y3")},
+		},
+	}
+	fmt.Println(dash0.GetGenerativeAiEvaluationID(evaluation))
+	// Output: eval_01k9z3d4q5r6s7t8u9v0w1x2y3
+}
+
+func ExampleGetGenerativeAiEvaluationOrigin() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{
+			Labels: &dash0.GenerativeAiEvaluationLabels{Dash0Comorigin: dash0.Ptr("tf_answer-relevance")},
+		},
+	}
+	fmt.Println(dash0.GetGenerativeAiEvaluationOrigin(evaluation))
+	// Output: tf_answer-relevance
+}
+
+func ExampleGetGenerativeAiEvaluationDataset() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{
+			Labels: &dash0.GenerativeAiEvaluationLabels{Dash0Comdataset: dash0.Ptr("default")},
+		},
+	}
+	fmt.Println(dash0.GetGenerativeAiEvaluationDataset(evaluation))
+	// Output: default
+}
+
+func ExampleSetGenerativeAiEvaluationDataset() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{}
+	dash0.SetGenerativeAiEvaluationDataset(evaluation, "default")
+	fmt.Println(*evaluation.Metadata.Labels.Dash0Comdataset)
+	// Output: default
+}
+
+func ExampleSetGenerativeAiEvaluationID() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{}
+	dash0.SetGenerativeAiEvaluationID(evaluation, "eval_01k9z3d4q5r6s7t8u9v0w1x2y3")
+	fmt.Println(*evaluation.Metadata.Labels.Dash0Comid)
+	// Output: eval_01k9z3d4q5r6s7t8u9v0w1x2y3
+}
+
+func ExampleSetGenerativeAiEvaluationIDIfAbsent() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{
+			Labels: &dash0.GenerativeAiEvaluationLabels{Dash0Comid: dash0.Ptr("existing-id")},
+		},
+	}
+	dash0.SetGenerativeAiEvaluationIDIfAbsent(evaluation, "new-id")
+	fmt.Println(*evaluation.Metadata.Labels.Dash0Comid)
+	// Output: existing-id
+}
+
+func ExampleClearGenerativeAiEvaluationID() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{
+			Labels: &dash0.GenerativeAiEvaluationLabels{Dash0Comid: dash0.Ptr("eval_01k9z3d4q5r6s7t8u9v0w1x2y3")},
+		},
+	}
+	dash0.ClearGenerativeAiEvaluationID(evaluation)
+	fmt.Println(evaluation.Metadata.Labels.Dash0Comid == nil)
+	// Output: true
+}
+
+func ExampleStripGenerativeAiEvaluationServerFields() {
+	evaluation := &dash0.GenerativeAiEvaluationDefinition{
+		Metadata: dash0.GenerativeAiEvaluationMetadata{
+			Labels: &dash0.GenerativeAiEvaluationLabels{
+				Dash0Comid:      dash0.Ptr("eval_01k9z3d4q5r6s7t8u9v0w1x2y3"),
+				Dash0Comversion: dash0.Ptr("2"),
+				Dash0Comorigin:  dash0.Ptr("tf_answer-relevance"),
+			},
+			Annotations: &dash0.GenerativeAiEvaluationGroupAnnotations{
+				Dash0ComfolderPath: dash0.Ptr("/checkout"),
+			},
+		},
+	}
+	dash0.StripGenerativeAiEvaluationServerFields(evaluation)
+	fmt.Println(dash0.GetGenerativeAiEvaluationID(evaluation) == "", evaluation.Metadata.Labels.Dash0Comversion == nil)
+	fmt.Println(dash0.GetGenerativeAiEvaluationOrigin(evaluation), *evaluation.Metadata.Annotations.Dash0ComfolderPath)
+	// Output:
+	// true true
+	// tf_answer-relevance /checkout
+}
+
 // AWS metric scrape config helpers
 
 func ExampleStripAwsMetricScrapeConfigServerFields() {
