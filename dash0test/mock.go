@@ -25,7 +25,7 @@ import (
 // [dash0.ListOption] before calling their *Func field, so those fields cannot observe
 // [dash0.WithOriginPrefix].
 // Their signatures predate list options and are kept so existing mocks still compile.
-// ListSignalToMetricsFunc, ListSignalToMetricsIterFunc, CountSignalToMetricsFunc, ListCustomSkillsFunc, and ListCustomSkillsIterFunc do receive the options.
+// ListSignalToMetricsFunc, ListSignalToMetricsIterFunc, CountSignalToMetricsFunc, ListCustomSkillsFunc, ListCustomSkillsIterFunc, ListGenerativeAiEvaluationsFunc, and ListGenerativeAiEvaluationsIterFunc do receive the options.
 type MockClient struct {
 	// Dashboards
 	ListDashboardsFunc     func(ctx context.Context, dataset *string) ([]*dash0.DashboardApiListItem, error)
@@ -148,6 +148,14 @@ type MockClient struct {
 	UpdateCustomSkillFunc    func(ctx context.Context, originOrID string, skill *dash0.SkillDefinition) (*dash0.SkillDefinition, error)
 	DeleteCustomSkillFunc    func(ctx context.Context, originOrID string) error
 	ListCustomSkillsIterFunc func(ctx context.Context, opts ...dash0.ListOption) *dash0.Iter[dash0.SkillDefinition]
+
+	// Generative AI Evaluations
+	ListGenerativeAiEvaluationsFunc     func(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.GenerativeAiEvaluationDefinition, error)
+	GetGenerativeAiEvaluationFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.GenerativeAiEvaluationDefinition, error)
+	CreateGenerativeAiEvaluationFunc    func(ctx context.Context, evaluation *dash0.GenerativeAiEvaluationDefinition, dataset *string) (*dash0.GenerativeAiEvaluationDefinition, error)
+	UpdateGenerativeAiEvaluationFunc    func(ctx context.Context, originOrID string, evaluation *dash0.GenerativeAiEvaluationDefinition, dataset *string) (*dash0.GenerativeAiEvaluationDefinition, error)
+	DeleteGenerativeAiEvaluationFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	ListGenerativeAiEvaluationsIterFunc func(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.GenerativeAiEvaluationDefinition]
 
 	// Notification Channels
 	ListNotificationChannelsFunc     func(ctx context.Context) ([]*dash0.NotificationChannelDefinition, error)
@@ -867,6 +875,50 @@ func (m *MockClient) DeleteCustomSkill(ctx context.Context, originOrID string) e
 func (m *MockClient) ListCustomSkillsIter(ctx context.Context, opts ...dash0.ListOption) *dash0.Iter[dash0.SkillDefinition] {
 	if m.ListCustomSkillsIterFunc != nil {
 		return m.ListCustomSkillsIterFunc(ctx, opts...)
+	}
+	return nil
+}
+
+// Generative AI Evaluations
+
+func (m *MockClient) ListGenerativeAiEvaluations(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.GenerativeAiEvaluationDefinition, error) {
+	if m.ListGenerativeAiEvaluationsFunc != nil {
+		return m.ListGenerativeAiEvaluationsFunc(ctx, dataset, opts...)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetGenerativeAiEvaluation(ctx context.Context, originOrID string, dataset *string) (*dash0.GenerativeAiEvaluationDefinition, error) {
+	if m.GetGenerativeAiEvaluationFunc != nil {
+		return m.GetGenerativeAiEvaluationFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateGenerativeAiEvaluation(ctx context.Context, evaluation *dash0.GenerativeAiEvaluationDefinition, dataset *string) (*dash0.GenerativeAiEvaluationDefinition, error) {
+	if m.CreateGenerativeAiEvaluationFunc != nil {
+		return m.CreateGenerativeAiEvaluationFunc(ctx, evaluation, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateGenerativeAiEvaluation(ctx context.Context, originOrID string, evaluation *dash0.GenerativeAiEvaluationDefinition, dataset *string) (*dash0.GenerativeAiEvaluationDefinition, error) {
+	if m.UpdateGenerativeAiEvaluationFunc != nil {
+		return m.UpdateGenerativeAiEvaluationFunc(ctx, originOrID, evaluation, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteGenerativeAiEvaluation(ctx context.Context, originOrID string, dataset *string) error {
+	if m.DeleteGenerativeAiEvaluationFunc != nil {
+		return m.DeleteGenerativeAiEvaluationFunc(ctx, originOrID, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListGenerativeAiEvaluationsIter(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.GenerativeAiEvaluationDefinition] {
+	if m.ListGenerativeAiEvaluationsIterFunc != nil {
+		return m.ListGenerativeAiEvaluationsIterFunc(ctx, dataset, opts...)
 	}
 	return nil
 }
