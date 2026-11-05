@@ -286,6 +286,8 @@ const (
 	AgenticWorkflowTriggerKindLinearIssueComment             AgenticWorkflowTriggerKind = "linear.issue_comment"
 	AgenticWorkflowTriggerKindLinearProject                  AgenticWorkflowTriggerKind = "linear.project"
 	AgenticWorkflowTriggerKindLinearProjectUpdate            AgenticWorkflowTriggerKind = "linear.project_update"
+	AgenticWorkflowTriggerKindLinearRelease                  AgenticWorkflowTriggerKind = "linear.release"
+	AgenticWorkflowTriggerKindLinearReleaseNote              AgenticWorkflowTriggerKind = "linear.release_note"
 	AgenticWorkflowTriggerKindManual                         AgenticWorkflowTriggerKind = "manual"
 	AgenticWorkflowTriggerKindSchedule                       AgenticWorkflowTriggerKind = "schedule"
 	AgenticWorkflowTriggerKindSlackBotFailedCheckNew         AgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -348,6 +350,10 @@ func (e AgenticWorkflowTriggerKind) Valid() bool {
 	case AgenticWorkflowTriggerKindLinearProject:
 		return true
 	case AgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case AgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case AgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case AgenticWorkflowTriggerKindManual:
 		return true
@@ -793,6 +799,8 @@ const (
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearIssueComment             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.issue_comment"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProject                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.project"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProjectUpdate            DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.project_update"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearRelease                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.release"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearReleaseNote              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.release_note"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindManual                         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "manual"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSchedule                       DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "schedule"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindSlackBotFailedCheckNew         DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -855,6 +863,10 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindManual:
 		return true
@@ -1000,6 +1012,8 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindLinearIssueComment             FailedCheckAgenticWorkflowTriggerKind = "linear.issue_comment"
 	FailedCheckAgenticWorkflowTriggerKindLinearProject                  FailedCheckAgenticWorkflowTriggerKind = "linear.project"
 	FailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate            FailedCheckAgenticWorkflowTriggerKind = "linear.project_update"
+	FailedCheckAgenticWorkflowTriggerKindLinearRelease                  FailedCheckAgenticWorkflowTriggerKind = "linear.release"
+	FailedCheckAgenticWorkflowTriggerKindLinearReleaseNote              FailedCheckAgenticWorkflowTriggerKind = "linear.release_note"
 	FailedCheckAgenticWorkflowTriggerKindManual                         FailedCheckAgenticWorkflowTriggerKind = "manual"
 	FailedCheckAgenticWorkflowTriggerKindSchedule                       FailedCheckAgenticWorkflowTriggerKind = "schedule"
 	FailedCheckAgenticWorkflowTriggerKindSlackBotFailedCheckNew         FailedCheckAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1062,6 +1076,10 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 	case FailedCheckAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindManual:
 		return true
@@ -1282,6 +1300,8 @@ const (
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearIssueComment             GitHubCheckRunAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearProject                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.project"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubCheckRunAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubCheckRunAgenticWorkflowTriggerKindLinearRelease                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.release"
+	GitHubCheckRunAgenticWorkflowTriggerKindLinearReleaseNote              GitHubCheckRunAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubCheckRunAgenticWorkflowTriggerKindManual                         GitHubCheckRunAgenticWorkflowTriggerKind = "manual"
 	GitHubCheckRunAgenticWorkflowTriggerKindSchedule                       GitHubCheckRunAgenticWorkflowTriggerKind = "schedule"
 	GitHubCheckRunAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubCheckRunAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1344,6 +1364,10 @@ func (e GitHubCheckRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckRunAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindManual:
 		return true
@@ -1459,6 +1483,8 @@ const (
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearIssueComment             GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProject                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.project"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearRelease                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.release"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearReleaseNote              GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindManual                         GitHubCheckSuiteAgenticWorkflowTriggerKind = "manual"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindSchedule                       GitHubCheckSuiteAgenticWorkflowTriggerKind = "schedule"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubCheckSuiteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1521,6 +1547,10 @@ func (e GitHubCheckSuiteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindManual:
 		return true
@@ -1633,6 +1663,8 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearIssueComment             GitHubDeploymentAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearProject                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.project"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubDeploymentAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubDeploymentAgenticWorkflowTriggerKindLinearRelease                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.release"
+	GitHubDeploymentAgenticWorkflowTriggerKindLinearReleaseNote              GitHubDeploymentAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubDeploymentAgenticWorkflowTriggerKindManual                         GitHubDeploymentAgenticWorkflowTriggerKind = "manual"
 	GitHubDeploymentAgenticWorkflowTriggerKindSchedule                       GitHubDeploymentAgenticWorkflowTriggerKind = "schedule"
 	GitHubDeploymentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubDeploymentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1696,6 +1728,10 @@ func (e GitHubDeploymentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindSchedule:
@@ -1741,6 +1777,8 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearIssueComment             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProject                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.project"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearRelease                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.release"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearReleaseNote              GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindManual                         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "manual"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindSchedule                       GitHubDeploymentStatusAgenticWorkflowTriggerKind = "schedule"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubDeploymentStatusAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1804,6 +1842,10 @@ func (e GitHubDeploymentStatusAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindSchedule:
@@ -1849,6 +1891,8 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearIssueComment             GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearProject                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.project"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubIssueCommentAgenticWorkflowTriggerKindLinearRelease                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.release"
+	GitHubIssueCommentAgenticWorkflowTriggerKindLinearReleaseNote              GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubIssueCommentAgenticWorkflowTriggerKindManual                         GitHubIssueCommentAgenticWorkflowTriggerKind = "manual"
 	GitHubIssueCommentAgenticWorkflowTriggerKindSchedule                       GitHubIssueCommentAgenticWorkflowTriggerKind = "schedule"
 	GitHubIssueCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubIssueCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -1912,6 +1956,10 @@ func (e GitHubIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindSchedule:
@@ -1957,6 +2005,8 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearIssueComment             GitHubPullRequestAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearProject                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPullRequestAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubPullRequestAgenticWorkflowTriggerKindLinearRelease                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.release"
+	GitHubPullRequestAgenticWorkflowTriggerKindLinearReleaseNote              GitHubPullRequestAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubPullRequestAgenticWorkflowTriggerKindManual                         GitHubPullRequestAgenticWorkflowTriggerKind = "manual"
 	GitHubPullRequestAgenticWorkflowTriggerKindSchedule                       GitHubPullRequestAgenticWorkflowTriggerKind = "schedule"
 	GitHubPullRequestAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPullRequestAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2020,6 +2070,10 @@ func (e GitHubPullRequestAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindSchedule:
@@ -2065,6 +2119,8 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearIssueComment             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProject                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearRelease                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.release"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearReleaseNote              GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "manual"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindSchedule                       GitHubPullRequestReviewAgenticWorkflowTriggerKind = "schedule"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPullRequestReviewAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2128,6 +2184,10 @@ func (e GitHubPullRequestReviewAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindSchedule:
@@ -2173,6 +2233,8 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearIssueComment             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProject                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearRelease                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.release"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearReleaseNote              GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindManual                         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "manual"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindSchedule                       GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "schedule"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2236,6 +2298,10 @@ func (e GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindSchedule:
@@ -2281,6 +2347,8 @@ const (
 	GitHubPushAgenticWorkflowTriggerKindLinearIssueComment             GitHubPushAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubPushAgenticWorkflowTriggerKindLinearProject                  GitHubPushAgenticWorkflowTriggerKind = "linear.project"
 	GitHubPushAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubPushAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubPushAgenticWorkflowTriggerKindLinearRelease                  GitHubPushAgenticWorkflowTriggerKind = "linear.release"
+	GitHubPushAgenticWorkflowTriggerKindLinearReleaseNote              GitHubPushAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubPushAgenticWorkflowTriggerKindManual                         GitHubPushAgenticWorkflowTriggerKind = "manual"
 	GitHubPushAgenticWorkflowTriggerKindSchedule                       GitHubPushAgenticWorkflowTriggerKind = "schedule"
 	GitHubPushAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubPushAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2344,6 +2412,10 @@ func (e GitHubPushAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubPushAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubPushAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindSchedule:
@@ -2389,6 +2461,8 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindLinearIssueComment             GitHubReleaseAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearProject                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.project"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubReleaseAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubReleaseAgenticWorkflowTriggerKindLinearRelease                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.release"
+	GitHubReleaseAgenticWorkflowTriggerKindLinearReleaseNote              GitHubReleaseAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubReleaseAgenticWorkflowTriggerKindManual                         GitHubReleaseAgenticWorkflowTriggerKind = "manual"
 	GitHubReleaseAgenticWorkflowTriggerKindSchedule                       GitHubReleaseAgenticWorkflowTriggerKind = "schedule"
 	GitHubReleaseAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubReleaseAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2451,6 +2525,10 @@ func (e GitHubReleaseAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubReleaseAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindManual:
 		return true
@@ -2626,6 +2704,8 @@ const (
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearIssueComment             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProject                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.project"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearRelease                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.release"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearReleaseNote              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindManual                         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "manual"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "schedule"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2689,6 +2769,10 @@ func (e GitHubWorkflowDispatchAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindManual:
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindSchedule:
@@ -2734,6 +2818,8 @@ const (
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearIssueComment             GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProject                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.project"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearRelease                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.release"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearReleaseNote              GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindManual                         GitHubWorkflowJobAgenticWorkflowTriggerKind = "manual"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowJobAgenticWorkflowTriggerKind = "schedule"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowJobAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2796,6 +2882,10 @@ func (e GitHubWorkflowJobAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindManual:
 		return true
@@ -2875,6 +2965,8 @@ const (
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearIssueComment             GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProject                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.project"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProjectUpdate            GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.project_update"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearRelease                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.release"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearReleaseNote              GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.release_note"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindManual                         GitHubWorkflowRunAgenticWorkflowTriggerKind = "manual"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindSchedule                       GitHubWorkflowRunAgenticWorkflowTriggerKind = "schedule"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitHubWorkflowRunAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -2937,6 +3029,10 @@ func (e GitHubWorkflowRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindManual:
 		return true
@@ -3022,6 +3118,8 @@ const (
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearIssueComment             GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearProject                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.project"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearProjectUpdate            GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.project_update"
+	GitLabMergeRequestAgenticWorkflowTriggerKindLinearRelease                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.release"
+	GitLabMergeRequestAgenticWorkflowTriggerKindLinearReleaseNote              GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.release_note"
 	GitLabMergeRequestAgenticWorkflowTriggerKindManual                         GitLabMergeRequestAgenticWorkflowTriggerKind = "manual"
 	GitLabMergeRequestAgenticWorkflowTriggerKindSchedule                       GitLabMergeRequestAgenticWorkflowTriggerKind = "schedule"
 	GitLabMergeRequestAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitLabMergeRequestAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -3085,6 +3183,10 @@ func (e GitLabMergeRequestAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindManual:
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindSchedule:
@@ -3130,6 +3232,8 @@ const (
 	GitLabNoteAgenticWorkflowTriggerKindLinearIssueComment             GitLabNoteAgenticWorkflowTriggerKind = "linear.issue_comment"
 	GitLabNoteAgenticWorkflowTriggerKindLinearProject                  GitLabNoteAgenticWorkflowTriggerKind = "linear.project"
 	GitLabNoteAgenticWorkflowTriggerKindLinearProjectUpdate            GitLabNoteAgenticWorkflowTriggerKind = "linear.project_update"
+	GitLabNoteAgenticWorkflowTriggerKindLinearRelease                  GitLabNoteAgenticWorkflowTriggerKind = "linear.release"
+	GitLabNoteAgenticWorkflowTriggerKindLinearReleaseNote              GitLabNoteAgenticWorkflowTriggerKind = "linear.release_note"
 	GitLabNoteAgenticWorkflowTriggerKindManual                         GitLabNoteAgenticWorkflowTriggerKind = "manual"
 	GitLabNoteAgenticWorkflowTriggerKindSchedule                       GitLabNoteAgenticWorkflowTriggerKind = "schedule"
 	GitLabNoteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         GitLabNoteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -3192,6 +3296,10 @@ func (e GitLabNoteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitLabNoteAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindManual:
 		return true
@@ -3430,6 +3538,8 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindLinearIssueComment             LinearCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearCommentAgenticWorkflowTriggerKindLinearProject                  LinearCommentAgenticWorkflowTriggerKind = "linear.project"
 	LinearCommentAgenticWorkflowTriggerKindLinearProjectUpdate            LinearCommentAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearCommentAgenticWorkflowTriggerKindLinearRelease                  LinearCommentAgenticWorkflowTriggerKind = "linear.release"
+	LinearCommentAgenticWorkflowTriggerKindLinearReleaseNote              LinearCommentAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearCommentAgenticWorkflowTriggerKindManual                         LinearCommentAgenticWorkflowTriggerKind = "manual"
 	LinearCommentAgenticWorkflowTriggerKindSchedule                       LinearCommentAgenticWorkflowTriggerKind = "schedule"
 	LinearCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -3493,6 +3603,10 @@ func (e LinearCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case LinearCommentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case LinearCommentAgenticWorkflowTriggerKindManual:
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindSchedule:
@@ -3538,6 +3652,8 @@ const (
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearIssueComment             LinearCommentReactionAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearProject                  LinearCommentReactionAgenticWorkflowTriggerKind = "linear.project"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearProjectUpdate            LinearCommentReactionAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearCommentReactionAgenticWorkflowTriggerKindLinearRelease                  LinearCommentReactionAgenticWorkflowTriggerKind = "linear.release"
+	LinearCommentReactionAgenticWorkflowTriggerKindLinearReleaseNote              LinearCommentReactionAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearCommentReactionAgenticWorkflowTriggerKindManual                         LinearCommentReactionAgenticWorkflowTriggerKind = "manual"
 	LinearCommentReactionAgenticWorkflowTriggerKindSchedule                       LinearCommentReactionAgenticWorkflowTriggerKind = "schedule"
 	LinearCommentReactionAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearCommentReactionAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -3600,6 +3716,10 @@ func (e LinearCommentReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearCommentReactionAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindManual:
 		return true
@@ -3721,6 +3841,8 @@ const (
 	LinearInitiativeAgenticWorkflowTriggerKindLinearIssueComment             LinearInitiativeAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearProject                  LinearInitiativeAgenticWorkflowTriggerKind = "linear.project"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearProjectUpdate            LinearInitiativeAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearInitiativeAgenticWorkflowTriggerKindLinearRelease                  LinearInitiativeAgenticWorkflowTriggerKind = "linear.release"
+	LinearInitiativeAgenticWorkflowTriggerKindLinearReleaseNote              LinearInitiativeAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearInitiativeAgenticWorkflowTriggerKindManual                         LinearInitiativeAgenticWorkflowTriggerKind = "manual"
 	LinearInitiativeAgenticWorkflowTriggerKindSchedule                       LinearInitiativeAgenticWorkflowTriggerKind = "schedule"
 	LinearInitiativeAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearInitiativeAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -3783,6 +3905,10 @@ func (e LinearInitiativeAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindManual:
 		return true
@@ -3865,6 +3991,8 @@ const (
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearIssueComment             LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProject                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.project"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProjectUpdate            LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearRelease                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.release"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearReleaseNote              LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindManual                         LinearInitiativeUpdateAgenticWorkflowTriggerKind = "manual"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindSchedule                       LinearInitiativeUpdateAgenticWorkflowTriggerKind = "schedule"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearInitiativeUpdateAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -3927,6 +4055,10 @@ func (e LinearInitiativeUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindManual:
 		return true
@@ -4012,6 +4144,8 @@ const (
 	LinearIssueAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearIssueAgenticWorkflowTriggerKindLinearProject                  LinearIssueAgenticWorkflowTriggerKind = "linear.project"
 	LinearIssueAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearIssueAgenticWorkflowTriggerKindLinearRelease                  LinearIssueAgenticWorkflowTriggerKind = "linear.release"
+	LinearIssueAgenticWorkflowTriggerKindLinearReleaseNote              LinearIssueAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearIssueAgenticWorkflowTriggerKindManual                         LinearIssueAgenticWorkflowTriggerKind = "manual"
 	LinearIssueAgenticWorkflowTriggerKindSchedule                       LinearIssueAgenticWorkflowTriggerKind = "schedule"
 	LinearIssueAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearIssueAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -4075,6 +4209,10 @@ func (e LinearIssueAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case LinearIssueAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case LinearIssueAgenticWorkflowTriggerKindManual:
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindSchedule:
@@ -4120,6 +4258,8 @@ const (
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProject                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.project"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearRelease                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.release"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearReleaseNote              LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindManual                         LinearIssueAttachmentAgenticWorkflowTriggerKind = "manual"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindSchedule                       LinearIssueAttachmentAgenticWorkflowTriggerKind = "schedule"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearIssueAttachmentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -4182,6 +4322,10 @@ func (e LinearIssueAttachmentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindManual:
 		return true
@@ -4282,6 +4426,8 @@ const (
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearIssueComment             LinearIssueCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearProject                  LinearIssueCommentAgenticWorkflowTriggerKind = "linear.project"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate            LinearIssueCommentAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearIssueCommentAgenticWorkflowTriggerKindLinearRelease                  LinearIssueCommentAgenticWorkflowTriggerKind = "linear.release"
+	LinearIssueCommentAgenticWorkflowTriggerKindLinearReleaseNote              LinearIssueCommentAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearIssueCommentAgenticWorkflowTriggerKindManual                         LinearIssueCommentAgenticWorkflowTriggerKind = "manual"
 	LinearIssueCommentAgenticWorkflowTriggerKindSchedule                       LinearIssueCommentAgenticWorkflowTriggerKind = "schedule"
 	LinearIssueCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearIssueCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -4344,6 +4490,10 @@ func (e LinearIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueCommentAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindManual:
 		return true
@@ -4504,6 +4654,8 @@ const (
 	LinearProjectAgenticWorkflowTriggerKindLinearIssueComment             LinearProjectAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearProjectAgenticWorkflowTriggerKindLinearProject                  LinearProjectAgenticWorkflowTriggerKind = "linear.project"
 	LinearProjectAgenticWorkflowTriggerKindLinearProjectUpdate            LinearProjectAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearProjectAgenticWorkflowTriggerKindLinearRelease                  LinearProjectAgenticWorkflowTriggerKind = "linear.release"
+	LinearProjectAgenticWorkflowTriggerKindLinearReleaseNote              LinearProjectAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearProjectAgenticWorkflowTriggerKindManual                         LinearProjectAgenticWorkflowTriggerKind = "manual"
 	LinearProjectAgenticWorkflowTriggerKindSchedule                       LinearProjectAgenticWorkflowTriggerKind = "schedule"
 	LinearProjectAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearProjectAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -4566,6 +4718,10 @@ func (e LinearProjectAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindManual:
 		return true
@@ -4648,6 +4804,8 @@ const (
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearIssueComment             LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.issue_comment"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearProject                  LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.project"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearProjectUpdate            LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearProjectUpdateAgenticWorkflowTriggerKindLinearRelease                  LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.release"
+	LinearProjectUpdateAgenticWorkflowTriggerKindLinearReleaseNote              LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.release_note"
 	LinearProjectUpdateAgenticWorkflowTriggerKindManual                         LinearProjectUpdateAgenticWorkflowTriggerKind = "manual"
 	LinearProjectUpdateAgenticWorkflowTriggerKindSchedule                       LinearProjectUpdateAgenticWorkflowTriggerKind = "schedule"
 	LinearProjectUpdateAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearProjectUpdateAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -4711,6 +4869,10 @@ func (e LinearProjectUpdateAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindManual:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindSchedule:
@@ -4761,6 +4923,315 @@ func (e LinearProjectUpdateTriggerVariableName) Valid() bool {
 	case LinearProjectUpdateTriggerVariableNameLinearProjectUpdateUrl:
 		return true
 	case LinearProjectUpdateTriggerVariableNameLinearProjectUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LinearReleaseAgenticWorkflowTriggerKind.
+const (
+	LinearReleaseAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearReleaseAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	LinearReleaseAgenticWorkflowTriggerKindFailedCheckNew                 LinearReleaseAgenticWorkflowTriggerKind = "failed_check.new"
+	LinearReleaseAgenticWorkflowTriggerKindGithubCheckRun                 LinearReleaseAgenticWorkflowTriggerKind = "github.check_run"
+	LinearReleaseAgenticWorkflowTriggerKindGithubCheckSuite               LinearReleaseAgenticWorkflowTriggerKind = "github.check_suite"
+	LinearReleaseAgenticWorkflowTriggerKindGithubDeployment               LinearReleaseAgenticWorkflowTriggerKind = "github.deployment"
+	LinearReleaseAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearReleaseAgenticWorkflowTriggerKind = "github.deployment_status"
+	LinearReleaseAgenticWorkflowTriggerKindGithubIssueComment             LinearReleaseAgenticWorkflowTriggerKind = "github.issue_comment"
+	LinearReleaseAgenticWorkflowTriggerKindGithubPullRequest              LinearReleaseAgenticWorkflowTriggerKind = "github.pull_request"
+	LinearReleaseAgenticWorkflowTriggerKindGithubPullRequestReview        LinearReleaseAgenticWorkflowTriggerKind = "github.pull_request_review"
+	LinearReleaseAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearReleaseAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	LinearReleaseAgenticWorkflowTriggerKindGithubPush                     LinearReleaseAgenticWorkflowTriggerKind = "github.push"
+	LinearReleaseAgenticWorkflowTriggerKindGithubRelease                  LinearReleaseAgenticWorkflowTriggerKind = "github.release"
+	LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearReleaseAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowJob              LinearReleaseAgenticWorkflowTriggerKind = "github.workflow_job"
+	LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowRun              LinearReleaseAgenticWorkflowTriggerKind = "github.workflow_run"
+	LinearReleaseAgenticWorkflowTriggerKindGitlabMergeRequest             LinearReleaseAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	LinearReleaseAgenticWorkflowTriggerKindGitlabNote                     LinearReleaseAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearReleaseAgenticWorkflowTriggerKindLinearComment                  LinearReleaseAgenticWorkflowTriggerKind = "linear.comment"
+	LinearReleaseAgenticWorkflowTriggerKindLinearCommentReaction          LinearReleaseAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	LinearReleaseAgenticWorkflowTriggerKindLinearInitiative               LinearReleaseAgenticWorkflowTriggerKind = "linear.initiative"
+	LinearReleaseAgenticWorkflowTriggerKindLinearInitiativeUpdate         LinearReleaseAgenticWorkflowTriggerKind = "linear.initiative_update"
+	LinearReleaseAgenticWorkflowTriggerKindLinearIssue                    LinearReleaseAgenticWorkflowTriggerKind = "linear.issue"
+	LinearReleaseAgenticWorkflowTriggerKindLinearIssueAttachment          LinearReleaseAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	LinearReleaseAgenticWorkflowTriggerKindLinearIssueComment             LinearReleaseAgenticWorkflowTriggerKind = "linear.issue_comment"
+	LinearReleaseAgenticWorkflowTriggerKindLinearProject                  LinearReleaseAgenticWorkflowTriggerKind = "linear.project"
+	LinearReleaseAgenticWorkflowTriggerKindLinearProjectUpdate            LinearReleaseAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearReleaseAgenticWorkflowTriggerKindLinearRelease                  LinearReleaseAgenticWorkflowTriggerKind = "linear.release"
+	LinearReleaseAgenticWorkflowTriggerKindLinearReleaseNote              LinearReleaseAgenticWorkflowTriggerKind = "linear.release_note"
+	LinearReleaseAgenticWorkflowTriggerKindManual                         LinearReleaseAgenticWorkflowTriggerKind = "manual"
+	LinearReleaseAgenticWorkflowTriggerKindSchedule                       LinearReleaseAgenticWorkflowTriggerKind = "schedule"
+	LinearReleaseAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearReleaseAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	LinearReleaseAgenticWorkflowTriggerKindSlackBotMessage                LinearReleaseAgenticWorkflowTriggerKind = "slack_bot.message"
+	LinearReleaseAgenticWorkflowTriggerKindSlackBotReaction               LinearReleaseAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	LinearReleaseAgenticWorkflowTriggerKindWebhook                        LinearReleaseAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the LinearReleaseAgenticWorkflowTriggerKind enum.
+func (e LinearReleaseAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case LinearReleaseAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindManual:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindSchedule:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LinearReleaseNoteAgenticWorkflowTriggerKind.
+const (
+	LinearReleaseNoteAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearReleaseNoteAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	LinearReleaseNoteAgenticWorkflowTriggerKindFailedCheckNew                 LinearReleaseNoteAgenticWorkflowTriggerKind = "failed_check.new"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubCheckRun                 LinearReleaseNoteAgenticWorkflowTriggerKind = "github.check_run"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubCheckSuite               LinearReleaseNoteAgenticWorkflowTriggerKind = "github.check_suite"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubDeployment               LinearReleaseNoteAgenticWorkflowTriggerKind = "github.deployment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubDeploymentStatus         LinearReleaseNoteAgenticWorkflowTriggerKind = "github.deployment_status"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubIssueComment             LinearReleaseNoteAgenticWorkflowTriggerKind = "github.issue_comment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubPullRequest              LinearReleaseNoteAgenticWorkflowTriggerKind = "github.pull_request"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubPullRequestReview        LinearReleaseNoteAgenticWorkflowTriggerKind = "github.pull_request_review"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubPullRequestReviewComment LinearReleaseNoteAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubPush                     LinearReleaseNoteAgenticWorkflowTriggerKind = "github.push"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubRelease                  LinearReleaseNoteAgenticWorkflowTriggerKind = "github.release"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowDispatch         LinearReleaseNoteAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowJob              LinearReleaseNoteAgenticWorkflowTriggerKind = "github.workflow_job"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowRun              LinearReleaseNoteAgenticWorkflowTriggerKind = "github.workflow_run"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGitlabMergeRequest             LinearReleaseNoteAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	LinearReleaseNoteAgenticWorkflowTriggerKindGitlabNote                     LinearReleaseNoteAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearComment                  LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.comment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearCommentReaction          LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearInitiative               LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.initiative"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearInitiativeUpdate         LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.initiative_update"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearIssue                    LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.issue"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearIssueAttachment          LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearIssueComment             LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.issue_comment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearProject                  LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.project"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearProjectUpdate            LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.project_update"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearRelease                  LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.release"
+	LinearReleaseNoteAgenticWorkflowTriggerKindLinearReleaseNote              LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.release_note"
+	LinearReleaseNoteAgenticWorkflowTriggerKindManual                         LinearReleaseNoteAgenticWorkflowTriggerKind = "manual"
+	LinearReleaseNoteAgenticWorkflowTriggerKindSchedule                       LinearReleaseNoteAgenticWorkflowTriggerKind = "schedule"
+	LinearReleaseNoteAgenticWorkflowTriggerKindSlackBotFailedCheckNew         LinearReleaseNoteAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	LinearReleaseNoteAgenticWorkflowTriggerKindSlackBotMessage                LinearReleaseNoteAgenticWorkflowTriggerKind = "slack_bot.message"
+	LinearReleaseNoteAgenticWorkflowTriggerKindSlackBotReaction               LinearReleaseNoteAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	LinearReleaseNoteAgenticWorkflowTriggerKindWebhook                        LinearReleaseNoteAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the LinearReleaseNoteAgenticWorkflowTriggerKind enum.
+func (e LinearReleaseNoteAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case LinearReleaseNoteAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindManual:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindSchedule:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LinearReleaseNoteTriggerVariableName.
+const (
+	LinearReleaseNoteTriggerVariableNameLinearAction                  LinearReleaseNoteTriggerVariableName = "linear.action"
+	LinearReleaseNoteTriggerVariableNameLinearActorName               LinearReleaseNoteTriggerVariableName = "linear.actor.name"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNoteContent      LinearReleaseNoteTriggerVariableName = "linear.release_note.content"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNoteId           LinearReleaseNoteTriggerVariableName = "linear.release_note.id"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNotePipelineId   LinearReleaseNoteTriggerVariableName = "linear.release_note.pipeline_id"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNotePipelineName LinearReleaseNoteTriggerVariableName = "linear.release_note.pipeline_name"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNoteReleaseIds   LinearReleaseNoteTriggerVariableName = "linear.release_note.release_ids"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNoteTitle        LinearReleaseNoteTriggerVariableName = "linear.release_note.title"
+	LinearReleaseNoteTriggerVariableNameLinearReleaseNoteUrl          LinearReleaseNoteTriggerVariableName = "linear.release_note.url"
+)
+
+// Valid indicates whether the value is a known member of the LinearReleaseNoteTriggerVariableName enum.
+func (e LinearReleaseNoteTriggerVariableName) Valid() bool {
+	switch e {
+	case LinearReleaseNoteTriggerVariableNameLinearAction:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearActorName:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNoteContent:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNoteId:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNotePipelineId:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNotePipelineName:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNoteReleaseIds:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNoteTitle:
+		return true
+	case LinearReleaseNoteTriggerVariableNameLinearReleaseNoteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for LinearReleaseTriggerVariableName.
+const (
+	LinearReleaseTriggerVariableNameLinearAction              LinearReleaseTriggerVariableName = "linear.action"
+	LinearReleaseTriggerVariableNameLinearActorName           LinearReleaseTriggerVariableName = "linear.actor.name"
+	LinearReleaseTriggerVariableNameLinearReleaseDescription  LinearReleaseTriggerVariableName = "linear.release.description"
+	LinearReleaseTriggerVariableNameLinearReleaseId           LinearReleaseTriggerVariableName = "linear.release.id"
+	LinearReleaseTriggerVariableNameLinearReleaseName         LinearReleaseTriggerVariableName = "linear.release.name"
+	LinearReleaseTriggerVariableNameLinearReleasePipelineId   LinearReleaseTriggerVariableName = "linear.release.pipeline_id"
+	LinearReleaseTriggerVariableNameLinearReleasePipelineName LinearReleaseTriggerVariableName = "linear.release.pipeline_name"
+	LinearReleaseTriggerVariableNameLinearReleaseStage        LinearReleaseTriggerVariableName = "linear.release.stage"
+	LinearReleaseTriggerVariableNameLinearReleaseUrl          LinearReleaseTriggerVariableName = "linear.release.url"
+	LinearReleaseTriggerVariableNameLinearReleaseVersion      LinearReleaseTriggerVariableName = "linear.release.version"
+)
+
+// Valid indicates whether the value is a known member of the LinearReleaseTriggerVariableName enum.
+func (e LinearReleaseTriggerVariableName) Valid() bool {
+	switch e {
+	case LinearReleaseTriggerVariableNameLinearAction:
+		return true
+	case LinearReleaseTriggerVariableNameLinearActorName:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleaseDescription:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleaseId:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleaseName:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleasePipelineId:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleasePipelineName:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleaseStage:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleaseUrl:
+		return true
+	case LinearReleaseTriggerVariableNameLinearReleaseVersion:
 		return true
 	default:
 		return false
@@ -4840,6 +5311,8 @@ const (
 	ManualAgenticWorkflowTriggerKindLinearIssueComment             ManualAgenticWorkflowTriggerKind = "linear.issue_comment"
 	ManualAgenticWorkflowTriggerKindLinearProject                  ManualAgenticWorkflowTriggerKind = "linear.project"
 	ManualAgenticWorkflowTriggerKindLinearProjectUpdate            ManualAgenticWorkflowTriggerKind = "linear.project_update"
+	ManualAgenticWorkflowTriggerKindLinearRelease                  ManualAgenticWorkflowTriggerKind = "linear.release"
+	ManualAgenticWorkflowTriggerKindLinearReleaseNote              ManualAgenticWorkflowTriggerKind = "linear.release_note"
 	ManualAgenticWorkflowTriggerKindManual                         ManualAgenticWorkflowTriggerKind = "manual"
 	ManualAgenticWorkflowTriggerKindSchedule                       ManualAgenticWorkflowTriggerKind = "schedule"
 	ManualAgenticWorkflowTriggerKindSlackBotFailedCheckNew         ManualAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -4902,6 +5375,10 @@ func (e ManualAgenticWorkflowTriggerKind) Valid() bool {
 	case ManualAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case ManualAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case ManualAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case ManualAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case ManualAgenticWorkflowTriggerKindManual:
 		return true
@@ -5238,6 +5715,159 @@ func (e PinnedRetentionClass) Valid() bool {
 	}
 }
 
+// Defines values for ProfileFrameType.
+const (
+	ProfileFrameTypeBeam    ProfileFrameType = "beam"
+	ProfileFrameTypeCpython ProfileFrameType = "cpython"
+	ProfileFrameTypeCuda    ProfileFrameType = "cuda"
+	ProfileFrameTypeDotnet  ProfileFrameType = "dotnet"
+	ProfileFrameTypeGo      ProfileFrameType = "go"
+	ProfileFrameTypeJvm     ProfileFrameType = "jvm"
+	ProfileFrameTypeKernel  ProfileFrameType = "kernel"
+	ProfileFrameTypeLuajit  ProfileFrameType = "luajit"
+	ProfileFrameTypeNative  ProfileFrameType = "native"
+	ProfileFrameTypePerl    ProfileFrameType = "perl"
+	ProfileFrameTypePhp     ProfileFrameType = "php"
+	ProfileFrameTypeRuby    ProfileFrameType = "ruby"
+	ProfileFrameTypeRust    ProfileFrameType = "rust"
+	ProfileFrameTypeV8js    ProfileFrameType = "v8js"
+)
+
+// Valid indicates whether the value is a known member of the ProfileFrameType enum.
+func (e ProfileFrameType) Valid() bool {
+	switch e {
+	case ProfileFrameTypeBeam:
+		return true
+	case ProfileFrameTypeCpython:
+		return true
+	case ProfileFrameTypeCuda:
+		return true
+	case ProfileFrameTypeDotnet:
+		return true
+	case ProfileFrameTypeGo:
+		return true
+	case ProfileFrameTypeJvm:
+		return true
+	case ProfileFrameTypeKernel:
+		return true
+	case ProfileFrameTypeLuajit:
+		return true
+	case ProfileFrameTypeNative:
+		return true
+	case ProfileFrameTypePerl:
+		return true
+	case ProfileFrameTypePhp:
+		return true
+	case ProfileFrameTypeRuby:
+		return true
+	case ProfileFrameTypeRust:
+		return true
+	case ProfileFrameTypeV8js:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ProfileStackFilterKind.
+const (
+	ProfileStackFilterKindField  ProfileStackFilterKind = "field"
+	ProfileStackFilterKindPrefix ProfileStackFilterKind = "prefix"
+)
+
+// Valid indicates whether the value is a known member of the ProfileStackFilterKind enum.
+func (e ProfileStackFilterKind) Valid() bool {
+	switch e {
+	case ProfileStackFilterKindField:
+		return true
+	case ProfileStackFilterKindPrefix:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ProfileStacktraceField.
+const (
+	ProfileStacktraceFieldAddress        ProfileStacktraceField = "address"
+	ProfileStacktraceFieldBuildId        ProfileStacktraceField = "buildId"
+	ProfileStacktraceFieldColumnNumber   ProfileStacktraceField = "columnNumber"
+	ProfileStacktraceFieldExecutableName ProfileStacktraceField = "executableName"
+	ProfileStacktraceFieldFrameType      ProfileStacktraceField = "frameType"
+	ProfileStacktraceFieldFunctionName   ProfileStacktraceField = "functionName"
+	ProfileStacktraceFieldLineNumber     ProfileStacktraceField = "lineNumber"
+	ProfileStacktraceFieldSourceFile     ProfileStacktraceField = "sourceFile"
+	ProfileStacktraceFieldSystemName     ProfileStacktraceField = "systemName"
+)
+
+// Valid indicates whether the value is a known member of the ProfileStacktraceField enum.
+func (e ProfileStacktraceField) Valid() bool {
+	switch e {
+	case ProfileStacktraceFieldAddress:
+		return true
+	case ProfileStacktraceFieldBuildId:
+		return true
+	case ProfileStacktraceFieldColumnNumber:
+		return true
+	case ProfileStacktraceFieldExecutableName:
+		return true
+	case ProfileStacktraceFieldFrameType:
+		return true
+	case ProfileStacktraceFieldFunctionName:
+		return true
+	case ProfileStacktraceFieldLineNumber:
+		return true
+	case ProfileStacktraceFieldSourceFile:
+		return true
+	case ProfileStacktraceFieldSystemName:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ProfileStacktraceOperator.
+const (
+	ProfileStacktraceOperatorContains         ProfileStacktraceOperator = "contains"
+	ProfileStacktraceOperatorDoesNotContain   ProfileStacktraceOperator = "does_not_contain"
+	ProfileStacktraceOperatorDoesNotStartWith ProfileStacktraceOperator = "does_not_start_with"
+	ProfileStacktraceOperatorGt               ProfileStacktraceOperator = "gt"
+	ProfileStacktraceOperatorGte              ProfileStacktraceOperator = "gte"
+	ProfileStacktraceOperatorIs               ProfileStacktraceOperator = "is"
+	ProfileStacktraceOperatorIsNot            ProfileStacktraceOperator = "is_not"
+	ProfileStacktraceOperatorLt               ProfileStacktraceOperator = "lt"
+	ProfileStacktraceOperatorLte              ProfileStacktraceOperator = "lte"
+	ProfileStacktraceOperatorStartsWith       ProfileStacktraceOperator = "starts_with"
+)
+
+// Valid indicates whether the value is a known member of the ProfileStacktraceOperator enum.
+func (e ProfileStacktraceOperator) Valid() bool {
+	switch e {
+	case ProfileStacktraceOperatorContains:
+		return true
+	case ProfileStacktraceOperatorDoesNotContain:
+		return true
+	case ProfileStacktraceOperatorDoesNotStartWith:
+		return true
+	case ProfileStacktraceOperatorGt:
+		return true
+	case ProfileStacktraceOperatorGte:
+		return true
+	case ProfileStacktraceOperatorIs:
+		return true
+	case ProfileStacktraceOperatorIsNot:
+		return true
+	case ProfileStacktraceOperatorLt:
+		return true
+	case ProfileStacktraceOperatorLte:
+		return true
+	case ProfileStacktraceOperatorStartsWith:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PrometheusResultType.
 const (
 	Matrix                     PrometheusResultType = "matrix"
@@ -5491,6 +6121,8 @@ const (
 	ScheduledAgenticWorkflowTriggerKindLinearIssueComment             ScheduledAgenticWorkflowTriggerKind = "linear.issue_comment"
 	ScheduledAgenticWorkflowTriggerKindLinearProject                  ScheduledAgenticWorkflowTriggerKind = "linear.project"
 	ScheduledAgenticWorkflowTriggerKindLinearProjectUpdate            ScheduledAgenticWorkflowTriggerKind = "linear.project_update"
+	ScheduledAgenticWorkflowTriggerKindLinearRelease                  ScheduledAgenticWorkflowTriggerKind = "linear.release"
+	ScheduledAgenticWorkflowTriggerKindLinearReleaseNote              ScheduledAgenticWorkflowTriggerKind = "linear.release_note"
 	ScheduledAgenticWorkflowTriggerKindManual                         ScheduledAgenticWorkflowTriggerKind = "manual"
 	ScheduledAgenticWorkflowTriggerKindSchedule                       ScheduledAgenticWorkflowTriggerKind = "schedule"
 	ScheduledAgenticWorkflowTriggerKindSlackBotFailedCheckNew         ScheduledAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -5553,6 +6185,10 @@ func (e ScheduledAgenticWorkflowTriggerKind) Valid() bool {
 	case ScheduledAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindManual:
 		return true
@@ -5848,6 +6484,8 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearIssueComment             SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.issue_comment"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProject                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.project"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate            SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.project_update"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearRelease                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.release"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearReleaseNote              SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.release_note"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindManual                         SlackBotFailedCheckAgenticWorkflowTriggerKind = "manual"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindSchedule                       SlackBotFailedCheckAgenticWorkflowTriggerKind = "schedule"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindSlackBotFailedCheckNew         SlackBotFailedCheckAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -5911,6 +6549,10 @@ func (e SlackBotFailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindManual:
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindSchedule:
@@ -5956,6 +6598,8 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindLinearIssueComment             SlackBotMessageAgenticWorkflowTriggerKind = "linear.issue_comment"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearProject                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.project"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearProjectUpdate            SlackBotMessageAgenticWorkflowTriggerKind = "linear.project_update"
+	SlackBotMessageAgenticWorkflowTriggerKindLinearRelease                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.release"
+	SlackBotMessageAgenticWorkflowTriggerKindLinearReleaseNote              SlackBotMessageAgenticWorkflowTriggerKind = "linear.release_note"
 	SlackBotMessageAgenticWorkflowTriggerKindManual                         SlackBotMessageAgenticWorkflowTriggerKind = "manual"
 	SlackBotMessageAgenticWorkflowTriggerKindSchedule                       SlackBotMessageAgenticWorkflowTriggerKind = "schedule"
 	SlackBotMessageAgenticWorkflowTriggerKindSlackBotFailedCheckNew         SlackBotMessageAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -6019,6 +6663,10 @@ func (e SlackBotMessageAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindLinearProjectUpdate:
 		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindManual:
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindSchedule:
@@ -6064,6 +6712,8 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindLinearIssueComment             SlackBotReactionAgenticWorkflowTriggerKind = "linear.issue_comment"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearProject                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.project"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearProjectUpdate            SlackBotReactionAgenticWorkflowTriggerKind = "linear.project_update"
+	SlackBotReactionAgenticWorkflowTriggerKindLinearRelease                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.release"
+	SlackBotReactionAgenticWorkflowTriggerKindLinearReleaseNote              SlackBotReactionAgenticWorkflowTriggerKind = "linear.release_note"
 	SlackBotReactionAgenticWorkflowTriggerKindManual                         SlackBotReactionAgenticWorkflowTriggerKind = "manual"
 	SlackBotReactionAgenticWorkflowTriggerKindSchedule                       SlackBotReactionAgenticWorkflowTriggerKind = "schedule"
 	SlackBotReactionAgenticWorkflowTriggerKindSlackBotFailedCheckNew         SlackBotReactionAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -6126,6 +6776,10 @@ func (e SlackBotReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case SlackBotReactionAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindManual:
 		return true
@@ -7255,6 +7909,8 @@ const (
 	WebhookAgenticWorkflowTriggerKindLinearIssueComment             WebhookAgenticWorkflowTriggerKind = "linear.issue_comment"
 	WebhookAgenticWorkflowTriggerKindLinearProject                  WebhookAgenticWorkflowTriggerKind = "linear.project"
 	WebhookAgenticWorkflowTriggerKindLinearProjectUpdate            WebhookAgenticWorkflowTriggerKind = "linear.project_update"
+	WebhookAgenticWorkflowTriggerKindLinearRelease                  WebhookAgenticWorkflowTriggerKind = "linear.release"
+	WebhookAgenticWorkflowTriggerKindLinearReleaseNote              WebhookAgenticWorkflowTriggerKind = "linear.release_note"
 	WebhookAgenticWorkflowTriggerKindManual                         WebhookAgenticWorkflowTriggerKind = "manual"
 	WebhookAgenticWorkflowTriggerKindSchedule                       WebhookAgenticWorkflowTriggerKind = "schedule"
 	WebhookAgenticWorkflowTriggerKindSlackBotFailedCheckNew         WebhookAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
@@ -7317,6 +7973,10 @@ func (e WebhookAgenticWorkflowTriggerKind) Valid() bool {
 	case WebhookAgenticWorkflowTriggerKindLinearProject:
 		return true
 	case WebhookAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case WebhookAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case WebhookAgenticWorkflowTriggerKindLinearReleaseNote:
 		return true
 	case WebhookAgenticWorkflowTriggerKindManual:
 		return true
@@ -7400,9 +8060,13 @@ type Agent0ModelMaker string
 
 // Agent0ModelSelection A pick from an organization's `GetAgent0ModelsResponse.models`: the model it names and the
 // reasoning effort it asks for. The deployment resolves it to what runs. An organization that
-// no longer routes by model ID runs the class the named model belongs to.
+// no longer routes by model ID runs the class the named model belongs to. A level that picks
+// no model stores no selection and follows the next level, so it follows the deployment
+// default when that changes.
 type Agent0ModelSelection struct {
-	// Model The `Agent0Model.id` of the picked model, sent back as listed.
+	// Model The `Agent0Model.id` of the picked model, sent back as listed. `class:<class>` is still
+	// accepted as an alias for that class's registry default, for clients and stored
+	// selections that predate model IDs.
 	Model string `json:"model"`
 
 	// ReasoningEffort Omitted means no override at this level; falls through to the next level in the
@@ -7960,7 +8624,7 @@ type AgenticWorkflowTriggerDelivery string
 // - `gitlab.merge_request`: Triggered when a GitLab merge request event occurs.
 // - `gitlab.note`: Triggered when a comment is created on a GitLab merge request, issue, commit, or snippet.
 // - `darkplane.pull_request.evaluation`: Triggered after a successful terminal, non-experiment Darkplane AutoMerge evaluation run.
-// - `linear.comment`: Triggered when the Dash0 agent is @mentioned or delegated in a Linear comment whose text contains the configured keyword.
+// - `linear.comment`: Triggered when the Dash0 agent is @mentioned or delegated in a Linear comment whose text contains the configured keyword. A mention in an issue description does not fire it. The same comment also fires `linear.issue_comment` automations when it is on an issue.
 // - `linear.issue_comment`: Triggered when a comment is created, updated, or removed on a Linear issue, in the configured teams.
 // - `linear.issue`: Triggered when a Linear issue is created, updated or removed in the selected teams. `actions` narrows which; omitted, every action matches.
 // - `linear.issue_attachment`: Triggered when an attachment (for example a GitHub pull request, Sentry issue, or Slack thread link) is added to, changed on or removed from a Linear issue in the selected teams.
@@ -7969,6 +8633,8 @@ type AgenticWorkflowTriggerDelivery string
 // - `linear.project_update`: Triggered when a Linear project update (status post) is created, updated, or removed.
 // - `linear.initiative`: Triggered when a Linear initiative is created, updated, or removed.
 // - `linear.initiative_update`: Triggered when a Linear initiative update (status post) is created, updated, or removed.
+// - `linear.release`: Triggered when a Linear release is created, updated, or removed.
+// - `linear.release_note`: Triggered when a Linear release note is created, updated, or removed.
 // - `webhook`: Triggered via an external webhook call.
 // - `manual`: Triggered manually via the UI. Runtime-only — not valid in `spec.triggers[]`.
 type AgenticWorkflowTriggerKind string
@@ -8922,7 +9588,25 @@ type DatasetSettings struct {
 	SemanticConventionUpgrades SemanticConventionUpgrades `json:"semanticConventionUpgrades"`
 
 	// Slug The slug of a dataset, such as `default`. Where a request may omit it, "Selecting a dataset" in the API introduction describes how the dataset is chosen.
-	Slug             Dataset                  `json:"slug"`
+	Slug Dataset `json:"slug"`
+
+	// Source Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Source           *CrdSource               `json:"source,omitempty"`
 	TelemetryFilters []TelemetryFilter        `json:"telemetryFilters"`
 	Tracing          DatasetTracingSettings   `json:"tracing"`
 	UpdatedAt        *time.Time               `json:"updatedAt,omitempty"`
@@ -9223,6 +9907,9 @@ type GenAIAttributeRedactionSettings struct {
 	ToolCalls *GenAIAttributeRedaction `json:"toolCalls,omitempty"`
 }
 
+// GenerativeAiEvaluationCreateRequest defines model for GenerativeAiEvaluationCreateRequest.
+type GenerativeAiEvaluationCreateRequest = GenerativeAiEvaluationDefinition
+
 // GenerativeAiEvaluationDefinition defines model for GenerativeAiEvaluationDefinition.
 type GenerativeAiEvaluationDefinition struct {
 	Kind     GenerativeAiEvaluationDefinitionKind `json:"kind"`
@@ -9242,19 +9929,19 @@ type GenerativeAiEvaluationDisplay struct {
 
 // GenerativeAiEvaluationGroupAnnotations defines model for GenerativeAiEvaluationGroupAnnotations.
 type GenerativeAiEvaluationGroupAnnotations struct {
-	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	// Dash0ComcreatedAt Timestamp when the evaluation was created. Set by the server; read-only.
 	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
 
-	// Dash0ComcreatedBy The member ID of the user who originally created the eval. Set by the server; read-only. Absent when no user was behind the create (operator, Terraform, API) or the eval predates this annotation and its first version had no recorded author.
+	// Dash0ComcreatedBy The Dash0 user ID (`dash0.com/userId` in `GET /api/members`) of the user who originally created the eval. Set by the server; read-only. Absent when no user was behind the create (operator, Terraform, API) or the eval predates this annotation and its first version had no recorded author.
 	Dash0ComcreatedBy *string `json:"dash0.com/created-by,omitempty"`
 
-	// Dash0ComdeletedAt Soft-delete timestamp. Present when the rule has been deleted but not yet purged. Set by the server; read-only.
+	// Dash0ComdeletedAt Timestamp when the evaluation was deleted. Present only on deleted evaluations. Set by the server; read-only.
 	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
 
-	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
+	// Dash0ComfolderPath Optional folder path for organizing evaluations in the Dash0 UI (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
-	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Note: this resource type does not currently enforce sharing; the field is accepted but has no effect on access.
+	// Dash0Comsharing Comma-separated list of principals the evaluation is shared with. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. The value is stored and returned as sent. Access to an evaluation follows the permissions on its dataset, so this annotation neither grants nor restricts access.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
 
 	// Dash0ComupdatedAt Timestamp of the last update. Set by the server; read-only.
@@ -9346,13 +10033,13 @@ type GenerativeAiEvaluationJudgeOutputNumericSpec struct {
 
 // GenerativeAiEvaluationLabels defines model for GenerativeAiEvaluationLabels.
 type GenerativeAiEvaluationLabels struct {
-	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
+	// Dash0Comdataset Dataset the evaluation belongs to. Defaults to the default dataset when absent. The `dataset` query parameter takes precedence.
 	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
 
-	// Dash0Comid Unique internal ID of the eval config. Set by the server on creation; do not set manually.
+	// Dash0Comid Unique ID of the evaluation. Set by the server on create; read-only.
 	Dash0Comid *string `json:"dash0.com/id,omitempty"`
 
-	// Dash0Comorigin External identifier for API-managed resources (e.g. the CRD name from an operator or Terraform resource ID). Empty for user-created rules; non-empty for rules created via the internal API.
+	// Dash0Comorigin External identifier for evaluations managed as code (e.g. a Terraform resource ID or a `dash0 apply` document). Unique within the organization. Set on create and immutable afterwards; use it as the `originOrId` path parameter to upsert the evaluation with PUT. Empty for evaluations created in the Dash0 UI.
 	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
 
 	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
@@ -9373,8 +10060,13 @@ type GenerativeAiEvaluationLabels struct {
 	// rather than rejecting the response.
 	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
 
-	// Dash0Comversion Current version of the rule. Needs to be set when updating a rule to prevent conflicting writes.
+	// Dash0Comversion Current version of the evaluation. Send it back on update to reject the write when the evaluation changed since you read it; omit it to overwrite unconditionally.
 	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// GenerativeAiEvaluationListResponse defines model for GenerativeAiEvaluationListResponse.
+type GenerativeAiEvaluationListResponse struct {
+	GenerativeAiEvaluations []GenerativeAiEvaluationResponse `json:"generativeAiEvaluations"`
 }
 
 // GenerativeAiEvaluationMatch defines model for GenerativeAiEvaluationMatch.
@@ -9417,6 +10109,9 @@ type GenerativeAiEvaluationSpec struct {
 	Match   GenerativeAiEvaluationMatch    `json:"match"`
 	Sample  GenerativeAiEvaluationSampling `json:"sample"`
 }
+
+// GenerativeAiEvaluationUpdateRequest defines model for GenerativeAiEvaluationUpdateRequest.
+type GenerativeAiEvaluationUpdateRequest = GenerativeAiEvaluationDefinition
 
 // GeoLocationSettings defines model for GeoLocationSettings.
 type GeoLocationSettings struct {
@@ -9485,6 +10180,9 @@ type GetLogRecordsResponse struct {
 
 	// TimeRange The property is only included when `includeOTLPSchemaExtensions` is `true`.
 	TimeRange *TimeRange `json:"timeRange,omitempty"`
+
+	// Warnings Attribute scope warnings. Only included when `includeOTLPSchemaExtensions` is `true`.
+	Warnings *[]string `json:"warnings,omitempty"`
 }
 
 // GetSamplingRulesResponse defines model for GetSamplingRulesResponse.
@@ -9560,6 +10258,9 @@ type GetSpansResponse struct {
 
 	// TimeRange The property is only included when `includeOTLPSchemaExtensions` is `true`.
 	TimeRange *TimeRange `json:"timeRange,omitempty"`
+
+	// Warnings Attribute scope warnings. Only included when `includeOTLPSchemaExtensions` is `true`.
+	Warnings *[]string `json:"warnings,omitempty"`
 }
 
 // GetTeamResponse defines model for GetTeamResponse.
@@ -9921,11 +10622,13 @@ type GitHubCheckActivityAgenticWorkflowTriggerSpec struct {
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
-	// Mutually exclusive with `branches`.
+	// Mutually exclusive with `branches`. A check whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
-	// commit branch. When omitted, checks on any branch match.
+	// commit branch. When omitted, checks on any branch match. A check whose branch cannot
+	// be determined, such as one from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -10057,11 +10760,13 @@ type GitHubCheckRunAgenticWorkflowTriggerSpec struct {
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
-	// Mutually exclusive with `branches`.
+	// Mutually exclusive with `branches`. A check whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
-	// commit branch. When omitted, checks on any branch match.
+	// commit branch. When omitted, checks on any branch match. A check whose branch cannot
+	// be determined, such as one from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -10224,11 +10929,13 @@ type GitHubCheckSuiteAgenticWorkflowTriggerSpec struct {
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
-	// Mutually exclusive with `branches`.
+	// Mutually exclusive with `branches`. A check whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
-	// commit branch. When omitted, checks on any branch match.
+	// commit branch. When omitted, checks on any branch match. A check whose branch cannot
+	// be determined, such as one from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -10758,11 +11465,13 @@ type GitHubPushAgenticWorkflowTriggerSpec struct {
 	AvailableVariables *[]GitHubTriggerVariableName `json:"availableVariables,omitempty"`
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
-	// Mutually exclusive with `branches`.
+	// Mutually exclusive with `branches`. A check whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch names to filter on, matched against the check's associated
-	// commit branch. When omitted, checks on any branch match.
+	// commit branch. When omitted, checks on any branch match. A check whose branch cannot
+	// be determined, such as one from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -10845,7 +11554,7 @@ type GitHubReleaseAgenticWorkflowTriggerKind string
 // GitHubTriggerVariableName Variables provided by all GitHub-based triggers.
 //
 //   - `github.action`: The GitHub event action (e.g., `opened`, `created`, `completed`).
-//   - `github.account`: The GitHub account login (organization or user).
+//   - `github.account`: The login of the account (organization or user) that owns the repository, not the sender.
 //   - `github.repository`: Full repository name (e.g., `owner/repo`).
 //   - `github.installation.id`: The GitHub App installation id the event came from.
 //   - `github.pull_request.number`: The pull request number. Present on pull-request, review,
@@ -10989,11 +11698,13 @@ type GitHubWorkflowActivityAgenticWorkflowTriggerSpec struct {
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
 	// Mutually exclusive with `branches`. Matching is case-sensitive unless the pattern
-	// includes a flag such as `(?i)`.
+	// includes a flag such as `(?i)`. An event whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
-	// on. When omitted, events on any branch match.
+	// on. When omitted, events on any branch match. An event whose branch cannot be
+	// determined, such as a run from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -11154,11 +11865,13 @@ type GitHubWorkflowJobAgenticWorkflowTriggerSpec struct {
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
 	// Mutually exclusive with `branches`. Matching is case-sensitive unless the pattern
-	// includes a flag such as `(?i)`.
+	// includes a flag such as `(?i)`. An event whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
-	// on. When omitted, events on any branch match.
+	// on. When omitted, events on any branch match. An event whose branch cannot be
+	// determined, such as a run from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -11312,11 +12025,13 @@ type GitHubWorkflowRunAgenticWorkflowTriggerSpec struct {
 
 	// BranchRegex Optional RE2 regular expression matched against the complete branch name.
 	// Mutually exclusive with `branches`. Matching is case-sensitive unless the pattern
-	// includes a flag such as `(?i)`.
+	// includes a flag such as `(?i)`. An event whose branch cannot be determined never
+	// matches, even a pattern that matches an empty name.
 	BranchRegex *string `json:"branchRegex,omitempty"`
 
 	// Branches Optional list of branch (or, for workflow_dispatch, branch or tag) names to filter
-	// on. When omitted, events on any branch match.
+	// on. When omitted, events on any branch match. An event whose branch cannot be
+	// determined, such as a run from a fork, never matches a branch filter.
 	Branches *[]string `json:"branches,omitempty"`
 
 	// CheckRunStatuses Optional list of check run statuses to filter on. Only `github.deployment_status` uses this
@@ -11851,7 +12566,8 @@ type LinearCommentReactionAgenticWorkflowTriggerSpec struct {
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
 	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// rejected on write as an accidental match-everything catch-all. `linear.issue` also
+	// accepts `teamRegex` as the team scope in place of both. Only issue-scoped
 	// Linear trigger kinds carry this scope. `linear.project` has its own optional `teamIds`
 	// filter, where an empty list matches every team; initiatives have no team filter.
 	TeamIds *[]string `json:"teamIds,omitempty"`
@@ -11909,8 +12625,8 @@ type LinearDataEventAgenticWorkflowTriggerSpec struct {
 	Senders *[]string `json:"senders,omitempty"`
 }
 
-// LinearEntityAgenticWorkflowTriggerSpec Filters shared by the Linear project, project update, initiative, and initiative update
-// triggers. All configured filters must match.
+// LinearEntityAgenticWorkflowTriggerSpec Filters shared by the Linear project, project update, initiative, initiative update,
+// release, and release note triggers. All configured filters must match.
 type LinearEntityAgenticWorkflowTriggerSpec struct {
 	// Actions Optional list of actions to filter on. When omitted or empty, every action
 	// matches.
@@ -11925,9 +12641,10 @@ type LinearEntityAgenticWorkflowTriggerSpec struct {
 	// UUID or email, case-insensitively. Mutually exclusive with `authorRegex`.
 	Authors *[]string `json:"authors,omitempty"`
 
-	// NameRegex Optional RE2 regular expression matched against the complete name of the project or
-	// initiative. For a project or initiative update, it matches the name of the project
-	// or initiative the update was posted to. Matching is case-sensitive unless the
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
@@ -11979,9 +12696,10 @@ type LinearInitiativeAgenticWorkflowTriggerSpec struct {
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]LinearInitiativeTriggerVariableName `json:"availableVariables,omitempty"`
 
-	// NameRegex Optional RE2 regular expression matched against the complete name of the project or
-	// initiative. For a project or initiative update, it matches the name of the project
-	// or initiative the update was posted to. Matching is case-sensitive unless the
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
@@ -12050,9 +12768,10 @@ type LinearInitiativeUpdateAgenticWorkflowTriggerSpec struct {
 	// updates of every initiative match.
 	InitiativeIds *[]string `json:"initiativeIds,omitempty"`
 
-	// NameRegex Optional RE2 regular expression matched against the complete name of the project or
-	// initiative. For a project or initiative update, it matches the name of the project
-	// or initiative the update was posted to. Matching is case-sensitive unless the
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
@@ -12117,6 +12836,12 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// Combined with every other filter, including `labelIds`, as AND.
 	AddedLabelIds *[]string `json:"addedLabelIds,omitempty"`
 
+	// AddedLabelRegex Optional RE2 regular expression that must match the complete name of at least one
+	// label the event added, under the same added-label rule as `addedLabelIds`.
+	// Mutually exclusive with `addedLabelIds`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	AddedLabelRegex *string `json:"addedLabelRegex,omitempty"`
+
 	// AllTeams When true, the automation deliberately matches issues in every team of the connected
 	// Linear workspace, now and in the future. Mutually exclusive with a non-empty `teamIds`
 	// list. This flag distinguishes an explicit "all teams" choice from an unconfigured
@@ -12141,11 +12866,23 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// to a label being added or removed, use `addedLabelIds` or `removedLabelIds`.
 	LabelIds *[]string `json:"labelIds,omitempty"`
 
+	// LabelRegex Optional RE2 regular expression that must match the complete name of at least one
+	// label the issue carries at the time of the event.
+	// Mutually exclusive with `labelIds`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	LabelRegex *string `json:"labelRegex,omitempty"`
+
 	// ProjectIds Optional list of Linear project UUIDs. When non-empty, the trigger fires only when
 	// the issue's project is one of them. An issue without a project never matches a
 	// non-empty list. When omitted or empty, issues match whatever their project.
 	// Combined with every other filter as AND.
 	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// ProjectRegex Optional RE2 regular expression that must match the complete name of the issue's
+	// project. An issue without a project never matches.
+	// Mutually exclusive with `projectIds`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	ProjectRegex *string `json:"projectRegex,omitempty"`
 
 	// RemovedLabelIds Optional list of Linear label UUIDs. When non-empty, the trigger fires only when
 	// an `update` removed at least one of these labels: it was in the issue's previous
@@ -12161,6 +12898,12 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// Clients that know the names at write time should send them.
 	RemovedLabelNames *[]string `json:"removedLabelNames,omitempty"`
 
+	// RemovedLabelRegex Optional RE2 regular expression that must match the complete name of at least one
+	// label the event removed, under the same removed-label rule as `removedLabelIds`.
+	// Mutually exclusive with `removedLabelIds`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	RemovedLabelRegex *string `json:"removedLabelRegex,omitempty"`
+
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
 	// or complete email. An actor without an email matches on its UUID only. Mutually
 	// exclusive with `senders`.
@@ -12174,10 +12917,17 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
 	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// rejected on write as an accidental match-everything catch-all. `linear.issue` also
+	// accepts `teamRegex` as the team scope in place of both. Only issue-scoped
 	// Linear trigger kinds carry this scope. `linear.project` has its own optional `teamIds`
 	// filter, where an empty list matches every team; initiatives have no team filter.
 	TeamIds *[]string `json:"teamIds,omitempty"`
+
+	// TeamRegex Optional RE2 regular expression that must match the complete key or the complete name
+	// of the issue's team.
+	// Mutually exclusive with `teamIds` and `allTeams`. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	TeamRegex *string `json:"teamRegex,omitempty"`
 
 	// TitleRegex Optional RE2 regular expression matched against the complete issue title at the
 	// time of the event. Matching is case-sensitive unless the pattern includes a flag
@@ -12252,7 +13002,8 @@ type LinearIssueAttachmentAgenticWorkflowTriggerSpec struct {
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
 	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// rejected on write as an accidental match-everything catch-all. `linear.issue` also
+	// accepts `teamRegex` as the team scope in place of both. Only issue-scoped
 	// Linear trigger kinds carry this scope. `linear.project` has its own optional `teamIds`
 	// filter, where an empty list matches every team; initiatives have no team filter.
 	TeamIds *[]string `json:"teamIds,omitempty"`
@@ -12353,7 +13104,8 @@ type LinearIssueCommentAgenticWorkflowTriggerSpec struct {
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
 	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// rejected on write as an accidental match-everything catch-all. `linear.issue` also
+	// accepts `teamRegex` as the team scope in place of both. Only issue-scoped
 	// Linear trigger kinds carry this scope. `linear.project` has its own optional `teamIds`
 	// filter, where an empty list matches every team; initiatives have no team filter.
 	TeamIds *[]string `json:"teamIds,omitempty"`
@@ -12421,6 +13173,10 @@ type LinearProjectAgenticWorkflowTriggerSpec struct {
 	// matches.
 	Actions *[]LinearWebhookAction `json:"actions,omitempty"`
 
+	// AllTeams When true, projects of every team match, including teams added later. Mutually
+	// exclusive with a non-empty `teamIds`.
+	AllTeams *bool `json:"allTeams,omitempty"`
+
 	// AuthorRegex Optional RE2 regular expression that must match the author's complete Linear user UUID
 	// or complete email. Mutually exclusive with `authors`.
 	AuthorRegex *string `json:"authorRegex,omitempty"`
@@ -12434,9 +13190,10 @@ type LinearProjectAgenticWorkflowTriggerSpec struct {
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]LinearProjectTriggerVariableName `json:"availableVariables,omitempty"`
 
-	// NameRegex Optional RE2 regular expression matched against the complete name of the project or
-	// initiative. For a project or initiative update, it matches the name of the project
-	// or initiative the update was posted to. Matching is case-sensitive unless the
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
@@ -12452,8 +13209,9 @@ type LinearProjectAgenticWorkflowTriggerSpec struct {
 
 	// TeamIds Optional list of Linear team UUIDs. A project belongs to one or more teams; the
 	// trigger fires when any of the project's teams is in this list. When omitted or
-	// empty, projects of every team match. Only `linear.project` has this filter,
-	// because the other Linear entity events carry no team.
+	// empty and `allTeams` is not set, projects of every team match. Mutually exclusive
+	// with `allTeams`. Only `linear.project` has this filter, because the other Linear
+	// entity events carry no team.
 	TeamIds *[]string `json:"teamIds,omitempty"`
 }
 
@@ -12506,9 +13264,10 @@ type LinearProjectUpdateAgenticWorkflowTriggerSpec struct {
 	// This is in addition to the built-in variables that are always available.
 	AvailableVariables *[]LinearProjectUpdateTriggerVariableName `json:"availableVariables,omitempty"`
 
-	// NameRegex Optional RE2 regular expression matched against the complete name of the project or
-	// initiative. For a project or initiative update, it matches the name of the project
-	// or initiative the update was posted to. Matching is case-sensitive unless the
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
@@ -12541,6 +13300,158 @@ type LinearProjectUpdateAgenticWorkflowTriggerSpec struct {
 // - `linear.actor.name`: Display name of the user who made the change, when known.
 type LinearProjectUpdateTriggerVariableName string
 
+// LinearReleaseAgenticWorkflowTrigger defines model for LinearReleaseAgenticWorkflowTrigger.
+type LinearReleaseAgenticWorkflowTrigger struct {
+	Kind LinearReleaseAgenticWorkflowTriggerKind `json:"kind"`
+	Spec LinearReleaseAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// LinearReleaseAgenticWorkflowTriggerKind defines model for LinearReleaseAgenticWorkflowTrigger.Kind.
+type LinearReleaseAgenticWorkflowTriggerKind string
+
+// LinearReleaseAgenticWorkflowTriggerSpec defines model for LinearReleaseAgenticWorkflowTriggerSpec.
+type LinearReleaseAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]LinearWebhookAction `json:"actions,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Linear user UUID
+	// or complete email. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Linear users who must have authored the entity, for example the
+	// comment's writer or the issue's creator. An entry matches the author's Linear user
+	// UUID or email, case-insensitively. Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]LinearReleaseTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
+	// pattern includes a flag such as `(?i)`.
+	NameRegex *string `json:"nameRegex,omitempty"`
+
+	// PipelineIds Optional list of Linear release pipeline UUIDs. When non-empty, the trigger fires
+	// only for releases of one of these pipelines. When omitted or empty, releases of
+	// every pipeline match.
+	PipelineIds *[]string `json:"pipelineIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
+	// or complete email. An actor without an email matches on its UUID only. Mutually
+	// exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
+	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
+	// match by ID only. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// StageNames Optional list of release stage names. When non-empty, the trigger fires only when
+	// the release is in one of these stages (exact, case-sensitive match). When omitted
+	// or empty, releases in every stage match.
+	StageNames *[]string `json:"stageNames,omitempty"`
+}
+
+// LinearReleaseNoteAgenticWorkflowTrigger defines model for LinearReleaseNoteAgenticWorkflowTrigger.
+type LinearReleaseNoteAgenticWorkflowTrigger struct {
+	Kind LinearReleaseNoteAgenticWorkflowTriggerKind `json:"kind"`
+	Spec LinearReleaseNoteAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// LinearReleaseNoteAgenticWorkflowTriggerKind defines model for LinearReleaseNoteAgenticWorkflowTrigger.Kind.
+type LinearReleaseNoteAgenticWorkflowTriggerKind string
+
+// LinearReleaseNoteAgenticWorkflowTriggerSpec defines model for LinearReleaseNoteAgenticWorkflowTriggerSpec.
+type LinearReleaseNoteAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]LinearWebhookAction `json:"actions,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Linear user UUID
+	// or complete email. Mutually exclusive with `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Linear users who must have authored the entity, for example the
+	// comment's writer or the issue's creator. An entry matches the author's Linear user
+	// UUID or email, case-insensitively. Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]LinearReleaseNoteTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// NameRegex Optional RE2 regular expression matched against the complete name of the project,
+	// initiative, or release, or the title of the release note. For a project or
+	// initiative update, it matches the name of the project or initiative the update was
+	// posted to. Matching is case-sensitive unless the
+	// pattern includes a flag such as `(?i)`.
+	NameRegex *string `json:"nameRegex,omitempty"`
+
+	// PipelineIds Optional list of Linear release pipeline UUIDs. When non-empty, the trigger fires
+	// only for release notes of one of these pipelines. When omitted or empty, release
+	// notes of every pipeline match.
+	PipelineIds *[]string `json:"pipelineIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
+	// or complete email. An actor without an email matches on its UUID only. Mutually
+	// exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
+	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
+	// match by ID only. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+}
+
+// LinearReleaseNoteTriggerVariableName Variables provided by the `linear.release_note` trigger. Fields Linear omits from the event are omitted.
+//
+// - `linear.action`: The Linear webhook action: `create`, `update`, or `remove`.
+// - `linear.release_note.id`: UUID of the release note.
+// - `linear.release_note.title`: Title of the release note.
+// - `linear.release_note.url`: URL of the release note.
+// - `linear.release_note.content`: Markdown content of the release note.
+// - `linear.release_note.pipeline_id`: UUID of the release pipeline.
+// - `linear.release_note.pipeline_name`: Name of the release pipeline.
+// - `linear.release_note.release_ids`: Comma-separated UUIDs of the releases the note covers.
+// - `linear.actor.name`: Display name of the user who made the change, when known.
+type LinearReleaseNoteTriggerVariableName string
+
+// LinearReleaseTriggerVariableName Variables provided by the `linear.release` trigger. Fields Linear omits from the event are omitted.
+//
+// - `linear.action`: The Linear webhook action: `create`, `update`, or `remove`.
+// - `linear.release.id`: UUID of the Linear release.
+// - `linear.release.name`: Name of the release.
+// - `linear.release.url`: URL of the release.
+// - `linear.release.description`: Description of the release.
+// - `linear.release.version`: Version of the release.
+// - `linear.release.stage`: Name of the stage the release is in.
+// - `linear.release.pipeline_id`: UUID of the release pipeline.
+// - `linear.release.pipeline_name`: Name of the release pipeline.
+// - `linear.actor.name`: Display name of the user who made the change, when known.
+type LinearReleaseTriggerVariableName string
+
 // LinearSenderFilters defines model for LinearSenderFilters.
 type LinearSenderFilters struct {
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
@@ -12565,7 +13476,8 @@ type LinearTeamScope struct {
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
 	// request that sets both, or that leaves both `teamIds` and `allTeams` empty/unset, is
-	// rejected on write as an accidental match-everything catch-all. Only issue-scoped
+	// rejected on write as an accidental match-everything catch-all. `linear.issue` also
+	// accepts `teamRegex` as the team scope in place of both. Only issue-scoped
 	// Linear trigger kinds carry this scope. `linear.project` has its own optional `teamIds`
 	// filter, where an empty list matches every team; initiatives have no team filter.
 	TeamIds *[]string `json:"teamIds,omitempty"`
@@ -13287,6 +14199,314 @@ type PagerDutyConfig struct {
 // PinnedRetentionClass The retention of a signal that is not customer-selectable (metrics, profiling): always
 // 30 days.
 type PinnedRetentionClass string
+
+// ProfileFrameAddressMatch Constrains the instruction address of one prefix frame. Set exactly one
+// of `value` and `isNull`.
+type ProfileFrameAddressMatch struct {
+	// IsNull When `true`, the frame carries no address at all. Mutually
+	// exclusive with `value`.
+	IsNull *bool `json:"isNull,omitempty"`
+
+	// Value The address must equal this value exactly, written as `0x` followed
+	// by hexadecimal digits. Case does not matter, in the prefix or the
+	// digits. The prefix is required.
+	Value *string `json:"value,omitempty"`
+}
+
+// ProfileFrameFilter Prunes frames within each kept stack. A stack with no surviving frame
+// contributes nothing, but the sample itself is not filtered out the way
+// a `ProfileStackFilter` filters it.
+type ProfileFrameFilter struct {
+	// Field A frame property. Stack and frame filters match against it, and
+	// `groupFramesBy` merges frames on it.
+	// - `functionName`: the demangled function name.
+	// - `systemName`: the raw, un-demangled symbol name.
+	// - `executableName`: the binary or shared library the frame is in.
+	// - `buildId`: the build ID of that binary.
+	// - `sourceFile`: the source file the frame resolves to.
+	// - `lineNumber`: the line in that source file.
+	// - `columnNumber`: the column in that source file.
+	// - `address`: the instruction address within the binary, written as `0x`
+	//   followed by hexadecimal digits.
+	// - `frameType`: the interpreter or compiler the frame came from. Its
+	//   values are listed in `ProfileFrameType`.
+	//
+	// Which operators apply depends on the field. `lineNumber` and
+	// `columnNumber` compare numerically, `address` only for equality, and
+	// the rest as text: see `ProfileStacktraceOperator`.
+	Field ProfileStacktraceField `json:"field"`
+
+	// Operator How a stacktrace filter's `value` is compared against the frame
+	// property. The names and meanings are those of
+	// `AttributeFilterOperator`, narrowed to the operators the profiling
+	// query engine implements.
+	//
+	// Which operators a field accepts:
+	//
+	// - `is` and `is_not` apply to every field.
+	// - `gt`, `lt`, `gte`, and `lte` apply only to `lineNumber` and
+	//   `columnNumber`.
+	// - `contains`, `does_not_contain`, `starts_with`, and
+	//   `does_not_start_with` apply only to the text fields.
+	// - `address` takes `is` and `is_not` alone — an address is an
+	//   identifier, not a quantity worth ordering or matching substrings of.
+	//
+	// A combination outside those rules is rejected.
+	//
+	// **The negative operators read differently on the two filters**, because
+	// the two filters do different things. On a `ProfileStackFilter`, which
+	// keeps or drops a whole sample, `is_not` and the other negatives apply to
+	// the stack: `does_not_contain` means *no* frame in the stack contains the
+	// value. On a `ProfileFrameFilter`, which prunes frames within a stack
+	// that is kept, they apply to the frame: it means *this* frame does not
+	// contain it.
+	//
+	// The whole-stack reading is the one worth having. "This stack does not
+	// call `X`" is a question about a stack; "some frame in this stack is not
+	// `X`" is true of practically every stack, so it would filter nothing.
+	Operator ProfileStacktraceOperator `json:"operator"`
+
+	// Value The value to compare against. Always a string, whatever the field:
+	// `lineNumber` and `columnNumber` must parse as a non-negative
+	// integer, `address` as `0x` followed by hexadecimal digits, and
+	// `frameType` under `is` or `is_not` must be one of
+	// `ProfileFrameType`. Under the substring and prefix operators the
+	// value is a fragment, so it is not checked against that list.
+	Value string `json:"value"`
+}
+
+// ProfileFrameIntegerMatch Constrains one numeric property of one prefix frame. Set exactly one of
+// `value` and `isNull`.
+type ProfileFrameIntegerMatch struct {
+	// IsNull When `true`, the property must be absent at this frame. Mutually
+	// exclusive with `value`.
+	IsNull *bool `json:"isNull,omitempty"`
+
+	// Value The property must equal this value exactly.
+	Value *int64 `json:"value,omitempty"`
+}
+
+// ProfileFrameStringMatch Constrains one string property of one prefix frame. Set exactly one of
+// `value` and `isNull`.
+type ProfileFrameStringMatch struct {
+	// IsNull When `true`, the property must be absent at this frame. Mutually
+	// exclusive with `value`.
+	IsNull *bool `json:"isNull,omitempty"`
+
+	// Value The property must equal this string exactly. The empty string is a
+	// real value here.
+	Value *string `json:"value,omitempty"`
+}
+
+// ProfileFrameType The interpreter or compiler of a single frame, as defined by the
+// OpenTelemetry `profile.frame.type` attribute.
+//
+//   - `beam`: Erlang virtual machine.
+//   - `cpython`: Python interpreter.
+//   - `cuda`: CUDA GPU code.
+//   - `dotnet`: .NET runtime.
+//   - `go`: Go programming language.
+//   - `jvm`: Java virtual machine.
+//   - `kernel`: operating system kernel.
+//   - `luajit`: LuaJIT compiler.
+//   - `native`: compiled languages (C, C++, Go, Rust). A more specific
+//     value is preferred where one applies.
+//   - `perl`: Perl interpreter.
+//   - `php`: PHP runtime.
+//   - `ruby`: Ruby interpreter.
+//   - `rust`: Rust compiler.
+//   - `v8js`: V8 JavaScript engine.
+//
+// Every value comes from the OpenTelemetry registry, where the attribute
+// is at development stability. Expect the set to grow.
+type ProfileFrameType string
+
+// ProfileFrameTypeMatch Constrains the frame type of one prefix frame. Set exactly one of
+// `value` and `isNull`.
+type ProfileFrameTypeMatch struct {
+	// IsNull When `true`, the frame carries no frame type at all. Mutually
+	// exclusive with `value`.
+	IsNull *bool `json:"isNull,omitempty"`
+
+	// Value The interpreter or compiler of a single frame, as defined by the
+	// OpenTelemetry `profile.frame.type` attribute.
+	//
+	// - `beam`: Erlang virtual machine.
+	// - `cpython`: Python interpreter.
+	// - `cuda`: CUDA GPU code.
+	// - `dotnet`: .NET runtime.
+	// - `go`: Go programming language.
+	// - `jvm`: Java virtual machine.
+	// - `kernel`: operating system kernel.
+	// - `luajit`: LuaJIT compiler.
+	// - `native`: compiled languages (C, C++, Go, Rust). A more specific
+	//   value is preferred where one applies.
+	// - `perl`: Perl interpreter.
+	// - `php`: PHP runtime.
+	// - `ruby`: Ruby interpreter.
+	// - `rust`: Rust compiler.
+	// - `v8js`: V8 JavaScript engine.
+	//
+	// Every value comes from the OpenTelemetry registry, where the attribute
+	// is at development stability. Expect the set to grow.
+	Value *ProfileFrameType `json:"value,omitempty"`
+}
+
+// ProfileStackFilter Drops whole samples whose stack does not match. Contrast
+// `ProfileFrameFilter`, which prunes frames inside a stack that is kept.
+//
+// `kind` selects which of the two forms this is and which properties
+// below apply; a property belonging to the other form is rejected rather
+// than ignored.
+type ProfileStackFilter struct {
+	// Field `field` kind only.
+	Field *ProfileStacktraceField `json:"field,omitempty"`
+
+	// Kind Which form a stack filter takes.
+	//
+	// - `field`: one frame property is compared against one value, and the
+	//   stack matches when any frame in it matches. Set `field`, `value` and
+	//   `operator`.
+	// - `prefix`: a run of frames at the top of the stack is matched position
+	//   by position, which is how the UI zooms into a subtree. Set `prefix`.
+	Kind ProfileStackFilterKind `json:"kind"`
+
+	// Operator Under the `prefix` kind only `is` and `is_not` apply, and they
+	// negate the positional match as a whole: `is_not` keeps the samples
+	// whose stack does *not* begin with the prefix, which is how a
+	// subtree is excluded rather than zoomed into. Defaults to `is`.
+	Operator *ProfileStacktraceOperator `json:"operator,omitempty"`
+
+	// Prefix The frames the top of the stack must match, position by position. A
+	// stack matches when its first `prefix|length` frames each match the
+	// matcher at the same index; what follows is unconstrained.
+	//
+	// `prefix` kind only.
+	Prefix *[]ProfileStackPrefixFrame `json:"prefix,omitempty"`
+
+	// Value The value to compare against. Always a string, whatever the field:
+	// `lineNumber` and `columnNumber` must parse as a non-negative
+	// integer, `address` as `0x` followed by hexadecimal digits, and
+	// `frameType` under `is` or `is_not` must be one of
+	// `ProfileFrameType`. Under the substring and prefix operators the
+	// value is a fragment, so it is not checked against that list.
+	//
+	// `field` kind only.
+	Value *string `json:"value,omitempty"`
+}
+
+// ProfileStackFilterKind Which form a stack filter takes.
+//
+//   - `field`: one frame property is compared against one value, and the
+//     stack matches when any frame in it matches. Set `field`, `value` and
+//     `operator`.
+//   - `prefix`: a run of frames at the top of the stack is matched position
+//     by position, which is how the UI zooms into a subtree. Set `prefix`.
+type ProfileStackFilterKind string
+
+// ProfileStackPrefixFrame One position in a stack prefix. A frame matches this position when
+// every property set here matches; a property left out is
+// unconstrained. An object with no property set matches any frame.
+type ProfileStackPrefixFrame struct {
+	// Address Constrains the instruction address of one prefix frame. Set exactly one
+	// of `value` and `isNull`.
+	Address *ProfileFrameAddressMatch `json:"address,omitempty"`
+
+	// BuildId Constrains one string property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	BuildId *ProfileFrameStringMatch `json:"buildId,omitempty"`
+
+	// ColumnNumber Constrains one numeric property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	ColumnNumber *ProfileFrameIntegerMatch `json:"columnNumber,omitempty"`
+
+	// ExecutableName Constrains one string property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	ExecutableName *ProfileFrameStringMatch `json:"executableName,omitempty"`
+
+	// FrameType Constrains the frame type of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	FrameType *ProfileFrameTypeMatch `json:"frameType,omitempty"`
+
+	// FunctionName Constrains one string property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	FunctionName *ProfileFrameStringMatch `json:"functionName,omitempty"`
+
+	// LineNumber Constrains one numeric property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	LineNumber *ProfileFrameIntegerMatch `json:"lineNumber,omitempty"`
+
+	// SourceFile Constrains one string property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	SourceFile *ProfileFrameStringMatch `json:"sourceFile,omitempty"`
+
+	// SystemName Constrains one string property of one prefix frame. Set exactly one of
+	// `value` and `isNull`.
+	SystemName *ProfileFrameStringMatch `json:"systemName,omitempty"`
+}
+
+// ProfileStacktraceField A frame property. Stack and frame filters match against it, and
+// `groupFramesBy` merges frames on it.
+//   - `functionName`: the demangled function name.
+//   - `systemName`: the raw, un-demangled symbol name.
+//   - `executableName`: the binary or shared library the frame is in.
+//   - `buildId`: the build ID of that binary.
+//   - `sourceFile`: the source file the frame resolves to.
+//   - `lineNumber`: the line in that source file.
+//   - `columnNumber`: the column in that source file.
+//   - `address`: the instruction address within the binary, written as `0x`
+//     followed by hexadecimal digits.
+//   - `frameType`: the interpreter or compiler the frame came from. Its
+//     values are listed in `ProfileFrameType`.
+//
+// Which operators apply depends on the field. `lineNumber` and
+// `columnNumber` compare numerically, `address` only for equality, and
+// the rest as text: see `ProfileStacktraceOperator`.
+type ProfileStacktraceField string
+
+// ProfileStacktraceOperator How a stacktrace filter's `value` is compared against the frame
+// property. The names and meanings are those of
+// `AttributeFilterOperator`, narrowed to the operators the profiling
+// query engine implements.
+//
+// Which operators a field accepts:
+//
+//   - `is` and `is_not` apply to every field.
+//   - `gt`, `lt`, `gte`, and `lte` apply only to `lineNumber` and
+//     `columnNumber`.
+//   - `contains`, `does_not_contain`, `starts_with`, and
+//     `does_not_start_with` apply only to the text fields.
+//   - `address` takes `is` and `is_not` alone — an address is an
+//     identifier, not a quantity worth ordering or matching substrings of.
+//
+// A combination outside those rules is rejected.
+//
+// **The negative operators read differently on the two filters**, because
+// the two filters do different things. On a `ProfileStackFilter`, which
+// keeps or drops a whole sample, `is_not` and the other negatives apply to
+// the stack: `does_not_contain` means *no* frame in the stack contains the
+// value. On a `ProfileFrameFilter`, which prunes frames within a stack
+// that is kept, they apply to the frame: it means *this* frame does not
+// contain it.
+//
+// The whole-stack reading is the one worth having. "This stack does not
+// call `X`" is a question about a stack; "some frame in this stack is not
+// `X`" is true of practically every stack, so it would filter nothing.
+type ProfileStacktraceOperator string
+
+// ProfileTypeIdentity The fields that identify one profile type.
+//
+// Every field is required. An omitted field would widen a query to
+// profile types the caller never asked for, rather than narrow it.
+type ProfileTypeIdentity struct {
+	// Delta Whether the samples are deltas over the profile's duration rather
+	// than cumulative totals.
+	Delta      bool   `json:"delta"`
+	PeriodType string `json:"periodType"`
+	PeriodUnit string `json:"periodUnit"`
+	SampleType string `json:"sampleType"`
+	SampleUnit string `json:"sampleUnit"`
+}
 
 // Progress defines model for Progress.
 type Progress struct {
@@ -14516,7 +15736,9 @@ type SettingsPerOrganizationAndDatasetInfo struct {
 	// schema's `required` list, unlike `signalControlEdge`: an absent object means warn mode,
 	// so absence has to stay expressible. Requiring it would also force a backfill for every
 	// existing organization, which the rollout does not need — each one receives an explicit
-	// value by the end of the transition window.
+	// value by the end of the transition window. The field is omitted entirely when the
+	// settings read fails, so collectors keep their last known enforcement decision rather
+	// than reading the failure as "stop enforcing".
 	SignalControlMetering *SignalControlMeteringSettings `json:"signalControlMetering,omitempty"`
 
 	// SignalControlOperationCardinalityReduction SaaS-side operation-name cardinality reduction for the organization. When `enabled` is
@@ -17145,6 +18367,9 @@ type ViewSpec struct {
 	// Filter The filter for the whole view.
 	Filter *FilterCriteria `json:"filter,omitempty"`
 
+	// FrameFilters Frame filters applied by a profiles view.
+	FrameFilters *[]ProfileFrameFilter `json:"frameFilters,omitempty"`
+
 	// GroupBy A set of attribute keys to group the view by. This property may be missing to indicate that
 	// no configuration was historically made for this view, i.e., the view was saved before the
 	// grouping capability was added. In that case, you can assume a default grouping should be used.
@@ -17169,15 +18394,25 @@ type ViewSpec struct {
 	// array is rejected there.
 	Permissions *[]ViewPermission `json:"permissions,omitempty"`
 
+	// ProfileType The profile type selected in a profiles view.
+	ProfileType *ProfileTypeIdentity `json:"profileType,omitempty"`
+
 	// Query The SQL query associated with this view. Only applicable when type is "sql".
 	// When the view is loaded, this query is used to populate the editor and auto-executed.
 	Query                *string                       `json:"query,omitempty"`
 	ServiceMapProperties *ViewSpecServiceMapProperties `json:"serviceMapProperties,omitempty"`
 
-	// ServiceName The selected service name for this view. Only applicable when type is "profiles".
-	// When the view is loaded, this service is pre-selected in the filter bar.
-	ServiceName *string    `json:"serviceName,omitempty"`
-	Table       *ViewTable `json:"table,omitempty"`
+	// ServiceName The service selected by the old profiling page. Profiles views now use a service.name
+	// criterion in filter instead; the profiling page reads this property as that criterion
+	// and removes it when the view is saved.
+	ServiceName *string `json:"serviceName,omitempty"`
+
+	// StackFilters Stack filters applied by a profiles view.
+	StackFilters *[]ProfileStackFilter `json:"stackFilters,omitempty"`
+
+	// SumBy Attribute keys used to aggregate the time series in a profiles view.
+	SumBy *[]string  `json:"sumBy,omitempty"`
+	Table *ViewTable `json:"table,omitempty"`
 
 	// Type Views can exist in a variety of locations within the Dash0. The type defines
 	// where the view can be used, and consequently where it would appear as a selectable
@@ -17463,6 +18698,36 @@ type PutApiDashboardsOriginOrIdParams struct {
 type GetApiEdgeSettingsParams struct {
 	// IfNoneMatch The `ETag` of an earlier response. When it still matches the current settings, the response is a `304` without a body.
 	IfNoneMatch *string `json:"If-None-Match,omitempty"`
+}
+
+// GetApiGenerativeAiEvaluationsParams defines parameters for GetApiGenerativeAiEvaluations.
+type GetApiGenerativeAiEvaluationsParams struct {
+	// Dataset Dataset to list. Defaults to the default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+}
+
+// PostApiGenerativeAiEvaluationsParams defines parameters for PostApiGenerativeAiEvaluations.
+type PostApiGenerativeAiEvaluationsParams struct {
+	// Dataset Dataset to create the evaluation in. Takes precedence over the `dash0.com/dataset` label; defaults to the default dataset.
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiGenerativeAiEvaluationsOriginOrIdParams defines parameters for DeleteApiGenerativeAiEvaluationsOriginOrId.
+type DeleteApiGenerativeAiEvaluationsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// GetApiGenerativeAiEvaluationsOriginOrIdParams defines parameters for GetApiGenerativeAiEvaluationsOriginOrId.
+type GetApiGenerativeAiEvaluationsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiGenerativeAiEvaluationsOriginOrIdParams defines parameters for PutApiGenerativeAiEvaluationsOriginOrId.
+type PutApiGenerativeAiEvaluationsOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
 // PostApiImportCheckRuleParams defines parameters for PostApiImportCheckRule.
@@ -17946,6 +19211,12 @@ type PostApiDatasetsJSONRequestBody = DatasetCreateRequest
 
 // PutApiDatasetsOriginOrIdJSONRequestBody defines body for PutApiDatasetsOriginOrId for application/json ContentType.
 type PutApiDatasetsOriginOrIdJSONRequestBody = DatasetUpdateRequest
+
+// PostApiGenerativeAiEvaluationsJSONRequestBody defines body for PostApiGenerativeAiEvaluations for application/json ContentType.
+type PostApiGenerativeAiEvaluationsJSONRequestBody = GenerativeAiEvaluationCreateRequest
+
+// PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody defines body for PutApiGenerativeAiEvaluationsOriginOrId for application/json ContentType.
+type PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody = GenerativeAiEvaluationUpdateRequest
 
 // PostApiImportCheckRuleJSONRequestBody defines body for PostApiImportCheckRule for application/json ContentType.
 type PostApiImportCheckRuleJSONRequestBody = PrometheusAlertRule
@@ -19456,6 +20727,58 @@ func (t *AgenticWorkflowTrigger) FromLinearInitiativeUpdateAgenticWorkflowTrigge
 
 // MergeLinearInitiativeUpdateAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearInitiativeUpdateAgenticWorkflowTrigger
 func (t *AgenticWorkflowTrigger) MergeLinearInitiativeUpdateAgenticWorkflowTrigger(v LinearInitiativeUpdateAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLinearReleaseAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a LinearReleaseAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsLinearReleaseAgenticWorkflowTrigger() (LinearReleaseAgenticWorkflowTrigger, error) {
+	var body LinearReleaseAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLinearReleaseAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided LinearReleaseAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromLinearReleaseAgenticWorkflowTrigger(v LinearReleaseAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLinearReleaseAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearReleaseAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeLinearReleaseAgenticWorkflowTrigger(v LinearReleaseAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsLinearReleaseNoteAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a LinearReleaseNoteAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsLinearReleaseNoteAgenticWorkflowTrigger() (LinearReleaseNoteAgenticWorkflowTrigger, error) {
+	var body LinearReleaseNoteAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromLinearReleaseNoteAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided LinearReleaseNoteAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromLinearReleaseNoteAgenticWorkflowTrigger(v LinearReleaseNoteAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeLinearReleaseNoteAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearReleaseNoteAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeLinearReleaseNoteAgenticWorkflowTrigger(v LinearReleaseNoteAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -21838,6 +23161,89 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/edge/settings (the `GetApiEdgeSettings` operationId).
 	GetApiEdgeSettings(ctx context.Context, params *GetApiEdgeSettingsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiGenerativeAiEvaluations List generative AI evaluations
+	//
+	// Returns the generative AI evaluations of a dataset, without deleted ones.
+	//
+	// Corresponds with GET /api/generative-ai-evaluations (the `GetApiGenerativeAiEvaluations` operationId).
+	GetApiGenerativeAiEvaluations(ctx context.Context, params *GetApiGenerativeAiEvaluationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiGenerativeAiEvaluationsWithBody Create a generative AI evaluation
+	//
+	// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+	// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+	//
+	// A `dash0.com/origin` label must be unique within the organization and must not start with a
+	// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+	// returns 400, because the server assigns the ID. When an API token without a user sends no
+	// origin, the server sets one.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+	PostApiGenerativeAiEvaluationsWithBody(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiGenerativeAiEvaluations Create a generative AI evaluation
+	//
+	// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+	// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+	//
+	// A `dash0.com/origin` label must be unique within the organization and must not start with a
+	// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+	// returns 400, because the server assigns the ID. When an API token without a user sends no
+	// origin, the server sets one.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+	PostApiGenerativeAiEvaluations(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, body PostApiGenerativeAiEvaluationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiGenerativeAiEvaluationsOriginOrId Delete a generative AI evaluation
+	//
+	// Soft-deletes the evaluation, so it stops judging spans. Deleting an evaluation that is already deleted returns 404.
+	//
+	// Corresponds with DELETE /api/generative-ai-evaluations/{originOrId} (the `DeleteApiGenerativeAiEvaluationsOriginOrId` operationId).
+	DeleteApiGenerativeAiEvaluationsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiGenerativeAiEvaluationsOriginOrId Retrieve a generative AI evaluation
+	//
+	// Corresponds with GET /api/generative-ai-evaluations/{originOrId} (the `GetApiGenerativeAiEvaluationsOriginOrId` operationId).
+	GetApiGenerativeAiEvaluationsOriginOrId(ctx context.Context, originOrId string, params *GetApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiGenerativeAiEvaluationsOriginOrIdWithBody Update or insert a generative AI evaluation
+	//
+	// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+	// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+	// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+	// evaluation restores it.
+	//
+	// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+	// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+	// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+	// evaluation unchanged without creating a new version.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+	PutApiGenerativeAiEvaluationsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiGenerativeAiEvaluationsOriginOrId Update or insert a generative AI evaluation
+	//
+	// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+	// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+	// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+	// evaluation restores it.
+	//
+	// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+	// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+	// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+	// evaluation unchanged without creating a new version.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+	PutApiGenerativeAiEvaluationsOriginOrId(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, body PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostApiImportCheckRuleWithBody Import a check rule
 	//
@@ -24405,6 +25811,159 @@ func (c *generatedClient) PutApiDatasetsOriginOrId(ctx context.Context, originOr
 // Corresponds with GET /api/edge/settings (the `GetApiEdgeSettings` operationId).
 func (c *generatedClient) GetApiEdgeSettings(ctx context.Context, params *GetApiEdgeSettingsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiEdgeSettingsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiGenerativeAiEvaluations List generative AI evaluations
+//
+// Returns the generative AI evaluations of a dataset, without deleted ones.
+//
+// Corresponds with GET /api/generative-ai-evaluations (the `GetApiGenerativeAiEvaluations` operationId).
+func (c *generatedClient) GetApiGenerativeAiEvaluations(ctx context.Context, params *GetApiGenerativeAiEvaluationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiGenerativeAiEvaluationsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiGenerativeAiEvaluationsWithBody Create a generative AI evaluation
+//
+// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+//
+// A `dash0.com/origin` label must be unique within the organization and must not start with a
+// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+// returns 400, because the server assigns the ID. When an API token without a user sends no
+// origin, the server sets one.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+func (c *generatedClient) PostApiGenerativeAiEvaluationsWithBody(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiGenerativeAiEvaluationsRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiGenerativeAiEvaluations Create a generative AI evaluation
+//
+// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+//
+// A `dash0.com/origin` label must be unique within the organization and must not start with a
+// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+// returns 400, because the server assigns the ID. When an API token without a user sends no
+// origin, the server sets one.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+func (c *generatedClient) PostApiGenerativeAiEvaluations(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, body PostApiGenerativeAiEvaluationsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiGenerativeAiEvaluationsRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiGenerativeAiEvaluationsOriginOrId Delete a generative AI evaluation
+//
+// Soft-deletes the evaluation, so it stops judging spans. Deleting an evaluation that is already deleted returns 404.
+//
+// Corresponds with DELETE /api/generative-ai-evaluations/{originOrId} (the `DeleteApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *generatedClient) DeleteApiGenerativeAiEvaluationsOriginOrId(ctx context.Context, originOrId string, params *DeleteApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiGenerativeAiEvaluationsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiGenerativeAiEvaluationsOriginOrId Retrieve a generative AI evaluation
+//
+// Corresponds with GET /api/generative-ai-evaluations/{originOrId} (the `GetApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *generatedClient) GetApiGenerativeAiEvaluationsOriginOrId(ctx context.Context, originOrId string, params *GetApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiGenerativeAiEvaluationsOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiGenerativeAiEvaluationsOriginOrIdWithBody Update or insert a generative AI evaluation
+//
+// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+// evaluation restores it.
+//
+// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+// evaluation unchanged without creating a new version.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *generatedClient) PutApiGenerativeAiEvaluationsOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiGenerativeAiEvaluationsOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiGenerativeAiEvaluationsOriginOrId Update or insert a generative AI evaluation
+//
+// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+// evaluation restores it.
+//
+// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+// evaluation unchanged without creating a new version.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *generatedClient) PutApiGenerativeAiEvaluationsOriginOrId(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, body PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiGenerativeAiEvaluationsOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -29335,6 +30894,335 @@ func NewGetApiEdgeSettingsRequest(server string, params *GetApiEdgeSettingsParam
 		}
 
 	}
+
+	return req, nil
+}
+
+// NewGetApiGenerativeAiEvaluationsRequest constructs an http.Request for the GetApiGenerativeAiEvaluations method
+func NewGetApiGenerativeAiEvaluationsRequest(server string, params *GetApiGenerativeAiEvaluationsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/generative-ai-evaluations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "originPrefix", *params.OriginPrefix, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiGenerativeAiEvaluationsRequest calls the generic PostApiGenerativeAiEvaluations builder with application/json body
+func NewPostApiGenerativeAiEvaluationsRequest(server string, params *PostApiGenerativeAiEvaluationsParams, body PostApiGenerativeAiEvaluationsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiGenerativeAiEvaluationsRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiGenerativeAiEvaluationsRequestWithBody constructs an http.Request for the PostApiGenerativeAiEvaluations method, with any body, and a specified content type
+func NewPostApiGenerativeAiEvaluationsRequestWithBody(server string, params *PostApiGenerativeAiEvaluationsParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/generative-ai-evaluations")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiGenerativeAiEvaluationsOriginOrIdRequest constructs an http.Request for the DeleteApiGenerativeAiEvaluationsOriginOrId method
+func NewDeleteApiGenerativeAiEvaluationsOriginOrIdRequest(server string, originOrId string, params *DeleteApiGenerativeAiEvaluationsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/generative-ai-evaluations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiGenerativeAiEvaluationsOriginOrIdRequest constructs an http.Request for the GetApiGenerativeAiEvaluationsOriginOrId method
+func NewGetApiGenerativeAiEvaluationsOriginOrIdRequest(server string, originOrId string, params *GetApiGenerativeAiEvaluationsOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/generative-ai-evaluations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiGenerativeAiEvaluationsOriginOrIdRequest calls the generic PutApiGenerativeAiEvaluationsOriginOrId builder with application/json body
+func NewPutApiGenerativeAiEvaluationsOriginOrIdRequest(server string, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, body PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiGenerativeAiEvaluationsOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiGenerativeAiEvaluationsOriginOrIdRequestWithBody constructs an http.Request for the PutApiGenerativeAiEvaluationsOriginOrId method, with any body, and a specified content type
+func NewPutApiGenerativeAiEvaluationsOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/generative-ai-evaluations/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -35630,6 +37518,95 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /api/edge/settings (the `GetApiEdgeSettings` operationId).
 	GetApiEdgeSettingsWithResponse(ctx context.Context, params *GetApiEdgeSettingsParams, reqEditors ...RequestEditorFn) (*GetApiEdgeSettingsResponse, error)
 
+	// GetApiGenerativeAiEvaluationsWithResponse List generative AI evaluations
+	//
+	// Returns the generative AI evaluations of a dataset, without deleted ones.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/generative-ai-evaluations (the `GetApiGenerativeAiEvaluations` operationId).
+	GetApiGenerativeAiEvaluationsWithResponse(ctx context.Context, params *GetApiGenerativeAiEvaluationsParams, reqEditors ...RequestEditorFn) (*GetApiGenerativeAiEvaluationsResponse, error)
+
+	// PostApiGenerativeAiEvaluationsWithBodyWithResponse Create a generative AI evaluation
+	//
+	// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+	// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+	//
+	// A `dash0.com/origin` label must be unique within the organization and must not start with a
+	// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+	// returns 400, because the server assigns the ID. When an API token without a user sends no
+	// origin, the server sets one.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+	PostApiGenerativeAiEvaluationsWithBodyWithResponse(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiGenerativeAiEvaluationsResponse, error)
+
+	// PostApiGenerativeAiEvaluationsWithResponse Create a generative AI evaluation
+	//
+	// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+	// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+	//
+	// A `dash0.com/origin` label must be unique within the organization and must not start with a
+	// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+	// returns 400, because the server assigns the ID. When an API token without a user sends no
+	// origin, the server sets one.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+	PostApiGenerativeAiEvaluationsWithResponse(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, body PostApiGenerativeAiEvaluationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiGenerativeAiEvaluationsResponse, error)
+
+	// DeleteApiGenerativeAiEvaluationsOriginOrIdWithResponse Delete a generative AI evaluation
+	//
+	// Soft-deletes the evaluation, so it stops judging spans. Deleting an evaluation that is already deleted returns 404.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/generative-ai-evaluations/{originOrId} (the `DeleteApiGenerativeAiEvaluationsOriginOrId` operationId).
+	DeleteApiGenerativeAiEvaluationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiGenerativeAiEvaluationsOriginOrIdResponse, error)
+
+	// GetApiGenerativeAiEvaluationsOriginOrIdWithResponse Retrieve a generative AI evaluation
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/generative-ai-evaluations/{originOrId} (the `GetApiGenerativeAiEvaluationsOriginOrId` operationId).
+	GetApiGenerativeAiEvaluationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiGenerativeAiEvaluationsOriginOrIdResponse, error)
+
+	// PutApiGenerativeAiEvaluationsOriginOrIdWithBodyWithResponse Update or insert a generative AI evaluation
+	//
+	// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+	// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+	// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+	// evaluation restores it.
+	//
+	// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+	// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+	// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+	// evaluation unchanged without creating a new version.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+	PutApiGenerativeAiEvaluationsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiGenerativeAiEvaluationsOriginOrIdResponse, error)
+
+	// PutApiGenerativeAiEvaluationsOriginOrIdWithResponse Update or insert a generative AI evaluation
+	//
+	// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+	// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+	// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+	// evaluation restores it.
+	//
+	// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+	// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+	// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+	// evaluation unchanged without creating a new version.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+	PutApiGenerativeAiEvaluationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, body PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiGenerativeAiEvaluationsOriginOrIdResponse, error)
+
 	// PostApiImportCheckRuleWithBodyWithResponse Import a check rule
 	//
 	// This endpoint allows you **to import an existing check rule** into your organization. It's intended for one-time migrations rather than ongoing check rule management.
@@ -39036,6 +41013,239 @@ func (r GetApiEdgeSettingsResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetApiEdgeSettingsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiGenerativeAiEvaluationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *GenerativeAiEvaluationListResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiGenerativeAiEvaluationsResponse) GetJSON200() *GenerativeAiEvaluationListResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiGenerativeAiEvaluationsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiGenerativeAiEvaluationsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiGenerativeAiEvaluationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiGenerativeAiEvaluationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiGenerativeAiEvaluationsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostApiGenerativeAiEvaluationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *GenerativeAiEvaluationResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostApiGenerativeAiEvaluationsResponse) GetJSON200() *GenerativeAiEvaluationResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PostApiGenerativeAiEvaluationsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PostApiGenerativeAiEvaluationsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiGenerativeAiEvaluationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiGenerativeAiEvaluationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostApiGenerativeAiEvaluationsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteApiGenerativeAiEvaluationsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiGenerativeAiEvaluationsOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiGenerativeAiEvaluationsOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiGenerativeAiEvaluationsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiGenerativeAiEvaluationsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiGenerativeAiEvaluationsOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiGenerativeAiEvaluationsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *GenerativeAiEvaluationResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiGenerativeAiEvaluationsOriginOrIdResponse) GetJSON200() *GenerativeAiEvaluationResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiGenerativeAiEvaluationsOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiGenerativeAiEvaluationsOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiGenerativeAiEvaluationsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiGenerativeAiEvaluationsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiGenerativeAiEvaluationsOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiGenerativeAiEvaluationsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *GenerativeAiEvaluationResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiGenerativeAiEvaluationsOriginOrIdResponse) GetJSON200() *GenerativeAiEvaluationResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiGenerativeAiEvaluationsOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiGenerativeAiEvaluationsOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiGenerativeAiEvaluationsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiGenerativeAiEvaluationsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiGenerativeAiEvaluationsOriginOrIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -44723,6 +46933,137 @@ func (c *ClientWithResponses) GetApiEdgeSettingsWithResponse(ctx context.Context
 	return ParseGetApiEdgeSettingsResponse(rsp)
 }
 
+// GetApiGenerativeAiEvaluationsWithResponse List generative AI evaluations
+//
+// Returns the generative AI evaluations of a dataset, without deleted ones.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/generative-ai-evaluations (the `GetApiGenerativeAiEvaluations` operationId).
+func (c *ClientWithResponses) GetApiGenerativeAiEvaluationsWithResponse(ctx context.Context, params *GetApiGenerativeAiEvaluationsParams, reqEditors ...RequestEditorFn) (*GetApiGenerativeAiEvaluationsResponse, error) {
+	rsp, err := c.GetApiGenerativeAiEvaluations(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiGenerativeAiEvaluationsResponse(rsp)
+}
+
+// PostApiGenerativeAiEvaluationsWithBodyWithResponse Create a generative AI evaluation
+//
+// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+//
+// A `dash0.com/origin` label must be unique within the organization and must not start with a
+// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+// returns 400, because the server assigns the ID. When an API token without a user sends no
+// origin, the server sets one.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+func (c *ClientWithResponses) PostApiGenerativeAiEvaluationsWithBodyWithResponse(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiGenerativeAiEvaluationsResponse, error) {
+	rsp, err := c.PostApiGenerativeAiEvaluationsWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiGenerativeAiEvaluationsResponse(rsp)
+}
+
+// PostApiGenerativeAiEvaluationsWithResponse Create a generative AI evaluation
+//
+// Creates an evaluation that has an LLM judge score a sample of the generative AI spans its
+// filters match. `metadata.name` must be unique within the dataset and cannot change later.
+//
+// A `dash0.com/origin` label must be unique within the organization and must not start with a
+// prefix Dash0 reserves; a duplicate or reserved origin returns 400. A `dash0.com/id` label
+// returns 400, because the server assigns the ID. When an API token without a user sends no
+// origin, the server sets one.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/generative-ai-evaluations (the `PostApiGenerativeAiEvaluations` operationId).
+func (c *ClientWithResponses) PostApiGenerativeAiEvaluationsWithResponse(ctx context.Context, params *PostApiGenerativeAiEvaluationsParams, body PostApiGenerativeAiEvaluationsJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiGenerativeAiEvaluationsResponse, error) {
+	rsp, err := c.PostApiGenerativeAiEvaluations(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiGenerativeAiEvaluationsResponse(rsp)
+}
+
+// DeleteApiGenerativeAiEvaluationsOriginOrIdWithResponse Delete a generative AI evaluation
+//
+// Soft-deletes the evaluation, so it stops judging spans. Deleting an evaluation that is already deleted returns 404.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/generative-ai-evaluations/{originOrId} (the `DeleteApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *ClientWithResponses) DeleteApiGenerativeAiEvaluationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiGenerativeAiEvaluationsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiGenerativeAiEvaluationsOriginOrIdResponse(rsp)
+}
+
+// GetApiGenerativeAiEvaluationsOriginOrIdWithResponse Retrieve a generative AI evaluation
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/generative-ai-evaluations/{originOrId} (the `GetApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *ClientWithResponses) GetApiGenerativeAiEvaluationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiGenerativeAiEvaluationsOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiGenerativeAiEvaluationsOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiGenerativeAiEvaluationsOriginOrIdResponse(rsp)
+}
+
+// PutApiGenerativeAiEvaluationsOriginOrIdWithBodyWithResponse Update or insert a generative AI evaluation
+//
+// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+// evaluation restores it.
+//
+// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+// evaluation unchanged without creating a new version.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiGenerativeAiEvaluationsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiGenerativeAiEvaluationsOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiGenerativeAiEvaluationsOriginOrIdResponse(rsp)
+}
+
+// PutApiGenerativeAiEvaluationsOriginOrIdWithResponse Update or insert a generative AI evaluation
+//
+// Replaces the evaluation's definition. When no evaluation matches, the path parameter becomes
+// the origin of a new evaluation, which is how infrastructure-as-code tools apply a definition;
+// a path parameter shaped like an evaluation ID returns 404 instead. A PUT to a deleted
+// evaluation restores it.
+//
+// `metadata.name` and the judge's output `kind` cannot change; send a new evaluation instead.
+// Send the `dash0.com/version` label you read to reject the write when someone else changed the
+// evaluation since; omit it to overwrite unconditionally. A PUT that changes nothing returns the
+// evaluation unchanged without creating a new version.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/generative-ai-evaluations/{originOrId} (the `PutApiGenerativeAiEvaluationsOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiGenerativeAiEvaluationsOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiGenerativeAiEvaluationsOriginOrIdParams, body PutApiGenerativeAiEvaluationsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiGenerativeAiEvaluationsOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiGenerativeAiEvaluationsOriginOrIdResponse(rsp)
+}
+
 // PostApiImportCheckRuleWithBodyWithResponse Import a check rule
 //
 // This endpoint allows you **to import an existing check rule** into your organization. It's intended for one-time migrations rather than ongoing check rule management.
@@ -48543,6 +50884,167 @@ func ParseGetApiEdgeSettingsResponse(rsp *http.Response) (*GetApiEdgeSettingsRes
 			headers.ETag = &value
 		}
 		response.Headers304 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetApiGenerativeAiEvaluationsResponse parses an HTTP response from a GetApiGenerativeAiEvaluationsWithResponse call
+func ParseGetApiGenerativeAiEvaluationsResponse(rsp *http.Response) (*GetApiGenerativeAiEvaluationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiGenerativeAiEvaluationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GenerativeAiEvaluationListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiGenerativeAiEvaluationsResponse parses an HTTP response from a PostApiGenerativeAiEvaluationsWithResponse call
+func ParsePostApiGenerativeAiEvaluationsResponse(rsp *http.Response) (*PostApiGenerativeAiEvaluationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiGenerativeAiEvaluationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GenerativeAiEvaluationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiGenerativeAiEvaluationsOriginOrIdResponse parses an HTTP response from a DeleteApiGenerativeAiEvaluationsOriginOrIdWithResponse call
+func ParseDeleteApiGenerativeAiEvaluationsOriginOrIdResponse(rsp *http.Response) (*DeleteApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiGenerativeAiEvaluationsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiGenerativeAiEvaluationsOriginOrIdResponse parses an HTTP response from a GetApiGenerativeAiEvaluationsOriginOrIdWithResponse call
+func ParseGetApiGenerativeAiEvaluationsOriginOrIdResponse(rsp *http.Response) (*GetApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiGenerativeAiEvaluationsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GenerativeAiEvaluationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiGenerativeAiEvaluationsOriginOrIdResponse parses an HTTP response from a PutApiGenerativeAiEvaluationsOriginOrIdWithResponse call
+func ParsePutApiGenerativeAiEvaluationsOriginOrIdResponse(rsp *http.Response) (*PutApiGenerativeAiEvaluationsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiGenerativeAiEvaluationsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GenerativeAiEvaluationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
 	}
 
 	return response, nil
