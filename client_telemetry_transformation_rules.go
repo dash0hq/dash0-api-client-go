@@ -1,10 +1,20 @@
 package dash0
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
+
+// UnmarshalJSON decodes OTLP numbers as json.Number: float64 would round integers above 2^53.
+func (e *TelemetryTransformationRuleExample) UnmarshalJSON(data []byte) error {
+	type plain TelemetryTransformationRuleExample
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.UseNumber()
+	return decoder.Decode((*plain)(e))
+}
 
 // ListTelemetryTransformationRules retrieves rules without their stored examples.
 // Use GetTelemetryTransformationRule before a read-modify-write update to preserve examples.
