@@ -126,6 +126,8 @@ var constRenames = map[string]string{
 	"LineNumber":     "ProfileStacktraceFieldLineNumber",
 	"SourceFile":     "ProfileStacktraceFieldSourceFile",
 	"SystemName":     "ProfileStacktraceFieldSystemName",
+
+	"Dash0TelemetryTransformationRule": "TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

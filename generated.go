@@ -7425,6 +7425,81 @@ func (e TelemetryFilterContext) Valid() bool {
 	}
 }
 
+// Defines values for TelemetryTransformationRuleContext.
+const (
+	TelemetryTransformationRuleContextDatapoint TelemetryTransformationRuleContext = "datapoint"
+	TelemetryTransformationRuleContextLog       TelemetryTransformationRuleContext = "log"
+	TelemetryTransformationRuleContextMetric    TelemetryTransformationRuleContext = "metric"
+	TelemetryTransformationRuleContextProfile   TelemetryTransformationRuleContext = "profile"
+	TelemetryTransformationRuleContextResource  TelemetryTransformationRuleContext = "resource"
+	TelemetryTransformationRuleContextScope     TelemetryTransformationRuleContext = "scope"
+	TelemetryTransformationRuleContextSpan      TelemetryTransformationRuleContext = "span"
+	TelemetryTransformationRuleContextSpanevent TelemetryTransformationRuleContext = "spanevent"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleContext enum.
+func (e TelemetryTransformationRuleContext) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleContextDatapoint:
+		return true
+	case TelemetryTransformationRuleContextLog:
+		return true
+	case TelemetryTransformationRuleContextMetric:
+		return true
+	case TelemetryTransformationRuleContextProfile:
+		return true
+	case TelemetryTransformationRuleContextResource:
+		return true
+	case TelemetryTransformationRuleContextScope:
+		return true
+	case TelemetryTransformationRuleContextSpan:
+		return true
+	case TelemetryTransformationRuleContextSpanevent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleDefinitionKind.
+const (
+	TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleDefinitionKind enum.
+func (e TelemetryTransformationRuleDefinitionKind) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleSignalType.
+const (
+	TelemetryTransformationRuleSignalTypeLogs     TelemetryTransformationRuleSignalType = "logs"
+	TelemetryTransformationRuleSignalTypeMetrics  TelemetryTransformationRuleSignalType = "metrics"
+	TelemetryTransformationRuleSignalTypeProfiles TelemetryTransformationRuleSignalType = "profiles"
+	TelemetryTransformationRuleSignalTypeTraces   TelemetryTransformationRuleSignalType = "traces"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleSignalType enum.
+func (e TelemetryTransformationRuleSignalType) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleSignalTypeLogs:
+		return true
+	case TelemetryTransformationRuleSignalTypeMetrics:
+		return true
+	case TelemetryTransformationRuleSignalTypeProfiles:
+		return true
+	case TelemetryTransformationRuleSignalTypeTraces:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TimeSeriesAggregationAttributeModificationKind.
 const (
 	DropAttributes TimeSeriesAggregationAttributeModificationKind = "drop_attributes"
@@ -8277,7 +8352,8 @@ type AgenticWorkflowAnnotations struct {
 
 // AgenticWorkflowConcurrency defines model for AgenticWorkflowConcurrency.
 type AgenticWorkflowConcurrency struct {
-	// MaxParallel The maximum number of parallel executions allowed. Only meaningful when `policy` is set to `parallel`.
+	// MaxParallel The maximum number of active executions allowed. Applies to `parallel` and `skip`;
+	// `queue` and `supersede` always allow only one active execution.
 	// Defaults to `50`.
 	MaxParallel *int `json:"maxParallel,omitempty"`
 
@@ -8287,10 +8363,11 @@ type AgenticWorkflowConcurrency struct {
 
 // AgenticWorkflowConcurrencyPolicy The concurrency policy to apply when an automation is triggered while a previous execution is still running.
 //
-// - `queue`: Queue the new execution and run it after the current one completes.
-// - `skip`: Skip the new execution entirely.
-// - `supersede`: Cancel the current execution and start the new one.
-// - `parallel`: Run executions in parallel, up to `maxParallel`.
+//   - `queue`: Queue the new execution and run it after the current one completes.
+//   - `skip`: Run executions in parallel up to `maxParallel`, then skip further triggers.
+//   - `supersede`: Cancel the current execution and start the new one.
+//   - `parallel`: Run executions in parallel, up to `maxParallel`, then queue further triggers.
+//     The queue holds up to 100 triggers; further triggers are dropped.
 type AgenticWorkflowConcurrencyPolicy string
 
 // AgenticWorkflowCreateRequest defines model for AgenticWorkflowCreateRequest.
@@ -12497,6 +12574,23 @@ type LinearCommentAgenticWorkflowTriggerSpec struct {
 	// Mutually exclusive with `keyword`. Matching is case-sensitive unless the pattern
 	// includes a flag such as `(?i)`.
 	KeywordRegex *string `json:"keywordRegex,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
+	// or complete email. An actor without an email matches on its UUID only. Mutually
+	// exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
+	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
+	// match by ID only. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// TeamIds Optional list of Linear team UUIDs. The trigger fires only when the issue the
+	// agent was mentioned on belongs to one of these teams. When omitted or empty,
+	// mentions in every team match, so automations created before this filter existed
+	// keep firing unchanged. Unlike the issue-scoped Linear triggers, there is no
+	// `allTeams` flag and no team scope is required.
+	TeamIds *[]string `json:"teamIds,omitempty"`
 }
 
 // LinearCommentReactionAgenticWorkflowTrigger defines model for LinearCommentReactionAgenticWorkflowTrigger.
@@ -12712,6 +12806,18 @@ type LinearInitiativeAgenticWorkflowTriggerSpec struct {
 	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
 	// match by ID only. Mutually exclusive with `senderRegex`.
 	Senders *[]string `json:"senders,omitempty"`
+
+	// StatusRegex Optional RE2 regular expression that must match the complete name of the initiative's
+	// new status. The trigger fires only when an `update` changed the status into a
+	// match; a `create` never matches. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	StatusRegex *string `json:"statusRegex,omitempty"`
+
+	// Statuses Optional list of initiative status names. When non-empty, the trigger fires only when
+	// an `update` changed the initiative's status into one of them; a `create` never matches.
+	// Names match case-insensitively against the complete status name. Combined with
+	// every other filter, including `statusRegex`, as AND.
+	Statuses *[]string `json:"statuses,omitempty"`
 }
 
 // LinearInitiativeTriggerVariableName Variables provided by the `linear.initiative` trigger. Fields Linear omits from the event are omitted.
@@ -12721,7 +12827,7 @@ type LinearInitiativeAgenticWorkflowTriggerSpec struct {
 // - `linear.initiative.name`: Name of the Linear initiative.
 // - `linear.initiative.url`: URL of the Linear initiative.
 // - `linear.initiative.description`: Description of the Linear initiative.
-// - `linear.initiative.status`: Status of the initiative (`Planned`, `Active`, or `Completed`).
+// - `linear.initiative.status`: Status of the initiative (`Proposed`, `Planned`, `Active`, `Completed`, or `Canceled`).
 // - `linear.initiative.health`: Health of the initiative (`onTrack`, `atRisk`, or `offTrack`), when set.
 // - `linear.actor.name`: Display name of the user who made the change, when known.
 type LinearInitiativeTriggerVariableName string
@@ -12913,6 +13019,18 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
 	// match by ID only. Mutually exclusive with `senderRegex`.
 	Senders *[]string `json:"senders,omitempty"`
+
+	// StatusRegex Optional RE2 regular expression that must match the complete name of the issue's
+	// new status. The trigger fires only when an `update` changed the status into a
+	// match; a `create` never matches. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	StatusRegex *string `json:"statusRegex,omitempty"`
+
+	// Statuses Optional list of issue status names. When non-empty, the trigger fires only when
+	// an `update` changed the issue's status into one of them; a `create` never matches.
+	// Names match case-insensitively against the complete status name. Combined with
+	// every other filter, including `statusRegex`, as AND.
+	Statuses *[]string `json:"statuses,omitempty"`
 
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
@@ -13207,6 +13325,18 @@ type LinearProjectAgenticWorkflowTriggerSpec struct {
 	// match by ID only. Mutually exclusive with `senderRegex`.
 	Senders *[]string `json:"senders,omitempty"`
 
+	// StatusRegex Optional RE2 regular expression that must match the complete name of the project's
+	// new status. The trigger fires only when an `update` changed the status into a
+	// match; a `create` never matches. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	StatusRegex *string `json:"statusRegex,omitempty"`
+
+	// Statuses Optional list of project status names. When non-empty, the trigger fires only when
+	// an `update` changed the project's status into one of them; a `create` never matches.
+	// Names match case-insensitively against the complete status name. Combined with
+	// every other filter, including `statusRegex`, as AND.
+	Statuses *[]string `json:"statuses,omitempty"`
+
 	// TeamIds Optional list of Linear team UUIDs. A project belongs to one or more teams; the
 	// trigger fires when any of the project's teams is in this list. When omitted or
 	// empty and `allTeams` is not set, projects of every team match. Mutually exclusive
@@ -13344,10 +13474,16 @@ type LinearReleaseAgenticWorkflowTriggerSpec struct {
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
-	// PipelineIds Optional list of Linear release pipeline UUIDs. When non-empty, the trigger fires
-	// only for releases of one of these pipelines. When omitted or empty, releases of
-	// every pipeline match.
-	PipelineIds *[]string `json:"pipelineIds,omitempty"`
+	// PipelineNames Optional list of Linear release pipeline names. When non-empty, the trigger fires
+	// only for releases of one of these pipelines (exact, case-sensitive match). When
+	// omitted or empty, releases of every pipeline match. Mutually exclusive with
+	// `pipelineRegex`.
+	PipelineNames *[]string `json:"pipelineNames,omitempty"`
+
+	// PipelineRegex Optional RE2 regular expression matched against the complete release pipeline
+	// name. Mutually exclusive with `pipelineNames`. Matching is case-sensitive unless
+	// the pattern includes a flag such as `(?i)`.
+	PipelineRegex *string `json:"pipelineRegex,omitempty"`
 
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
 	// or complete email. An actor without an email matches on its UUID only. Mutually
@@ -13361,8 +13497,13 @@ type LinearReleaseAgenticWorkflowTriggerSpec struct {
 
 	// StageNames Optional list of release stage names. When non-empty, the trigger fires only when
 	// the release is in one of these stages (exact, case-sensitive match). When omitted
-	// or empty, releases in every stage match.
+	// or empty, releases in every stage match. Mutually exclusive with `stageRegex`.
 	StageNames *[]string `json:"stageNames,omitempty"`
+
+	// StageRegex Optional RE2 regular expression matched against the complete release stage name.
+	// Mutually exclusive with `stageNames`. Matching is case-sensitive unless the
+	// pattern includes a flag such as `(?i)`.
+	StageRegex *string `json:"stageRegex,omitempty"`
 }
 
 // LinearReleaseNoteAgenticWorkflowTrigger defines model for LinearReleaseNoteAgenticWorkflowTrigger.
@@ -13409,10 +13550,16 @@ type LinearReleaseNoteAgenticWorkflowTriggerSpec struct {
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
-	// PipelineIds Optional list of Linear release pipeline UUIDs. When non-empty, the trigger fires
-	// only for release notes of one of these pipelines. When omitted or empty, release
-	// notes of every pipeline match.
-	PipelineIds *[]string `json:"pipelineIds,omitempty"`
+	// PipelineNames Optional list of Linear release pipeline names. When non-empty, the trigger fires
+	// only for release notes of one of these pipelines (exact, case-sensitive match).
+	// When omitted or empty, release notes of every pipeline match. Mutually exclusive
+	// with `pipelineRegex`.
+	PipelineNames *[]string `json:"pipelineNames,omitempty"`
+
+	// PipelineRegex Optional RE2 regular expression matched against the complete release pipeline
+	// name. Mutually exclusive with `pipelineNames`. Matching is case-sensitive unless
+	// the pattern includes a flag such as `(?i)`.
+	PipelineRegex *string `json:"pipelineRegex,omitempty"`
 
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
 	// or complete email. An actor without an email matches on its UUID only. Mutually
@@ -14163,6 +14310,29 @@ type OAuthTokenType string
 // Examples:
 //   - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
 type OTTLCondition = string
+
+// OTTLConditions defines model for OTTLConditions.
+type OTTLConditions = []OTTLCondition
+
+// OTTLStatement The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
+// process data with OpenTelemetry-native concepts and constructs. An OTTL *Statement* is an expression that
+// performs an action on telemetry data, such as setting, deleting, or transforming attributes.
+//
+// OTTL statements are used by the OpenTelemetry Transform Processor to modify telemetry data as it passes
+// through the collector pipeline:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/transformprocessor/README.md
+//
+// Statements are only valid for specific evaluation contexts:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
+//
+// Examples:
+//   - `set(attributes["http.request.method"], "GET")` sets an attribute value.
+//   - `delete_key(attributes, "http.request.header.authorization")` removes a sensitive attribute.
+//   - `truncate_all(attributes, 100)` truncates all attribute values to 100 characters.
+type OTTLStatement = string
+
+// OTTLStatements defines model for OTTLStatements.
+type OTTLStatements = []OTTLStatement
 
 // OpsgenieConfig defines model for OpsgenieConfig.
 type OpsgenieConfig struct {
@@ -17816,6 +17986,235 @@ type TelemetryFilter struct {
 // `profile_sample` evaluates each sample of a profile and drops matching samples individually.
 type TelemetryFilterContext string
 
+// TelemetryTransformationRuleAnnotations defines model for TelemetryTransformationRuleAnnotations.
+type TelemetryTransformationRuleAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Timestamp of the deletion. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update, set by the server. It is the concurrency token: send the value you read
+	// back on PUT. A stale value returns 400 with the error type `superseded_version`. UI sessions must send it.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// TelemetryTransformationRuleContext The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+// Not all contexts are valid for all signal types:
+//
+// For `traces`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `span`: Transform individual span properties and attributes.
+// - `spanevent`: Transform individual span event properties and attributes.
+//
+// For `metrics`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `metric`: Transform metric-level properties (name, description, type).
+// - `datapoint`: Transform individual metric data point attributes.
+//
+// For `logs`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `log`: Transform individual log record properties (body, severity, attributes).
+//
+// For `profiles`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `profile`: Transform individual profile properties and attributes.
+//
+// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+// resource, but a `metric` context cannot access individual data points.
+type TelemetryTransformationRuleContext string
+
+// TelemetryTransformationRuleDefinition defines model for TelemetryTransformationRuleDefinition.
+type TelemetryTransformationRuleDefinition struct {
+	Kind     TelemetryTransformationRuleDefinitionKind `json:"kind"`
+	Metadata TelemetryTransformationRuleMetadata       `json:"metadata"`
+	Spec     TelemetryTransformationRuleSpec           `json:"spec"`
+}
+
+// TelemetryTransformationRuleDefinitionKind defines model for TelemetryTransformationRuleDefinition.Kind.
+type TelemetryTransformationRuleDefinitionKind string
+
+// TelemetryTransformationRuleDisplay defines model for TelemetryTransformationRuleDisplay.
+type TelemetryTransformationRuleDisplay struct {
+	// Name Name of the rule, shown in the rule list.
+	Name string `json:"name"`
+}
+
+// TelemetryTransformationRuleError defines model for TelemetryTransformationRuleError.
+type TelemetryTransformationRuleError struct {
+	// Code HTTP status code.
+	Code int `json:"code"`
+
+	// Message Human-readable description of the error. Safe to display.
+	Message string `json:"message"`
+
+	// TraceId Trace ID for the request that produced the error.
+	TraceId *string `json:"traceId,omitempty"`
+
+	// Type Stable `snake_case` identifier for the kind of error. `invalid_rule` when `violations` is set.
+	Type *string `json:"type,omitempty"`
+
+	// Violations Why the rule was rejected. Set only when `type` is `invalid_rule`.
+	Violations *[]TelemetryTransformationRuleViolation `json:"violations,omitempty"`
+}
+
+// TelemetryTransformationRuleErrorResponse defines model for TelemetryTransformationRuleErrorResponse.
+type TelemetryTransformationRuleErrorResponse struct {
+	Error TelemetryTransformationRuleError `json:"error"`
+}
+
+// TelemetryTransformationRuleExample defines model for TelemetryTransformationRuleExample.
+type TelemetryTransformationRuleExample struct {
+	// Name Label of the example, shown in the UI.
+	Name string `json:"name"`
+
+	// Otlp One OTLP/JSON export request for `spec.signal`, for example `{"resourceLogs": [...]}` for a `logs` rule.
+	// It keeps resource and scope, so resource and scope conditions can match. It must hold at least one log
+	// record, span, data point or profile, and at most 64 KiB of compact JSON. The server returns it with
+	// its keys and whitespace normalized.
+	Otlp map[string]interface{} `json:"otlp"`
+}
+
+// TelemetryTransformationRuleLabels defines model for TelemetryTransformationRuleLabels.
+type TelemetryTransformationRuleLabels struct {
+	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the telemetry transformation rule. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed rules, e.g. the CRD name from an operator or a Terraform resource ID. Set by the client on create; immutable afterwards. Empty for rules created in the UI. Rules created with a machine token that has no user get an `api-<uuid>` origin.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// TelemetryTransformationRuleListResponse defines model for TelemetryTransformationRuleListResponse.
+type TelemetryTransformationRuleListResponse struct {
+	// TelemetryTransformationRules The rules without `spec.examples`. Get a single rule to read its examples.
+	TelemetryTransformationRules []TelemetryTransformationRuleResponse `json:"telemetryTransformationRules"`
+}
+
+// TelemetryTransformationRuleMetadata defines model for TelemetryTransformationRuleMetadata.
+type TelemetryTransformationRuleMetadata struct {
+	Annotations *TelemetryTransformationRuleAnnotations `json:"annotations,omitempty"`
+	Labels      *TelemetryTransformationRuleLabels      `json:"labels,omitempty"`
+	Name        string                                  `json:"name"`
+}
+
+// TelemetryTransformationRuleResponse defines model for TelemetryTransformationRuleResponse.
+type TelemetryTransformationRuleResponse = TelemetryTransformationRuleDefinition
+
+// TelemetryTransformationRuleSignalType The signal type that this transformation rule applies to.
+// - `traces`: Apply transformations to trace data (spans and span events).
+// - `metrics`: Apply transformations to metric data (metrics and data points).
+// - `logs`: Apply transformations to log data (log records).
+// - `profiles`: Apply transformations to profile data.
+type TelemetryTransformationRuleSignalType string
+
+// TelemetryTransformationRuleSpec defines model for TelemetryTransformationRuleSpec.
+type TelemetryTransformationRuleSpec struct {
+	// Conditions A list of OTTL conditions that act as a gate for all transformations of this rule. The conditions
+	// are ORed together, so only one condition needs to evaluate to true for the transformations to run.
+	Conditions *OTTLConditions `json:"conditions,omitempty"`
+
+	// Context The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+	// Not all contexts are valid for all signal types:
+	//
+	// For `traces`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `span`: Transform individual span properties and attributes.
+	// - `spanevent`: Transform individual span event properties and attributes.
+	//
+	// For `metrics`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `metric`: Transform metric-level properties (name, description, type).
+	// - `datapoint`: Transform individual metric data point attributes.
+	//
+	// For `logs`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `log`: Transform individual log record properties (body, severity, attributes).
+	//
+	// For `profiles`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `profile`: Transform individual profile properties and attributes.
+	//
+	// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+	// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+	// resource, but a `metric` context cannot access individual data points.
+	Context TelemetryTransformationRuleContext  `json:"context"`
+	Display *TelemetryTransformationRuleDisplay `json:"display,omitempty"`
+	Enabled bool                                `json:"enabled"`
+
+	// Examples Example signals to test the rule against in the UI. Collectors never receive them, and changing them
+	// does not change the ruleset version collectors poll for. At most 10 examples.
+	//
+	// PUT replaces the whole rule, so a PUT without `examples` removes the stored examples. On rules with a
+	// `dash0.com/origin`, the owning tool manages examples like the rest of the rule; the UI cannot edit them.
+	//
+	// Examples are stored as rule configuration. Telemetry retention does not apply to them, so do not put
+	// sensitive data in them. Deleting the rule deletes its examples.
+	Examples *[]TelemetryTransformationRuleExample `json:"examples,omitempty"`
+
+	// Priority Order in which rules for the same signal run: 0, 100, 200, 300 or 400. Rules with a lower value run
+	// first. Defaults to 200, the middle value, so a rule can be ranked above and below the default. Rules
+	// with the same priority run in order of `metadata.name`, then `dash0.com/created-at`, then
+	// `dash0.com/id`.
+	Priority *int `json:"priority,omitempty"`
+
+	// Signal The signal type that this transformation rule applies to.
+	// - `traces`: Apply transformations to trace data (spans and span events).
+	// - `metrics`: Apply transformations to metric data (metrics and data points).
+	// - `logs`: Apply transformations to log data (log records).
+	// - `profiles`: Apply transformations to profile data.
+	Signal          TelemetryTransformationRuleSignalType       `json:"signal"`
+	Transformations []TelemetryTransformationRuleTransformation `json:"transformations"`
+}
+
+// TelemetryTransformationRuleTransformation defines model for TelemetryTransformationRuleTransformation.
+type TelemetryTransformationRuleTransformation struct {
+	// Name Short name for the transformation, shown in the rule's list of transformations.
+	Name       string         `json:"name"`
+	Statements OTTLStatements `json:"statements"`
+}
+
+// TelemetryTransformationRuleViolation One reason a rule was rejected.
+type TelemetryTransformationRuleViolation struct {
+	// Attribute The attribute or field the rule may not use. For `compile`, the expression that did not compile.
+	Attribute string `json:"attribute"`
+
+	// Kind `secret`, `protected`, `read_only` or `compile`. Treat an unknown value like `compile`.
+	Kind string `json:"kind"`
+
+	// Message Human-readable description of the violation. Safe to display.
+	Message string `json:"message"`
+}
+
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
 	// Dataset The slug of a dataset, such as `default`. Where a request may omit it, "Selecting a dataset" in the API introduction describes how the dataset is chosen.
@@ -18378,6 +18777,9 @@ type ViewSpec struct {
 	// ImplicitFilter An implicit filter the user cannot change that will always be applied to the view. It will not
 	// be shown in the UI.
 	ImplicitFilter *FilterCriteria `json:"implicitFilter,omitempty"`
+
+	// InvertCallStack Whether to invert the callstack in a profiles view. Defaults to false when omitted.
+	InvertCallStack *bool `json:"invertCallStack,omitempty"`
 
 	// Permissions The explicit grants on this view.
 	//
@@ -19093,6 +19495,37 @@ type PutApiSyntheticChecksOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiTelemetryTransformationRulesParams defines parameters for GetApiTelemetryTransformationRules.
+type GetApiTelemetryTransformationRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+}
+
+// PostApiTelemetryTransformationRulesParams defines parameters for PostApiTelemetryTransformationRules.
+type PostApiTelemetryTransformationRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrIdParams defines parameters for DeleteApiTelemetryTransformationRulesOriginOrId.
+type DeleteApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// UpdatedAt The rule's `dash0.com/updated-at` as last read. When given, the delete fails with error type `superseded_version` if the rule changed since. Omit it to delete unconditionally.
+	UpdatedAt *time.Time `form:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+}
+
+// GetApiTelemetryTransformationRulesOriginOrIdParams defines parameters for GetApiTelemetryTransformationRulesOriginOrId.
+type GetApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdParams defines parameters for PutApiTelemetryTransformationRulesOriginOrId.
+type PutApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiTimeSeriesAggregationsParams defines parameters for GetApiTimeSeriesAggregations.
 type GetApiTimeSeriesAggregationsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -19358,6 +19791,12 @@ type PutApiTeamsOriginOrIdDisplayJSONRequestBody = TeamDisplay
 
 // PostApiTeamsOriginOrIdMembersJSONRequestBody defines body for PostApiTeamsOriginOrIdMembers for application/json ContentType.
 type PostApiTeamsOriginOrIdMembersJSONRequestBody = AddTeamMembersRequest
+
+// PostApiTelemetryTransformationRulesJSONRequestBody defines body for PostApiTelemetryTransformationRules for application/json ContentType.
+type PostApiTelemetryTransformationRulesJSONRequestBody = TelemetryTransformationRuleDefinition
+
+// PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody defines body for PutApiTelemetryTransformationRulesOriginOrId for application/json ContentType.
+type PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody = TelemetryTransformationRuleDefinition
 
 // PostApiTimeSeriesAggregationsJSONRequestBody defines body for PostApiTimeSeriesAggregations for application/json ContentType.
 type PostApiTimeSeriesAggregationsJSONRequestBody = TimeSeriesAggregationDefinition
@@ -24414,6 +24853,49 @@ type ClientInterface interface {
 	// Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 	DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiTelemetryTransformationRules Retrieve a list of telemetry transformation rules
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+	GetApiTelemetryTransformationRules(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTelemetryTransformationRulesWithBody Create a new telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithBody(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTelemetryTransformationRules Create a new telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRules(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiTelemetryTransformationRulesOriginOrId Delete a specific telemetry transformation rule
+	//
+	// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+	DeleteApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiTelemetryTransformationRulesOriginOrId Retrieve the latest version of a specific telemetry transformation rule
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+	GetApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithBody Update a specific telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrId Update a specific telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiTimeSeriesAggregations List all time series aggregations for the organization
 	//
 	// Returns all time series aggregation rules configured for your organization.
@@ -28403,6 +28885,119 @@ func (c *generatedClient) PostApiTeamsOriginOrIdMembers(ctx context.Context, ori
 // Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 func (c *generatedClient) DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(c.Server, originOrId, memberID)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiTelemetryTransformationRules Retrieve a list of telemetry transformation rules
+//
+// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) GetApiTelemetryTransformationRules(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTelemetryTransformationRulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiTelemetryTransformationRulesWithBody Create a new telemetry transformation rule
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) PostApiTelemetryTransformationRulesWithBody(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTelemetryTransformationRulesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiTelemetryTransformationRules Create a new telemetry transformation rule
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) PostApiTelemetryTransformationRules(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTelemetryTransformationRulesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrId Delete a specific telemetry transformation rule
+//
+// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) DeleteApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiTelemetryTransformationRulesOriginOrId Retrieve the latest version of a specific telemetry transformation rule
+//
+// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) GetApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithBody Update a specific telemetry transformation rule
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrId Update a specific telemetry transformation rule
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) PutApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -35837,6 +36432,347 @@ func NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(server string, originOrId
 	return req, nil
 }
 
+// NewGetApiTelemetryTransformationRulesRequest constructs an http.Request for the GetApiTelemetryTransformationRules method
+func NewGetApiTelemetryTransformationRulesRequest(server string, params *GetApiTelemetryTransformationRulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "originPrefix", *params.OriginPrefix, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiTelemetryTransformationRulesRequest calls the generic PostApiTelemetryTransformationRules builder with application/json body
+func NewPostApiTelemetryTransformationRulesRequest(server string, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTelemetryTransformationRulesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiTelemetryTransformationRulesRequestWithBody constructs an http.Request for the PostApiTelemetryTransformationRules method, with any body, and a specified content type
+func NewPostApiTelemetryTransformationRulesRequestWithBody(server string, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest constructs an http.Request for the DeleteApiTelemetryTransformationRulesOriginOrId method
+func NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.UpdatedAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updatedAt", *params.UpdatedAt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiTelemetryTransformationRulesOriginOrIdRequest constructs an http.Request for the GetApiTelemetryTransformationRulesOriginOrId method
+func NewGetApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiTelemetryTransformationRulesOriginOrIdRequest calls the generic PutApiTelemetryTransformationRulesOriginOrId builder with application/json body
+func NewPutApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody constructs an http.Request for the PutApiTelemetryTransformationRulesOriginOrId method, with any body, and a specified content type
+func NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiTimeSeriesAggregationsRequest constructs an http.Request for the GetApiTimeSeriesAggregations method
 func NewGetApiTimeSeriesAggregationsRequest(server string, params *GetApiTimeSeriesAggregationsParams) (*http.Request, error) {
 	var err error
@@ -38855,6 +39791,55 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 	DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error)
+
+	// GetApiTelemetryTransformationRulesWithResponse Retrieve a list of telemetry transformation rules
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+	GetApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesResponse, error)
+
+	// PostApiTelemetryTransformationRulesWithBodyWithResponse Create a new telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithBodyWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error)
+
+	// PostApiTelemetryTransformationRulesWithResponse Create a new telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error)
+
+	// DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse Delete a specific telemetry transformation rule
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+	DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// GetApiTelemetryTransformationRulesOriginOrIdWithResponse Retrieve the latest version of a specific telemetry transformation rule
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+	GetApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse Update a specific telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithResponse Update a specific telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error)
 
 	// GetApiTimeSeriesAggregationsWithResponse List all time series aggregations for the organization
 	//
@@ -45136,6 +46121,323 @@ func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) ContentType() string {
 	return ""
 }
 
+type GetApiTelemetryTransformationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleListResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSON200() *TelemetryTransformationRuleListResponse {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiTelemetryTransformationRulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTelemetryTransformationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTelemetryTransformationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiTelemetryTransformationRulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostApiTelemetryTransformationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *TelemetryTransformationRuleErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON400() *TelemetryTransformationRuleErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PostApiTelemetryTransformationRulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTelemetryTransformationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTelemetryTransformationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostApiTelemetryTransformationRulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON400() *ErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *TelemetryTransformationRuleErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON400() *TelemetryTransformationRuleErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetApiTimeSeriesAggregationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -49073,6 +50375,97 @@ func (c *ClientWithResponses) DeleteApiTeamsOriginOrIdMembersMemberIDWithRespons
 		return nil, err
 	}
 	return ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp)
+}
+
+// GetApiTelemetryTransformationRulesWithResponse Retrieve a list of telemetry transformation rules
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) GetApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.GetApiTelemetryTransformationRules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// PostApiTelemetryTransformationRulesWithBodyWithResponse Create a new telemetry transformation rule
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) PostApiTelemetryTransformationRulesWithBodyWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.PostApiTelemetryTransformationRulesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// PostApiTelemetryTransformationRulesWithResponse Create a new telemetry transformation rule
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) PostApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.PostApiTelemetryTransformationRules(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse Delete a specific telemetry transformation rule
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// GetApiTelemetryTransformationRulesOriginOrIdWithResponse Retrieve the latest version of a specific telemetry transformation rule
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) GetApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.GetApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse Update a specific telemetry transformation rule
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithResponse Update a specific telemetry transformation rule
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
 }
 
 // GetApiTimeSeriesAggregationsWithResponse List all time series aggregations for the organization
@@ -53790,6 +55183,251 @@ func ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp *http.Response) (*
 	switch {
 	case rsp.StatusCode == 204:
 		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTelemetryTransformationRulesResponse parses an HTTP response from a GetApiTelemetryTransformationRulesWithResponse call
+func ParseGetApiTelemetryTransformationRulesResponse(rsp *http.Response) (*GetApiTelemetryTransformationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTelemetryTransformationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTelemetryTransformationRulesResponse parses an HTTP response from a PostApiTelemetryTransformationRulesWithResponse call
+func ParsePostApiTelemetryTransformationRulesResponse(rsp *http.Response) (*PostApiTelemetryTransformationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTelemetryTransformationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TelemetryTransformationRuleErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a GetApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParseGetApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a PutApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TelemetryTransformationRuleErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
