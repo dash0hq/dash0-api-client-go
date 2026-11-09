@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.31.0
+
+
+### Bug Fixes
+- derive no app host from an IP, FQDN, or uppercase API URL (#76)
+
+### Features
+- wrap the generative AI evaluation endpoints (#77)
+
+  New `Client` methods for generative AI evaluations and the helpers `StripGenerativeAiEvaluationServerFields`, `GetGenerativeAiEvaluationID`, `GetGenerativeAiEvaluationName`, `GetGenerativeAiEvaluationOrigin`, `GetGenerativeAiEvaluationDataset`, `SetGenerativeAiEvaluationID`, `SetGenerativeAiEvaluationIDIfAbsent`, `SetGenerativeAiEvaluationDataset`, and `ClearGenerativeAiEvaluationID`. Custom `Client` implementations must add the new methods.
+- regenerate from the latest dev spec (#78)
+
+  New generated types for generative AI evaluations (`GenerativeAiEvaluationDefinition` and related types), profile stack and frame filters (`ProfileFrameFilter`, `ProfileStackFilter`, `ProfileTypeIdentity`, and related types and constants), and Linear release and release note agentic workflow triggers. `ViewSpec` has the new optional fields `FrameFilters`, `ProfileType`, `StackFilters`, and `SumBy`.
+
 ## v1.30.0
 
 

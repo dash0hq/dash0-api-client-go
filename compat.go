@@ -205,7 +205,7 @@ package dash0
 // Bare enum names such as [Manual], [V1alpha2] and [N30d] stay as deprecated aliases. LinearLabelAdded* is gone.
 // GetApiEdgeSettings takes a *[GetApiEdgeSettingsParams]; pass nil to keep the old request.
 //
-// # Migration guide (v1.30.x to <NEXT_RELEASE>)
+// # Migration guide (v1.30.x to v1.31.0)
 //
 // [Client] gained [Client.ListGenerativeAiEvaluations], [Client.GetGenerativeAiEvaluation], [Client.CreateGenerativeAiEvaluation], [Client.UpdateGenerativeAiEvaluation], [Client.DeleteGenerativeAiEvaluation], and [Client.ListGenerativeAiEvaluationsIter].
 // Custom [Client] implementations and wrappers must add them.
