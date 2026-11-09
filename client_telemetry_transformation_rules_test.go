@@ -158,6 +158,29 @@ func TestTelemetryTransformationRules_ReadModifyWrite(t *testing.T) {
 	}
 }
 
+func TestTelemetryTransformationRules_GetKeepsExampleNumbersExact(t *testing.T) {
+	numbers := []string{"9007199254740993", "-9223372036854775807", "18446744073709551615", "0.30000000000000004", "1e400"}
+	response := strings.Replace(telemetryTransformationRuleJSON, `"severityNumber": 13`,
+		`"severityNumber": 13, "numbers": [`+strings.Join(numbers, ", ")+`]`, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, response)
+	}))
+	defer server.Close()
+
+	rule, err := newTestClient(t, server.URL).GetTelemetryTransformationRule(context.Background(), "terraform-checkout-19", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, err := json.Marshal(rule)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := `"numbers":[` + strings.Join(numbers, ",") + `]`; !strings.Contains(string(body), want) {
+		t.Errorf("re-encoded rule does not contain %s:\n%s", want, body)
+	}
+}
+
 func TestTelemetryTransformationRules_ListAndIter(t *testing.T) {
 	const listJSON = `{"telemetryTransformationRules":[
 		{"kind":"Dash0TelemetryTransformationRule","metadata":{"name":"redact"},"spec":{"enabled":true,"signal":"logs","context":"log","transformations":[{"name":"redact","statements":["delete_key(attributes, \"password\")"]}]}},
