@@ -49,7 +49,7 @@ func TestImportDashboard_RetryOnConflict(t *testing.T) {
 	}
 
 	dashboard := &DashboardDefinition{
-		Kind: DashboardDefinitionKind("Dash0Dashboard"),
+		Kind: DashboardKind("Dash0Dashboard"),
 	}
 
 	t.Run("retries until the conflict clears", func(t *testing.T) {

@@ -124,6 +124,7 @@ func StripDashboardServerFields(dashboard *DashboardDefinition) {
 	}
 	if dashboard.Metadata.Annotations != nil {
 		dashboard.Metadata.Annotations.Dash0ComdeletedAt = nil
+		dashboard.Metadata.Annotations.Dash0ComexpiresAt = nil
 	}
 	dashboard.Metadata.CreatedAt = nil
 	dashboard.Metadata.UpdatedAt = nil

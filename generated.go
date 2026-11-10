@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -885,15 +886,18 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 	}
 }
 
-// Defines values for DashboardDefinitionKind.
+// Defines values for DashboardKind.
 const (
-	Dashboard DashboardDefinitionKind = "Dashboard"
+	Dashboard                       DashboardKind = "Dashboard"
+	DashboardKindEphemeralDashboard DashboardKind = "EphemeralDashboard"
 )
 
-// Valid indicates whether the value is a known member of the DashboardDefinitionKind enum.
-func (e DashboardDefinitionKind) Valid() bool {
+// Valid indicates whether the value is a known member of the DashboardKind enum.
+func (e DashboardKind) Valid() bool {
 	switch e {
 	case Dashboard:
+		return true
+	case DashboardKindEphemeralDashboard:
 		return true
 	default:
 		return false
@@ -7170,6 +7174,21 @@ func (e StringAssertionOperator) Valid() bool {
 	}
 }
 
+// Defines values for SyntheticBrowserCheckPluginKind.
+const (
+	SyntheticBrowserCheckPluginKindBrowser SyntheticBrowserCheckPluginKind = "browser"
+)
+
+// Valid indicates whether the value is a known member of the SyntheticBrowserCheckPluginKind enum.
+func (e SyntheticBrowserCheckPluginKind) Valid() bool {
+	switch e {
+	case SyntheticBrowserCheckPluginKindBrowser:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SyntheticCheckAction.
 const (
 	SyntheticCheckDelete SyntheticCheckAction = "synthetic_check:delete"
@@ -8277,7 +8296,8 @@ type AgenticWorkflowAnnotations struct {
 
 // AgenticWorkflowConcurrency defines model for AgenticWorkflowConcurrency.
 type AgenticWorkflowConcurrency struct {
-	// MaxParallel The maximum number of parallel executions allowed. Only meaningful when `policy` is set to `parallel`.
+	// MaxParallel The maximum number of active executions allowed. Applies to `parallel` and `skip`;
+	// `queue` and `supersede` always allow only one active execution.
 	// Defaults to `50`.
 	MaxParallel *int `json:"maxParallel,omitempty"`
 
@@ -8287,10 +8307,11 @@ type AgenticWorkflowConcurrency struct {
 
 // AgenticWorkflowConcurrencyPolicy The concurrency policy to apply when an automation is triggered while a previous execution is still running.
 //
-// - `queue`: Queue the new execution and run it after the current one completes.
-// - `skip`: Skip the new execution entirely.
-// - `supersede`: Cancel the current execution and start the new one.
-// - `parallel`: Run executions in parallel, up to `maxParallel`.
+//   - `queue`: Queue the new execution and run it after the current one completes.
+//   - `skip`: Run executions in parallel up to `maxParallel`, then skip further triggers.
+//   - `supersede`: Cancel the current execution and start the new one.
+//   - `parallel`: Run executions in parallel, up to `maxParallel`, then queue further triggers.
+//     The queue holds up to 100 triggers; further triggers are dropped.
 type AgenticWorkflowConcurrencyPolicy string
 
 // AgenticWorkflowCreateRequest defines model for AgenticWorkflowCreateRequest.
@@ -9287,6 +9308,9 @@ type DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec struct {
 type DashboardAnnotations struct {
 	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
 
+	// Dash0ComexpiresAt When an `EphemeralDashboard` expires and is deleted. Server-set and read-only: it is `ttl` after the latest write, and values supplied on a write are ignored.
+	Dash0ComexpiresAt *time.Time `json:"dash0.com/expires-at,omitempty"`
+
 	// Dash0ComfolderPath Optional UI folder path for organising groups (e.g. '/infrastructure/hosts'). Nesting is expressed with '/' separators.
 	Dash0ComfolderPath *string `json:"dash0.com/folder-path,omitempty"`
 
@@ -9296,27 +9320,44 @@ type DashboardAnnotations struct {
 
 // DashboardApiListItem defines model for DashboardApiListItem.
 type DashboardApiListItem struct {
-	Dataset     string   `json:"dataset"`
-	Description *string  `json:"description,omitempty"`
-	Id          string   `json:"id"`
-	Name        *string  `json:"name,omitempty"`
-	Origin      *string  `json:"origin,omitempty"`
-	Tags        []string `json:"tags"`
+	Dataset     string  `json:"dataset"`
+	Description *string `json:"description,omitempty"`
+
+	// ExpiresAt When the dashboard expires. Set only for an `EphemeralDashboard`.
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	Id        string     `json:"id"`
+
+	// Kind - `Dashboard`: A permanent dashboard.
+	// - `EphemeralDashboard`: A dashboard that is deleted once `spec.ttl` has passed since its latest
+	//   write. Every write starts the `ttl` again. The kind of an existing dashboard cannot change.
+	Kind   DashboardKind `json:"kind"`
+	Name   *string       `json:"name,omitempty"`
+	Origin *string       `json:"origin,omitempty"`
+	Tags   []string      `json:"tags"`
 }
 
 // DashboardDefinition A dashboard definition that is compatible with Perses' dashboarding system.
 type DashboardDefinition struct {
-	Kind     DashboardDefinitionKind `json:"kind"`
-	Metadata DashboardMetadata       `json:"metadata"`
+	// Kind - `Dashboard`: A permanent dashboard.
+	// - `EphemeralDashboard`: A dashboard that is deleted once `spec.ttl` has passed since its latest
+	//   write. Every write starts the `ttl` again. The kind of an existing dashboard cannot change.
+	Kind     DashboardKind     `json:"kind"`
+	Metadata DashboardMetadata `json:"metadata"`
 
 	// Spec The dashboard content in the Perses dashboard format: `display`, `datasources`, `variables`,
 	// `panels`, `layouts`, `duration` and `refreshInterval`. See the
 	// [Perses dashboard reference](https://perses.dev/perses/docs/api/dashboard/).
+	//
+	// An `EphemeralDashboard` also requires `ttl`, a Perses duration of at least `1m`, such as `1d` or `12h`. See the
+	// [Perses ephemeral dashboard reference](https://perses.dev/perses/docs/api/ephemeral-dashboard/).
+	// A `Dashboard` must not set `ttl`.
 	Spec map[string]interface{} `json:"spec"`
 }
 
-// DashboardDefinitionKind defines model for DashboardDefinition.Kind.
-type DashboardDefinitionKind string
+// DashboardKind - `Dashboard`: A permanent dashboard.
+//   - `EphemeralDashboard`: A dashboard that is deleted once `spec.ttl` has passed since its latest
+//     write. Every write starts the `ttl` again. The kind of an existing dashboard cannot change.
+type DashboardKind string
 
 // DashboardLabels defines model for DashboardLabels.
 type DashboardLabels struct {
@@ -12497,6 +12538,23 @@ type LinearCommentAgenticWorkflowTriggerSpec struct {
 	// Mutually exclusive with `keyword`. Matching is case-sensitive unless the pattern
 	// includes a flag such as `(?i)`.
 	KeywordRegex *string `json:"keywordRegex,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
+	// or complete email. An actor without an email matches on its UUID only. Mutually
+	// exclusive with `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Linear users whose action fires the trigger. An entry matches the
+	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
+	// match by ID only. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// TeamIds Optional list of Linear team UUIDs. The trigger fires only when the issue the
+	// agent was mentioned on belongs to one of these teams. When omitted or empty,
+	// mentions in every team match, so automations created before this filter existed
+	// keep firing unchanged. Unlike the issue-scoped Linear triggers, there is no
+	// `allTeams` flag and no team scope is required.
+	TeamIds *[]string `json:"teamIds,omitempty"`
 }
 
 // LinearCommentReactionAgenticWorkflowTrigger defines model for LinearCommentReactionAgenticWorkflowTrigger.
@@ -12712,6 +12770,18 @@ type LinearInitiativeAgenticWorkflowTriggerSpec struct {
 	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
 	// match by ID only. Mutually exclusive with `senderRegex`.
 	Senders *[]string `json:"senders,omitempty"`
+
+	// StatusRegex Optional RE2 regular expression that must match the complete name of the initiative's
+	// new status. The trigger fires only when an `update` changed the status into a
+	// match; a `create` never matches. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	StatusRegex *string `json:"statusRegex,omitempty"`
+
+	// Statuses Optional list of initiative status names. When non-empty, the trigger fires only when
+	// an `update` changed the initiative's status into one of them; a `create` never matches.
+	// Names match case-insensitively against the complete status name. Combined with
+	// every other filter, including `statusRegex`, as AND.
+	Statuses *[]string `json:"statuses,omitempty"`
 }
 
 // LinearInitiativeTriggerVariableName Variables provided by the `linear.initiative` trigger. Fields Linear omits from the event are omitted.
@@ -12721,7 +12791,7 @@ type LinearInitiativeAgenticWorkflowTriggerSpec struct {
 // - `linear.initiative.name`: Name of the Linear initiative.
 // - `linear.initiative.url`: URL of the Linear initiative.
 // - `linear.initiative.description`: Description of the Linear initiative.
-// - `linear.initiative.status`: Status of the initiative (`Planned`, `Active`, or `Completed`).
+// - `linear.initiative.status`: Status of the initiative (`Proposed`, `Planned`, `Active`, `Completed`, or `Canceled`).
 // - `linear.initiative.health`: Health of the initiative (`onTrack`, `atRisk`, or `offTrack`), when set.
 // - `linear.actor.name`: Display name of the user who made the change, when known.
 type LinearInitiativeTriggerVariableName string
@@ -12913,6 +12983,18 @@ type LinearIssueAgenticWorkflowTriggerSpec struct {
 	// actor's Linear user UUID or email, case-insensitively. OAuth clients and integrations
 	// match by ID only. Mutually exclusive with `senderRegex`.
 	Senders *[]string `json:"senders,omitempty"`
+
+	// StatusRegex Optional RE2 regular expression that must match the complete name of the issue's
+	// new status. The trigger fires only when an `update` changed the status into a
+	// match; a `create` never matches. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	StatusRegex *string `json:"statusRegex,omitempty"`
+
+	// Statuses Optional list of issue status names. When non-empty, the trigger fires only when
+	// an `update` changed the issue's status into one of them; a `create` never matches.
+	// Names match case-insensitively against the complete status name. Combined with
+	// every other filter, including `statusRegex`, as AND.
+	Statuses *[]string `json:"statuses,omitempty"`
 
 	// TeamIds List of Linear team UUIDs to scope the trigger to. When non-empty, the trigger fires
 	// only for issues whose team ID is in this list. Mutually exclusive with `allTeams`; a
@@ -13207,6 +13289,18 @@ type LinearProjectAgenticWorkflowTriggerSpec struct {
 	// match by ID only. Mutually exclusive with `senderRegex`.
 	Senders *[]string `json:"senders,omitempty"`
 
+	// StatusRegex Optional RE2 regular expression that must match the complete name of the project's
+	// new status. The trigger fires only when an `update` changed the status into a
+	// match; a `create` never matches. Matching is case-sensitive unless the pattern
+	// includes a flag such as `(?i)`.
+	StatusRegex *string `json:"statusRegex,omitempty"`
+
+	// Statuses Optional list of project status names. When non-empty, the trigger fires only when
+	// an `update` changed the project's status into one of them; a `create` never matches.
+	// Names match case-insensitively against the complete status name. Combined with
+	// every other filter, including `statusRegex`, as AND.
+	Statuses *[]string `json:"statuses,omitempty"`
+
 	// TeamIds Optional list of Linear team UUIDs. A project belongs to one or more teams; the
 	// trigger fires when any of the project's teams is in this list. When omitted or
 	// empty and `allTeams` is not set, projects of every team match. Mutually exclusive
@@ -13344,10 +13438,16 @@ type LinearReleaseAgenticWorkflowTriggerSpec struct {
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
-	// PipelineIds Optional list of Linear release pipeline UUIDs. When non-empty, the trigger fires
-	// only for releases of one of these pipelines. When omitted or empty, releases of
-	// every pipeline match.
-	PipelineIds *[]string `json:"pipelineIds,omitempty"`
+	// PipelineNames Optional list of Linear release pipeline names. When non-empty, the trigger fires
+	// only for releases of one of these pipelines (exact, case-sensitive match). When
+	// omitted or empty, releases of every pipeline match. Mutually exclusive with
+	// `pipelineRegex`.
+	PipelineNames *[]string `json:"pipelineNames,omitempty"`
+
+	// PipelineRegex Optional RE2 regular expression matched against the complete release pipeline
+	// name. Mutually exclusive with `pipelineNames`. Matching is case-sensitive unless
+	// the pattern includes a flag such as `(?i)`.
+	PipelineRegex *string `json:"pipelineRegex,omitempty"`
 
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
 	// or complete email. An actor without an email matches on its UUID only. Mutually
@@ -13361,8 +13461,13 @@ type LinearReleaseAgenticWorkflowTriggerSpec struct {
 
 	// StageNames Optional list of release stage names. When non-empty, the trigger fires only when
 	// the release is in one of these stages (exact, case-sensitive match). When omitted
-	// or empty, releases in every stage match.
+	// or empty, releases in every stage match. Mutually exclusive with `stageRegex`.
 	StageNames *[]string `json:"stageNames,omitempty"`
+
+	// StageRegex Optional RE2 regular expression matched against the complete release stage name.
+	// Mutually exclusive with `stageNames`. Matching is case-sensitive unless the
+	// pattern includes a flag such as `(?i)`.
+	StageRegex *string `json:"stageRegex,omitempty"`
 }
 
 // LinearReleaseNoteAgenticWorkflowTrigger defines model for LinearReleaseNoteAgenticWorkflowTrigger.
@@ -13409,10 +13514,16 @@ type LinearReleaseNoteAgenticWorkflowTriggerSpec struct {
 	// pattern includes a flag such as `(?i)`.
 	NameRegex *string `json:"nameRegex,omitempty"`
 
-	// PipelineIds Optional list of Linear release pipeline UUIDs. When non-empty, the trigger fires
-	// only for release notes of one of these pipelines. When omitted or empty, release
-	// notes of every pipeline match.
-	PipelineIds *[]string `json:"pipelineIds,omitempty"`
+	// PipelineNames Optional list of Linear release pipeline names. When non-empty, the trigger fires
+	// only for release notes of one of these pipelines (exact, case-sensitive match).
+	// When omitted or empty, release notes of every pipeline match. Mutually exclusive
+	// with `pipelineRegex`.
+	PipelineNames *[]string `json:"pipelineNames,omitempty"`
+
+	// PipelineRegex Optional RE2 regular expression matched against the complete release pipeline
+	// name. Mutually exclusive with `pipelineNames`. Matching is case-sensitive unless
+	// the pattern includes a flag such as `(?i)`.
+	PipelineRegex *string `json:"pipelineRegex,omitempty"`
 
 	// SenderRegex Optional RE2 regular expression that must match the actor's complete Linear user UUID
 	// or complete email. An actor without an email matches on its UUID only. Mutually
@@ -17189,6 +17300,28 @@ type StatusCounts struct {
 // StringAssertionOperator defines model for StringAssertionOperator.
 type StringAssertionOperator string
 
+// SyntheticBrowserCheckPlugin defines model for SyntheticBrowserCheckPlugin.
+type SyntheticBrowserCheckPlugin struct {
+	Kind SyntheticBrowserCheckPluginKind `json:"kind"`
+
+	// Spec A browser check runs a Playwright test script. A browser check runs only on private locations.
+	Spec SyntheticBrowserCheckPluginSpec `json:"spec"`
+}
+
+// SyntheticBrowserCheckPluginKind defines model for SyntheticBrowserCheckPluginKind.
+type SyntheticBrowserCheckPluginKind string
+
+// SyntheticBrowserCheckPluginSpec A browser check runs a Playwright test script. A browser check runs only on private locations.
+type SyntheticBrowserCheckPluginSpec struct {
+	// Env Environment variables the script reads. Each name is unique within the check. The runner
+	// sets `PATH`, `HOME`, `TMPDIR`, `PLAYWRIGHT_BROWSERS_PATH`, `TRACEPARENT`, `CI` and
+	// `NODE_OPTIONS` itself, so a check cannot set them.
+	Env *[]SyntheticCheckEnvVar `json:"env,omitempty"`
+
+	// Script The Playwright test script, at most 65536 characters.
+	Script string `json:"script"`
+}
+
 // SyntheticCheckAction defines model for SyntheticCheckAction.
 type SyntheticCheckAction string
 
@@ -17346,6 +17479,29 @@ type SyntheticCheckDisplay struct {
 	Name string `json:"name"`
 }
 
+// SyntheticCheckEnvVar One environment variable. Carries either `value` or `valueFrom`, never both and never
+// neither.
+type SyntheticCheckEnvVar struct {
+	// Name Environment variable name, as the script reads it.
+	Name string `json:"name"`
+
+	// Value Plaintext value. Dash0 stores it with the check and returns it to anyone who may read
+	// the check, so a secret belongs in `valueFrom` instead.
+	Value *string `json:"value,omitempty"`
+
+	// ValueFrom Where Dash0 reads the value from. Exactly one source. A source added in a later version is
+	// a new property here, so a client written against this version keeps working.
+	ValueFrom *SyntheticCheckEnvVarSource `json:"valueFrom,omitempty"`
+}
+
+// SyntheticCheckEnvVarSource Where Dash0 reads the value from. Exactly one source. A source added in a later version is
+// a new property here, so a client written against this version keeps working.
+type SyntheticCheckEnvVarSource struct {
+	// PlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
+	// `synthetics` in its `usableIn`.
+	PlatformVariableRef *SyntheticCheckPlatformVariableRef `json:"platformVariableRef,omitempty"`
+}
+
 // SyntheticCheckLabels defines model for SyntheticCheckLabels.
 type SyntheticCheckLabels struct {
 	// Deprecated: this property has been marked as deprecated upstream, but no `x-deprecated-reason` was set
@@ -17430,6 +17586,13 @@ type SyntheticCheckPermission struct {
 	Role    *string                `json:"role,omitempty"`
 	TeamId  *string                `json:"teamId,omitempty"`
 	UserId  *string                `json:"userId,omitempty"`
+}
+
+// SyntheticCheckPlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
+// `synthetics` in its `usableIn`.
+type SyntheticCheckPlatformVariableRef struct {
+	// Name Name of the platform variable, not the environment variable name the script reads.
+	Name string `json:"name"`
 }
 
 // SyntheticCheckPlugin defines model for SyntheticCheckPlugin.
@@ -17881,11 +18044,15 @@ type TimeSeriesAggregationAttributeModification struct {
 // TimeSeriesAggregationAttributeModificationKind defines model for TimeSeriesAggregationAttributeModification.Kind.
 type TimeSeriesAggregationAttributeModificationKind string
 
-// TimeSeriesAggregationAttributeModificationContext defines model for TimeSeriesAggregationAttributeModificationContext.
+// TimeSeriesAggregationAttributeModificationContext The attributes a modification applies to:
+// - `resource`: resource attributes.
+// - `scope`: instrumentation scope attributes.
+// - `datapoint`: data point attributes.
 type TimeSeriesAggregationAttributeModificationContext string
 
 // TimeSeriesAggregationAttributeModificationSpec defines model for TimeSeriesAggregationAttributeModificationSpec.
 type TimeSeriesAggregationAttributeModificationSpec struct {
+	// Context When omitted, the modification applies to all three contexts.
 	Context    *TimeSeriesAggregationAttributeModificationContext `json:"context,omitempty"`
 	KeyMatcher Matcher                                            `json:"keyMatcher"`
 }
@@ -17993,6 +18160,15 @@ type TimeSeriesAggregationSample struct {
 
 // TimeSeriesAggregationSpec defines model for TimeSeriesAggregationSpec.
 type TimeSeriesAggregationSpec struct {
+	// AttributeModifications Attributes to remove from matching metrics before aggregation.
+	//
+	// The `keep_attributes` modifications that apply to a context keep the union of the keys
+	// they match and remove every other attribute in that context. A `drop_attributes`
+	// modification removes every attribute in its context whose key it matches, even if a
+	// `keep_attributes` modification also matches that key. The order of the modifications
+	// does not matter.
+	//
+	// Modifications never remove attributes whose keys start with `dash0.`.
 	AttributeModifications *[]TimeSeriesAggregationAttributeModification `json:"attributeModifications,omitempty"`
 	Display                *TimeSeriesAggregationDisplay                 `json:"display,omitempty"`
 	Enabled                bool                                          `json:"enabled"`
@@ -18378,6 +18554,9 @@ type ViewSpec struct {
 	// ImplicitFilter An implicit filter the user cannot change that will always be applied to the view. It will not
 	// be shown in the UI.
 	ImplicitFilter *FilterCriteria `json:"implicitFilter,omitempty"`
+
+	// InvertCallStack Whether to invert the callstack in a profiles view. Defaults to false when omitted.
+	InvertCallStack *bool `json:"invertCallStack,omitempty"`
 
 	// Permissions The explicit grants on this view.
 	//
@@ -22301,6 +22480,10 @@ func (t SyntheticCheckPlugin) AsSyntheticHttpCheckPlugin() (SyntheticHttpCheckPl
 // FromSyntheticHttpCheckPlugin overwrites any union data inside the SyntheticCheckPlugin as the provided SyntheticHttpCheckPlugin
 func (t *SyntheticCheckPlugin) FromSyntheticHttpCheckPlugin(v SyntheticHttpCheckPlugin) error {
 	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"http"}`))
 	t.union = b
 	return err
 }
@@ -22311,10 +22494,71 @@ func (t *SyntheticCheckPlugin) MergeSyntheticHttpCheckPlugin(v SyntheticHttpChec
 	if err != nil {
 		return err
 	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"http"}`))
+	if err != nil {
+		return err
+	}
 
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+// AsSyntheticBrowserCheckPlugin returns the union data inside the SyntheticCheckPlugin as a SyntheticBrowserCheckPlugin
+func (t SyntheticCheckPlugin) AsSyntheticBrowserCheckPlugin() (SyntheticBrowserCheckPlugin, error) {
+	var body SyntheticBrowserCheckPlugin
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSyntheticBrowserCheckPlugin overwrites any union data inside the SyntheticCheckPlugin as the provided SyntheticBrowserCheckPlugin
+func (t *SyntheticCheckPlugin) FromSyntheticBrowserCheckPlugin(v SyntheticBrowserCheckPlugin) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"browser"}`))
+	t.union = b
+	return err
+}
+
+// MergeSyntheticBrowserCheckPlugin performs a merge with any union data inside the SyntheticCheckPlugin, using the provided SyntheticBrowserCheckPlugin
+func (t *SyntheticCheckPlugin) MergeSyntheticBrowserCheckPlugin(v SyntheticBrowserCheckPlugin) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"browser"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t SyntheticCheckPlugin) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t SyntheticCheckPlugin) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "browser":
+		return t.AsSyntheticBrowserCheckPlugin()
+	case "http":
+		return t.AsSyntheticHttpCheckPlugin()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
 }
 
 func (t SyntheticCheckPlugin) MarshalJSON() ([]byte, error) {
