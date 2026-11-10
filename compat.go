@@ -211,7 +211,7 @@ package dash0
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
 //
-// # Migration guide (v1.31.x to <NEXT_RELEASE>)
+// # Migration guide (v1.31.x to v1.32.0)
 //
 // DashboardDefinitionKind is now [DashboardKind], because [DashboardApiListItem] shares it.
 // The old name stays as a deprecated alias.
@@ -222,7 +222,7 @@ package dash0
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [DashboardKind] instead.
+// Deprecated: since v1.32.0. Use [DashboardKind] instead.
 type DashboardDefinitionKind = DashboardKind
 
 // DashboardSource is a deprecated alias for [CrdSource].

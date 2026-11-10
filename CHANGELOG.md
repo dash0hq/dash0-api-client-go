@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.32.0
+
+
+### Features
+- regenerate for ephemeral dashboards (#79)
+
+  New `DashboardKindEphemeralDashboard` constant for ephemeral dashboards, a read-only `DashboardAnnotations.Dash0ComexpiresAt`, and `ExpiresAt` and `Kind` on `DashboardApiListItem`. `DashboardDefinitionKind` is now `DashboardKind`, and the old name stays as a deprecated alias. `StripDashboardServerFields` also clears `Dash0ComexpiresAt`. New generated types for synthetic browser checks (`SyntheticBrowserCheckPlugin`, `SyntheticCheckEnvVar`, and related types), new filters on the Linear agentic workflow triggers, and `ViewSpec.InvertCallStack`. `LinearReleaseAgenticWorkflowTriggerSpec` and `LinearReleaseNoteAgenticWorkflowTriggerSpec` lost `PipelineIds`, use `PipelineNames` or `PipelineRegex` instead.
+
 ## v1.31.0
 
 

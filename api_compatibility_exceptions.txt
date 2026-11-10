@@ -7,7 +7,3 @@
 # Note: interface method additions (": added") are filtered out automatically
 # and do not need to be listed here.
 
-# <NEXT_RELEASE>: the Linear release triggers match pipelines by name now, so
-# the spec replaced pipelineIds with pipelineNames and pipelineRegex.
-LinearReleaseAgenticWorkflowTriggerSpec.PipelineIds
-LinearReleaseNoteAgenticWorkflowTriggerSpec.PipelineIds
