@@ -126,6 +126,9 @@ var constRenames = map[string]string{
 	"LineNumber":     "ProfileStacktraceFieldLineNumber",
 	"SourceFile":     "ProfileStacktraceFieldSourceFile",
 	"SystemName":     "ProfileStacktraceFieldSystemName",
+	// Pinned before release so a future enum sharing these values cannot rename them.
+	"EphemeralDashboard": "DashboardKindEphemeralDashboard",
+	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

@@ -13,15 +13,20 @@ func TestStripDashboardServerFields(t *testing.T) {
 	createdAt := time.Now()
 	updatedAt := time.Now()
 	deletedAt := time.Now()
+	expiresAt := time.Now()
 	version := int64(3)
 	dataset := "my-dataset"
 
 	d := &DashboardDefinition{
 		Metadata: DashboardMetadata{
-			CreatedAt:   &createdAt,
-			UpdatedAt:   &updatedAt,
-			Version:     &version,
-			Annotations: &DashboardAnnotations{Dash0ComdeletedAt: &deletedAt},
+			CreatedAt: &createdAt,
+			UpdatedAt: &updatedAt,
+			Version:   &version,
+			Annotations: &DashboardAnnotations{
+				Dash0ComdeletedAt:  &deletedAt,
+				Dash0ComexpiresAt:  &expiresAt,
+				Dash0ComfolderPath: Ptr("/keep/this"),
+			},
 			Dash0Extensions: &DashboardMetadataExtensions{
 				Dataset: &dataset,
 				Id:      Ptr("keep-this"),
@@ -42,6 +47,12 @@ func TestStripDashboardServerFields(t *testing.T) {
 	}
 	if d.Metadata.Annotations.Dash0ComdeletedAt != nil {
 		t.Error("Dash0ComdeletedAt should be nil")
+	}
+	if d.Metadata.Annotations.Dash0ComexpiresAt != nil {
+		t.Error("Dash0ComexpiresAt should be nil")
+	}
+	if d.Metadata.Annotations.Dash0ComfolderPath == nil || *d.Metadata.Annotations.Dash0ComfolderPath != "/keep/this" {
+		t.Error("Dash0ComfolderPath should be preserved")
 	}
 	if d.Metadata.Dash0Extensions.Dataset != nil {
 		t.Error("Dataset should be nil")

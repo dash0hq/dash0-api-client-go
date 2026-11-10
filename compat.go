@@ -210,6 +210,20 @@ package dash0
 // [Client] gained [Client.ListGenerativeAiEvaluations], [Client.GetGenerativeAiEvaluation], [Client.CreateGenerativeAiEvaluation], [Client.UpdateGenerativeAiEvaluation], [Client.DeleteGenerativeAiEvaluation], and [Client.ListGenerativeAiEvaluationsIter].
 // Custom [Client] implementations and wrappers must add them.
 // dash0test.MockClient implements them through new *Func fields.
+//
+// # Migration guide (v1.31.x to <NEXT_RELEASE>)
+//
+// DashboardDefinitionKind is now [DashboardKind], because [DashboardApiListItem] shares it.
+// The old name stays as a deprecated alias.
+// The new [DashboardKindEphemeralDashboard] constant marks a dashboard that is deleted once its spec.ttl has passed.
+//
+// [LinearReleaseAgenticWorkflowTriggerSpec] and [LinearReleaseNoteAgenticWorkflowTriggerSpec] lost PipelineIds.
+// Use PipelineNames or PipelineRegex instead, which match the release pipeline name rather than its UUID.
+
+// DashboardDefinitionKind is a deprecated alias for [DashboardKind].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [DashboardKind] instead.
+type DashboardDefinitionKind = DashboardKind
 
 // DashboardSource is a deprecated alias for [CrdSource].
 //
