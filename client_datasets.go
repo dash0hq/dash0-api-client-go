@@ -159,6 +159,14 @@ func GetDatasetID(dataset *DatasetDefinition) string {
 	return *dataset.Metadata.Labels.Dash0Comid
 }
 
+// GetDatasetOrigin extracts the dash0.com/origin label from a dataset definition.
+func GetDatasetOrigin(dataset *DatasetDefinition) string {
+	if dataset == nil || dataset.Metadata.Labels == nil || dataset.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *dataset.Metadata.Labels.Dash0Comorigin
+}
+
 // GetDatasetName extracts the name from a dataset definition.
 func GetDatasetName(dataset *DatasetDefinition) string {
 	if dataset == nil {

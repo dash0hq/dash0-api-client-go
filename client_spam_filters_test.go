@@ -1386,3 +1386,13 @@ func liveSpamFilterOrigin(metadata SpamFilterMetadata) string {
 	}
 	return StringValue(metadata.Labels.Dash0Comorigin)
 }
+
+func TestGetSpamFilterOrigin(t *testing.T) {
+	metadata := SpamFilterMetadata{Labels: &SpamFilterLabels{Dash0Comorigin: Ptr("tf_filter")}}
+	assertEqual(t, "v1alpha1 origin", GetSpamFilterOrigin(&SpamFilter{Metadata: metadata}), "tf_filter")
+	assertEqual(t, "v1alpha2 origin", GetSpamFilterV1Alpha2Origin(&SpamFilterV1Alpha2{Metadata: metadata}), "tf_filter")
+	assertEqual(t, "v1alpha1 origin without labels", GetSpamFilterOrigin(&SpamFilter{}), "")
+	assertEqual(t, "v1alpha2 origin without labels", GetSpamFilterV1Alpha2Origin(&SpamFilterV1Alpha2{}), "")
+	assertEqual(t, "v1alpha1 origin of nil", GetSpamFilterOrigin(nil), "")
+	assertEqual(t, "v1alpha2 origin of nil", GetSpamFilterV1Alpha2Origin(nil), "")
+}

@@ -495,3 +495,10 @@ func TestSetDatasetID_FieldsDoNotShareStorage(t *testing.T) {
 	*d.Spec.Slug = "renamed"
 	assertEqual(t, "label after writing through spec.slug", StringValue(d.Metadata.Labels.Dash0Comid), "staging")
 }
+
+func TestGetDatasetOrigin(t *testing.T) {
+	dataset := &DatasetDefinition{Metadata: DatasetMetadata{Labels: &DatasetLabels{Dash0Comorigin: Ptr("tf_dataset")}}}
+	assertEqual(t, "origin", GetDatasetOrigin(dataset), "tf_dataset")
+	assertEqual(t, "origin without labels", GetDatasetOrigin(&DatasetDefinition{}), "")
+	assertEqual(t, "origin of nil", GetDatasetOrigin(nil), "")
+}
