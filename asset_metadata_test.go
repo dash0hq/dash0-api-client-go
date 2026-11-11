@@ -11,6 +11,7 @@ import (
 const assetMetadataDocument = `{
 	"id": "test-id",
 	"name": "test-name",
+	"labels": {"dash0.com/origin": "test-origin"},
 	"metadata": {
 		"name": "test-name",
 		"labels": {"dash0.com/origin": "test-origin", "dash0.com/id": "test-id"},
@@ -37,14 +38,24 @@ func TestAssetMetadata(t *testing.T) {
 		{&NotificationChannelDefinition{}, "test-origin", true, false},
 		{&TimeSeriesAggregationDefinition{}, "test-origin", true, false},
 		{&DashboardDefinition{}, "", false, true},
-		{&PersesDashboard{}, "", false, true},
-		{&PrometheusAlertRule{}, "", false, true},
-		{&PrometheusRules{}, "", false, true},
-		{&RecordingRule{}, "", false, true},
-		{&SyntheticCheckDefinition{}, "", false, true},
-		{&ViewDefinition{}, "", false, true},
+		{&PersesDashboard{}, "test-origin", false, true},
+		{&PrometheusAlertRule{}, "test-origin", false, true},
+		{&PrometheusRules{}, "test-origin", false, true},
+		{&RecordingRule{}, "test-origin", false, true},
+		{&SyntheticCheckDefinition{}, "test-origin", false, true},
+		{&ViewDefinition{}, "test-origin", false, true},
 		{&DatasetDefinition{}, "test-origin", false, true},
 		{&AwsMetricScrapeConfigDefinition{}, "test-origin", false, true},
+	}
+	for _, nilAsset := range []AssetMetadata{
+		(*ViewDefinition)(nil),
+		(*SyntheticCheckDefinition)(nil),
+		(*PrometheusAlertRule)(nil),
+		(*RecordingRule)(nil),
+		(*PrometheusRules)(nil),
+		(*PersesDashboard)(nil),
+	} {
+		assertEqual(t, fmt.Sprintf("%T origin", nilAsset), nilAsset.GetOrigin(), "")
 	}
 	for _, tt := range tests {
 		if err := json.Unmarshal([]byte(assetMetadataDocument), tt.asset); err != nil {

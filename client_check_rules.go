@@ -209,8 +209,12 @@ func SetCheckRuleIDIfAbsent(rule *PrometheusAlertRule, id string) {
 
 var _ AssetMetadata = (*PrometheusAlertRule)(nil)
 
-// GetOrigin returns "", because PrometheusAlertRule is not upserted by origin.
-func (*PrometheusAlertRule) GetOrigin() string                 { return "" }
+func (rule *PrometheusAlertRule) GetOrigin() string {
+	if rule == nil || rule.Labels == nil {
+		return ""
+	}
+	return (*rule.Labels)[LabelOrigin]
+}
 func (rule *PrometheusAlertRule) GetID() string                { return GetCheckRuleID(rule) }
 func (rule *PrometheusAlertRule) GetName() string              { return GetCheckRuleName(rule) }
 func (*PrometheusAlertRule) UpsertKeys() (byOrigin, byID bool) { return false, true }

@@ -312,8 +312,12 @@ func extractDetectorFromAnnotations(annotations map[string]string, thresholds *C
 
 var _ AssetMetadata = (*PrometheusRules)(nil)
 
-// GetOrigin returns "", because PrometheusRules is not upserted by origin.
-func (*PrometheusRules) GetOrigin() string                 { return "" }
+func (rule *PrometheusRules) GetOrigin() string {
+	if rule == nil {
+		return ""
+	}
+	return rule.Metadata.Labels[LabelOrigin]
+}
 func (rule *PrometheusRules) GetID() string                { return GetPrometheusRuleID(rule) }
 func (rule *PrometheusRules) GetName() string              { return GetPrometheusRuleName(rule) }
 func (*PrometheusRules) UpsertKeys() (byOrigin, byID bool) { return false, true }
