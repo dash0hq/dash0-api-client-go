@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.33.0
+
+
+### Bug Fixes
+- return the origin label from AssetMetadata.GetOrigin (#83)
+
+### Features
+- add the AssetMetadata interface (#81)
+
+  New `AssetMetadata` interface with `GetOrigin`, `GetID`, `GetName`, and `UpsertKeys`, implemented by every definition type, and the helpers `GetTimeSeriesAggregationOrigin`, `GetSignalToMetricsOrigin`, `GetDatasetOrigin`, `GetSpamFilterOrigin`, and `GetSpamFilterV1Alpha2Origin`.
+
+  * test(spam-filters): use the origin getters in the live tests
+
+  * refactor(definitions): move AssetMetadata methods next to each type's helpers
+
+  * docs(claude): require AssetMetadata on every definition type
+
+  * test(definitions): check AssetMetadata getters through the interface and add an example
+
+  * chore: trigger Darkplane evaluation
+
 ## v1.32.0
 
 
