@@ -1293,7 +1293,7 @@ func TestLiveAPI_SpamFilters(t *testing.T) {
 		got = getLiveSpamFilter[*SpamFilter](t, client, originV1Alpha1, dataset)
 		assertEqual(t, "name after update", got.Metadata.Name, originV1Alpha1+"-renamed")
 		assertLiveSpamFilterDisabled(t, "after strip and update", got.Metadata)
-		assertEqual(t, "origin after update", liveSpamFilterOrigin(got.Metadata), originV1Alpha1)
+		assertEqual(t, "origin after update", GetSpamFilterOrigin(got), originV1Alpha1)
 	})
 
 	t.Run("a v1alpha1 filter recreated from a stripped copy keeps its origin", func(t *testing.T) {
@@ -1315,7 +1315,7 @@ func TestLiveAPI_SpamFilters(t *testing.T) {
 		if err != nil {
 			t.Fatalf("CreateSpamFilter from the stripped copy failed: %v", err)
 		}
-		assertEqual(t, "origin after create", liveSpamFilterOrigin(created.Metadata), originRecreate)
+		assertEqual(t, "origin after create", GetSpamFilterOrigin(created), originRecreate)
 
 		// The upsert by the original origin updates the recreated filter instead of adding a second one.
 		got = getLiveSpamFilter[*SpamFilter](t, client, originRecreate, dataset)
@@ -1346,7 +1346,7 @@ func TestLiveAPI_SpamFilters(t *testing.T) {
 		}
 		var listed *SpamFilterV1Alpha2
 		for _, obj := range filters {
-			if filter, ok := obj.(*SpamFilterV1Alpha2); ok && liveSpamFilterOrigin(filter.Metadata) == originV1Alpha2 {
+			if filter, ok := obj.(*SpamFilterV1Alpha2); ok && GetSpamFilterV1Alpha2Origin(filter) == originV1Alpha2 {
 				listed = filter
 			}
 		}
@@ -1378,13 +1378,6 @@ func assertLiveSpamFilterDisabled(t *testing.T, when string, metadata SpamFilter
 		t.Fatalf("%s: dash0.com/enabled is missing, so the server treats the filter as enabled", when)
 	}
 	assertEqual(t, "dash0.com/enabled "+when, string(*metadata.Annotations.Dash0Comenabled), string(False))
-}
-
-func liveSpamFilterOrigin(metadata SpamFilterMetadata) string {
-	if metadata.Labels == nil {
-		return ""
-	}
-	return StringValue(metadata.Labels.Dash0Comorigin)
 }
 
 func TestGetSpamFilterOrigin(t *testing.T) {
