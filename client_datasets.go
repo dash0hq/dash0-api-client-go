@@ -206,3 +206,10 @@ func ClearDatasetID(dataset *DatasetDefinition) {
 		dataset.Metadata.Labels.Dash0Comid = nil
 	}
 }
+
+var _ AssetMetadata = (*DatasetDefinition)(nil)
+
+func (dataset *DatasetDefinition) GetOrigin() string         { return GetDatasetOrigin(dataset) }
+func (dataset *DatasetDefinition) GetID() string             { return GetDatasetID(dataset) }
+func (dataset *DatasetDefinition) GetName() string           { return GetDatasetName(dataset) }
+func (*DatasetDefinition) UpsertKeys() (byOrigin, byID bool) { return false, true }

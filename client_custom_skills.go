@@ -237,3 +237,10 @@ func SetCustomSkillOrigin(skill *SkillDefinition, origin string) {
 	}
 	skill.Metadata.Labels.Dash0Comorigin = &origin
 }
+
+var _ AssetMetadata = (*SkillDefinition)(nil)
+
+func (skill *SkillDefinition) GetOrigin() string           { return GetCustomSkillOrigin(skill) }
+func (skill *SkillDefinition) GetID() string               { return GetCustomSkillID(skill) }
+func (skill *SkillDefinition) GetName() string             { return GetCustomSkillName(skill) }
+func (*SkillDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }

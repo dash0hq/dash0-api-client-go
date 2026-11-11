@@ -315,3 +315,10 @@ func SetSignalToMetricsIDIfAbsent(rule *SignalToMetricsDefinition, id string) {
 		rule.Metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*SignalToMetricsDefinition)(nil)
+
+func (rule *SignalToMetricsDefinition) GetOrigin() string            { return GetSignalToMetricsOrigin(rule) }
+func (rule *SignalToMetricsDefinition) GetID() string                { return GetSignalToMetricsID(rule) }
+func (rule *SignalToMetricsDefinition) GetName() string              { return GetSignalToMetricsName(rule) }
+func (*SignalToMetricsDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }

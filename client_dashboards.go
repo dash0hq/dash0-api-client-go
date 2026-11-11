@@ -234,3 +234,11 @@ func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
 		dashboard.Metadata.Dash0Extensions.Id = &id
 	}
 }
+
+var _ AssetMetadata = (*DashboardDefinition)(nil)
+
+// GetOrigin returns "", because DashboardDefinition is not upserted by origin.
+func (*DashboardDefinition) GetOrigin() string                 { return "" }
+func (dashboard *DashboardDefinition) GetID() string           { return GetDashboardID(dashboard) }
+func (dashboard *DashboardDefinition) GetName() string         { return GetDashboardName(dashboard) }
+func (*DashboardDefinition) UpsertKeys() (byOrigin, byID bool) { return false, true }

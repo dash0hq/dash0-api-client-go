@@ -384,3 +384,10 @@ func StripTeamServerFields(team *TeamDefinitionV1Alpha1) {
 		team.Metadata.Annotations.AdditionalProperties = nil
 	}
 }
+
+var _ AssetMetadata = (*TeamDefinitionV1Alpha1)(nil)
+
+func (team *TeamDefinitionV1Alpha1) GetOrigin() string            { return GetTeamOrigin(team) }
+func (team *TeamDefinitionV1Alpha1) GetID() string                { return GetTeamID(team) }
+func (team *TeamDefinitionV1Alpha1) GetName() string              { return GetTeamName(team) }
+func (*TeamDefinitionV1Alpha1) UpsertKeys() (byOrigin, byID bool) { return true, true }

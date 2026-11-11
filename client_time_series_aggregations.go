@@ -226,3 +226,16 @@ func SetTimeSeriesAggregationIDIfAbsent(aggregation *TimeSeriesAggregationDefini
 		aggregation.Metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*TimeSeriesAggregationDefinition)(nil)
+
+func (aggregation *TimeSeriesAggregationDefinition) GetOrigin() string {
+	return GetTimeSeriesAggregationOrigin(aggregation)
+}
+func (aggregation *TimeSeriesAggregationDefinition) GetID() string {
+	return GetTimeSeriesAggregationID(aggregation)
+}
+func (aggregation *TimeSeriesAggregationDefinition) GetName() string {
+	return GetTimeSeriesAggregationName(aggregation)
+}
+func (*TimeSeriesAggregationDefinition) UpsertKeys() (byOrigin, byID bool) { return true, false }

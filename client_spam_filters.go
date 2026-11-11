@@ -528,3 +528,17 @@ func setSpamFilterMetadataIDIfAbsent(metadata *SpamFilterMetadata, id string) {
 		metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*SpamFilter)(nil)
+
+func (filter *SpamFilter) GetOrigin() string          { return GetSpamFilterOrigin(filter) }
+func (filter *SpamFilter) GetID() string              { return GetSpamFilterID(filter) }
+func (filter *SpamFilter) GetName() string            { return GetSpamFilterName(filter) }
+func (*SpamFilter) UpsertKeys() (byOrigin, byID bool) { return true, true }
+
+var _ AssetMetadata = (*SpamFilterV1Alpha2)(nil)
+
+func (filter *SpamFilterV1Alpha2) GetOrigin() string          { return GetSpamFilterV1Alpha2Origin(filter) }
+func (filter *SpamFilterV1Alpha2) GetID() string              { return GetSpamFilterV1Alpha2ID(filter) }
+func (filter *SpamFilterV1Alpha2) GetName() string            { return GetSpamFilterV1Alpha2Name(filter) }
+func (*SpamFilterV1Alpha2) UpsertKeys() (byOrigin, byID bool) { return true, true }

@@ -251,3 +251,16 @@ func SetGenerativeAiEvaluationDataset(evaluation *GenerativeAiEvaluationDefiniti
 	}
 	evaluation.Metadata.Labels.Dash0Comdataset = &dataset
 }
+
+var _ AssetMetadata = (*GenerativeAiEvaluationDefinition)(nil)
+
+func (evaluation *GenerativeAiEvaluationDefinition) GetOrigin() string {
+	return GetGenerativeAiEvaluationOrigin(evaluation)
+}
+func (evaluation *GenerativeAiEvaluationDefinition) GetID() string {
+	return GetGenerativeAiEvaluationID(evaluation)
+}
+func (evaluation *GenerativeAiEvaluationDefinition) GetName() string {
+	return GetGenerativeAiEvaluationName(evaluation)
+}
+func (*GenerativeAiEvaluationDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }

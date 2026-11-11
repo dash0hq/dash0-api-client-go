@@ -198,3 +198,16 @@ func SetNotificationChannelOrigin(channel *NotificationChannelDefinition, origin
 	}
 	channel.Metadata.Labels.Dash0Comorigin = &origin
 }
+
+var _ AssetMetadata = (*NotificationChannelDefinition)(nil)
+
+func (channel *NotificationChannelDefinition) GetOrigin() string {
+	return GetNotificationChannelOrigin(channel)
+}
+func (channel *NotificationChannelDefinition) GetID() string {
+	return GetNotificationChannelID(channel)
+}
+func (channel *NotificationChannelDefinition) GetName() string {
+	return GetNotificationChannelName(channel)
+}
+func (*NotificationChannelDefinition) UpsertKeys() (byOrigin, byID bool) { return true, false }
