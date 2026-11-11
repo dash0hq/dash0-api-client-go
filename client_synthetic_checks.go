@@ -212,8 +212,12 @@ func SetSyntheticCheckIDIfAbsent(check *SyntheticCheckDefinition, id string) {
 
 var _ AssetMetadata = (*SyntheticCheckDefinition)(nil)
 
-// GetOrigin returns "", because SyntheticCheckDefinition is not upserted by origin.
-func (*SyntheticCheckDefinition) GetOrigin() string                 { return "" }
+func (check *SyntheticCheckDefinition) GetOrigin() string {
+	if check == nil || check.Metadata.Labels == nil || check.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *check.Metadata.Labels.Dash0Comorigin
+}
 func (check *SyntheticCheckDefinition) GetID() string               { return GetSyntheticCheckID(check) }
 func (check *SyntheticCheckDefinition) GetName() string             { return GetSyntheticCheckName(check) }
 func (*SyntheticCheckDefinition) UpsertKeys() (byOrigin, byID bool) { return false, true }

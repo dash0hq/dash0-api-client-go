@@ -11,6 +11,7 @@ import (
 const assetMetadataDocument = `{
 	"id": "test-id",
 	"name": "test-name",
+	"labels": {"dash0.com/origin": "test-origin"},
 	"metadata": {
 		"name": "test-name",
 		"labels": {"dash0.com/origin": "test-origin", "dash0.com/id": "test-id"},
@@ -38,11 +39,11 @@ func TestAssetMetadata(t *testing.T) {
 		{&TimeSeriesAggregationDefinition{}, "test-origin", true, false},
 		{&DashboardDefinition{}, "", false, true},
 		{&PersesDashboard{}, "", false, true},
-		{&PrometheusAlertRule{}, "", false, true},
+		{&PrometheusAlertRule{}, "test-origin", false, true},
 		{&PrometheusRules{}, "", false, true},
 		{&RecordingRule{}, "", false, true},
-		{&SyntheticCheckDefinition{}, "", false, true},
-		{&ViewDefinition{}, "", false, true},
+		{&SyntheticCheckDefinition{}, "test-origin", false, true},
+		{&ViewDefinition{}, "test-origin", false, true},
 		{&DatasetDefinition{}, "test-origin", false, true},
 		{&AwsMetricScrapeConfigDefinition{}, "test-origin", false, true},
 	}

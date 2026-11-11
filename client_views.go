@@ -211,8 +211,12 @@ func SetViewIDIfAbsent(view *ViewDefinition, id string) {
 
 var _ AssetMetadata = (*ViewDefinition)(nil)
 
-// GetOrigin returns "", because ViewDefinition is not upserted by origin.
-func (*ViewDefinition) GetOrigin() string                 { return "" }
+func (view *ViewDefinition) GetOrigin() string {
+	if view == nil || view.Metadata.Labels == nil || view.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *view.Metadata.Labels.Dash0Comorigin
+}
 func (view *ViewDefinition) GetID() string                { return GetViewID(view) }
 func (view *ViewDefinition) GetName() string              { return GetViewName(view) }
 func (*ViewDefinition) UpsertKeys() (byOrigin, byID bool) { return false, true }

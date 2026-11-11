@@ -237,7 +237,7 @@ func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
 
 var _ AssetMetadata = (*DashboardDefinition)(nil)
 
-// GetOrigin returns "", because DashboardDefinition is not upserted by origin.
+// GetOrigin returns "", because the only origin field, metadata.dash0Extensions.origin, is deprecated in favor of the id.
 func (*DashboardDefinition) GetOrigin() string                 { return "" }
 func (dashboard *DashboardDefinition) GetID() string           { return GetDashboardID(dashboard) }
 func (dashboard *DashboardDefinition) GetName() string         { return GetDashboardName(dashboard) }
