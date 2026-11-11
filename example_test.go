@@ -2756,3 +2756,24 @@ func ExampleGetCustomSkillOrigin() {
 	// ""
 	// tf_incident-response
 }
+
+// AssetMetadata
+
+func ExampleAssetMetadata() {
+	assets := []dash0.AssetMetadata{
+		&dash0.SloDefinition{Metadata: dash0.SloMetadata{Labels: &dash0.SloLabels{Dash0Comorigin: dash0.Ptr("checkout-latency")}}},
+		&dash0.PrometheusAlertRule{Id: dash0.Ptr("high-error-rate")},
+	}
+	for _, asset := range assets {
+		// Address the asset by its origin when the API upserts by origin and the document has one.
+		byOrigin, _ := asset.UpsertKeys()
+		if byOrigin && asset.GetOrigin() != "" {
+			fmt.Println("origin:", asset.GetOrigin())
+		} else {
+			fmt.Println("id:", asset.GetID())
+		}
+	}
+	// Output:
+	// origin: checkout-latency
+	// id: high-error-rate
+}

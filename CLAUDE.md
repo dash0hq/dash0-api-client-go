@@ -254,7 +254,7 @@ Clear<Asset>ID(<param> *<Type>)
 - Parameter names must be consistent within a file (e.g., all functions in `client_check_rules.go` use `rule`, not `r`).
 - All helper functions that take a pointer parameter must be nil-safe (no panics on nil pointers or zero-value structs).
 - Every definition type that `dash0 apply` handles also implements `AssetMetadata` (`asset_metadata.go`).
-  Put the 4 methods and a `var _ AssetMetadata = (*<Type>)(nil)` check next to the type's other helpers, and add the type to `TestUpsertKeys`.
+  Put the 4 methods and a `var _ AssetMetadata = (*<Type>)(nil)` check next to the type's other helpers, and add the type to `TestAssetMetadata`.
   `UpsertKeys` must match how dash0-cli upserts the kind.
   Go does not force a new type to implement the interface, so nothing fails when you forget this.
 
