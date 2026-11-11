@@ -156,3 +156,14 @@ func SetAwsMetricScrapeConfigOrigin(cfg *AwsMetricScrapeConfigDefinition, origin
 	}
 	cfg.Metadata.Labels.Dash0Comorigin = &origin
 }
+
+var _ AssetMetadata = (*AwsMetricScrapeConfigDefinition)(nil)
+
+func (cfg *AwsMetricScrapeConfigDefinition) GetOrigin() string {
+	return GetAwsMetricScrapeConfigOrigin(cfg)
+}
+func (cfg *AwsMetricScrapeConfigDefinition) GetID() string { return GetAwsMetricScrapeConfigID(cfg) }
+func (cfg *AwsMetricScrapeConfigDefinition) GetName() string {
+	return GetAwsMetricScrapeConfigName(cfg)
+}
+func (*AwsMetricScrapeConfigDefinition) UpsertKeys() (byOrigin, byID bool) { return false, true }

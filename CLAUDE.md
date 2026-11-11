@@ -78,6 +78,7 @@ Keep helpers co-located with their domain's CRUD methods.
 |------|---------|
 | `client.go` | `Client` interface + `NewClient` factory |
 | `client_*.go` | Domain-specific CRUD methods and helpers (dashboards, check rules, views, etc.) |
+| `asset_metadata.go` | `AssetMetadata` interface; each type implements it in the file with its other helpers |
 | `list_options.go` | `ListOption`, `WithOriginPrefix`, and the signal-to-metrics filters (`WithSignalToMetricsName`, `WithSignal`, `WithEnabled`) for List* methods whose endpoint supports filters |
 | `generated.go` | oapi-codegen generated client (do not edit manually) |
 | `tools/postprocess/` | AST-based post-processing of `generated.go` |
@@ -252,6 +253,10 @@ Clear<Asset>ID(<param> *<Type>)
   `Set*IDIfAbsent` only sets the ID when it is not already present.
 - Parameter names must be consistent within a file (e.g., all functions in `client_check_rules.go` use `rule`, not `r`).
 - All helper functions that take a pointer parameter must be nil-safe (no panics on nil pointers or zero-value structs).
+- Every definition type that `dash0 apply` handles also implements `AssetMetadata` (`asset_metadata.go`).
+  Put the 4 methods and a `var _ AssetMetadata = (*<Type>)(nil)` check next to the type's other helpers, and add the type to `TestAssetMetadata`.
+  `UpsertKeys` must match how dash0-cli upserts the kind.
+  Go does not force a new type to implement the interface, so nothing fails when you forget this.
 
 **Parse/Marshal functions** in the `yaml/` subpackage:
 

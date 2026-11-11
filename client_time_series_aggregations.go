@@ -182,6 +182,14 @@ func GetTimeSeriesAggregationID(aggregation *TimeSeriesAggregationDefinition) st
 	return *aggregation.Metadata.Labels.Dash0Comid
 }
 
+// GetTimeSeriesAggregationOrigin extracts the dash0.com/origin label from a time series aggregation definition.
+func GetTimeSeriesAggregationOrigin(aggregation *TimeSeriesAggregationDefinition) string {
+	if aggregation == nil || aggregation.Metadata.Labels == nil || aggregation.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *aggregation.Metadata.Labels.Dash0Comorigin
+}
+
 // GetTimeSeriesAggregationName extracts the display name from a time series aggregation definition.
 // It falls back to metadata.name when the display block is absent or its name is empty.
 func GetTimeSeriesAggregationName(aggregation *TimeSeriesAggregationDefinition) string {
@@ -218,3 +226,16 @@ func SetTimeSeriesAggregationIDIfAbsent(aggregation *TimeSeriesAggregationDefini
 		aggregation.Metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*TimeSeriesAggregationDefinition)(nil)
+
+func (aggregation *TimeSeriesAggregationDefinition) GetOrigin() string {
+	return GetTimeSeriesAggregationOrigin(aggregation)
+}
+func (aggregation *TimeSeriesAggregationDefinition) GetID() string {
+	return GetTimeSeriesAggregationID(aggregation)
+}
+func (aggregation *TimeSeriesAggregationDefinition) GetName() string {
+	return GetTimeSeriesAggregationName(aggregation)
+}
+func (*TimeSeriesAggregationDefinition) UpsertKeys() (byOrigin, byID bool) { return true, false }

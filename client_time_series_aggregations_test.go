@@ -818,3 +818,10 @@ func TestClearTimeSeriesAggregationID_NilLabels(t *testing.T) {
 func TestClearTimeSeriesAggregationID_Nil(t *testing.T) {
 	ClearTimeSeriesAggregationID(nil) // should not panic
 }
+
+func TestGetTimeSeriesAggregationOrigin(t *testing.T) {
+	aggregation := &TimeSeriesAggregationDefinition{Metadata: TimeSeriesAggregationMetadata{Labels: &TimeSeriesAggregationLabels{Dash0Comorigin: Ptr("tf_agg")}}}
+	assertEqual(t, "origin", GetTimeSeriesAggregationOrigin(aggregation), "tf_agg")
+	assertEqual(t, "origin without labels", GetTimeSeriesAggregationOrigin(&TimeSeriesAggregationDefinition{}), "")
+	assertEqual(t, "origin of nil", GetTimeSeriesAggregationOrigin(nil), "")
+}

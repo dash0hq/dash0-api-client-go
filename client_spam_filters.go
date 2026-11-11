@@ -347,6 +347,14 @@ func GetSpamFilterID(filter *SpamFilter) string {
 	return getSpamFilterMetadataID(&filter.Metadata)
 }
 
+// GetSpamFilterOrigin extracts the dash0.com/origin label from a v1alpha1 spam filter.
+func GetSpamFilterOrigin(filter *SpamFilter) string {
+	if filter == nil {
+		return ""
+	}
+	return getSpamFilterMetadataOrigin(&filter.Metadata)
+}
+
 // GetSpamFilterName extracts the name from a v1alpha1 spam filter.
 func GetSpamFilterName(filter *SpamFilter) string {
 	if filter == nil {
@@ -413,6 +421,14 @@ func GetSpamFilterV1Alpha2ID(filter *SpamFilterV1Alpha2) string {
 	return getSpamFilterMetadataID(&filter.Metadata)
 }
 
+// GetSpamFilterV1Alpha2Origin extracts the dash0.com/origin label from a v1alpha2 spam filter.
+func GetSpamFilterV1Alpha2Origin(filter *SpamFilterV1Alpha2) string {
+	if filter == nil {
+		return ""
+	}
+	return getSpamFilterMetadataOrigin(&filter.Metadata)
+}
+
 // GetSpamFilterV1Alpha2Name extracts the name from a v1alpha2 spam filter.
 func GetSpamFilterV1Alpha2Name(filter *SpamFilterV1Alpha2) string {
 	if filter == nil {
@@ -476,6 +492,13 @@ func getSpamFilterMetadataID(metadata *SpamFilterMetadata) string {
 	return *metadata.Labels.Dash0Comid
 }
 
+func getSpamFilterMetadataOrigin(metadata *SpamFilterMetadata) string {
+	if metadata.Labels == nil || metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *metadata.Labels.Dash0Comorigin
+}
+
 func getSpamFilterMetadataDataset(metadata *SpamFilterMetadata) string {
 	if metadata.Labels == nil || metadata.Labels.Dash0Comdataset == nil {
 		return ""
@@ -505,3 +528,17 @@ func setSpamFilterMetadataIDIfAbsent(metadata *SpamFilterMetadata, id string) {
 		metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*SpamFilter)(nil)
+
+func (filter *SpamFilter) GetOrigin() string          { return GetSpamFilterOrigin(filter) }
+func (filter *SpamFilter) GetID() string              { return GetSpamFilterID(filter) }
+func (filter *SpamFilter) GetName() string            { return GetSpamFilterName(filter) }
+func (*SpamFilter) UpsertKeys() (byOrigin, byID bool) { return true, true }
+
+var _ AssetMetadata = (*SpamFilterV1Alpha2)(nil)
+
+func (filter *SpamFilterV1Alpha2) GetOrigin() string          { return GetSpamFilterV1Alpha2Origin(filter) }
+func (filter *SpamFilterV1Alpha2) GetID() string              { return GetSpamFilterV1Alpha2ID(filter) }
+func (filter *SpamFilterV1Alpha2) GetName() string            { return GetSpamFilterV1Alpha2Name(filter) }
+func (*SpamFilterV1Alpha2) UpsertKeys() (byOrigin, byID bool) { return true, true }

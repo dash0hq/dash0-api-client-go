@@ -261,3 +261,10 @@ func SetSLOIDIfAbsent(slo *SloDefinition, id string) {
 		slo.Metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*SloDefinition)(nil)
+
+func (slo *SloDefinition) GetOrigin() string             { return GetSLOOrigin(slo) }
+func (slo *SloDefinition) GetID() string                 { return GetSLOID(slo) }
+func (slo *SloDefinition) GetName() string               { return GetSLOName(slo) }
+func (*SloDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }

@@ -1491,3 +1491,10 @@ func assertSignalToMetricsJSONRoundTrip(t *testing.T, input string) {
 		t.Errorf("round trip changed the document\nwant:\n%s\ngot:\n%s", wantJSON, gotJSON)
 	}
 }
+
+func TestGetSignalToMetricsOrigin(t *testing.T) {
+	rule := &SignalToMetricsDefinition{Metadata: SignalToMetricsMetadata{Labels: &SignalToMetricsLabels{Dash0Comorigin: Ptr("tf_rule")}}}
+	assertEqual(t, "origin", GetSignalToMetricsOrigin(rule), "tf_rule")
+	assertEqual(t, "origin without labels", GetSignalToMetricsOrigin(&SignalToMetricsDefinition{}), "")
+	assertEqual(t, "origin of nil", GetSignalToMetricsOrigin(nil), "")
+}

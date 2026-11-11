@@ -271,6 +271,14 @@ func GetSignalToMetricsID(rule *SignalToMetricsDefinition) string {
 	return *rule.Metadata.Labels.Dash0Comid
 }
 
+// GetSignalToMetricsOrigin extracts the dash0.com/origin label from a signal-to-metrics rule.
+func GetSignalToMetricsOrigin(rule *SignalToMetricsDefinition) string {
+	if rule == nil || rule.Metadata.Labels == nil || rule.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *rule.Metadata.Labels.Dash0Comorigin
+}
+
 // GetSignalToMetricsName extracts the display name from a signal-to-metrics rule.
 // It falls back to metadata.name when the display name is empty.
 func GetSignalToMetricsName(rule *SignalToMetricsDefinition) string {
@@ -307,3 +315,10 @@ func SetSignalToMetricsIDIfAbsent(rule *SignalToMetricsDefinition, id string) {
 		rule.Metadata.Labels.Dash0Comid = &id
 	}
 }
+
+var _ AssetMetadata = (*SignalToMetricsDefinition)(nil)
+
+func (rule *SignalToMetricsDefinition) GetOrigin() string            { return GetSignalToMetricsOrigin(rule) }
+func (rule *SignalToMetricsDefinition) GetID() string                { return GetSignalToMetricsID(rule) }
+func (rule *SignalToMetricsDefinition) GetName() string              { return GetSignalToMetricsName(rule) }
+func (*SignalToMetricsDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }
