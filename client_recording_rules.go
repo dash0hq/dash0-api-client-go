@@ -229,8 +229,12 @@ func SetRecordingRuleDataset(rule *RecordingRule, dataset string) {
 
 var _ AssetMetadata = (*RecordingRule)(nil)
 
-// GetOrigin returns "", because RecordingRule is not upserted by origin.
-func (*RecordingRule) GetOrigin() string                 { return "" }
+func (rule *RecordingRule) GetOrigin() string {
+	if rule == nil || rule.Metadata.Labels == nil {
+		return ""
+	}
+	return (*rule.Metadata.Labels)[LabelOrigin]
+}
 func (rule *RecordingRule) GetID() string                { return GetRecordingRuleID(rule) }
 func (rule *RecordingRule) GetName() string              { return GetRecordingRuleName(rule) }
 func (*RecordingRule) UpsertKeys() (byOrigin, byID bool) { return false, true }

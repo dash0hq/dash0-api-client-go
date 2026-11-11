@@ -236,8 +236,12 @@ func SetPersesDashboardIDIfAbsent(perses *PersesDashboard, id string) {
 
 var _ AssetMetadata = (*PersesDashboard)(nil)
 
-// GetOrigin returns "", because PersesDashboard is not upserted by origin.
-func (*PersesDashboard) GetOrigin() string                 { return "" }
+func (perses *PersesDashboard) GetOrigin() string {
+	if perses == nil {
+		return ""
+	}
+	return perses.Metadata.Labels[LabelOrigin]
+}
 func (perses *PersesDashboard) GetID() string              { return GetPersesDashboardID(perses) }
 func (perses *PersesDashboard) GetName() string            { return GetPersesDashboardName(perses) }
 func (*PersesDashboard) UpsertKeys() (byOrigin, byID bool) { return false, true }
