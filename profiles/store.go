@@ -160,28 +160,14 @@ func resolveConfigDir(opts []StoreOption) (string, error) {
 // fields keep the active profile's values.
 // When there is no active profile, a DASH0_AUTH_TOKEN plus at least one of
 // DASH0_API_URL or DASH0_OTLP_URL is a complete configuration on its own.
-// If the active profile uses OAuth, the access token is refreshed when close
-// to expiry, using [context.Background] for the refresh request.
-// Use [Store.GetActiveConfigurationContext] to plumb a cancellable context
-// through the refresh.
+//
+// The OAuth access token is returned as stored and is not refreshed here.
+// Refreshing happens per request, in the provider returned by
+// [Configuration.AuthTokenProvider], so it only happens for a client that
+// actually goes on to use the profile's credentials.
+// A caller that reads [Configuration.AuthToken] directly gets the token on
+// disk, which may be expired.
 func (s *Store) GetActiveConfiguration() (*Configuration, error) {
-	return s.getActiveConfigurationContext(context.Background(), true)
-}
-
-// GetActiveConfigurationContext is the context-aware variant of
-// [Store.GetActiveConfiguration].
-// The ctx is propagated through the OAuth refresh round-trip so a hung
-// authorization server does not pin the caller for the full HTTP timeout.
-func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configuration, error) {
-	return s.getActiveConfigurationContext(ctx, true)
-}
-
-// getActiveConfigurationContext is the shared implementation behind
-// [Store.GetActiveConfiguration] and [Store.GetActiveConfigurationContext].
-// The refreshOAuth flag controls whether an OAuth-backed access token close
-// to expiry is refreshed; callers that intend to override the auth token
-// anyway can pass false to skip the refresh network call.
-func (s *Store) getActiveConfigurationContext(ctx context.Context, refreshOAuth bool) (*Configuration, error) {
 	envApiUrl := os.Getenv(EnvApiUrl)
 	envAuthToken := os.Getenv(EnvAuthToken)
 	envOtlpUrl := os.Getenv(EnvOtlpUrl)
@@ -210,7 +196,15 @@ func (s *Store) getActiveConfigurationContext(ctx context.Context, refreshOAuth 
 		return nil, err
 	}
 
-	return s.configurationForProfile(ctx, activeProfile, refreshOAuth)
+	return s.configurationForProfile(activeProfile), nil
+}
+
+// GetActiveConfigurationContext is the context-aware variant of
+// [Store.GetActiveConfiguration].
+// ctx is currently unused: this call reads the profile store and makes no
+// network request.
+func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configuration, error) {
+	return s.GetActiveConfiguration()
 }
 
 // GetConfigurationForProfile returns the configuration of a named profile, with
@@ -246,50 +240,34 @@ func (s *Store) GetConfigurationForProfile(ctx context.Context, profileName stri
 	}
 	for i := range allProfiles {
 		if allProfiles[i].Name == profileName {
-			return s.configurationForProfile(ctx, &allProfiles[i], false)
+			return s.configurationForProfile(&allProfiles[i]), nil
 		}
 	}
 	return nil, ErrProfileNotFound
 }
 
 // configurationForProfile is the shared tail of every profile-to-configuration
-// path: it records which profile the configuration came from, refreshes an
-// OAuth access token close to expiry, and layers the environment variables on
-// top.
+// path: it records which profile the configuration came from and layers the
+// environment variables on top.
 //
 // Keeping this in one place is deliberate. Recording
 // [Configuration.ProfileName] is easy to forget, and a configuration without
 // it cannot refresh its OAuth token at all.
 //
-// refreshOAuth requests a refresh at lookup time. Callers pass false when the
-// token they return may never be used to authenticate anything, either because
-// they are about to override it or because the caller refreshes per request
-// through [Configuration.AuthTokenProvider]. A refresh that goes unused still
-// rotates the refresh token.
-func (s *Store) configurationForProfile(
-	ctx context.Context,
-	profile *Profile,
-	refreshOAuth bool,
-) (*Configuration, error) {
+// It does not refresh the OAuth access token.
+// [Configuration.AuthTokenProvider] refreshes per request, and a refresh at
+// lookup time would rotate the refresh token even when the caller goes on to
+// authenticate with a token supplied elsewhere.
+func (s *Store) configurationForProfile(profile *Profile) *Configuration {
 	cfg := &profile.Configuration
 	cfg.ProfileName = profile.Name
 	cfg.ConfigDir = s.configDir
-
-	envAuthToken := os.Getenv(EnvAuthToken)
-
-	// If the profile uses OAuth and no env var overrides the auth token,
-	// refresh the access token when it is close to expiry.
-	if refreshOAuth && cfg.OAuth != nil && envAuthToken == "" {
-		if err := refreshOAuthToken(ctx, s, profile.Name, cfg, refreshIfExpiring); err != nil {
-			return nil, err
-		}
-	}
 
 	// Override with env vars if set.
 	if envApiUrl := os.Getenv(EnvApiUrl); envApiUrl != "" {
 		cfg.ApiUrl = envApiUrl
 	}
-	if envAuthToken != "" {
+	if envAuthToken := os.Getenv(EnvAuthToken); envAuthToken != "" {
 		cfg.AuthToken = envAuthToken
 		cfg.OAuth = nil
 	}
@@ -300,7 +278,7 @@ func (s *Store) configurationForProfile(
 		cfg.Dataset = envDataset
 	}
 
-	return cfg, nil
+	return cfg
 }
 
 // ResolveConfiguration loads the active profile, applies environment variable
@@ -310,9 +288,6 @@ func (s *Store) configurationForProfile(
 // This is a convenience function that creates a temporary [Store] internally.
 // Pass [StoreOption] values (e.g. [WithConfigDir]) to control how the
 // profile store is constructed.
-//
-// OAuth refresh, if needed, uses [context.Background]; use
-// [ResolveConfigurationContext] to plumb a cancellable context.
 func ResolveConfiguration(apiUrl, authToken string, opts ...StoreOption) (*Configuration, error) {
 	return ResolveConfigurationWithOtlpContext(context.Background(), apiUrl, authToken, "", "", opts...)
 }
@@ -325,9 +300,6 @@ func ResolveConfigurationContext(ctx context.Context, apiUrl, authToken string, 
 
 // ResolveConfigurationWithOtlp is like [ResolveConfiguration] but also accepts
 // OTLP URL and dataset overrides.
-//
-// OAuth refresh, if needed, uses [context.Background]; use
-// [ResolveConfigurationWithOtlpContext] to plumb a cancellable context.
 func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
 	return ResolveConfigurationWithOtlpContext(context.Background(), apiUrl, authToken, otlpUrl, dataset, opts...)
 }
@@ -338,14 +310,10 @@ func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken,
 	result := &Configuration{}
 
 	// Try to get the active configuration for defaults.
-	// Skip the OAuth refresh when the caller is about to override the auth
-	// token -- the refreshed token would be discarded and the network call
-	// wasted (and could rotate the refresh token for no good reason).
-	refreshOAuth := authToken == ""
 	var configErr error
 	store, err := NewStore(opts...)
 	if err == nil {
-		cfg, err := store.getActiveConfigurationContext(ctx, refreshOAuth)
+		cfg, err := store.GetActiveConfiguration()
 		if err != nil {
 			// Store the error but don't return yet -- we might have explicit overrides.
 			configErr = err

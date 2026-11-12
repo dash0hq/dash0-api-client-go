@@ -294,9 +294,6 @@ func ExampleResolveOAuthClientID_dcrCacheFallback() {
 }
 
 func ExampleStore_GetActiveConfigurationContext() {
-	// The Context variant plumbs cancellation through the OAuth refresh
-	// round-trip so a hung authorization server cannot pin the caller for
-	// the full HTTP timeout.
 	configDir, _ := os.MkdirTemp("", "dash0-example-*")
 	defer func() { _ = os.RemoveAll(configDir) }()
 
@@ -591,7 +588,7 @@ func ExampleStore_GetConfigurationForProfile() {
 	}
 
 	// Prefer this over GetProfiles plus a search by name: the returned
-	// configuration is refreshed and records which profile it came from.
+	// configuration records which profile it came from.
 	cfg, err := store.GetConfigurationForProfile(context.Background(), "production")
 	if err != nil {
 		fmt.Println("error:", err)
