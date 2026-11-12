@@ -10,18 +10,6 @@ import (
 	sigsyaml "sigs.k8s.io/yaml"
 )
 
-const (
-	enabledAnnotationKey                  = "dash0-enabled"
-	thresholdCriticalAnnotationKey        = "dash0-threshold-critical"
-	thresholdDegradedAnnotationKey        = "dash0-threshold-degraded"
-	baselineDirectionAnnotationKey        = "dash0.com/baseline-direction"
-	baselineSpreadFloorAnnotationKey      = "dash0.com/baseline-spread-floor"
-	volumeFloorAnnotationKey              = "dash0.com/volume-floor"
-	changeGateComparisonAnnotationKey     = "dash0.com/change-gate-comparison"
-	changeGateValueAnnotationKey          = "dash0.com/change-gate-value"
-	changeGateBaselineWindowAnnotationKey = "dash0.com/change-gate-baseline-window"
-)
-
 // MergeAnnotations merges a PrometheusRule document's top-level
 // metadata.annotations into a rule's own annotations.
 // Rule-level annotations win on key conflict, mirroring the Dash0 Operator's
@@ -141,39 +129,39 @@ func MarshalPrometheusRule(rule *dash0.PrometheusAlertRule) ([]byte, error) {
 	// Typed detector settings are authoritative on API reads.
 	if rule.Thresholds != nil && (rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
 		for _, key := range []string{
-			baselineDirectionAnnotationKey, baselineSpreadFloorAnnotationKey,
-			changeGateComparisonAnnotationKey, changeGateValueAnnotationKey, changeGateBaselineWindowAnnotationKey,
+			dash0.AnnotationBaselineDirection, dash0.AnnotationBaselineSpreadFloor,
+			dash0.AnnotationChangeGateComparison, dash0.AnnotationChangeGateValue, dash0.AnnotationChangeGateBaselineWindow,
 		} {
 			delete(annotations, key)
 		}
-		delete(annotations, volumeFloorAnnotationKey)
+		delete(annotations, dash0.AnnotationVolumeFloor)
 	}
 	if rule.Thresholds != nil {
 		if baseline := rule.Thresholds.Baseline; baseline != nil {
-			annotations[baselineDirectionAnnotationKey] = string(baseline.Direction)
+			annotations[dash0.AnnotationBaselineDirection] = string(baseline.Direction)
 			if baseline.SpreadFloor != nil {
-				annotations[baselineSpreadFloorAnnotationKey] = strconv.FormatFloat(*baseline.SpreadFloor, 'f', -1, 64)
+				annotations[dash0.AnnotationBaselineSpreadFloor] = strconv.FormatFloat(*baseline.SpreadFloor, 'f', -1, 64)
 			}
 		}
 		if gate := rule.Thresholds.ChangeGate; gate != nil {
-			annotations[changeGateComparisonAnnotationKey] = string(gate.Comparison)
-			annotations[changeGateValueAnnotationKey] = strconv.FormatFloat(gate.Value, 'f', -1, 64)
-			annotations[changeGateBaselineWindowAnnotationKey] = string(gate.BaselineWindow)
+			annotations[dash0.AnnotationChangeGateComparison] = string(gate.Comparison)
+			annotations[dash0.AnnotationChangeGateValue] = strconv.FormatFloat(gate.Value, 'f', -1, 64)
+			annotations[dash0.AnnotationChangeGateBaselineWindow] = string(gate.BaselineWindow)
 		}
 	}
 
 	// Only add enabled annotation if false (true is the default)
 	if rule.Enabled != nil && !*rule.Enabled {
-		annotations[enabledAnnotationKey] = strconv.FormatBool(false)
+		annotations[dash0.AnnotationPrometheusRuleEnabled] = strconv.FormatBool(false)
 	}
 
 	// Detector thresholds preserve configured tiers even at zero; static zero remains the default.
 	if rule.Thresholds != nil {
 		if rule.Thresholds.Failed != nil && (*rule.Thresholds.Failed != 0 || rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
-			annotations[thresholdCriticalAnnotationKey] = strconv.FormatFloat(*rule.Thresholds.Failed, 'f', -1, 64)
+			annotations[dash0.AnnotationThresholdCritical] = strconv.FormatFloat(*rule.Thresholds.Failed, 'f', -1, 64)
 		}
 		if rule.Thresholds.Degraded != nil && (*rule.Thresholds.Degraded != 0 || rule.Thresholds.Baseline != nil || rule.Thresholds.ChangeGate != nil) {
-			annotations[thresholdDegradedAnnotationKey] = strconv.FormatFloat(*rule.Thresholds.Degraded, 'f', -1, 64)
+			annotations[dash0.AnnotationThresholdDegraded] = strconv.FormatFloat(*rule.Thresholds.Degraded, 'f', -1, 64)
 		}
 	}
 

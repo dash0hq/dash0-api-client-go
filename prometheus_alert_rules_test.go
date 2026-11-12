@@ -380,14 +380,14 @@ func TestConvertPrometheusRuleToPrometheusAlertRule_EnabledFalse(t *testing.T) {
 
 func TestConvertRejectsMalformedDetectorAnnotations(t *testing.T) {
 	for _, annotations := range []map[string]string{
-		{baselineDirectionAnnotation: "sideways"},
-		{baselineDirectionAnnotation: "above", baselineSpreadFloorAnnotation: "invalid"},
-		{baselineDirectionAnnotation: "above", volumeFloorAnnotation: "NaN"},
-		{baselineDirectionAnnotation: "above", changeGateComparisonAnnotation: "relative_factor"},
-		{changeGateComparisonAnnotation: "relative_factor", changeGateValueAnnotation: "2"},
-		{changeGateComparisonAnnotation: "relative_factor", changeGateValueAnnotation: "invalid", changeGateBaselineWindowAnnotation: "1h"},
-		{changeGateComparisonAnnotation: "invalid", changeGateValueAnnotation: "2", changeGateBaselineWindowAnnotation: "1h"},
-		{volumeFloorAnnotation: "50"},
+		{AnnotationBaselineDirection: "sideways"},
+		{AnnotationBaselineDirection: "above", AnnotationBaselineSpreadFloor: "invalid"},
+		{AnnotationBaselineDirection: "above", AnnotationVolumeFloor: "NaN"},
+		{AnnotationBaselineDirection: "above", AnnotationChangeGateComparison: "relative_factor"},
+		{AnnotationChangeGateComparison: "relative_factor", AnnotationChangeGateValue: "2"},
+		{AnnotationChangeGateComparison: "relative_factor", AnnotationChangeGateValue: "invalid", AnnotationChangeGateBaselineWindow: "1h"},
+		{AnnotationChangeGateComparison: "invalid", AnnotationChangeGateValue: "2", AnnotationChangeGateBaselineWindow: "1h"},
+		{AnnotationVolumeFloor: "50"},
 	} {
 		_, err := ConvertPrometheusRuleToPrometheusAlertRule(&PrometheusRule{Alert: "rule", Expr: "observed", Annotations: annotations}, time.Minute, "")
 		require.Error(t, err)
