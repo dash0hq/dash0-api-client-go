@@ -929,15 +929,11 @@ func TestGetActiveConfiguration(t *testing.T) {
 		// --auth-token flag, would discard the result and have rotated the
 		// refresh token for nothing.
 		var exchanges atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			exchanges.Add(1)
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]any{
-				"access_token": "dash0_at_refreshed-token",
-				"token_type":   "Bearer",
-				"expires_in":   3600,
-			})
-		}))
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_refreshed-token",
+			ExpiresIn:   3600,
+			Exchanges:   &exchanges,
+		}, nil)
 		defer server.Close()
 
 		svc, dir := newTestStore(t)
@@ -1200,18 +1196,12 @@ func TestResolveConfiguration(t *testing.T) {
 	})
 
 	t.Run("no explicit auth token leaves the OAuth refresh to the provider", func(t *testing.T) {
-		// The CLI calls ResolveConfiguration("", "") before it parses its flags,
-		// so this path cannot know whether --auth-token will replace the token.
 		var requestCount atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestCount.Add(1)
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]any{
-				"access_token": "dash0_at_refreshed",
-				"token_type":   "Bearer",
-				"expires_in":   3600,
-			})
-		}))
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_refreshed",
+			ExpiresIn:   3600,
+			Exchanges:   &requestCount,
+		}, nil)
 		defer server.Close()
 
 		dir := t.TempDir()

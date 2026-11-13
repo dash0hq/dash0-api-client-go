@@ -61,8 +61,8 @@ var (
 type Store struct {
 	configDir string
 
-	// refreshMu serializes OAuth token refreshes so that concurrent callers
-	// of [Store.GetActiveConfigurationContext] do not race against each
+	// refreshMu serializes OAuth token refreshes so that concurrent
+	// [Configuration.AuthTokenProvider] refreshes do not race against each
 	// other and invalidate a rotated refresh token.
 	// Cross-process serialization is layered on top via [acquireProfileLock].
 	refreshMu sync.Mutex
@@ -162,11 +162,8 @@ func resolveConfigDir(opts []StoreOption) (string, error) {
 // DASH0_API_URL or DASH0_OTLP_URL is a complete configuration on its own.
 //
 // The OAuth access token is returned as stored and is not refreshed here.
-// Refreshing happens per request, in the provider returned by
-// [Configuration.AuthTokenProvider], so it only happens for a client that
-// actually goes on to use the profile's credentials.
-// A caller that reads [Configuration.AuthToken] directly gets the token on
-// disk, which may be expired.
+// Refreshing happens per request, in the provider returned by [Configuration.AuthTokenProvider], so it only happens for a client that actually goes on to use the profile's credentials.
+// A caller that reads [Configuration.AuthToken] directly gets the token on disk, which may be expired.
 func (s *Store) GetActiveConfiguration() (*Configuration, error) {
 	envApiUrl := os.Getenv(EnvApiUrl)
 	envAuthToken := os.Getenv(EnvAuthToken)
@@ -201,8 +198,7 @@ func (s *Store) GetActiveConfiguration() (*Configuration, error) {
 
 // GetActiveConfigurationContext is the context-aware variant of
 // [Store.GetActiveConfiguration].
-// ctx is currently unused: this call reads the profile store and makes no
-// network request.
+// ctx is currently unused: this call reads the profile store and makes no network request.
 func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configuration, error) {
 	return s.GetActiveConfiguration()
 }
@@ -253,11 +249,6 @@ func (s *Store) GetConfigurationForProfile(ctx context.Context, profileName stri
 // Keeping this in one place is deliberate. Recording
 // [Configuration.ProfileName] is easy to forget, and a configuration without
 // it cannot refresh its OAuth token at all.
-//
-// It does not refresh the OAuth access token.
-// [Configuration.AuthTokenProvider] refreshes per request, and a refresh at
-// lookup time would rotate the refresh token even when the caller goes on to
-// authenticate with a token supplied elsewhere.
 func (s *Store) configurationForProfile(profile *Profile) *Configuration {
 	cfg := &profile.Configuration
 	cfg.ProfileName = profile.Name
@@ -294,6 +285,7 @@ func ResolveConfiguration(apiUrl, authToken string, opts ...StoreOption) (*Confi
 
 // ResolveConfigurationContext is the context-aware variant of
 // [ResolveConfiguration].
+// ctx is currently unused: this call reads the profile store and makes no network request.
 func ResolveConfigurationContext(ctx context.Context, apiUrl, authToken string, opts ...StoreOption) (*Configuration, error) {
 	return ResolveConfigurationWithOtlpContext(ctx, apiUrl, authToken, "", "", opts...)
 }
@@ -306,6 +298,7 @@ func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, op
 
 // ResolveConfigurationWithOtlpContext is the context-aware variant of
 // [ResolveConfigurationWithOtlp].
+// ctx is currently unused: this call reads the profile store and makes no network request.
 func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
 	result := &Configuration{}
 
