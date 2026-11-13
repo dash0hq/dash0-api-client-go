@@ -62,7 +62,7 @@ type Store struct {
 	configDir string
 
 	// refreshMu serializes OAuth token refreshes so that concurrent
-	// [Configuration.AuthTokenProvider] refreshes do not race against each
+	// [ResolvedConfiguration.AuthTokenProvider] refreshes do not race against each
 	// other and invalidate a rotated refresh token.
 	// Cross-process serialization is layered on top via [acquireProfileLock].
 	refreshMu sync.Mutex
@@ -162,9 +162,9 @@ func resolveConfigDir(opts []StoreOption) (string, error) {
 // DASH0_API_URL or DASH0_OTLP_URL is a complete configuration on its own.
 //
 // The OAuth access token is returned as stored and is not refreshed here.
-// Refreshing happens per request, in the provider returned by [Configuration.AuthTokenProvider], so it only happens for a client that actually goes on to use the profile's credentials.
-// A caller that reads [Configuration.AuthToken] directly gets the token on disk, which may be expired.
-func (s *Store) GetActiveConfiguration() (*Configuration, error) {
+// Refreshing happens per request, in the provider returned by [ResolvedConfiguration.AuthTokenProvider], so it only happens for a client that actually goes on to use the profile's credentials.
+// A caller that reads [ResolvedConfiguration.Token] directly gets the token on disk, which may be expired.
+func (s *Store) GetActiveConfiguration() (*ResolvedConfiguration, error) {
 	envApiUrl := os.Getenv(EnvApiUrl)
 	envAuthToken := os.Getenv(EnvAuthToken)
 	envOtlpUrl := os.Getenv(EnvOtlpUrl)
@@ -180,12 +180,12 @@ func (s *Store) GetActiveConfiguration() (*Configuration, error) {
 		// No usable profile. Env vars alone are sufficient when the auth token
 		// and at least one URL are set; otherwise surface the profile error.
 		if envAuthToken != "" && (envApiUrl != "" || envOtlpUrl != "") {
-			return &Configuration{
-				ApiUrl:    envApiUrl,
-				AuthToken: envAuthToken,
-				OtlpUrl:   envOtlpUrl,
-				Dataset:   envDataset,
-			}, nil
+			resolved := &ResolvedConfiguration{}
+			resolved.setApiUrl(envApiUrl, SourceEnvironment)
+			resolved.setAuthToken(envAuthToken, SourceEnvironment)
+			resolved.setOtlpUrl(envOtlpUrl, SourceEnvironment)
+			resolved.setDataset(envDataset, SourceEnvironment)
+			return resolved, nil
 		}
 		if err == nil {
 			err = ErrNoActiveProfile
@@ -199,7 +199,7 @@ func (s *Store) GetActiveConfiguration() (*Configuration, error) {
 // GetActiveConfigurationContext is the context-aware variant of
 // [Store.GetActiveConfiguration].
 // ctx is currently unused: this call reads the profile store and makes no network request.
-func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configuration, error) {
+func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*ResolvedConfiguration, error) {
 	return s.GetActiveConfiguration()
 }
 
@@ -209,15 +209,10 @@ func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configurati
 // returns [ErrProfileNotFound] when no profile carries the given name so callers
 // can phrase their own message.
 //
-// Prefer this over [Store.GetProfiles] plus a search by name: the returned
-// configuration records the profile and directory it came from, which is what
-// lets [Configuration.AuthTokenProvider] find the profile to write a rotated
-// OAuth token back to. A hand-rolled lookup leaves those fields empty, and the
-// resulting configuration cannot refresh at all.
-//
 // The OAuth access token is not refreshed here. Refreshing happens per request,
-// in the provider returned by [Configuration.AuthTokenProvider], so it only
-// happens for a client that actually goes on to use the profile's credentials.
+// in the provider returned by [ResolvedConfiguration.AuthTokenProvider], so it
+// only happens for a client that actually goes on to use the profile's
+// credentials.
 // Refreshing at lookup time would spend a token exchange, and rotate the
 // refresh token, even when the caller is about to authenticate with a static
 // token supplied elsewhere.
@@ -225,7 +220,7 @@ func (s *Store) GetActiveConfigurationContext(ctx context.Context) (*Configurati
 // ctx is accepted for symmetry with [Store.GetActiveConfigurationContext] and
 // is currently unused: this call reads the profile store and makes no network
 // request.
-func (s *Store) GetConfigurationForProfile(ctx context.Context, profileName string) (*Configuration, error) {
+func (s *Store) GetConfigurationForProfile(ctx context.Context, profileName string) (*ResolvedConfiguration, error) {
 	if profileName == "" {
 		return nil, fmt.Errorf("profile name must not be empty")
 	}
@@ -246,30 +241,57 @@ func (s *Store) GetConfigurationForProfile(ctx context.Context, profileName stri
 // path: it records which profile the configuration came from and layers the
 // environment variables on top.
 //
-// Keeping this in one place is deliberate. Recording
-// [Configuration.ProfileName] is easy to forget, and a configuration without
-// it cannot refresh its OAuth token at all.
-func (s *Store) configurationForProfile(profile *Profile) *Configuration {
-	cfg := &profile.Configuration
-	cfg.ProfileName = profile.Name
-	cfg.ConfigDir = s.configDir
+// It does not refresh the OAuth access token.
+// [ResolvedConfiguration.AuthTokenProvider] refreshes per request, and a
+// refresh at lookup time would rotate the refresh token even when the caller
+// goes on to authenticate with a token supplied elsewhere.
+func (s *Store) configurationForProfile(profile *Profile) *ResolvedConfiguration {
+	resolved := &ResolvedConfiguration{
+		values:      profile.Configuration,
+		profileName: profile.Name,
+		configDir:   s.configDir,
+	}
+	resolved.recordProfileSources()
 
-	// Override with env vars if set.
-	if envApiUrl := os.Getenv(EnvApiUrl); envApiUrl != "" {
-		cfg.ApiUrl = envApiUrl
-	}
-	if envAuthToken := os.Getenv(EnvAuthToken); envAuthToken != "" {
-		cfg.AuthToken = envAuthToken
-		cfg.OAuth = nil
-	}
-	if envOtlpUrl := os.Getenv(EnvOtlpUrl); envOtlpUrl != "" {
-		cfg.OtlpUrl = envOtlpUrl
-	}
-	if envDataset := os.Getenv(EnvDataset); envDataset != "" {
-		cfg.Dataset = envDataset
-	}
+	resolved.setApiUrl(os.Getenv(EnvApiUrl), SourceEnvironment)
+	resolved.setAuthToken(os.Getenv(EnvAuthToken), SourceEnvironment)
+	resolved.setOtlpUrl(os.Getenv(EnvOtlpUrl), SourceEnvironment)
+	resolved.setDataset(os.Getenv(EnvDataset), SourceEnvironment)
 
-	return cfg
+	return resolved
+}
+
+// The set* methods apply one layer's value to a field and record its source.
+// An empty value leaves the field and its source unchanged.
+
+func (cfg *ResolvedConfiguration) setApiUrl(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.ApiUrl = value
+		cfg.sources[FieldApiUrl] = source
+	}
+}
+
+// setAuthToken also drops the OAuth state, because a static token replaces it.
+func (cfg *ResolvedConfiguration) setAuthToken(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.AuthToken = value
+		cfg.values.OAuth = nil
+		cfg.sources[FieldAuthToken] = source
+	}
+}
+
+func (cfg *ResolvedConfiguration) setOtlpUrl(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.OtlpUrl = value
+		cfg.sources[FieldOtlpUrl] = source
+	}
+}
+
+func (cfg *ResolvedConfiguration) setDataset(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.Dataset = value
+		cfg.sources[FieldDataset] = source
+	}
 }
 
 // ResolveConfiguration loads the active profile, applies environment variable
@@ -279,28 +301,28 @@ func (s *Store) configurationForProfile(profile *Profile) *Configuration {
 // This is a convenience function that creates a temporary [Store] internally.
 // Pass [StoreOption] values (e.g. [WithConfigDir]) to control how the
 // profile store is constructed.
-func ResolveConfiguration(apiUrl, authToken string, opts ...StoreOption) (*Configuration, error) {
+func ResolveConfiguration(apiUrl, authToken string, opts ...StoreOption) (*ResolvedConfiguration, error) {
 	return ResolveConfigurationWithOtlpContext(context.Background(), apiUrl, authToken, "", "", opts...)
 }
 
 // ResolveConfigurationContext is the context-aware variant of
 // [ResolveConfiguration].
 // ctx is currently unused: this call reads the profile store and makes no network request.
-func ResolveConfigurationContext(ctx context.Context, apiUrl, authToken string, opts ...StoreOption) (*Configuration, error) {
+func ResolveConfigurationContext(ctx context.Context, apiUrl, authToken string, opts ...StoreOption) (*ResolvedConfiguration, error) {
 	return ResolveConfigurationWithOtlpContext(ctx, apiUrl, authToken, "", "", opts...)
 }
 
 // ResolveConfigurationWithOtlp is like [ResolveConfiguration] but also accepts
 // OTLP URL and dataset overrides.
-func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
+func ResolveConfigurationWithOtlp(apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*ResolvedConfiguration, error) {
 	return ResolveConfigurationWithOtlpContext(context.Background(), apiUrl, authToken, otlpUrl, dataset, opts...)
 }
 
 // ResolveConfigurationWithOtlpContext is the context-aware variant of
 // [ResolveConfigurationWithOtlp].
 // ctx is currently unused: this call reads the profile store and makes no network request.
-func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*Configuration, error) {
-	result := &Configuration{}
+func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken, otlpUrl, dataset string, opts ...StoreOption) (*ResolvedConfiguration, error) {
+	result := &ResolvedConfiguration{}
 
 	// Try to get the active configuration for defaults.
 	var configErr error
@@ -311,59 +333,47 @@ func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken,
 			// Store the error but don't return yet -- we might have explicit overrides.
 			configErr = err
 		} else if cfg != nil {
-			result.ApiUrl = cfg.ApiUrl
-			result.AuthToken = cfg.AuthToken
-			result.OtlpUrl = cfg.OtlpUrl
-			result.Dataset = cfg.Dataset
-			result.OAuth = cfg.OAuth
-			result.ProfileName = cfg.ProfileName
-			result.ConfigDir = cfg.ConfigDir
+			result = cfg
 		}
 	}
+	values := &result.values
 
 	// Override with environment variables (in case GetActiveConfiguration failed
 	// before it could apply them, e.g. no active profile but env vars are set).
-	if envApiUrl := os.Getenv(EnvApiUrl); envApiUrl != "" && result.ApiUrl == "" {
-		result.ApiUrl = envApiUrl
+	if values.ApiUrl == "" {
+		result.setApiUrl(os.Getenv(EnvApiUrl), SourceEnvironment)
 	}
-	if envAuthToken := os.Getenv(EnvAuthToken); envAuthToken != "" && result.AuthToken == "" {
-		result.AuthToken = envAuthToken
+	if result.Token() == "" {
+		result.setAuthToken(os.Getenv(EnvAuthToken), SourceEnvironment)
 	}
-	if envOtlpUrl := os.Getenv(EnvOtlpUrl); envOtlpUrl != "" && result.OtlpUrl == "" {
-		result.OtlpUrl = envOtlpUrl
+	if values.OtlpUrl == "" {
+		result.setOtlpUrl(os.Getenv(EnvOtlpUrl), SourceEnvironment)
 	}
-	if envDataset := os.Getenv(EnvDataset); envDataset != "" && result.Dataset == "" {
-		result.Dataset = envDataset
+	if values.Dataset == "" {
+		result.setDataset(os.Getenv(EnvDataset), SourceEnvironment)
 	}
 
 	// Override with explicit parameters if provided.
-	if apiUrl != "" {
-		result.ApiUrl = apiUrl
-	}
+	result.setApiUrl(apiUrl, SourceArgument)
 	if authToken != "" {
-		result.AuthToken = authToken
-		result.OAuth = nil
-		result.ProfileName = ""
-		result.ConfigDir = ""
+		result.setAuthToken(authToken, SourceArgument)
+		result.profileName = ""
+		result.configDir = ""
 	}
-	if otlpUrl != "" {
-		result.OtlpUrl = otlpUrl
-	}
-	if dataset != "" {
-		result.Dataset = dataset
-	}
+	result.setOtlpUrl(otlpUrl, SourceArgument)
+	result.setDataset(dataset, SourceArgument)
 
 	// If we had a config error and don't have complete configuration from
 	// overrides, return the error.
-	if configErr != nil && (result.AuthToken == "" || (result.ApiUrl == "" && result.OtlpUrl == "")) {
+	if configErr != nil && (result.Token() == "" || (values.ApiUrl == "" && values.OtlpUrl == "")) {
 		return nil, configErr
 	}
 
 	// Final validation.
-	if result.AuthToken == "" {
+	if result.Token() == "" {
 		return nil, fmt.Errorf("auth token is required; provide it as a parameter or configure a profile")
 	}
-	if result.ApiUrl == "" && result.OtlpUrl == "" {
+	if values.ApiUrl == "" && values.OtlpUrl == "" {
 		return nil, fmt.Errorf("at least one of API URL or OTLP URL is required; provide them as parameters or configure a profile")
 	}
 
@@ -412,6 +422,9 @@ func (s *Store) GetProfiles() ([]Profile, error) {
 		)
 	}
 
+	for i := range profilesFile.Profiles {
+		migrateAccessToken(&profilesFile.Profiles[i].Configuration)
+	}
 	return profilesFile.Profiles, nil
 }
 
@@ -511,7 +524,13 @@ func (s *Store) updateProfileLocked(name string, updateFn func(*Configuration)) 
 	found := false
 	for i, profile := range profiles {
 		if profile.Name == name {
-			updateFn(&profiles[i].Configuration)
+			cfg := &profiles[i].Configuration
+			authTokenBefore, accessTokenBefore := cfg.AuthToken, ""
+			if cfg.OAuth != nil {
+				accessTokenBefore = cfg.OAuth.AccessToken
+			}
+			updateFn(cfg)
+			syncAccessTokenCopy(cfg, authTokenBefore, accessTokenBefore)
 			found = true
 			break
 		}
@@ -698,7 +717,15 @@ func (s *Store) getActiveProfileName() (string, error) {
 }
 
 func (s *Store) saveProfiles(profiles []Profile) error {
-	profilesFile := ProfilesFile{Profiles: profiles}
+	profilesFile := ProfilesFile{Profiles: make([]Profile, len(profiles))}
+	for i, profile := range profiles {
+		if profile.Configuration.OAuth != nil {
+			oauthState := *profile.Configuration.OAuth
+			profile.Configuration.OAuth = &oauthState
+		}
+		migrateAccessToken(&profile.Configuration)
+		profilesFile.Profiles[i] = profile
+	}
 	data, err := json.MarshalIndent(profilesFile, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal profiles: %w", err)

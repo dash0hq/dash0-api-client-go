@@ -7,3 +7,19 @@
 # Note: interface method additions (": added") are filtered out automatically
 # and do not need to be listed here.
 
+
+# v1.34.0: profiles splits the profiles.json schema (Configuration) from the
+# resolved configuration (ResolvedConfiguration), see #37.
+(*Configuration).AuthTokenProvider
+(*Configuration).ClientOptions
+(*Store).GetActiveConfiguration
+(*Store).GetActiveConfigurationContext
+(*Store).GetConfigurationForProfile
+Configuration.ConfigDir
+Configuration.ProfileName
+FromContext
+ResolveConfiguration
+ResolveConfigurationContext
+ResolveConfigurationWithOtlp
+ResolveConfigurationWithOtlpContext
+WithConfiguration

@@ -1,6 +1,7 @@
 package profiles
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -50,20 +51,21 @@ func TestOAuthState_PopulatedRoundTrip(t *testing.T) {
 func TestConfigurationHasCredentials(t *testing.T) {
 	for _, tc := range []struct {
 		name string
-		cfg  Configuration
+		cfg  *Configuration
 		want bool
 	}{
-		{name: "nothing set", cfg: Configuration{}, want: false},
-		{name: "static token", cfg: Configuration{AuthToken: "auth_x"}, want: true},
-		{name: "OAuth state only", cfg: Configuration{OAuth: &OAuthState{}}, want: true},
+		{name: "nil", cfg: nil, want: false},
+		{name: "nothing set", cfg: &Configuration{}, want: false},
+		{name: "static token", cfg: &Configuration{AuthToken: "auth_x"}, want: true},
+		{name: "OAuth profile never logged in", cfg: &Configuration{OAuth: &OAuthState{}}, want: false},
 		{
 			name: "OAuth state with an access token",
-			cfg:  Configuration{AuthToken: "dash0_at_x", OAuth: &OAuthState{}},
+			cfg:  &Configuration{OAuth: &OAuthState{AccessToken: "dash0_at_x"}},
 			want: true,
 		},
 		{
 			name: "empty token is not a credential",
-			cfg:  Configuration{ApiUrl: "https://api.example.com"},
+			cfg:  &Configuration{ApiUrl: "https://api.example.com"},
 			want: false,
 		},
 	} {
@@ -72,5 +74,86 @@ func TestConfigurationHasCredentials(t *testing.T) {
 				t.Errorf("HasCredentials() = %v, want %v", got, tc.want)
 			}
 		})
+	}
+}
+
+func TestConfigurationDatasetPtrNil(t *testing.T) {
+	var cfg *Configuration
+	if got := cfg.DatasetPtr(); got != nil {
+		t.Errorf("DatasetPtr() = %v, want nil", got)
+	}
+}
+
+func TestResolvedConfigurationToken(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		cfg  Configuration
+		want string
+	}{
+		{name: "static token", cfg: Configuration{AuthToken: "auth_x"}, want: "auth_x"},
+		{
+			name: "OAuth access token",
+			cfg:  Configuration{OAuth: &OAuthState{AccessToken: "dash0_at_x"}},
+			want: "dash0_at_x",
+		},
+		{name: "OAuth profile never logged in", cfg: Configuration{OAuth: &OAuthState{}}, want: ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := newResolved(tc.cfg, "test", "/config")
+			if got := cfg.Token(); got != tc.want {
+				t.Errorf("Token() = %q, want %q", got, tc.want)
+			}
+			if got := cfg.HasCredentials(); got != (tc.want != "") {
+				t.Errorf("HasCredentials() = %v, want %v", got, tc.want != "")
+			}
+		})
+	}
+}
+
+func TestResolvedConfigurationOAuthReturnsACopy(t *testing.T) {
+	cfg := newResolved(Configuration{OAuth: &OAuthState{AccessToken: "dash0_at_x"}}, "test", "/config")
+
+	cfg.OAuth().AccessToken = "changed"
+
+	if got := cfg.Token(); got != "dash0_at_x" {
+		t.Errorf("Token() = %q after changing the returned OAuth state, want %q", got, "dash0_at_x")
+	}
+}
+
+func TestResolvedConfigurationNil(t *testing.T) {
+	var cfg *ResolvedConfiguration
+	if cfg.ApiUrl() != "" || cfg.OtlpUrl() != "" || cfg.Dataset() != "" || cfg.Token() != "" ||
+		cfg.ProfileName() != "" || cfg.ConfigDir() != "" {
+		t.Error("expected empty strings from a nil ResolvedConfiguration")
+	}
+	if cfg.DatasetPtr() != nil {
+		t.Error("DatasetPtr() on nil, want nil")
+	}
+	if cfg.OAuth() != nil {
+		t.Error("OAuth() on nil, want nil")
+	}
+	if cfg.HasCredentials() {
+		t.Error("HasCredentials() on nil, want false")
+	}
+	if opts := cfg.ClientOptions(); len(opts) != 0 {
+		t.Errorf("ClientOptions() on nil returned %d options, want 0", len(opts))
+	}
+	if token, _ := cfg.AuthTokenProvider().AuthToken(context.Background()); token != "" {
+		t.Errorf("AuthTokenProvider() on nil served %q, want an empty token", token)
+	}
+}
+
+func TestResolvedConfigurationSource_NilAndUnknownField(t *testing.T) {
+	var nilConfig *ResolvedConfiguration
+	if got := nilConfig.Source(FieldApiUrl); got != SourceUnset {
+		t.Errorf("nil Source(FieldApiUrl) = %q, want %q", got, SourceUnset)
+	}
+
+	cfg := &ResolvedConfiguration{}
+	cfg.setApiUrl("https://api.example.com", SourceArgument)
+	for _, field := range []ConfigurationField{-1, fieldCount, 99} {
+		if got := cfg.Source(field); got != SourceUnset {
+			t.Errorf("Source(%d) = %q, want %q", field, got, SourceUnset)
+		}
 	}
 }

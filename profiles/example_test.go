@@ -46,16 +46,23 @@ func ExampleNewStore_withConfigDir() {
 }
 
 func ExampleWithConfiguration() {
-	cfg := &profiles.Configuration{
-		ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
-		AuthToken: "auth_example-token",
-		Dataset:   "production",
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	cfg, err := profiles.ResolveConfiguration(
+		"https://api.eu-west-1.aws.dash0.com",
+		"auth_example-token",
+		profiles.WithConfigDir(configDir),
+	)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
 	}
 
 	ctx := profiles.WithConfiguration(context.Background(), cfg)
 
 	retrieved := profiles.FromContext(ctx)
-	fmt.Println(retrieved.ApiUrl)
+	fmt.Println(retrieved.ApiUrl())
 
 	// Output:
 	// https://api.eu-west-1.aws.dash0.com
@@ -81,8 +88,8 @@ func ExampleStore_GetActiveConfiguration() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.ApiUrl)
-	fmt.Println(cfg.Dataset)
+	fmt.Println(cfg.ApiUrl())
+	fmt.Println(cfg.Dataset())
 
 	// Output:
 	// https://api.eu-west-1.aws.dash0.com
@@ -113,8 +120,8 @@ func ExampleStore_GetActiveConfiguration_envVarOverride() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.ApiUrl)
-	fmt.Println(cfg.Dataset)
+	fmt.Println(cfg.ApiUrl())
+	fmt.Println(cfg.Dataset())
 
 	// Output:
 	// https://api.eu-west-1.aws.dash0.com
@@ -144,8 +151,8 @@ func ExampleResolveConfiguration_parameterOverride() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.ApiUrl)
-	fmt.Println(cfg.AuthToken)
+	fmt.Println(cfg.ApiUrl())
+	fmt.Println(cfg.Token())
 
 	// Output:
 	// https://api.us-west-2.aws.dash0.com
@@ -166,10 +173,18 @@ func ExampleConfiguration_DatasetPtr() {
 	// <nil>
 }
 
-func ExampleConfiguration_ClientOptions() {
-	cfg := &profiles.Configuration{
-		ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
-		AuthToken: "auth_example-token",
+func ExampleResolvedConfiguration_ClientOptions() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	cfg, err := profiles.ResolveConfiguration(
+		"https://api.eu-west-1.aws.dash0.com",
+		"auth_example-token",
+		profiles.WithConfigDir(configDir),
+	)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
 	}
 
 	opts := cfg.ClientOptions()
@@ -314,7 +329,7 @@ func ExampleStore_GetActiveConfigurationContext() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.ApiUrl)
+	fmt.Println(cfg.ApiUrl())
 
 	// Output:
 	// https://api.eu-west-1.aws.dash0.com
@@ -480,7 +495,7 @@ func ExampleResolveConfigurationContext() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.ApiUrl)
+	fmt.Println(cfg.ApiUrl())
 	// Output: https://api.eu-west-1.aws.dash0.com
 }
 
@@ -510,31 +525,47 @@ func ExampleResolveConfigurationWithOtlpContext() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.OtlpUrl, cfg.Dataset)
+	fmt.Println(cfg.OtlpUrl(), cfg.Dataset())
 	// Output: https://ingress.eu-west-1.aws.dash0.com production
 }
 
-func ExampleConfiguration_AuthTokenProvider() {
+func ExampleResolvedConfiguration_AuthTokenProvider() {
 	// Point the store at a scratch directory so the example does not touch the
 	// real ~/.dash0.
 	configDir, _ := os.MkdirTemp("", "dash0-example-*")
 	defer func() { _ = os.RemoveAll(configDir) }()
 
+	store, err := profiles.NewStore(profiles.WithConfigDir(configDir))
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	if err := store.AddProfile(profiles.Profile{
+		Name: "production",
+		Configuration: profiles.Configuration{
+			ApiUrl: "https://api.eu-west-1.aws.dash0.com",
+			OAuth: &profiles.OAuthState{
+				ClientID:     "example-client-id",
+				AccessToken:  "dash0_at_example-token",
+				RefreshToken: "example-refresh-token",
+				ExpiresAt:    time.Now().Add(1 * time.Hour),
+			},
+		},
+	}); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
 	// An OAuth-backed configuration yields a provider that refreshes the access
 	// token as it approaches expiry, so a client built from it keeps working for
 	// operations longer than a single token's 15-minute lifetime.
-	cfg := &profiles.Configuration{
-		ApiUrl:      "https://api.eu-west-1.aws.dash0.com",
-		AuthToken:   "dash0_at_example-token",
-		ProfileName: "production",
-		OAuth: &profiles.OAuthState{
-			ClientID:     "example-client-id",
-			RefreshToken: "example-refresh-token",
-			ExpiresAt:    time.Now().Add(1 * time.Hour),
-		},
+	cfg, err := store.GetConfigurationForProfile(context.Background(), "production")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
 	}
 
-	provider := cfg.AuthTokenProvider(profiles.WithConfigDir(configDir))
+	provider := cfg.AuthTokenProvider()
 
 	// The token is nowhere near expiry, so it is served without a network call.
 	authToken, err := provider.AuthToken(context.Background())
@@ -548,12 +579,20 @@ func ExampleConfiguration_AuthTokenProvider() {
 	// dash0_at_example-token
 }
 
-func ExampleConfiguration_AuthTokenProvider_staticToken() {
+func ExampleResolvedConfiguration_AuthTokenProvider_staticToken() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
 	// A configuration with no OAuth state serves its static token unchanged, so
 	// callers do not need to branch on the profile's auth kind.
-	cfg := &profiles.Configuration{
-		ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
-		AuthToken: "auth_example-token",
+	cfg, err := profiles.ResolveConfiguration(
+		"https://api.eu-west-1.aws.dash0.com",
+		"auth_example-token",
+		profiles.WithConfigDir(configDir),
+	)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
 	}
 
 	authToken, err := cfg.AuthTokenProvider().AuthToken(context.Background())
@@ -594,8 +633,83 @@ func ExampleStore_GetConfigurationForProfile() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println(cfg.ProfileName)
+	fmt.Println(cfg.ProfileName())
 
 	// Output:
 	// production
+}
+
+func ExampleResolvedConfiguration_Token() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, err := profiles.NewStore(profiles.WithConfigDir(configDir))
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	if err := store.AddProfile(profiles.Profile{
+		Name: "production",
+		Configuration: profiles.Configuration{
+			ApiUrl: "https://api.eu-west-1.aws.dash0.com",
+			OAuth: &profiles.OAuthState{
+				AccessToken:  "dash0_at_example-token",
+				RefreshToken: "example-refresh-token",
+				ExpiresAt:    time.Now().Add(1 * time.Hour),
+			},
+		},
+	}); err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+
+	cfg, err := store.GetConfigurationForProfile(context.Background(), "production")
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	// Token returns the OAuth access token for an OAuth profile and the static
+	// auth token otherwise.
+	fmt.Println(cfg.Token())
+
+	// Output:
+	// dash0_at_example-token
+}
+
+func ExampleResolvedConfiguration_Source() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewStore(profiles.WithConfigDir(configDir))
+	_ = store.AddProfile(profiles.Profile{
+		Name: "dev",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_dev-token",
+			Dataset:   "staging",
+		},
+	})
+
+	_ = os.Setenv(profiles.EnvDataset, "production")
+	defer func() { _ = os.Unsetenv(profiles.EnvDataset) }()
+
+	cfg, err := profiles.ResolveConfiguration(
+		"https://api.us-west-2.aws.dash0.com",
+		"",
+		profiles.WithConfigDir(configDir),
+	)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Printf("api url: %q\n", cfg.Source(profiles.FieldApiUrl))
+	fmt.Printf("auth token: %q\n", cfg.Source(profiles.FieldAuthToken))
+	fmt.Printf("otlp url: %q\n", cfg.Source(profiles.FieldOtlpUrl))
+	fmt.Printf("dataset: %q\n", cfg.Source(profiles.FieldDataset))
+
+	// Output:
+	// api url: "argument"
+	// auth token: "profile"
+	// otlp url: ""
+	// dataset: "environment"
 }
