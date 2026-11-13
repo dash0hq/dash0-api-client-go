@@ -129,6 +129,8 @@ var constRenames = map[string]string{
 	// Pinned before release so a future enum sharing these values cannot rename them.
 	"EphemeralDashboard": "DashboardKindEphemeralDashboard",
 	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
+	// Pinned before release so a future enum sharing this value cannot rename it.
+	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

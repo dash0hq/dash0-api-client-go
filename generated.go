@@ -1104,13 +1104,16 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 
 // Defines values for FailedCheckSilencedTriggerVariableName.
 const (
-	IssueSilenced FailedCheckSilencedTriggerVariableName = "issue.silenced"
+	IssueSilenced                                     FailedCheckSilencedTriggerVariableName = "issue.silenced"
+	FailedCheckSilencedTriggerVariableNameIssueStatus FailedCheckSilencedTriggerVariableName = "issue.status"
 )
 
 // Valid indicates whether the value is a known member of the FailedCheckSilencedTriggerVariableName enum.
 func (e FailedCheckSilencedTriggerVariableName) Valid() bool {
 	switch e {
 	case IssueSilenced:
+		return true
+	case FailedCheckSilencedTriggerVariableNameIssueStatus:
 		return true
 	default:
 		return false
@@ -5431,6 +5434,24 @@ func (e MemberInvitationDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for MetricsRetentionClass.
+const (
+	MetricsRetentionClassN13M MetricsRetentionClass = "13M"
+	MetricsRetentionClassN30d MetricsRetentionClass = "30d"
+)
+
+// Valid indicates whether the value is a known member of the MetricsRetentionClass enum.
+func (e MetricsRetentionClass) Valid() bool {
+	switch e {
+	case MetricsRetentionClassN13M:
+		return true
+	case MetricsRetentionClassN30d:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for NetworkLevel.
 const (
 	Full        NetworkLevel = "full"
@@ -7189,6 +7210,33 @@ func (e SyntheticBrowserCheckPluginKind) Valid() bool {
 	}
 }
 
+// Defines values for SyntheticBrowserCheckTestStatus.
+const (
+	SyntheticBrowserCheckTestStatusFailed      SyntheticBrowserCheckTestStatus = "failed"
+	SyntheticBrowserCheckTestStatusInterrupted SyntheticBrowserCheckTestStatus = "interrupted"
+	SyntheticBrowserCheckTestStatusPassed      SyntheticBrowserCheckTestStatus = "passed"
+	SyntheticBrowserCheckTestStatusSkipped     SyntheticBrowserCheckTestStatus = "skipped"
+	SyntheticBrowserCheckTestStatusTimedOut    SyntheticBrowserCheckTestStatus = "timedOut"
+)
+
+// Valid indicates whether the value is a known member of the SyntheticBrowserCheckTestStatus enum.
+func (e SyntheticBrowserCheckTestStatus) Valid() bool {
+	switch e {
+	case SyntheticBrowserCheckTestStatusFailed:
+		return true
+	case SyntheticBrowserCheckTestStatusInterrupted:
+		return true
+	case SyntheticBrowserCheckTestStatusPassed:
+		return true
+	case SyntheticBrowserCheckTestStatusSkipped:
+		return true
+	case SyntheticBrowserCheckTestStatusTimedOut:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SyntheticCheckAction.
 const (
 	SyntheticCheckDelete SyntheticCheckAction = "synthetic_check:delete"
@@ -7681,6 +7729,7 @@ const (
 	ViewTypeGcpCloudSqlInstances ViewType = "gcp_cloud_sql_instances"
 	ViewTypeGcpCloudStorage      ViewType = "gcp_cloud_storage"
 	ViewTypeGcpPubsub            ViewType = "gcp_pubsub"
+	ViewTypeKubernetesPods       ViewType = "kubernetes_pods"
 	ViewTypeLogs                 ViewType = "logs"
 	ViewTypeMetrics              ViewType = "metrics"
 	ViewTypeProfiles             ViewType = "profiles"
@@ -7708,6 +7757,8 @@ func (e ViewType) Valid() bool {
 	case ViewTypeGcpCloudStorage:
 		return true
 	case ViewTypeGcpPubsub:
+		return true
+	case ViewTypeKubernetesPods:
 		return true
 	case ViewTypeLogs:
 		return true
@@ -9361,6 +9412,18 @@ type DashboardKind string
 
 // DashboardLabels defines model for DashboardLabels.
 type DashboardLabels struct {
+	// Dash0Comid The UUID that Dash0 assigned to the dashboard. Server-set and read-only: it is set on
+	// `/api/dashboards` responses. `POST /api/dashboards` rejects a request that sets it with `400`,
+	// and a PUT ignores it.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin The client-supplied dashboard origin. `POST /api/dashboards` creates or updates the dashboard with
+	// this origin. It is settable on create only and ignored on update; when
+	// `metadata.dash0Extensions.id` is also set, the two must be equal. A UUID value is stored with
+	// an `api-` prefix, so responses return `api-<uuid>`. Set on `/api/dashboards` responses when the
+	// dashboard has an origin.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
 	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
 	// - `ui`: created interactively in the Dash0 UI.
 	// - `terraform`: managed via the Dash0 Terraform provider.
@@ -9402,7 +9465,8 @@ type DashboardMetadataExtensions struct {
 
 	// Id An immutable id field to support automatic dashboard creation based on Kubernetes CRDs. This
 	// field essentially acts as an external ID for the dashboard. We support a way to upsert dashboards based
-	// on this field.
+	// on this field. On `/api/dashboards`, `metadata.labels["dash0.com/origin"]` is the preferred way to
+	// set it; when both are set on create they must be equal.
 	Id *string `json:"id,omitempty"`
 
 	// Origin This field is deprecated and is replaced by id field.
@@ -9530,9 +9594,10 @@ type DatasetMetadata struct {
 
 // DatasetMetricsSettings defines model for DatasetMetricsSettings.
 type DatasetMetricsSettings struct {
-	// Retention The retention of a signal that is not customer-selectable (metrics, profiling): always
-	// 30 days.
-	Retention PinnedRetentionClass `json:"retention"`
+	// Retention The retention of metrics: always 13 calendar months, not customer-selectable.
+	// The legacy value `30d` is accepted on writes for backward compatibility and
+	// normalized to `13M`. Responses always return `13M`.
+	Retention MetricsRetentionClass `json:"retention"`
 }
 
 // DatasetPermission defines model for DatasetPermission.
@@ -9566,8 +9631,7 @@ type DatasetProcessing struct {
 
 // DatasetProfilingSettings defines model for DatasetProfilingSettings.
 type DatasetProfilingSettings struct {
-	// Retention The retention of a signal that is not customer-selectable (metrics, profiling): always
-	// 30 days.
+	// Retention The retention of profiling data: always 30 days, not customer-selectable.
 	Retention PinnedRetentionClass `json:"retention"`
 }
 
@@ -9590,11 +9654,11 @@ type DatasetRestriction string
 
 // DatasetRetention How long each signal is kept.
 type DatasetRetention struct {
-	Logs      *RetentionClass       `json:"logs,omitempty"`
-	Metrics   *PinnedRetentionClass `json:"metrics,omitempty"`
-	Profiles  *PinnedRetentionClass `json:"profiles,omitempty"`
-	Traces    *RetentionClass       `json:"traces,omitempty"`
-	WebEvents *RetentionClass       `json:"webEvents,omitempty"`
+	Logs      *RetentionClass        `json:"logs,omitempty"`
+	Metrics   *MetricsRetentionClass `json:"metrics,omitempty"`
+	Profiles  *PinnedRetentionClass  `json:"profiles,omitempty"`
+	Traces    *RetentionClass        `json:"traces,omitempty"`
+	WebEvents *RetentionClass        `json:"webEvents,omitempty"`
 }
 
 // DatasetSettings defines model for DatasetSettings.
@@ -9863,6 +9927,12 @@ type FailedCheckAgenticWorkflowTriggerSpec struct {
 	// whose rule ID matches one of the listed values trigger the automation.
 	CheckRuleIDs *[]string `json:"checkRuleIDs,omitempty"`
 
+	// ExcludedCheckRuleIDs Optional list of check rule IDs that never trigger the automation, even when
+	// they are also listed in `checkRuleIDs` or match the label and annotation
+	// filters. Use it to leave single rules out of an automation that runs for all
+	// check rules or for every rule matching its filters.
+	ExcludedCheckRuleIDs *[]string `json:"excludedCheckRuleIDs,omitempty"`
+
 	// LabelFilters Optional filters applied to check labels at dispatch time. When defined
 	// and not empty, only failed checks whose labels satisfy all filter criteria
 	// trigger this automation (AND semantics). Each criterion specifies a label key
@@ -9880,10 +9950,11 @@ type FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item struct {
 	union json.RawMessage
 }
 
-// FailedCheckSilencedTriggerVariableName Variable provided only by the `failed_check.new` trigger. A silenced failed check never
-// reaches Slack, so `slack_bot.failed_check.new` does not provide it.
+// FailedCheckSilencedTriggerVariableName Variables provided only by the `failed_check.new` trigger. A silenced failed check never
+// reaches Slack, so `slack_bot.failed_check.new` does not provide them.
 //
 // - `issue.silenced`: `true` when a silence covered the failed check when it fired, `false` otherwise.
+// - `issue.status`: `degraded` or `critical`, the highest status the failed check reached by the time it fired. Absent when the dispatching producer predates the field.
 type FailedCheckSilencedTriggerVariableName string
 
 // FailedCheckTriggerVariableName Variables provided by every failed-check trigger.
@@ -13879,6 +13950,11 @@ type MetricSample = []interface{}
 // MetricSamples defines model for MetricSamples.
 type MetricSamples = []MetricSample
 
+// MetricsRetentionClass The retention of metrics: always 13 calendar months, not customer-selectable.
+// The legacy value `30d` is accepted on writes for backward compatibility and
+// normalized to `13M`. Responses always return `13M`.
+type MetricsRetentionClass string
+
 // NameValuePair defines model for NameValuePair.
 type NameValuePair struct {
 	Name  string `json:"name"`
@@ -14056,6 +14132,10 @@ type NumericAssertionOperator string
 type OAuthAuthorizationServerMetadata struct {
 	// AuthorizationEndpoint URL of the authorization endpoint.
 	AuthorizationEndpoint string `json:"authorization_endpoint"`
+
+	// ClientIdMetadataDocumentSupported Whether a client may use an https URL pointing at its Client ID Metadata Document as its
+	// client_id instead of registering (draft-ietf-oauth-client-id-metadata-document).
+	ClientIdMetadataDocumentSupported *bool `json:"client_id_metadata_document_supported,omitempty"`
 
 	// CodeChallengeMethodsSupported List of supported PKCE code challenge methods.
 	CodeChallengeMethodsSupported *[]OAuthCodeChallengeMethod `json:"code_challenge_methods_supported,omitempty"`
@@ -14307,8 +14387,7 @@ type PagerDutyConfig struct {
 	Url string `json:"url"`
 }
 
-// PinnedRetentionClass The retention of a signal that is not customer-selectable (metrics, profiling): always
-// 30 days.
+// PinnedRetentionClass The retention of profiling data: always 30 days, not customer-selectable.
 type PinnedRetentionClass string
 
 // ProfileFrameAddressMatch Constrains the instruction address of one prefix frame. Set exactly one
@@ -17322,6 +17401,57 @@ type SyntheticBrowserCheckPluginSpec struct {
 	Script string `json:"script"`
 }
 
+// SyntheticBrowserCheckRun defines model for SyntheticBrowserCheckRun.
+type SyntheticBrowserCheckRun struct {
+	// Output The end of the runner's error output, when the run failed.
+	Output *string `json:"output,omitempty"`
+
+	// Passed The runner's verdict for the whole run.
+	Passed bool `json:"passed"`
+
+	// Tests The Playwright tests the script declared, in the order they ran.
+	Tests []SyntheticBrowserCheckTest `json:"tests"`
+}
+
+// SyntheticBrowserCheckStep defines model for SyntheticBrowserCheckStep.
+type SyntheticBrowserCheckStep struct {
+	// Duration duration in nanoseconds
+	Duration int64 `json:"duration"`
+
+	// Error Why the step failed, if it did.
+	Error *string `json:"error,omitempty"`
+	Title string  `json:"title"`
+}
+
+// SyntheticBrowserCheckTest defines model for SyntheticBrowserCheckTest.
+type SyntheticBrowserCheckTest struct {
+	// Duration duration in nanoseconds
+	Duration int64 `json:"duration"`
+
+	// Error Why the test failed, if it did.
+	Error *string `json:"error,omitempty"`
+
+	// Status Playwright's status of a test's last run.
+	// - `passed`: The test passed.
+	// - `failed`: An assertion or step failed.
+	// - `timedOut`: The test ran out of time.
+	// - `skipped`: The test did not run.
+	// - `interrupted`: The run stopped before the test finished.
+	Status SyntheticBrowserCheckTestStatus `json:"status"`
+	Steps  []SyntheticBrowserCheckStep     `json:"steps"`
+
+	// Title The test's title, prefixed with the titles of the describe blocks around it.
+	Title string `json:"title"`
+}
+
+// SyntheticBrowserCheckTestStatus Playwright's status of a test's last run.
+// - `passed`: The test passed.
+// - `failed`: An assertion or step failed.
+// - `timedOut`: The test ran out of time.
+// - `skipped`: The test did not run.
+// - `interrupted`: The run stopped before the test finished.
+type SyntheticBrowserCheckTestStatus string
+
 // SyntheticCheckAction defines model for SyntheticCheckAction.
 type SyntheticCheckAction string
 
@@ -17400,6 +17530,10 @@ type SyntheticCheckAttempt struct {
 type SyntheticCheckAttemptDetails struct {
 	// AttemptId (Internal) Unique identifier for the attempt
 	AttemptId string `json:"attemptId"`
+
+	// BrowserRun (Internal) What the browser runner reported, on a test run of a browser check. Absent on HTTP
+	// checks and on attempts read from storage.
+	BrowserRun *SyntheticBrowserCheckRun `json:"browserRun,omitempty"`
 
 	// Duration duration in nanoseconds
 	Duration int64 `json:"duration"`
@@ -18020,7 +18154,17 @@ type TimeReference struct {
 // TimeReferenceRange A range of time between two time references.
 type TimeReferenceRange struct {
 	From TimeReference `json:"from"`
-	To   TimeReference `json:"to"`
+
+	// TimeZone Optional IANA time zone used to evaluate relative calendar arithmetic and rounding,
+	// for example `Europe/Amsterdam` or `America/New_York`. Day and week boundaries
+	// follow that zone, including daylight saving time. Weeks start on Sunday.
+	// Fixed timestamps keep their original instant. If omitted or empty, the server's
+	// existing time zone behavior is preserved. Unknown time zones fall back to UTC.
+	// Responses report this fallback in the `Dash0-Time-Zone-Fallback: UTC` HTTP header,
+	// including streaming responses and responses without warning fields.
+	// Metric and SQL query responses also report this fallback through their warnings.
+	TimeZone *TimeZone     `json:"timeZone,omitempty"`
+	To       TimeReference `json:"to"`
 }
 
 // TimeSeriesAggregationAnnotations defines model for TimeSeriesAggregationAnnotations.
@@ -18181,6 +18325,16 @@ type TimeSeriesAggregationSpec struct {
 	Priority *int                        `json:"priority,omitempty"`
 	Sample   TimeSeriesAggregationSample `json:"sample"`
 }
+
+// TimeZone Optional IANA time zone used to evaluate relative calendar arithmetic and rounding,
+// for example `Europe/Amsterdam` or `America/New_York`. Day and week boundaries
+// follow that zone, including daylight saving time. Weeks start on Sunday.
+// Fixed timestamps keep their original instant. If omitted or empty, the server's
+// existing time zone behavior is preserved. Unknown time zones fall back to UTC.
+// Responses report this fallback in the `Dash0-Time-Zone-Fallback: UTC` HTTP header,
+// including streaming responses and responses without warning fields.
+// Metric and SQL query responses also report this fallback through their warnings.
+type TimeZone = string
 
 // TimingAssertion defines model for TimingAssertion.
 type TimingAssertion struct {
@@ -18538,7 +18692,11 @@ type ViewPermission struct {
 
 // ViewSpec defines model for ViewSpec.
 type ViewSpec struct {
-	Display ViewDisplay `json:"display"`
+	// ClientFilter A filter the UI applies to the rows it has loaded, for attributes the query cannot filter on,
+	// such as a Kubernetes pod's phase. Only applicable when type is "kubernetes_pods", where only
+	// `is` and `is_one_of` criteria on `k8s.pod.phase` apply.
+	ClientFilter *FilterCriteria `json:"clientFilter,omitempty"`
+	Display      ViewDisplay     `json:"display"`
 
 	// Filter The filter for the whole view.
 	Filter *FilterCriteria `json:"filter,omitempty"`
@@ -24514,7 +24672,14 @@ type ClientInterface interface {
 
 	// PostApiSyntheticChecksTestWithBody Trigger a test run of a synthetic check
 	//
-	// Triggers an immediate test execution of a synthetic check.
+	// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+	//
+	// A browser check can run for several minutes. When its run takes longer than a minute, the
+	// response starts early with status `200` and sends a space every minute until the result
+	// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+	// the body still parses as one JSON document. A browser run that fails after the response has
+	// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+	// in the body rather than relying on the status code alone.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -24523,7 +24688,14 @@ type ClientInterface interface {
 
 	// PostApiSyntheticChecksTest Trigger a test run of a synthetic check
 	//
-	// Triggers an immediate test execution of a synthetic check.
+	// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+	//
+	// A browser check can run for several minutes. When its run takes longer than a minute, the
+	// response starts early with status `200` and sends a space every minute until the result
+	// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+	// the body still parses as one JSON document. A browser run that fails after the response has
+	// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+	// in the body rather than relying on the status code alone.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -28333,7 +28505,14 @@ func (c *generatedClient) GetApiSyntheticChecksLocations(ctx context.Context, re
 
 // PostApiSyntheticChecksTestWithBody Trigger a test run of a synthetic check
 //
-// Triggers an immediate test execution of a synthetic check.
+// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+//
+// A browser check can run for several minutes. When its run takes longer than a minute, the
+// response starts early with status `200` and sends a space every minute until the result
+// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+// the body still parses as one JSON document. A browser run that fails after the response has
+// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+// in the body rather than relying on the status code alone.
 //
 // Takes any type of body and a specified content type.
 //
@@ -28352,7 +28531,14 @@ func (c *generatedClient) PostApiSyntheticChecksTestWithBody(ctx context.Context
 
 // PostApiSyntheticChecksTest Trigger a test run of a synthetic check
 //
-// Triggers an immediate test execution of a synthetic check.
+// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+//
+// A browser check can run for several minutes. When its run takes longer than a minute, the
+// response starts early with status `200` and sends a space every minute until the result
+// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+// the body still parses as one JSON document. A browser run that fails after the response has
+// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+// in the body rather than relying on the status code alone.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -38944,7 +39130,14 @@ type ClientWithResponsesInterface interface {
 
 	// PostApiSyntheticChecksTestWithBodyWithResponse Trigger a test run of a synthetic check
 	//
-	// Triggers an immediate test execution of a synthetic check.
+	// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+	//
+	// A browser check can run for several minutes. When its run takes longer than a minute, the
+	// response starts early with status `200` and sends a space every minute until the result
+	// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+	// the body still parses as one JSON document. A browser run that fails after the response has
+	// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+	// in the body rather than relying on the status code alone.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -38953,7 +39146,14 @@ type ClientWithResponsesInterface interface {
 
 	// PostApiSyntheticChecksTestWithResponse Trigger a test run of a synthetic check
 	//
-	// Triggers an immediate test execution of a synthetic check.
+	// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+	//
+	// A browser check can run for several minutes. When its run takes longer than a minute, the
+	// response starts early with status `200` and sends a space every minute until the result
+	// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+	// the body still parses as one JSON document. A browser run that fails after the response has
+	// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+	// in the body rather than relying on the status code alone.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -49055,7 +49255,14 @@ func (c *ClientWithResponses) GetApiSyntheticChecksLocationsWithResponse(ctx con
 
 // PostApiSyntheticChecksTestWithBodyWithResponse Trigger a test run of a synthetic check
 //
-// Triggers an immediate test execution of a synthetic check.
+// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+//
+// A browser check can run for several minutes. When its run takes longer than a minute, the
+// response starts early with status `200` and sends a space every minute until the result
+// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+// the body still parses as one JSON document. A browser run that fails after the response has
+// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+// in the body rather than relying on the status code alone.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -49070,7 +49277,14 @@ func (c *ClientWithResponses) PostApiSyntheticChecksTestWithBodyWithResponse(ctx
 
 // PostApiSyntheticChecksTestWithResponse Trigger a test run of a synthetic check
 //
-// Triggers an immediate test execution of a synthetic check.
+// Triggers an immediate test execution of a synthetic check and responds once it has finished.
+//
+// A browser check can run for several minutes. When its run takes longer than a minute, the
+// response starts early with status `200` and sends a space every minute until the result
+// is ready, so proxies do not close the idle connection. Leading whitespace is valid JSON, so
+// the body still parses as one JSON document. A browser run that fails after the response has
+// started returns an `ErrorResponse` body with status `200`; check for `syntheticCheckAttempt`
+// in the body rather than relying on the status code alone.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //

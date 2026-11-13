@@ -23,3 +23,8 @@ ResolveConfigurationContext
 ResolveConfigurationWithOtlp
 ResolveConfigurationWithOtlpContext
 WithConfiguration
+
+# <NEXT_RELEASE>: the spec moves metrics retention to the new MetricsRetentionClass
+# enum (always 13M). Struct field types cannot be aliased.
+DatasetMetricsSettings.Retention
+DatasetRetention.Metrics
