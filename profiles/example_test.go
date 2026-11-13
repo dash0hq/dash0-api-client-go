@@ -702,14 +702,14 @@ func ExampleResolvedConfiguration_Source() {
 		fmt.Println("error:", err)
 		return
 	}
-	fmt.Println("api url:", cfg.Source(profiles.FieldApiUrl))
-	fmt.Println("auth token:", cfg.Source(profiles.FieldAuthToken))
-	fmt.Println("otlp url:", cfg.Source(profiles.FieldOtlpUrl) == profiles.SourceUnset)
-	fmt.Println("dataset:", cfg.Source(profiles.FieldDataset))
+	fmt.Printf("api url: %q\n", cfg.Source(profiles.FieldApiUrl))
+	fmt.Printf("auth token: %q\n", cfg.Source(profiles.FieldAuthToken))
+	fmt.Printf("otlp url: %q\n", cfg.Source(profiles.FieldOtlpUrl))
+	fmt.Printf("dataset: %q\n", cfg.Source(profiles.FieldDataset))
 
 	// Output:
-	// api url: argument
-	// auth token: profile
-	// otlp url: true
-	// dataset: environment
+	// api url: "argument"
+	// auth token: "profile"
+	// otlp url: ""
+	// dataset: "environment"
 }
