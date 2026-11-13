@@ -113,7 +113,7 @@ func WithAuthToken(authToken string) ClientOption {
 // client is in use, most notably an OAuth access token: a client built with
 // [WithAuthToken] holds that token for its whole lifetime, so any operation
 // outliving the token's validity starts failing partway through.
-// Configuration.AuthTokenProvider in the profiles subpackage returns a provider
+// ResolvedConfiguration.AuthTokenProvider in the profiles subpackage returns a provider
 // that refreshes a Dash0 CLI profile's OAuth access token.
 func WithAuthTokenProvider(provider AuthTokenProvider) ClientOption {
 	return func(c *clientConfig) {

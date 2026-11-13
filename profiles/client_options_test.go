@@ -6,12 +6,12 @@ import (
 
 func TestClientOptions(t *testing.T) {
 	t.Run("all fields set", func(t *testing.T) {
-		cfg := &Configuration{
+		cfg := newResolved(Configuration{
 			ApiUrl:    "https://api.example.com",
 			AuthToken: "auth_test-token",
 			OtlpUrl:   "https://otlp.example.com",
 			Dataset:   "my-dataset",
-		}
+		}, "", "")
 
 		opts := cfg.ClientOptions()
 		// ApiUrl, AuthToken, and OtlpUrl are mapped; Dataset is not.
@@ -21,10 +21,10 @@ func TestClientOptions(t *testing.T) {
 	})
 
 	t.Run("only required fields", func(t *testing.T) {
-		cfg := &Configuration{
+		cfg := newResolved(Configuration{
 			ApiUrl:    "https://api.example.com",
 			AuthToken: "auth_test-token",
-		}
+		}, "", "")
 
 		opts := cfg.ClientOptions()
 		if len(opts) != 2 {
@@ -33,7 +33,7 @@ func TestClientOptions(t *testing.T) {
 	})
 
 	t.Run("empty configuration", func(t *testing.T) {
-		cfg := &Configuration{}
+		cfg := &ResolvedConfiguration{}
 		opts := cfg.ClientOptions()
 		if len(opts) != 0 {
 			t.Errorf("expected 0 options, got %d", len(opts))
@@ -41,10 +41,10 @@ func TestClientOptions(t *testing.T) {
 	})
 
 	t.Run("OTLP only", func(t *testing.T) {
-		cfg := &Configuration{
+		cfg := newResolved(Configuration{
 			AuthToken: "auth_test-token",
 			OtlpUrl:   "https://otlp.example.com",
-		}
+		}, "", "")
 
 		opts := cfg.ClientOptions()
 		if len(opts) != 2 {

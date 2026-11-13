@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -17,29 +16,27 @@ import (
 )
 
 // seedOAuthProfile writes a single OAuth profile named "test" into a fresh
-// store and returns the store, its config directory, and a Configuration that
-// mirrors what a resolver would hand a caller.
-func seedOAuthProfile(t *testing.T, apiUrl, accessToken string, expiresAt time.Time) (*Store, string, *Configuration) {
+// store and returns the store, its config directory, and the
+// ResolvedConfiguration a resolver would hand a caller.
+func seedOAuthProfile(t *testing.T, apiUrl, accessToken string, expiresAt time.Time) (*Store, string, *ResolvedConfiguration) {
 	t.Helper()
 	store, dir := newTestStore(t)
-	cfg := &Configuration{
-		ApiUrl:      apiUrl,
-		AuthToken:   accessToken,
-		ProfileName: "test",
+	persisted := Configuration{
+		ApiUrl: apiUrl,
 		OAuth: &OAuthState{
 			ClientID:     "cid",
+			AccessToken:  accessToken,
 			RefreshToken: "rt",
 			ExpiresAt:    expiresAt,
 		},
 	}
-	persisted := *cfg
 	createTestProfilesFile(t, dir, []Profile{{Name: "test", Configuration: persisted}})
-	return store, dir, cfg
+	return store, dir, newResolved(persisted, "test", dir)
 }
 
 func TestConfigurationAuthTokenProvider(t *testing.T) {
 	t.Run("serves a static token unchanged when the profile is not OAuth", func(t *testing.T) {
-		cfg := &Configuration{AuthToken: "auth_static"}
+		cfg := newResolved(Configuration{AuthToken: "auth_static"}, "", "")
 		provider := cfg.AuthTokenProvider()
 
 		got, err := provider.AuthToken(context.Background())
@@ -96,7 +93,7 @@ func TestConfigurationAuthTokenProvider(t *testing.T) {
 		}
 	})
 
-	t.Run("leaves the caller's Configuration untouched", func(t *testing.T) {
+	t.Run("leaves the caller's ResolvedConfiguration untouched", func(t *testing.T) {
 		server := newTokenServer(t, tokenServerResponse{
 			AccessToken: "dash0_at_refreshed",
 			ExpiresIn:   int64((15 * time.Minute).Seconds()),
@@ -109,8 +106,8 @@ func TestConfigurationAuthTokenProvider(t *testing.T) {
 		if _, err := provider.AuthToken(context.Background()); err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_stale" {
-			t.Errorf("caller's AuthToken = %q, want it left at %q", cfg.AuthToken, "dash0_at_stale")
+		if cfg.Token() != "dash0_at_stale" {
+			t.Errorf("caller's Token() = %q, want it left at %q", cfg.Token(), "dash0_at_stale")
 		}
 	})
 
@@ -198,32 +195,6 @@ func TestConfigurationAuthTokenProvider(t *testing.T) {
 		}
 	})
 
-	t.Run("reports a configuration that does not name its profile", func(t *testing.T) {
-		cfg := &Configuration{
-			ApiUrl:    "https://api.example.com",
-			AuthToken: "dash0_at_stale",
-			OAuth: &OAuthState{
-				ClientID:     "cid",
-				RefreshToken: "rt",
-				ExpiresAt:    time.Now().Add(1 * time.Minute),
-			},
-		}
-		provider := cfg.AuthTokenProvider(WithConfigDir(t.TempDir()))
-
-		_, err := provider.AuthToken(context.Background())
-		if !errors.Is(err, ErrNoAssociatedProfile) {
-			t.Fatalf("error = %v, want it to match ErrNoAssociatedProfile", err)
-		}
-		// This reaches an end user whenever a front end forgets to translate it,
-		// so the wording must not carry Go identifiers or internal concepts.
-		for _, leak := range []string{"ProfileName", "ConfigDir", "Store", "store", "Configuration"} {
-			if strings.Contains(err.Error(), leak) {
-				t.Errorf("error = %q, leaks the internal term %q", err, leak)
-			}
-		}
-
-	})
-
 	t.Run("surfaces ErrReauthenticationRequired when the refresh token is rejected", func(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
@@ -296,10 +267,10 @@ func TestAuthTokenProviderForceRefresh(t *testing.T) {
 		refresher := provider.(dash0.RefreshingAuthTokenProvider)
 
 		// Simulate a sibling process having rotated the token already.
-		rotated := *cfg
-		rotated.AuthToken = "dash0_at_rotated-elsewhere"
+		rotated := Configuration{ApiUrl: cfg.ApiUrl()}
 		rotated.OAuth = &OAuthState{
 			ClientID:     "cid",
+			AccessToken:  "dash0_at_rotated-elsewhere",
 			RefreshToken: "rt2",
 			ExpiresAt:    time.Now().Add(15 * time.Minute),
 		}
@@ -340,7 +311,7 @@ func TestConfigurationClientOptionsUsesProviderForOAuth(t *testing.T) {
 	})
 
 	t.Run("static configuration still maps to WithAuthToken", func(t *testing.T) {
-		cfg := &Configuration{ApiUrl: "https://api.example.com", AuthToken: "auth_static"}
+		cfg := newResolved(Configuration{ApiUrl: "https://api.example.com", AuthToken: "auth_static"}, "", "")
 
 		client, err := dash0.NewClient(cfg.ClientOptions()...)
 		if err != nil {
@@ -472,10 +443,10 @@ func TestRefreshSurvivesCallerCancellation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if persisted.AuthToken != "dash0_at_rotated" {
-		t.Errorf("persisted AuthToken = %q, want the rotated token", persisted.AuthToken)
+	if persisted.Token() != "dash0_at_rotated" {
+		t.Errorf("persisted Token() = %q, want the rotated token", persisted.Token())
 	}
-	if persisted.OAuth == nil || persisted.OAuth.RefreshToken != "rt-rotated" {
+	if persisted.OAuth() == nil || persisted.OAuth().RefreshToken != "rt-rotated" {
 		t.Errorf("persisted refresh token was not updated; the stored credential is burned")
 	}
 }
@@ -495,10 +466,10 @@ func TestAuthTokenProviderUsesTheStoreDirectory(t *testing.T) {
 
 	store, dir := newTestStore(t)
 	createTestProfilesFile(t, dir, []Profile{{Name: "test", Configuration: Configuration{
-		ApiUrl:    server.URL,
-		AuthToken: "dash0_at_stale",
+		ApiUrl: server.URL,
 		OAuth: &OAuthState{
 			ClientID:     "cid",
+			AccessToken:  "dash0_at_stale",
 			RefreshToken: "rt",
 			ExpiresAt:    time.Now().Add(1 * time.Minute),
 		},

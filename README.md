@@ -290,15 +290,15 @@ resp, _ := oauthClient.ExchangeToken(context.Background(), &dash0.OAuthTokenRequ
     ClientId:     dash0.Ptr(clientID),
 })
 
-// 4. Persist the OAuth state alongside the active access token.
+// 4. Persist the OAuth state, including the access token.
 store, _ := profiles.NewStore()
 _ = store.AddProfile(profiles.Profile{
     Name: "production",
     Configuration: profiles.Configuration{
-        ApiUrl:    apiURL,
-        AuthToken: resp.AccessToken,
+        ApiUrl: apiURL,
         OAuth: &profiles.OAuthState{
             ClientID:     clientID,
+            AccessToken:  resp.AccessToken,
             RefreshToken: *resp.RefreshToken,
             ExpiresAt:    time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second),
         },
@@ -328,7 +328,7 @@ All file writes go through a temp-file + `os.Rename` to avoid leaving a half-wri
 
 The `profiles.Store` serializes mutations of `profiles.json` and `activeProfile` at two layers:
 
-* In-process: an internal mutex guards every read-modify-write sequence (`AddProfile`, `UpdateProfile`, `RemoveProfile`, `SetActiveProfile`, and the OAuth refresh inside `Configuration.AuthTokenProvider`).
+* In-process: an internal mutex guards every read-modify-write sequence (`AddProfile`, `UpdateProfile`, `RemoveProfile`, `SetActiveProfile`, and the OAuth refresh inside `ResolvedConfiguration.AuthTokenProvider`).
 * Cross-process: an OS-level advisory lock on `.profile-lock`, backed by [github.com/gofrs/flock](https://github.com/gofrs/flock), prevents two CLI invocations sharing a config directory from refreshing or mutating profiles concurrently.
 
 Without the cross-process lock, two CLI invocations could both refresh the same profile in the 5-minute pre-expiry window, both rotate the server-side refresh-token family, and the loser would 401 on the next API call.

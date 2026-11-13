@@ -57,7 +57,7 @@ See `context.go`.
 
 **Per-request authentication**: the bearer token is resolved by an `AuthTokenProvider` on every request, in `authTransport`, not captured once in `NewClient`.
 A client built with `WithAuthToken` wraps the fixed token in a `StaticAuthTokenProvider` so both paths are identical below that point.
-This is what lets an operation outlive a short-lived credential: an OAuth access token is valid for 15 minutes, and `profiles.Configuration.AuthTokenProvider` refreshes it as it nears expiry.
+This is what lets an operation outlive a short-lived credential: an OAuth access token is valid for 15 minutes, and `profiles.ResolvedConfiguration.AuthTokenProvider` refreshes it as it nears expiry.
 Never set the `Authorization` header in a request editor or a hand-built request -- `authTransport` owns it, and bypassing it reintroduces the frozen-token bug.
 
 **Generic iterator**: `Iter[T]` in `iterator.go` handles cursor-based pagination.

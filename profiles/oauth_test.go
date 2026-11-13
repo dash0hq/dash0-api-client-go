@@ -66,9 +66,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old-token",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old-token",
 					ClientID:     "my-client-id",
 					RefreshToken: "my-refresh-token",
 					ExpiresAt:    time.Now().Add(2 * time.Minute),
@@ -82,8 +82,8 @@ func TestRefreshOAuthToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_refreshed-token" {
-			t.Errorf("expected dash0_at_refreshed-token, got %s", cfg.AuthToken)
+		if cfg.OAuth.AccessToken != "dash0_at_refreshed-token" {
+			t.Errorf("expected dash0_at_refreshed-token, got %s", cfg.OAuth.AccessToken)
 		}
 		if time.Until(cfg.OAuth.ExpiresAt) < 59*time.Minute {
 			t.Error("expected ExpiresAt to be roughly 1 hour from now")
@@ -106,9 +106,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 			t.Fatalf("failed to read profiles: %v", err)
 		}
 		persisted := profiles[0].Configuration
-		if persisted.AuthToken != "dash0_at_refreshed-token" {
-			t.Errorf("expected persisted AuthToken dash0_at_refreshed-token, got %s",
-				persisted.AuthToken)
+		if persisted.OAuth.AccessToken != "dash0_at_refreshed-token" {
+			t.Errorf("expected persisted access token dash0_at_refreshed-token, got %s",
+				persisted.OAuth.AccessToken)
 		}
 		if persisted.OAuth.RefreshToken != "my-refresh-token" {
 			t.Errorf("expected persisted RefreshToken unchanged, got %s",
@@ -131,9 +131,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old-token",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old-token",
 					ClientID:     "cid",
 					RefreshToken: "old-rt",
 					ExpiresAt:    time.Now().Add(1 * time.Minute),
@@ -177,9 +177,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old-token",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old-token",
 					ClientID:     "cid",
 					RefreshToken: "bad-rt",
 					ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -228,9 +228,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old",
 					ClientID:     "cid-revoked",
 					RefreshToken: "rt",
 					ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -270,9 +270,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old",
 					ClientID:     "cid",
 					RefreshToken: "rt-original",
 					ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -314,9 +314,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old",
 					ClientID:     "cid",
 					RefreshToken: "rt",
 					ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -329,8 +329,8 @@ func TestRefreshOAuthToken(t *testing.T) {
 		if err := refreshOAuthToken(context.Background(), store, "test", cfg, refreshIfExpiring); err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_new" {
-			t.Errorf("AuthToken = %q, want dash0_at_new", cfg.AuthToken)
+		if cfg.OAuth.AccessToken != "dash0_at_new" {
+			t.Errorf("access token = %q, want dash0_at_new", cfg.OAuth.AccessToken)
 		}
 		// ExpiresAt should land at roughly OAuthRefreshExpiresInDefault from now.
 		gotDelta := time.Until(cfg.OAuth.ExpiresAt)
@@ -356,9 +356,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old-token",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old-token",
 					ClientID:     "cid-deleted",
 					RefreshToken: "rt",
 					ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -403,9 +403,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		// Caller snapshot still has OAuth (as if the snapshot was taken
 		// before the concurrent clear).
 		cfg := &Configuration{
-			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
-			AuthToken: "dash0_at_caller-token",
+			ApiUrl: "https://api.eu-west-1.aws.dash0.com",
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_caller-token",
 				ClientID:     "cid",
 				RefreshToken: "rt",
 				ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -427,8 +427,8 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				AuthToken: "dash0_at_old-token",
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old-token",
 					ClientID:     "cid",
 					RefreshToken: "rt",
 					ExpiresAt:    time.Now().Add(1 * time.Minute),
@@ -442,8 +442,8 @@ func TestRefreshOAuthToken(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected error for missing API URL, got nil")
 		}
-		if cfg.AuthToken != "dash0_at_old-token" {
-			t.Errorf("expected AuthToken unchanged after failure, got %s", cfg.AuthToken)
+		if cfg.OAuth.AccessToken != "dash0_at_old-token" {
+			t.Errorf("expected access token unchanged after failure, got %s", cfg.OAuth.AccessToken)
 		}
 	})
 
@@ -469,9 +469,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		store, dir := newTestStore(t)
 		createTestProfilesFile(t, dir, []Profile{
 			{Name: "test", Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old",
 					ClientID:     "cid",
 					RefreshToken: "rt-original",
 					ExpiresAt:    time.Now().Add(1 * time.Minute),
@@ -491,9 +491,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 				// Each goroutine starts with its own snapshot of the
 				// configuration (as if it had just read the profile).
 				cfgs[i] = &Configuration{
-					ApiUrl:    server.URL,
-					AuthToken: "dash0_at_old",
+					ApiUrl: server.URL,
 					OAuth: &OAuthState{
+						AccessToken:  "dash0_at_old",
 						ClientID:     "cid",
 						RefreshToken: "rt-original",
 						ExpiresAt:    time.Now().Add(1 * time.Minute),
@@ -517,9 +517,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 			if err != nil {
 				t.Errorf("goroutine %d: unexpected error: %v", i, err)
 			}
-			if cfgs[i].AuthToken != "dash0_at_rotated" {
+			if cfgs[i].OAuth.AccessToken != "dash0_at_rotated" {
 				t.Errorf("goroutine %d: expected dash0_at_rotated, got %s",
-					i, cfgs[i].AuthToken)
+					i, cfgs[i].OAuth.AccessToken)
 			}
 			if cfgs[i].OAuth == nil || cfgs[i].OAuth.RefreshToken != "rt-rotated" {
 				t.Errorf("goroutine %d: expected rt-rotated, got %+v",
@@ -533,8 +533,8 @@ func TestRefreshOAuthToken(t *testing.T) {
 			t.Fatalf("failed to read profiles: %v", err)
 		}
 		persisted := profiles[0].Configuration
-		if persisted.AuthToken != "dash0_at_rotated" {
-			t.Errorf("persisted AuthToken = %s, want dash0_at_rotated", persisted.AuthToken)
+		if persisted.OAuth.AccessToken != "dash0_at_rotated" {
+			t.Errorf("persisted access token = %s, want dash0_at_rotated", persisted.OAuth.AccessToken)
 		}
 		if persisted.OAuth == nil || persisted.OAuth.RefreshToken != "rt-rotated" {
 			t.Errorf("persisted RefreshToken = %+v, want rt-rotated", persisted.OAuth)
@@ -574,9 +574,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		_, dir := newTestStore(t)
 		createTestProfilesFile(t, dir, []Profile{
 			{Name: "test", Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_old",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_old",
 					ClientID:     "cid",
 					RefreshToken: "rt-original",
 					ExpiresAt:    time.Now().Add(1 * time.Minute),
@@ -593,9 +593,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 				defer done.Done()
 				storeI, _ := NewStore(WithConfigDir(dir))
 				cfg := &Configuration{
-					ApiUrl:    server.URL,
-					AuthToken: "dash0_at_old",
+					ApiUrl: server.URL,
 					OAuth: &OAuthState{
+						AccessToken:  "dash0_at_old",
 						ClientID:     "cid",
 						RefreshToken: "rt-original",
 						ExpiresAt:    time.Now().Add(1 * time.Minute),
@@ -640,9 +640,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		}
 
 		cfg := &Configuration{
-			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
-			AuthToken: "dash0_at_old",
+			ApiUrl: "https://api.eu-west-1.aws.dash0.com",
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_old",
 				ClientID:     "cid",
 				RefreshToken: "rt",
 				ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -662,9 +662,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		// Surface a dedicated error rather than silently zeroing cfg.
 		store, _ := newTestStore(t)
 		cfg := &Configuration{
-			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
-			AuthToken: "dash0_at_old",
+			ApiUrl: "https://api.eu-west-1.aws.dash0.com",
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_old",
 				ClientID:     "cid",
 				RefreshToken: "rt",
 				ExpiresAt:    time.Now().Add(-1 * time.Minute),
@@ -690,9 +690,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_expired-token",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_expired-token",
 					ClientID:     "cid",
 					RefreshToken: "rt",
 					ExpiresAt:    time.Now().Add(-10 * time.Minute),
@@ -706,8 +706,8 @@ func TestRefreshOAuthToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_fresh-token" {
-			t.Errorf("expected dash0_at_fresh-token, got %s", cfg.AuthToken)
+		if cfg.OAuth.AccessToken != "dash0_at_fresh-token" {
+			t.Errorf("expected dash0_at_fresh-token, got %s", cfg.OAuth.AccessToken)
 		}
 	})
 
@@ -729,9 +729,9 @@ func TestRefreshOAuthToken(t *testing.T) {
 		profile := Profile{
 			Name: "test",
 			Configuration: Configuration{
-				ApiUrl:    server.URL,
-				AuthToken: "dash0_at_expired-token",
+				ApiUrl: server.URL,
 				OAuth: &OAuthState{
+					AccessToken:  "dash0_at_expired-token",
 					RefreshToken: "rt",
 					ExpiresAt:    time.Now().Add(-10 * time.Minute),
 				},
@@ -774,8 +774,8 @@ func TestRevokeOAuthTokens(t *testing.T) {
 
 	t.Run("no API URL", func(t *testing.T) {
 		cfg := &Configuration{
-			AuthToken: "dash0_at_token",
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_token",
 				ClientID:     "cid",
 				RefreshToken: "rt",
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
@@ -793,9 +793,9 @@ func TestRevokeOAuthTokens(t *testing.T) {
 		defer server.Close()
 
 		cfg := &Configuration{
-			ApiUrl:    server.URL,
-			AuthToken: "dash0_at_token",
+			ApiUrl: server.URL,
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_token",
 				ClientID:     "cid",
 				RefreshToken: "my-refresh-token",
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
@@ -822,9 +822,9 @@ func TestRevokeOAuthTokens(t *testing.T) {
 		defer server.Close()
 
 		cfg := &Configuration{
-			ApiUrl:    server.URL,
-			AuthToken: "dash0_at_token",
+			ApiUrl: server.URL,
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_token",
 				RefreshToken: "my-refresh-token",
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
@@ -853,9 +853,9 @@ func TestRevokeOAuthTokens(t *testing.T) {
 		}
 
 		cfg := &Configuration{
-			ApiUrl:    server.URL,
-			AuthToken: "dash0_at_token",
+			ApiUrl: server.URL,
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_token",
 				RefreshToken: "my-refresh-token",
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
@@ -877,9 +877,9 @@ func TestRevokeOAuthTokens(t *testing.T) {
 		defer server.Close()
 
 		cfg := &Configuration{
-			ApiUrl:    server.URL,
-			AuthToken: "dash0_at_token",
+			ApiUrl: server.URL,
 			OAuth: &OAuthState{
+				AccessToken:  "dash0_at_token",
 				ClientID:     "cid",
 				RefreshToken: "rt",
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
