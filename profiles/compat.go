@@ -3,7 +3,7 @@ package profiles
 // This file keeps deprecated symbols and documents migration steps for
 // breaking changes to the profiles package.
 //
-// # Migration guide (v1.33.x to <NEXT_RELEASE>)
+// # Migration guide (v1.33.x to v1.34.0)
 //
 // [Configuration] is now only the schema of one profile in profiles.json.
 // [Store.GetActiveConfiguration], [Store.GetActiveConfigurationContext],
@@ -34,7 +34,7 @@ package profiles
 // Code that writes an OAuth login with [Store.AddProfile] or
 // [Store.UpdateProfile] sets [OAuthState.AccessToken].
 // A [Store] migrates existing profiles.json files when it reads them.
-// Until the release after <NEXT_RELEASE>, it also writes a copy of the access
+// Until the release after v1.34.0, it also writes a copy of the access
 // token to "authToken", so an older CLI or Terraform provider can still read a
 // migrated file.
 //
@@ -50,7 +50,7 @@ import "errors"
 // ErrNoAssociatedProfile was returned when an OAuth access token needed
 // refreshing but the configuration was not associated with a stored profile.
 //
-// Deprecated: since <NEXT_RELEASE>. Never returned, because only a [Store]
+// Deprecated: since v1.34.0. Never returned, because only a [Store]
 // builds a [ResolvedConfiguration] with OAuth state.
 var ErrNoAssociatedProfile = errors.New(
 	"the credentials are not associated with a Dash0 profile, so the OAuth access token " +

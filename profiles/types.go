@@ -65,7 +65,7 @@ func (cfg *Configuration) DatasetPtr() *string {
 }
 
 // migrateAccessToken moves the OAuth access token from AuthToken, where
-// releases before <NEXT_RELEASE> stored it, into [OAuthState.AccessToken].
+// releases before v1.34.0 stored it, into [OAuthState.AccessToken].
 // It also drops the AuthToken copy that [mirrorAccessToken] writes, so in
 // memory AuthToken only ever holds a static token.
 func migrateAccessToken(cfg *Configuration) {

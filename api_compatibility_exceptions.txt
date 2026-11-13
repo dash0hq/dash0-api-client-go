@@ -8,7 +8,7 @@
 # and do not need to be listed here.
 
 
-# <NEXT_RELEASE>: profiles splits the profiles.json schema (Configuration) from the
+# v1.34.0: profiles splits the profiles.json schema (Configuration) from the
 # resolved configuration (ResolvedConfiguration), see #37.
 (*Configuration).AuthTokenProvider
 (*Configuration).ClientOptions
