@@ -1565,3 +1565,130 @@ func TestSaveProfilesDoesNotChangeTheCallersProfiles(t *testing.T) {
 		t.Errorf("AuthToken = %q, want the mirror kept out of the caller's slice", profiles[0].Configuration.AuthToken)
 	}
 }
+
+func TestResolvedConfigurationSources(t *testing.T) {
+	fullProfile := Profile{Name: "dev", Configuration: Configuration{
+		ApiUrl:    "https://api.profile.example.com",
+		AuthToken: "auth_profile-token",
+		OtlpUrl:   "https://otlp.profile.example.com",
+		Dataset:   "profile-dataset",
+	}}
+	oauthProfile := Profile{Name: "oauth", Configuration: Configuration{
+		ApiUrl: "https://api.profile.example.com",
+		OAuth:  &OAuthState{AccessToken: "profile-access-token", RefreshToken: "refresh"},
+	}}
+	allProfile := map[ConfigurationField]ConfigurationSource{
+		FieldApiUrl: SourceProfile, FieldAuthToken: SourceProfile, FieldOtlpUrl: SourceProfile, FieldDataset: SourceProfile,
+	}
+
+	tests := []struct {
+		name     string
+		profiles []Profile
+		env      map[string]string
+		resolve  func(t *testing.T, store *Store, configDir string) (*ResolvedConfiguration, error)
+		want     map[ConfigurationField]ConfigurationSource
+	}{
+		{
+			name:     "profile wins without overrides",
+			profiles: []Profile{fullProfile},
+			resolve:  activeConfiguration,
+			want:     allProfile,
+		},
+		{
+			name:     "empty profile field is unset",
+			profiles: []Profile{{Name: "dev", Configuration: Configuration{ApiUrl: "https://api.profile.example.com", AuthToken: "auth_profile-token"}}},
+			resolve:  activeConfiguration,
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceProfile, FieldAuthToken: SourceProfile, FieldOtlpUrl: SourceUnset, FieldDataset: SourceUnset,
+			},
+		},
+		{
+			name:     "environment wins over profile per field",
+			profiles: []Profile{fullProfile},
+			env:      map[string]string{EnvApiUrl: "https://api.env.example.com", EnvDataset: "env-dataset"},
+			resolve:  activeConfiguration,
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceEnvironment, FieldAuthToken: SourceProfile, FieldOtlpUrl: SourceProfile, FieldDataset: SourceEnvironment,
+			},
+		},
+		{
+			name:    "environment alone without a profile",
+			env:     map[string]string{EnvApiUrl: "https://api.env.example.com", EnvAuthToken: "auth_env-token"},
+			resolve: activeConfiguration,
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceEnvironment, FieldAuthToken: SourceEnvironment, FieldOtlpUrl: SourceUnset, FieldDataset: SourceUnset,
+			},
+		},
+		{
+			name:     "OAuth access token comes from the profile",
+			profiles: []Profile{oauthProfile},
+			resolve:  profileConfiguration("oauth"),
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceProfile, FieldAuthToken: SourceProfile, FieldOtlpUrl: SourceUnset, FieldDataset: SourceUnset,
+			},
+		},
+		{
+			name:     "environment token wins over OAuth profile",
+			profiles: []Profile{oauthProfile},
+			env:      map[string]string{EnvAuthToken: "auth_env-token"},
+			resolve:  profileConfiguration("oauth"),
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceProfile, FieldAuthToken: SourceEnvironment, FieldOtlpUrl: SourceUnset, FieldDataset: SourceUnset,
+			},
+		},
+		{
+			name:     "arguments win over environment and profile",
+			profiles: []Profile{fullProfile},
+			env:      map[string]string{EnvApiUrl: "https://api.env.example.com", EnvDataset: "env-dataset"},
+			resolve: func(t *testing.T, _ *Store, configDir string) (*ResolvedConfiguration, error) {
+				return ResolveConfigurationWithOtlp("https://api.arg.example.com", "auth_arg-token", "", "arg-dataset", WithConfigDir(configDir))
+			},
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceArgument, FieldAuthToken: SourceArgument, FieldOtlpUrl: SourceProfile, FieldDataset: SourceArgument,
+			},
+		},
+		{
+			name: "environment fills in when the active configuration fails",
+			env:  map[string]string{EnvAuthToken: "auth_env-token", EnvDataset: "env-dataset"},
+			resolve: func(t *testing.T, _ *Store, configDir string) (*ResolvedConfiguration, error) {
+				return ResolveConfiguration("https://api.arg.example.com", "", WithConfigDir(configDir))
+			},
+			want: map[ConfigurationField]ConfigurationSource{
+				FieldApiUrl: SourceArgument, FieldAuthToken: SourceEnvironment, FieldOtlpUrl: SourceUnset, FieldDataset: SourceEnvironment,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for _, name := range []string{EnvApiUrl, EnvAuthToken, EnvOtlpUrl, EnvDataset} {
+				t.Setenv(name, tt.env[name])
+			}
+			store, configDir := newTestStore(t)
+			if len(tt.profiles) > 0 {
+				createTestProfilesFile(t, configDir, tt.profiles)
+				setActiveProfile(t, configDir, tt.profiles[0].Name)
+			}
+
+			cfg, err := tt.resolve(t, store, configDir)
+			if err != nil {
+				t.Fatalf("resolve failed: %v", err)
+			}
+			for field, want := range tt.want {
+				if got := cfg.Source(field); got != want {
+					t.Errorf("Source(%d) = %q, want %q", field, got, want)
+				}
+			}
+		})
+	}
+}
+
+func activeConfiguration(t *testing.T, store *Store, _ string) (*ResolvedConfiguration, error) {
+	return store.GetActiveConfiguration()
+}
+
+func profileConfiguration(profileName string) func(*testing.T, *Store, string) (*ResolvedConfiguration, error) {
+	return func(t *testing.T, store *Store, _ string) (*ResolvedConfiguration, error) {
+		return store.GetConfigurationForProfile(context.Background(), profileName)
+	}
+}

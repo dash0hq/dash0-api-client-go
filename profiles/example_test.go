@@ -675,3 +675,41 @@ func ExampleResolvedConfiguration_Token() {
 	// Output:
 	// dash0_at_example-token
 }
+
+func ExampleResolvedConfiguration_Source() {
+	configDir, _ := os.MkdirTemp("", "dash0-example-*")
+	defer func() { _ = os.RemoveAll(configDir) }()
+
+	store, _ := profiles.NewStore(profiles.WithConfigDir(configDir))
+	_ = store.AddProfile(profiles.Profile{
+		Name: "dev",
+		Configuration: profiles.Configuration{
+			ApiUrl:    "https://api.eu-west-1.aws.dash0.com",
+			AuthToken: "auth_dev-token",
+			Dataset:   "staging",
+		},
+	})
+
+	_ = os.Setenv(profiles.EnvDataset, "production")
+	defer func() { _ = os.Unsetenv(profiles.EnvDataset) }()
+
+	cfg, err := profiles.ResolveConfiguration(
+		"https://api.us-west-2.aws.dash0.com",
+		"",
+		profiles.WithConfigDir(configDir),
+	)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println("api url:", cfg.Source(profiles.FieldApiUrl))
+	fmt.Println("auth token:", cfg.Source(profiles.FieldAuthToken))
+	fmt.Println("otlp url:", cfg.Source(profiles.FieldOtlpUrl) == profiles.SourceUnset)
+	fmt.Println("dataset:", cfg.Source(profiles.FieldDataset))
+
+	// Output:
+	// api url: argument
+	// auth token: profile
+	// otlp url: true
+	// dataset: environment
+}

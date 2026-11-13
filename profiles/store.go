@@ -183,12 +183,12 @@ func (s *Store) GetActiveConfiguration() (*ResolvedConfiguration, error) {
 		// No usable profile. Env vars alone are sufficient when the auth token
 		// and at least one URL are set; otherwise surface the profile error.
 		if envAuthToken != "" && (envApiUrl != "" || envOtlpUrl != "") {
-			return &ResolvedConfiguration{values: Configuration{
-				ApiUrl:    envApiUrl,
-				AuthToken: envAuthToken,
-				OtlpUrl:   envOtlpUrl,
-				Dataset:   envDataset,
-			}}, nil
+			resolved := &ResolvedConfiguration{}
+			resolved.setApiUrl(envApiUrl, SourceEnvironment)
+			resolved.setAuthToken(envAuthToken, SourceEnvironment)
+			resolved.setOtlpUrl(envOtlpUrl, SourceEnvironment)
+			resolved.setDataset(envDataset, SourceEnvironment)
+			return resolved, nil
 		}
 		if err == nil {
 			err = ErrNoActiveProfile
@@ -255,24 +255,47 @@ func (s *Store) configurationForProfile(profile *Profile) *ResolvedConfiguration
 		profileName: profile.Name,
 		configDir:   s.configDir,
 	}
-	cfg := &resolved.values
+	resolved.recordProfileSources()
 
-	// Override with env vars if set.
-	if envApiUrl := os.Getenv(EnvApiUrl); envApiUrl != "" {
-		cfg.ApiUrl = envApiUrl
-	}
-	if envAuthToken := os.Getenv(EnvAuthToken); envAuthToken != "" {
-		cfg.AuthToken = envAuthToken
-		cfg.OAuth = nil
-	}
-	if envOtlpUrl := os.Getenv(EnvOtlpUrl); envOtlpUrl != "" {
-		cfg.OtlpUrl = envOtlpUrl
-	}
-	if envDataset := os.Getenv(EnvDataset); envDataset != "" {
-		cfg.Dataset = envDataset
-	}
+	resolved.setApiUrl(os.Getenv(EnvApiUrl), SourceEnvironment)
+	resolved.setAuthToken(os.Getenv(EnvAuthToken), SourceEnvironment)
+	resolved.setOtlpUrl(os.Getenv(EnvOtlpUrl), SourceEnvironment)
+	resolved.setDataset(os.Getenv(EnvDataset), SourceEnvironment)
 
 	return resolved
+}
+
+// The set* methods apply one layer's value to a field and record its source.
+// An empty value leaves the field and its source unchanged.
+
+func (cfg *ResolvedConfiguration) setApiUrl(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.ApiUrl = value
+		cfg.sources[FieldApiUrl] = source
+	}
+}
+
+// setAuthToken also drops the OAuth state, because a static token replaces it.
+func (cfg *ResolvedConfiguration) setAuthToken(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.AuthToken = value
+		cfg.values.OAuth = nil
+		cfg.sources[FieldAuthToken] = source
+	}
+}
+
+func (cfg *ResolvedConfiguration) setOtlpUrl(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.OtlpUrl = value
+		cfg.sources[FieldOtlpUrl] = source
+	}
+}
+
+func (cfg *ResolvedConfiguration) setDataset(value string, source ConfigurationSource) {
+	if value != "" {
+		cfg.values.Dataset = value
+		cfg.sources[FieldDataset] = source
+	}
 }
 
 // ResolveConfiguration loads the active profile, applies environment variable
@@ -319,36 +342,28 @@ func ResolveConfigurationWithOtlpContext(ctx context.Context, apiUrl, authToken,
 
 	// Override with environment variables (in case GetActiveConfiguration failed
 	// before it could apply them, e.g. no active profile but env vars are set).
-	if envApiUrl := os.Getenv(EnvApiUrl); envApiUrl != "" && values.ApiUrl == "" {
-		values.ApiUrl = envApiUrl
+	if values.ApiUrl == "" {
+		result.setApiUrl(os.Getenv(EnvApiUrl), SourceEnvironment)
 	}
-	if envAuthToken := os.Getenv(EnvAuthToken); envAuthToken != "" && result.Token() == "" {
-		values.AuthToken = envAuthToken
-		values.OAuth = nil
+	if result.Token() == "" {
+		result.setAuthToken(os.Getenv(EnvAuthToken), SourceEnvironment)
 	}
-	if envOtlpUrl := os.Getenv(EnvOtlpUrl); envOtlpUrl != "" && values.OtlpUrl == "" {
-		values.OtlpUrl = envOtlpUrl
+	if values.OtlpUrl == "" {
+		result.setOtlpUrl(os.Getenv(EnvOtlpUrl), SourceEnvironment)
 	}
-	if envDataset := os.Getenv(EnvDataset); envDataset != "" && values.Dataset == "" {
-		values.Dataset = envDataset
+	if values.Dataset == "" {
+		result.setDataset(os.Getenv(EnvDataset), SourceEnvironment)
 	}
 
 	// Override with explicit parameters if provided.
-	if apiUrl != "" {
-		values.ApiUrl = apiUrl
-	}
+	result.setApiUrl(apiUrl, SourceArgument)
 	if authToken != "" {
-		values.AuthToken = authToken
-		values.OAuth = nil
+		result.setAuthToken(authToken, SourceArgument)
 		result.profileName = ""
 		result.configDir = ""
 	}
-	if otlpUrl != "" {
-		values.OtlpUrl = otlpUrl
-	}
-	if dataset != "" {
-		values.Dataset = dataset
-	}
+	result.setOtlpUrl(otlpUrl, SourceArgument)
+	result.setDataset(dataset, SourceArgument)
 
 	// If we had a config error and don't have complete configuration from
 	// overrides, return the error.

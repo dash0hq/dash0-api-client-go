@@ -89,6 +89,64 @@ type ResolvedConfiguration struct {
 	values      Configuration
 	profileName string
 	configDir   string
+	sources     [fieldCount]ConfigurationSource
+}
+
+// ConfigurationField names a field of a [ResolvedConfiguration] for
+// [ResolvedConfiguration.Source].
+type ConfigurationField int
+
+const (
+	// FieldApiUrl is the field returned by [ResolvedConfiguration.ApiUrl].
+	FieldApiUrl ConfigurationField = iota
+	// FieldAuthToken is the field returned by [ResolvedConfiguration.Token].
+	FieldAuthToken
+	// FieldOtlpUrl is the field returned by [ResolvedConfiguration.OtlpUrl].
+	FieldOtlpUrl
+	// FieldDataset is the field returned by [ResolvedConfiguration.Dataset].
+	FieldDataset
+
+	fieldCount
+)
+
+// ConfigurationSource is the layer that supplied the value of a
+// [ConfigurationField].
+type ConfigurationSource string
+
+const (
+	// SourceUnset means no layer supplied a value and the field is empty.
+	SourceUnset ConfigurationSource = ""
+	// SourceProfile means the value came from a profile in profiles.json.
+	SourceProfile ConfigurationSource = "profile"
+	// SourceEnvironment means the value came from an environment variable,
+	// such as DASH0_API_URL.
+	SourceEnvironment ConfigurationSource = "environment"
+	// SourceArgument means the value came from an argument the caller passed
+	// to a ResolveConfiguration function.
+	SourceArgument ConfigurationSource = "argument"
+)
+
+// Source returns the layer that supplied the value of field.
+// It returns [SourceUnset] when the field is empty or field is unknown.
+func (cfg *ResolvedConfiguration) Source(field ConfigurationField) ConfigurationSource {
+	if cfg == nil || field < 0 || field >= fieldCount {
+		return SourceUnset
+	}
+	return cfg.sources[field]
+}
+
+// recordProfileSources marks every non-empty field as coming from the profile.
+func (cfg *ResolvedConfiguration) recordProfileSources() {
+	for field, value := range map[ConfigurationField]string{
+		FieldApiUrl:    cfg.values.ApiUrl,
+		FieldAuthToken: cfg.Token(),
+		FieldOtlpUrl:   cfg.values.OtlpUrl,
+		FieldDataset:   cfg.values.Dataset,
+	} {
+		if value != "" {
+			cfg.sources[field] = SourceProfile
+		}
+	}
 }
 
 // ApiUrl returns the API URL.

@@ -142,3 +142,18 @@ func TestResolvedConfigurationNil(t *testing.T) {
 		t.Errorf("AuthTokenProvider() on nil served %q, want an empty token", token)
 	}
 }
+
+func TestResolvedConfigurationSource_NilAndUnknownField(t *testing.T) {
+	var nilConfig *ResolvedConfiguration
+	if got := nilConfig.Source(FieldApiUrl); got != SourceUnset {
+		t.Errorf("nil Source(FieldApiUrl) = %q, want %q", got, SourceUnset)
+	}
+
+	cfg := &ResolvedConfiguration{}
+	cfg.setApiUrl("https://api.example.com", SourceArgument)
+	for _, field := range []ConfigurationField{-1, fieldCount, 99} {
+		if got := cfg.Source(field); got != SourceUnset {
+			t.Errorf("Source(%d) = %q, want %q", field, got, SourceUnset)
+		}
+	}
+}
