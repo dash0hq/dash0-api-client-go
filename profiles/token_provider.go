@@ -130,7 +130,7 @@ func (p *authTokenProvider) servableWithoutRefresh() bool {
 	if p.cfg.values.OAuth == nil {
 		return p.cfg.Token() != ""
 	}
-	return time.Until(p.cfg.values.OAuth.ExpiresAt) > OAuthRefreshThreshold
+	return p.cfg.Token() != "" && time.Until(p.cfg.values.OAuth.ExpiresAt) > OAuthRefreshThreshold
 }
 
 // ForceRefreshAuthToken implements [dash0.RefreshingAuthTokenProvider].

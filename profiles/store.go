@@ -524,7 +524,13 @@ func (s *Store) updateProfileLocked(name string, updateFn func(*Configuration)) 
 	found := false
 	for i, profile := range profiles {
 		if profile.Name == name {
-			updateFn(&profiles[i].Configuration)
+			cfg := &profiles[i].Configuration
+			authTokenBefore, accessTokenBefore := cfg.AuthToken, ""
+			if cfg.OAuth != nil {
+				accessTokenBefore = cfg.OAuth.AccessToken
+			}
+			updateFn(cfg)
+			syncAccessTokenCopy(cfg, authTokenBefore, accessTokenBefore)
 			found = true
 			break
 		}
@@ -717,7 +723,7 @@ func (s *Store) saveProfiles(profiles []Profile) error {
 			oauthState := *profile.Configuration.OAuth
 			profile.Configuration.OAuth = &oauthState
 		}
-		mirrorAccessToken(&profile.Configuration)
+		migrateAccessToken(&profile.Configuration)
 		profilesFile.Profiles[i] = profile
 	}
 	data, err := json.MarshalIndent(profilesFile, "", "  ")
@@ -727,20 +733,6 @@ func (s *Store) saveProfiles(profiles []Profile) error {
 
 	profilesFilePath := filepath.Join(s.configDir, ProfilesFileName)
 	return writeFileAtomic(s.configDir, profilesFilePath, data)
-}
-
-// mirrorAccessToken copies the OAuth access token into AuthToken, so a CLI or
-// Terraform provider built before v1.34.0 still finds it there.
-// It runs [migrateAccessToken] first, so a caller that still writes the access
-// token to AuthToken keeps working.
-//
-// Remove the mirror in the release after v1.34.0.
-func mirrorAccessToken(cfg *Configuration) {
-	if cfg.OAuth == nil {
-		return
-	}
-	migrateAccessToken(cfg)
-	cfg.AuthToken = cfg.OAuth.AccessToken
 }
 
 // ensureConfigDirMode creates dir at [configDirMode] (0700) if it does not

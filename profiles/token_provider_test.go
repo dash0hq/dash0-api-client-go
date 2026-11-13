@@ -93,6 +93,24 @@ func TestConfigurationAuthTokenProvider(t *testing.T) {
 		}
 	})
 
+	t.Run("refreshes an empty access token that has not expired", func(t *testing.T) {
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_refreshed",
+			ExpiresIn:   int64((15 * time.Minute).Seconds()),
+		}, nil)
+		defer server.Close()
+
+		_, dir, cfg := seedOAuthProfile(t, server.URL, "", time.Now().Add(1*time.Hour))
+
+		got, err := cfg.AuthTokenProvider(WithConfigDir(dir)).AuthToken(context.Background())
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if got != "dash0_at_refreshed" {
+			t.Errorf("AuthToken = %q, want %q", got, "dash0_at_refreshed")
+		}
+	})
+
 	t.Run("leaves the caller's ResolvedConfiguration untouched", func(t *testing.T) {
 		server := newTokenServer(t, tokenServerResponse{
 			AccessToken: "dash0_at_refreshed",
@@ -297,6 +315,21 @@ func TestConfigurationClientOptionsUsesProviderForOAuth(t *testing.T) {
 		store, dir, _ := seedOAuthProfile(t, "https://api.example.com", "dash0_at_current", time.Now().Add(1*time.Hour))
 		t.Setenv(EnvConfigDir, "")
 		_ = dir
+
+		cfg, err := store.GetConfigurationForProfile(context.Background(), "test")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		client, err := dash0.NewClient(cfg.ClientOptions()...)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		defer func() { _ = client.Close(context.Background()) }()
+	})
+
+	t.Run("OAuth configuration with a refresh token but no access token gets a provider", func(t *testing.T) {
+		store, _, _ := seedOAuthProfile(t, "https://api.example.com", "", time.Now().Add(1*time.Hour))
 
 		cfg, err := store.GetConfigurationForProfile(context.Background(), "test")
 		if err != nil {

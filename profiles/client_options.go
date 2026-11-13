@@ -26,7 +26,7 @@ func (cfg *ResolvedConfiguration) ClientOptions() []dash0.ClientOption {
 	if cfg.ApiUrl() != "" {
 		opts = append(opts, dash0.WithApiUrl(cfg.ApiUrl()))
 	}
-	if cfg.HasCredentials() {
+	if cfg.HasCredentials() || cfg.canRefresh() {
 		opts = append(opts, dash0.WithAuthTokenProvider(cfg.AuthTokenProvider()))
 	}
 	if cfg.OtlpUrl() != "" {

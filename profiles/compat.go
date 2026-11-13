@@ -27,16 +27,19 @@ package profiles
 // with [Store.GetConfigurationForProfile] first.
 //
 // The OAuth access token moved from [Configuration.AuthToken] to
-// [OAuthState.AccessToken], so [Configuration.AuthToken] only holds a static
-// auth token.
+// [OAuthState.AccessToken].
 // Read the credential with [ResolvedConfiguration.Token], which returns the
 // access token for an OAuth profile and the static token otherwise.
 // Code that writes an OAuth login with [Store.AddProfile] or
-// [Store.UpdateProfile] sets [OAuthState.AccessToken].
+// [Store.UpdateProfile] sets [OAuthState.AccessToken], and clears the token
+// with OAuthState.AccessToken = "".
 // A [Store] migrates existing profiles.json files when it reads them.
-// Until the release after v1.34.0, it also writes a copy of the access
-// token to "authToken", so an older CLI or Terraform provider can still read a
-// migrated file.
+// Until the release after v1.34.0, [Configuration.AuthToken] stays a copy of
+// the access token, in memory and in profiles.json, so code that reads it,
+// writes a new token to it, or clears it keeps working, and an older CLI or
+// Terraform provider can still read the file.
+// In the release after v1.34.0, [Configuration.AuthToken] only holds a static
+// auth token.
 //
 // [ResolvedConfiguration.HasCredentials] and [Configuration.HasCredentials]
 // now report false for an OAuth profile with no access token, such as one

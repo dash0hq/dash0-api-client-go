@@ -1420,7 +1420,7 @@ func TestGetProfilesMigratesTheAccessToken(t *testing.T) {
 		accessToken string
 		oauth       bool
 	}{
-		"oauth":        {authToken: "", accessToken: "dash0_at_old", oauth: true},
+		"oauth":        {authToken: "dash0_at_old", accessToken: "dash0_at_old", oauth: true},
 		"oauth-empty":  {authToken: "", accessToken: "", oauth: true},
 		"static":       {authToken: "auth_static"},
 		"static-empty": {authToken: ""},
@@ -1538,6 +1538,51 @@ func TestSaveProfilesMovesAnAccessTokenWrittenToAuthToken(t *testing.T) {
 	oauthState, _ := readRawProfiles(t, dir)["oauth"]["oauth"].(map[string]any)
 	if oauthState["accessToken"] != "dash0_at_login" {
 		t.Errorf("accessToken = %v, want %q", oauthState["accessToken"], "dash0_at_login")
+	}
+}
+
+func TestUpdateProfileKeepsBothTokenFieldsInStep(t *testing.T) {
+	const stored = "dash0_at_stored"
+	tests := []struct {
+		name   string
+		update func(*Configuration)
+		want   string
+	}{
+		{"a new token written to AuthToken", func(cfg *Configuration) { cfg.AuthToken = "dash0_at_new" }, "dash0_at_new"},
+		{"AuthToken cleared", func(cfg *Configuration) { cfg.AuthToken = "" }, ""},
+		{"a new token written to AccessToken", func(cfg *Configuration) { cfg.OAuth.AccessToken = "dash0_at_new" }, "dash0_at_new"},
+		{"AccessToken cleared", func(cfg *Configuration) { cfg.OAuth.AccessToken = "" }, ""},
+		{"OAuth state replaced with the token in AuthToken", func(cfg *Configuration) {
+			cfg.AuthToken = "dash0_at_new"
+			cfg.OAuth = &OAuthState{RefreshToken: "rt2"}
+		}, "dash0_at_new"},
+		{"only the dataset changed", func(cfg *Configuration) { cfg.Dataset = "updated" }, stored},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			store, dir := newTestStore(t)
+			createTestProfilesFile(t, dir, []Profile{{Name: "oauth", Configuration: Configuration{
+				ApiUrl: "https://api.example.com",
+				OAuth:  &OAuthState{AccessToken: stored, RefreshToken: "rt"},
+			}}})
+
+			if err := store.UpdateProfile("oauth", tt.update); err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			cfg, err := store.GetConfigurationForProfile(context.Background(), "oauth")
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if cfg.Token() != tt.want {
+				t.Errorf("Token() = %q, want %q", cfg.Token(), tt.want)
+			}
+			raw := readRawProfiles(t, dir)["oauth"]
+			oauthState, _ := raw["oauth"].(map[string]any)
+			if gotAccess, _ := oauthState["accessToken"].(string); gotAccess != tt.want || raw["authToken"] != tt.want {
+				t.Errorf("file has authToken %v and accessToken %q, want both %q", raw["authToken"], gotAccess, tt.want)
+			}
+		})
 	}
 }
 

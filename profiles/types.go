@@ -25,7 +25,9 @@ import (
 type Configuration struct {
 	ApiUrl string `json:"apiUrl"`
 	// AuthToken is a static auth token.
-	// An OAuth profile keeps its access token in [OAuthState.AccessToken].
+	// For an OAuth profile it is a copy of [OAuthState.AccessToken], kept until
+	// the release after v1.34.0 so code that reads or writes the access token
+	// here keeps working.
 	AuthToken string `json:"authToken"`
 	OtlpUrl   string `json:"otlpUrl,omitempty"`
 	Dataset   string `json:"dataset,omitempty"`
@@ -65,9 +67,11 @@ func (cfg *Configuration) DatasetPtr() *string {
 }
 
 // migrateAccessToken moves the OAuth access token from AuthToken, where
-// releases before v1.34.0 stored it, into [OAuthState.AccessToken].
-// It also drops the AuthToken copy that [mirrorAccessToken] writes, so in
-// memory AuthToken only ever holds a static token.
+// releases before v1.34.0 stored it, into [OAuthState.AccessToken], and keeps
+// AuthToken as a copy so older readers of the field and of profiles.json
+// still find it.
+//
+// Remove the copy in the release after v1.34.0.
 func migrateAccessToken(cfg *Configuration) {
 	if cfg.OAuth == nil {
 		return
@@ -75,7 +79,26 @@ func migrateAccessToken(cfg *Configuration) {
 	if cfg.OAuth.AccessToken == "" {
 		cfg.OAuth.AccessToken = cfg.AuthToken
 	}
-	cfg.AuthToken = ""
+	cfg.AuthToken = cfg.OAuth.AccessToken
+}
+
+// syncAccessTokenCopy copies the access token from whichever of AuthToken and
+// [OAuthState.AccessToken] an update changed into the other.
+// Callers written before v1.34.0 change AuthToken, newer ones change
+// AccessToken, and without this the field left alone would win on save, so a
+// new token or a cleared one ("") would be lost.
+func syncAccessTokenCopy(cfg *Configuration, authTokenBefore, accessTokenBefore string) {
+	if cfg.OAuth == nil {
+		return
+	}
+	authTokenChanged := cfg.AuthToken != authTokenBefore
+	accessTokenChanged := cfg.OAuth.AccessToken != accessTokenBefore
+	switch {
+	case authTokenChanged && !accessTokenChanged:
+		cfg.OAuth.AccessToken = cfg.AuthToken
+	case accessTokenChanged && !authTokenChanged:
+		cfg.AuthToken = cfg.OAuth.AccessToken
+	}
 }
 
 // ResolvedConfiguration is a configuration resolved from a profile,
@@ -223,6 +246,10 @@ func (cfg *ResolvedConfiguration) ConfigDir() string {
 // HasCredentials reports whether [ResolvedConfiguration.Token] is non-empty.
 func (cfg *ResolvedConfiguration) HasCredentials() bool {
 	return cfg.Token() != ""
+}
+
+func (cfg *ResolvedConfiguration) canRefresh() bool {
+	return cfg != nil && cfg.values.OAuth != nil && cfg.values.OAuth.RefreshToken != ""
 }
 
 // Profile represents a named configuration profile.

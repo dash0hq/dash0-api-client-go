@@ -108,7 +108,7 @@ func refreshOAuthToken(
 	if cfg.OAuth == nil {
 		return nil
 	}
-	if mode == refreshIfExpiring && time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
+	if mode == refreshIfExpiring && cfg.OAuth.AccessToken != "" && time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
 		return nil
 	}
 	if cfg.ApiUrl == "" {
@@ -176,7 +176,7 @@ func refreshOAuthToken(
 		if cfg.OAuth.AccessToken != staleAccessToken {
 			return nil
 		}
-	} else if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
+	} else if cfg.OAuth.AccessToken != "" && time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
 		return nil
 	}
 
@@ -259,6 +259,7 @@ func refreshOAuthToken(
 		return fmt.Errorf("OAuth token refresh succeeded but persisting tokens failed: %w", err)
 	}
 
+	cfg.AuthToken = newAccessToken
 	cfg.OAuth.AccessToken = newAccessToken
 	cfg.OAuth.ExpiresAt = newExpiresAt
 	cfg.OAuth.RefreshToken = newRefreshToken
