@@ -92,8 +92,7 @@ type ResolvedConfiguration struct {
 	sources     [fieldCount]ConfigurationSource
 }
 
-// ConfigurationField names a field of a [ResolvedConfiguration] for
-// [ResolvedConfiguration.Source].
+// ConfigurationField names a field of a [ResolvedConfiguration] for [ResolvedConfiguration.Source].
 type ConfigurationField int
 
 const (
@@ -109,8 +108,7 @@ const (
 	fieldCount
 )
 
-// ConfigurationSource is the layer that supplied the value of a
-// [ConfigurationField].
+// ConfigurationSource is the layer that supplied the value of a [ConfigurationField].
 type ConfigurationSource string
 
 const (
@@ -118,11 +116,9 @@ const (
 	SourceUnset ConfigurationSource = ""
 	// SourceProfile means the value came from a profile in profiles.json.
 	SourceProfile ConfigurationSource = "profile"
-	// SourceEnvironment means the value came from an environment variable,
-	// such as DASH0_API_URL.
+	// SourceEnvironment means the value came from an environment variable, such as DASH0_API_URL.
 	SourceEnvironment ConfigurationSource = "environment"
-	// SourceArgument means the value came from an argument the caller passed
-	// to a ResolveConfiguration function.
+	// SourceArgument means the value came from an argument the caller passed to a ResolveConfiguration function.
 	SourceArgument ConfigurationSource = "argument"
 )
 
