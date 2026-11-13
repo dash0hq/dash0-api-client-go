@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 )
 
@@ -67,6 +68,8 @@ type tokenServerResponse struct {
 	AccessToken  string
 	ExpiresIn    int64
 	RefreshToken *string
+	// Exchanges, when set, counts the token requests the server answers.
+	Exchanges *atomic.Int32
 }
 
 // newTokenServer creates an httptest.Server that responds to POST /oauth/token
@@ -79,6 +82,9 @@ func newTokenServer(t *testing.T, resp tokenServerResponse, lastRequest *map[str
 		if r.Method != http.MethodPost || r.URL.Path != "/oauth/token" {
 			w.WriteHeader(http.StatusNotFound)
 			return
+		}
+		if resp.Exchanges != nil {
+			resp.Exchanges.Add(1)
 		}
 		if lastRequest != nil {
 			if m, err := parsePostForm(r); err == nil {

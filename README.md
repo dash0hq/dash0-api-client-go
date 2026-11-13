@@ -306,7 +306,8 @@ _ = store.AddProfile(profiles.Profile{
 })
 ```
 
-On subsequent invocations, `Store.GetActiveConfigurationContext(ctx)` returns the active configuration and transparently refreshes the access token when it is within 5 minutes of expiry.
+On subsequent invocations, `Store.GetActiveConfigurationContext(ctx)` returns the active configuration with the access token as stored on disk.
+Pass `cfg.AuthTokenProvider()` to `dash0.WithAuthTokenProvider`, and the client refreshes the access token before a request when it is within 5 minutes of expiry.
 A token that the authorization server rejects (`invalid_grant`) is cleared from disk and surfaces as `profiles.ErrReauthenticationRequired`, so the caller can trigger a fresh interactive login without retrying the dead credential.
 
 ### Files written under the config directory
@@ -327,7 +328,7 @@ All file writes go through a temp-file + `os.Rename` to avoid leaving a half-wri
 
 The `profiles.Store` serializes mutations of `profiles.json` and `activeProfile` at two layers:
 
-* In-process: an internal mutex guards every read-modify-write sequence (`AddProfile`, `UpdateProfile`, `RemoveProfile`, `SetActiveProfile`, and the transparent OAuth refresh inside `GetActiveConfigurationContext`).
+* In-process: an internal mutex guards every read-modify-write sequence (`AddProfile`, `UpdateProfile`, `RemoveProfile`, `SetActiveProfile`, and the OAuth refresh inside `Configuration.AuthTokenProvider`).
 * Cross-process: an OS-level advisory lock on `.profile-lock`, backed by [github.com/gofrs/flock](https://github.com/gofrs/flock), prevents two CLI invocations sharing a config directory from refreshing or mutating profiles concurrently.
 
 Without the cross-process lock, two CLI invocations could both refresh the same profile in the 5-minute pre-expiry window, both rotate the server-side refresh-token family, and the loser would 401 on the next API call.

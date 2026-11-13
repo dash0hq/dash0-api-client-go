@@ -25,7 +25,7 @@ type Configuration struct {
 	Dataset   string `json:"dataset,omitempty"`
 
 	// OAuth is set when the profile should authorize using an OAuth access token.
-	// Potentially refreshed when close to the expiry.
+	// Refreshed per request by [Configuration.AuthTokenProvider], never on load.
 	// The actual OAuth access token is located within the AuthToken field.
 	OAuth *OAuthState `json:"oauth,omitempty"`
 

@@ -31,6 +31,8 @@ const OAuthRefreshMaxExpiresIn = 24 * time.Hour
 // the OAuth refresh token is no longer accepted by the authorization server
 // (RFC 6749 invalid_grant) and the caller must initiate a fresh interactive
 // login.
+// Loading a configuration never returns it; match it with [errors.Is] on the
+// request error from [Configuration.AuthTokenProvider].
 // Callers should treat this as a terminal state for the affected profile: the
 // stored refresh token has been cleared from disk before this error is
 // returned, so a subsequent call no longer retries the dead credential.

@@ -923,10 +923,16 @@ func TestGetActiveConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("OAuth token near expiry triggers refresh", func(t *testing.T) {
+	t.Run("OAuth token near expiry is refreshed by the provider, not on load", func(t *testing.T) {
+		// Loading the active profile must not spend a token exchange: a caller
+		// that authenticates with a token from elsewhere, such as the CLI's
+		// --auth-token flag, would discard the result and have rotated the
+		// refresh token for nothing.
+		var exchanges atomic.Int32
 		server := newTokenServer(t, tokenServerResponse{
 			AccessToken: "dash0_at_refreshed-token",
 			ExpiresIn:   3600,
+			Exchanges:   &exchanges,
 		}, nil)
 		defer server.Close()
 
@@ -948,8 +954,22 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_refreshed-token" {
-			t.Errorf("expected dash0_at_refreshed-token, got %s", cfg.AuthToken)
+		if got := exchanges.Load(); got != 0 {
+			t.Errorf("token exchanges on load = %d, want 0", got)
+		}
+		if cfg.AuthToken != "dash0_at_old-token" {
+			t.Errorf("AuthToken = %q, want the stored %q", cfg.AuthToken, "dash0_at_old-token")
+		}
+
+		authToken, err := cfg.AuthTokenProvider().AuthToken(context.Background())
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if authToken != "dash0_at_refreshed-token" {
+			t.Errorf("provider AuthToken = %q, want %q", authToken, "dash0_at_refreshed-token")
+		}
+		if got := exchanges.Load(); got != 1 {
+			t.Errorf("token exchanges after request = %d, want 1", got)
 		}
 	})
 
@@ -1175,17 +1195,13 @@ func TestResolveConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("no explicit auth token still refreshes OAuth", func(t *testing.T) {
+	t.Run("no explicit auth token leaves the OAuth refresh to the provider", func(t *testing.T) {
 		var requestCount atomic.Int32
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			requestCount.Add(1)
-			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]any{
-				"access_token": "dash0_at_refreshed",
-				"token_type":   "Bearer",
-				"expires_in":   3600,
-			})
-		}))
+		server := newTokenServer(t, tokenServerResponse{
+			AccessToken: "dash0_at_refreshed",
+			ExpiresIn:   3600,
+			Exchanges:   &requestCount,
+		}, nil)
 		defer server.Close()
 
 		dir := t.TempDir()
@@ -1206,11 +1222,14 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_refreshed" {
-			t.Errorf("expected dash0_at_refreshed, got %s", cfg.AuthToken)
+		if cfg.AuthToken != "dash0_at_old" {
+			t.Errorf("expected dash0_at_old, got %s", cfg.AuthToken)
 		}
-		if got := requestCount.Load(); got != 1 {
-			t.Errorf("expected 1 token-endpoint request, got %d", got)
+		if got := requestCount.Load(); got != 0 {
+			t.Errorf("expected 0 token-endpoint requests on load, got %d", got)
+		}
+		if cfg.ProfileName != "test" || cfg.ConfigDir != dir {
+			t.Errorf("ProfileName = %q, ConfigDir = %q, want the profile recorded so the provider can refresh", cfg.ProfileName, cfg.ConfigDir)
 		}
 	})
 }
