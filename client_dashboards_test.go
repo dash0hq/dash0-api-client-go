@@ -31,10 +31,21 @@ func TestStripDashboardServerFields(t *testing.T) {
 				Dataset: &dataset,
 				Id:      Ptr("keep-this"),
 			},
+			Labels: &DashboardLabels{
+				Dash0Comid:     Ptr("server-set-id"),
+				Dash0Comorigin: Ptr("keep-origin"),
+			},
 		},
 	}
 
 	StripDashboardServerFields(d)
+
+	if d.Metadata.Labels.Dash0Comid != nil {
+		t.Error("Labels.Dash0Comid should be nil")
+	}
+	if d.Metadata.Labels.Dash0Comorigin == nil || *d.Metadata.Labels.Dash0Comorigin != "keep-origin" {
+		t.Error("Labels.Dash0Comorigin should be preserved")
+	}
 
 	if d.Metadata.CreatedAt != nil {
 		t.Error("CreatedAt should be nil")

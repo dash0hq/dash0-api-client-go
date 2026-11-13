@@ -132,6 +132,9 @@ func StripDashboardServerFields(dashboard *DashboardDefinition) {
 	if dashboard.Metadata.Dash0Extensions != nil {
 		dashboard.Metadata.Dash0Extensions.Dataset = nil
 	}
+	if dashboard.Metadata.Labels != nil {
+		dashboard.Metadata.Labels.Dash0Comid = nil
+	}
 }
 
 // ClearDashboardID removes the ID from a dashboard definition.

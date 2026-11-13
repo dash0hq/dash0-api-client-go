@@ -219,6 +219,14 @@ package dash0
 //
 // [LinearReleaseAgenticWorkflowTriggerSpec] and [LinearReleaseNoteAgenticWorkflowTriggerSpec] lost PipelineIds.
 // Use PipelineNames or PipelineRegex instead, which match the release pipeline name rather than its UUID.
+//
+// # Migration guide (v1.33.x to <NEXT_RELEASE>)
+//
+// [DatasetMetricsSettings].Retention and [DatasetRetention].Metrics changed from [PinnedRetentionClass] to the new [MetricsRetentionClass].
+// Metrics retention is now always 13 months: responses return [MetricsRetentionClassN13M], and the API normalizes a written 30d to 13M.
+// Use [MetricsRetentionClassN13M] on these fields, and update code that compares them to PinnedRetentionClassN30d.
+// There is no alias, because a struct field type cannot be aliased.
+// [PinnedRetentionClass] stays the type of [DatasetProfilingSettings].Retention and [DatasetRetention].Profiles.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
