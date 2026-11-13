@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	dash0 "github.com/dash0hq/dash0-api-client-go"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	sigsyaml "sigs.k8s.io/yaml"
@@ -58,10 +59,10 @@ var defaultIgnoredFields = []string{
 // dash0.com/source records which system last wrote a View or Recording
 // Rule), not noise to discard. See stripAbsentWellKnownLabels.
 var wellKnownLabelKeys = map[string]bool{
-	"dash0.com/id":      true,
-	"dash0.com/origin":  true,
-	"dash0.com/dataset": true,
-	"dash0.com/source":  true,
+	dash0.LabelID:      true,
+	dash0.LabelOrigin:  true,
+	dash0.LabelDataset: true,
+	dash0.LabelSource:  true,
 }
 
 // rootLevelIgnoredFields are always removed regardless of AnnotationsRoot.
@@ -322,8 +323,8 @@ func stringifyMapValues(m map[string]any) {
 //   - dash0-enabled: "true" is removed because true is the default and is
 //     omitted during the same conversion.
 func removeDefaultAnnotationValues(annotations map[string]any) {
-	direction, _ := annotations[baselineDirectionAnnotationKey].(string)
-	comparison, _ := annotations[changeGateComparisonAnnotationKey].(string)
+	direction, _ := annotations[dash0.AnnotationBaselineDirection].(string)
+	comparison, _ := annotations[dash0.AnnotationChangeGateComparison].(string)
 	hasDetector := direction != "" || comparison != ""
 	for key, value := range annotations {
 		strVal, ok := value.(string)
@@ -336,7 +337,7 @@ func removeDefaultAnnotationValues(annotations map[string]any) {
 			}
 			continue
 		}
-		if key == enabledAnnotationKey && strVal == "true" {
+		if key == dash0.AnnotationPrometheusRuleEnabled && strVal == "true" {
 			delete(annotations, key)
 		}
 	}
@@ -349,11 +350,11 @@ func removeDefaultAnnotationValues(annotations map[string]any) {
 // the legacy spelling with a default value must round-trip the same way as
 // the current dash0-prefixed one.
 func isThresholdCriticalAnnotationKey(key string) bool {
-	return key == thresholdCriticalAnnotationKey || key == "threshold-critical"
+	return key == dash0.AnnotationThresholdCritical || key == dash0.AnnotationThresholdCriticalLegacy
 }
 
 func isThresholdDegradedAnnotationKey(key string) bool {
-	return key == thresholdDegradedAnnotationKey || key == "threshold-degraded"
+	return key == dash0.AnnotationThresholdDegraded || key == dash0.AnnotationThresholdDegradedLegacy
 }
 
 // zeroOmittedDurationFields are map keys backed by a Duration field with
@@ -415,7 +416,7 @@ func cleanupMap(data map[string]any, fieldsToRemove []string) {
 				// dash0.com/id/origin/dataset (see wellKnownLabelKeys),
 				// it is never meaningful for drift and has no "must match
 				// if both sides declare it" case worth preserving.
-				delete(v, "dash0.com/version")
+				delete(v, dash0.LabelVersion)
 			}
 			if isEmpty(v) {
 				delete(data, key)

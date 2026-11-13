@@ -143,8 +143,8 @@ func StripRecordingRuleServerFields(rule *RecordingRule) {
 		delete(*rule.Metadata.Labels, LabelID)
 		delete(*rule.Metadata.Labels, LabelOrigin)
 		delete(*rule.Metadata.Labels, LabelDataset)
-		delete(*rule.Metadata.Labels, "dash0.com/version")
-		delete(*rule.Metadata.Labels, "dash0.com/source")
+		delete(*rule.Metadata.Labels, LabelVersion)
+		delete(*rule.Metadata.Labels, LabelSource)
 	}
 	if rule.Metadata.Annotations != nil {
 		delete(*rule.Metadata.Annotations, "dash0.com/created-at")
