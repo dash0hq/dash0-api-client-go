@@ -88,6 +88,15 @@ func TestClearDashboardID(t *testing.T) {
 	}
 }
 
+func TestClearDashboardID_Label(t *testing.T) {
+	d := &DashboardDefinition{Metadata: DashboardMetadata{
+		Labels: &DashboardLabels{Dash0Comid: Ptr("label-id"), Dash0Comorigin: Ptr("keep-origin")},
+	}}
+	ClearDashboardID(d)
+	assertEqual(t, "id", GetDashboardID(d), "")
+	assertEqual(t, "origin", d.GetOrigin(), "keep-origin")
+}
+
 func TestClearDashboardID_NilExtensions(t *testing.T) {
 	d := &DashboardDefinition{}
 	ClearDashboardID(d) // should not panic
@@ -192,6 +201,29 @@ func TestGetDashboardID(t *testing.T) {
 			}},
 			"",
 		},
+		{
+			"label wins over extension",
+			&DashboardDefinition{Metadata: DashboardMetadata{
+				Labels:          &DashboardLabels{Dash0Comid: Ptr("label-id")},
+				Dash0Extensions: &DashboardMetadataExtensions{Id: Ptr("extension-id")},
+			}},
+			"label-id",
+		},
+		{
+			"label only",
+			&DashboardDefinition{Metadata: DashboardMetadata{
+				Labels: &DashboardLabels{Dash0Comid: Ptr("label-id")},
+			}},
+			"label-id",
+		},
+		{
+			"empty label falls back to extension",
+			&DashboardDefinition{Metadata: DashboardMetadata{
+				Labels:          &DashboardLabels{Dash0Comid: Ptr("")},
+				Dash0Extensions: &DashboardMetadataExtensions{Id: Ptr("extension-id")},
+			}},
+			"extension-id",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -246,6 +278,66 @@ func TestSetDashboardIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
 	if *d.Metadata.Dash0Extensions.Id != "existing-id" {
 		t.Errorf("ID = %q, want %q (should not overwrite)", *d.Metadata.Dash0Extensions.Id, "existing-id")
 	}
+}
+
+func TestSetDashboardIDIfAbsent_NoOpWhenLabelSet(t *testing.T) {
+	d := &DashboardDefinition{Metadata: DashboardMetadata{
+		Labels: &DashboardLabels{Dash0Comid: Ptr("label-id")},
+	}}
+	SetDashboardIDIfAbsent(d, "new-id")
+	if d.Metadata.Dash0Extensions != nil {
+		t.Errorf("Dash0Extensions = %+v, want nil", d.Metadata.Dash0Extensions)
+	}
+	assertEqual(t, "id", GetDashboardID(d), "label-id")
+}
+
+func TestDashboardGetOrigin(t *testing.T) {
+	tests := []struct {
+		name      string
+		dashboard *DashboardDefinition
+		want      string
+	}{
+		{"nil dashboard", nil, ""},
+		{"nil labels", &DashboardDefinition{}, ""},
+		{
+			"origin label",
+			&DashboardDefinition{Metadata: DashboardMetadata{
+				Labels: &DashboardLabels{Dash0Comorigin: Ptr("my-origin"), Dash0Comid: Ptr("label-id")},
+			}},
+			"my-origin",
+		},
+		{
+			"extension id only",
+			&DashboardDefinition{Metadata: DashboardMetadata{
+				Dash0Extensions: &DashboardMetadataExtensions{Id: Ptr("extension-id")},
+			}},
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertEqual(t, "GetOrigin()", tt.dashboard.GetOrigin(), tt.want)
+		})
+	}
+}
+
+// TestDashboardLabels_RoundTrip checks that dash0.com/origin and dash0.com/id survive a decode and an encode.
+func TestDashboardLabels_RoundTrip(t *testing.T) {
+	in := `{"kind":"Dashboard","metadata":{"name":"d","labels":{"dash0.com/origin":"my-origin","dash0.com/id":"label-id"}},"spec":{}}`
+	var d DashboardDefinition
+	if err := json.Unmarshal([]byte(in), &d); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	out, err := json.Marshal(&d)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	var again DashboardDefinition
+	if err := json.Unmarshal(out, &again); err != nil {
+		t.Fatalf("unmarshal again: %v", err)
+	}
+	assertEqual(t, "origin", again.GetOrigin(), "my-origin")
+	assertEqual(t, "id", again.GetID(), "label-id")
 }
 
 func TestGetDashboardName(t *testing.T) {

@@ -37,7 +37,7 @@ func TestAssetMetadata(t *testing.T) {
 		{&SpamFilterV1Alpha2{}, "test-origin", true, true},
 		{&NotificationChannelDefinition{}, "test-origin", true, false},
 		{&TimeSeriesAggregationDefinition{}, "test-origin", true, false},
-		{&DashboardDefinition{}, "", false, true},
+		{&DashboardDefinition{}, "test-origin", true, true},
 		{&PersesDashboard{}, "test-origin", false, true},
 		{&PrometheusAlertRule{}, "test-origin", false, true},
 		{&PrometheusRules{}, "test-origin", false, true},
@@ -48,6 +48,7 @@ func TestAssetMetadata(t *testing.T) {
 		{&AwsMetricScrapeConfigDefinition{}, "test-origin", false, true},
 	}
 	for _, nilAsset := range []AssetMetadata{
+		(*DashboardDefinition)(nil),
 		(*ViewDefinition)(nil),
 		(*SyntheticCheckDefinition)(nil),
 		(*PrometheusAlertRule)(nil),
