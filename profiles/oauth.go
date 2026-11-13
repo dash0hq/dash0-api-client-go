@@ -32,31 +32,11 @@ const OAuthRefreshMaxExpiresIn = 24 * time.Hour
 // (RFC 6749 invalid_grant) and the caller must initiate a fresh interactive
 // login.
 // Loading a configuration never returns it; match it with [errors.Is] on the
-// request error from [Configuration.AuthTokenProvider].
+// request error from [ResolvedConfiguration.AuthTokenProvider].
 // Callers should treat this as a terminal state for the affected profile: the
 // stored refresh token has been cleared from disk before this error is
 // returned, so a subsequent call no longer retries the dead credential.
 var ErrReauthenticationRequired = errors.New("OAuth refresh token rejected; re-authentication required")
-
-// ErrNoAssociatedProfile is returned when an OAuth access token needs
-// refreshing but the credentials it belongs to are not associated with a stored
-// profile, so there is nowhere to save the new tokens.
-//
-// It means the configuration was built directly instead of being returned by a
-// [Store], so nothing recorded which profile the new tokens belong to. Obtain
-// the configuration from [Store.GetActiveConfigurationContext] or one of the
-// ResolveConfiguration functions, or populate [Configuration.ProfileName].
-//
-// No front end can currently produce this state, so the message carries no
-// remedy: any advice aimed at an end user would be wrong, since only the calling
-// code can fix it. It is a sentinel so a command-line or provider front end can
-// match it and decide how to present it, the way it already does for
-// [ErrReauthenticationRequired], rather than printing it verbatim. That is also
-// why the wording holds no Go identifiers.
-var ErrNoAssociatedProfile = errors.New(
-	"the credentials are not associated with a Dash0 profile, so the OAuth access token " +
-		"cannot be refreshed",
-)
 
 // ErrRevocationFailed is wrapped into the result of [Store.RemoveProfile]
 // (and equivalents) when the local profile was successfully removed but the
@@ -80,7 +60,7 @@ const (
 	// It exists for the case where the authorization server rejected a token the
 	// client still considered valid: clock skew against the server, or a
 	// revocation performed elsewhere. The API client reaches it through
-	// [Configuration.AuthTokenProvider]'s ForceRefreshAuthToken after a 401.
+	// [ResolvedConfiguration.AuthTokenProvider]'s ForceRefreshAuthToken after a 401.
 	forceRefresh
 )
 
@@ -139,7 +119,7 @@ func refreshOAuthToken(
 	// Retained so the post-lock re-check can tell "another process already
 	// replaced the token we were unhappy with" from "the token we were unhappy
 	// with is still the current one".
-	staleAccessToken := cfg.AuthToken
+	staleAccessToken := cfg.OAuth.AccessToken
 
 	store.refreshMu.Lock()
 	defer store.refreshMu.Unlock()
@@ -173,7 +153,7 @@ func refreshOAuthToken(
 	}
 	if !profileFound {
 		// The profile was removed from disk concurrently. Surface a
-		// dedicated error rather than silently zeroing cfg.AuthToken.
+		// dedicated error rather than silently zeroing the access token.
 		return fmt.Errorf("OAuth refresh aborted: profile %q no longer exists", profileName)
 	}
 	if persistedOAuth == nil {
@@ -193,7 +173,7 @@ func refreshOAuthToken(
 		// A sibling goroutine or process rotated the token while we waited for
 		// the locks. Its result is as good as one we would mint ourselves, and
 		// reusing it avoids burning another refresh-token rotation.
-		if cfg.AuthToken != staleAccessToken {
+		if cfg.OAuth.AccessToken != staleAccessToken {
 			return nil
 		}
 	} else if time.Until(cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold {
@@ -267,8 +247,8 @@ func refreshOAuthToken(
 	// process holding tokens disk has never seen.
 	clientID := ResolveOAuthClientID(cfg.ApiUrl, cfg.OAuth.ClientID, WithConfigDir(store.configDir))
 	if err := store.updateProfileLocked(profileName, func(persisted *Configuration) {
-		persisted.AuthToken = newAccessToken
 		if persisted.OAuth != nil {
+			persisted.OAuth.AccessToken = newAccessToken
 			persisted.OAuth.ExpiresAt = newExpiresAt
 			persisted.OAuth.RefreshToken = newRefreshToken
 			if persisted.OAuth.ClientID == "" && clientID != "" {
@@ -279,7 +259,7 @@ func refreshOAuthToken(
 		return fmt.Errorf("OAuth token refresh succeeded but persisting tokens failed: %w", err)
 	}
 
-	cfg.AuthToken = newAccessToken
+	cfg.OAuth.AccessToken = newAccessToken
 	cfg.OAuth.ExpiresAt = newExpiresAt
 	cfg.OAuth.RefreshToken = newRefreshToken
 	if cfg.OAuth.ClientID == "" && clientID != "" {

@@ -665,11 +665,11 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://env.example.com" {
-			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://env.example.com" {
+			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl())
 		}
-		if cfg.AuthToken != "env-token" {
-			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.Token())
 		}
 	})
 
@@ -684,11 +684,11 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://test1.example.com" {
-			t.Errorf("expected API URL https://test1.example.com, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://test1.example.com" {
+			t.Errorf("expected API URL https://test1.example.com, got %s", cfg.ApiUrl())
 		}
-		if cfg.AuthToken != "token1" {
-			t.Errorf("expected auth token token1, got %s", cfg.AuthToken)
+		if cfg.Token() != "token1" {
+			t.Errorf("expected auth token token1, got %s", cfg.Token())
 		}
 	})
 
@@ -706,12 +706,12 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.Dataset != "env-dataset" {
-			t.Errorf("expected dataset env-dataset, got %s", cfg.Dataset)
+		if cfg.Dataset() != "env-dataset" {
+			t.Errorf("expected dataset env-dataset, got %s", cfg.Dataset())
 		}
 		// Non-overridden fields come from the profile.
-		if cfg.ApiUrl != "https://profile.example.com" {
-			t.Errorf("expected API URL from profile, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://profile.example.com" {
+			t.Errorf("expected API URL from profile, got %s", cfg.ApiUrl())
 		}
 	})
 
@@ -738,17 +738,17 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://env.example.com" {
-			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://env.example.com" {
+			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl())
 		}
-		if cfg.AuthToken != "env-token" {
-			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.Token())
 		}
-		if cfg.Dataset != "production" {
-			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset)
+		if cfg.Dataset() != "production" {
+			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset())
 		}
-		if cfg.OtlpUrl != "https://otlp-profile.example.com" {
-			t.Errorf("expected OTLP URL from the profile, got %q", cfg.OtlpUrl)
+		if cfg.OtlpUrl() != "https://otlp-profile.example.com" {
+			t.Errorf("expected OTLP URL from the profile, got %q", cfg.OtlpUrl())
 		}
 	})
 
@@ -769,11 +769,11 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://profile.example.com" {
-			t.Errorf("expected API URL from the profile, got %q", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://profile.example.com" {
+			t.Errorf("expected API URL from the profile, got %q", cfg.ApiUrl())
 		}
-		if cfg.Dataset != "production" {
-			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset)
+		if cfg.Dataset() != "production" {
+			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset())
 		}
 	})
 
@@ -806,14 +806,14 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "env-token" {
-			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.Token())
 		}
-		if cfg.OAuth != nil {
+		if cfg.OAuth() != nil {
 			t.Error("expected OAuth state to be cleared by the env auth token")
 		}
-		if cfg.Dataset != "production" {
-			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset)
+		if cfg.Dataset() != "production" {
+			t.Errorf("expected dataset production from the profile, got %q", cfg.Dataset())
 		}
 	})
 
@@ -827,11 +827,11 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://env.example.com" || cfg.AuthToken != "env-token" {
+		if cfg.ApiUrl() != "https://env.example.com" || cfg.Token() != "env-token" {
 			t.Errorf("expected env credentials, got %+v", cfg)
 		}
-		if cfg.Dataset != "env-dataset" {
-			t.Errorf("expected dataset env-dataset, got %q", cfg.Dataset)
+		if cfg.Dataset() != "env-dataset" {
+			t.Errorf("expected dataset env-dataset, got %q", cfg.Dataset())
 		}
 	})
 
@@ -854,8 +854,8 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.OtlpUrl != "https://otlp.example.com" {
-			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", cfg.OtlpUrl)
+		if cfg.OtlpUrl() != "https://otlp.example.com" {
+			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", cfg.OtlpUrl())
 		}
 	})
 
@@ -873,8 +873,8 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.OtlpUrl != "https://otlp-env.example.com" {
-			t.Errorf("expected OTLP URL https://otlp-env.example.com, got %s", cfg.OtlpUrl)
+		if cfg.OtlpUrl() != "https://otlp-env.example.com" {
+			t.Errorf("expected OTLP URL https://otlp-env.example.com, got %s", cfg.OtlpUrl())
 		}
 	})
 
@@ -891,8 +891,8 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.Dataset != "profile-dataset" {
-			t.Errorf("expected dataset profile-dataset, got %s", cfg.Dataset)
+		if cfg.Dataset() != "profile-dataset" {
+			t.Errorf("expected dataset profile-dataset, got %s", cfg.Dataset())
 		}
 	})
 
@@ -915,10 +915,10 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_current-token" {
-			t.Errorf("expected dash0_at_current-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "dash0_at_current-token" {
+			t.Errorf("expected dash0_at_current-token, got %s", cfg.Token())
 		}
-		if cfg.OAuth == nil {
+		if cfg.OAuth() == nil {
 			t.Error("expected OAuth state to be preserved")
 		}
 	})
@@ -957,8 +957,8 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if got := exchanges.Load(); got != 0 {
 			t.Errorf("token exchanges on load = %d, want 0", got)
 		}
-		if cfg.AuthToken != "dash0_at_old-token" {
-			t.Errorf("AuthToken = %q, want the stored %q", cfg.AuthToken, "dash0_at_old-token")
+		if cfg.Token() != "dash0_at_old-token" {
+			t.Errorf("AuthToken = %q, want the stored %q", cfg.Token(), "dash0_at_old-token")
 		}
 
 		authToken, err := cfg.AuthTokenProvider().AuthToken(context.Background())
@@ -993,10 +993,10 @@ func TestGetActiveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "auth_env-token" {
-			t.Errorf("expected auth_env-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "auth_env-token" {
+			t.Errorf("expected auth_env-token, got %s", cfg.Token())
 		}
-		if cfg.OAuth != nil {
+		if cfg.OAuth() != nil {
 			t.Error("expected OAuth to be nil when env var overrides")
 		}
 	})
@@ -1011,11 +1011,11 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://env.example.com" {
-			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://env.example.com" {
+			t.Errorf("expected API URL https://env.example.com, got %s", cfg.ApiUrl())
 		}
-		if cfg.AuthToken != "env-token" {
-			t.Errorf("expected auth token env-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "env-token" {
+			t.Errorf("expected auth token env-token, got %s", cfg.Token())
 		}
 	})
 
@@ -1030,11 +1030,11 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ApiUrl != "https://override.example.com" {
-			t.Errorf("expected API URL https://override.example.com, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "https://override.example.com" {
+			t.Errorf("expected API URL https://override.example.com, got %s", cfg.ApiUrl())
 		}
-		if cfg.AuthToken != "original-token" {
-			t.Errorf("expected auth token original-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "original-token" {
+			t.Errorf("expected auth token original-token, got %s", cfg.Token())
 		}
 	})
 
@@ -1053,11 +1053,11 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.OtlpUrl != "https://otlp.example.com" {
-			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", cfg.OtlpUrl)
+		if cfg.OtlpUrl() != "https://otlp.example.com" {
+			t.Errorf("expected OTLP URL https://otlp.example.com, got %s", cfg.OtlpUrl())
 		}
-		if cfg.ApiUrl != "" {
-			t.Errorf("expected empty API URL, got %s", cfg.ApiUrl)
+		if cfg.ApiUrl() != "" {
+			t.Errorf("expected empty API URL, got %s", cfg.ApiUrl())
 		}
 	})
 
@@ -1070,8 +1070,8 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.Dataset != "env-dataset" {
-			t.Errorf("expected dataset env-dataset, got %s", cfg.Dataset)
+		if cfg.Dataset() != "env-dataset" {
+			t.Errorf("expected dataset env-dataset, got %s", cfg.Dataset())
 		}
 	})
 
@@ -1084,8 +1084,8 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.Dataset != "flag-dataset" {
-			t.Errorf("expected dataset flag-dataset, got %s", cfg.Dataset)
+		if cfg.Dataset() != "flag-dataset" {
+			t.Errorf("expected dataset flag-dataset, got %s", cfg.Dataset())
 		}
 	})
 
@@ -1096,8 +1096,8 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.OtlpUrl != "https://otlp-flag.example.com" {
-			t.Errorf("expected OTLP URL https://otlp-flag.example.com, got %s", cfg.OtlpUrl)
+		if cfg.OtlpUrl() != "https://otlp-flag.example.com" {
+			t.Errorf("expected OTLP URL https://otlp-flag.example.com, got %s", cfg.OtlpUrl())
 		}
 	})
 
@@ -1120,11 +1120,11 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.OAuth == nil {
+		if cfg.OAuth() == nil {
 			t.Fatal("expected OAuth state to be propagated")
 		}
-		if cfg.OAuth.ClientID != "cid" {
-			t.Errorf("expected ClientID cid, got %s", cfg.OAuth.ClientID)
+		if cfg.OAuth().ClientID != "cid" {
+			t.Errorf("expected ClientID cid, got %s", cfg.OAuth().ClientID)
 		}
 	})
 
@@ -1147,10 +1147,10 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "auth_explicit-token" {
-			t.Errorf("expected auth_explicit-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "auth_explicit-token" {
+			t.Errorf("expected auth_explicit-token, got %s", cfg.Token())
 		}
-		if cfg.OAuth != nil {
+		if cfg.OAuth() != nil {
 			t.Error("expected OAuth to be nil when explicit auth token provided")
 		}
 	})
@@ -1187,8 +1187,8 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "auth_explicit-token" {
-			t.Errorf("expected auth_explicit-token, got %s", cfg.AuthToken)
+		if cfg.Token() != "auth_explicit-token" {
+			t.Errorf("expected auth_explicit-token, got %s", cfg.Token())
 		}
 		if got := requestCount.Load(); got != 0 {
 			t.Errorf("expected 0 token-endpoint requests, got %d", got)
@@ -1222,14 +1222,14 @@ func TestResolveConfiguration(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "dash0_at_old" {
-			t.Errorf("expected dash0_at_old, got %s", cfg.AuthToken)
+		if cfg.Token() != "dash0_at_old" {
+			t.Errorf("expected dash0_at_old, got %s", cfg.Token())
 		}
 		if got := requestCount.Load(); got != 0 {
 			t.Errorf("expected 0 token-endpoint requests on load, got %d", got)
 		}
-		if cfg.ProfileName != "test" || cfg.ConfigDir != dir {
-			t.Errorf("ProfileName = %q, ConfigDir = %q, want the profile recorded so the provider can refresh", cfg.ProfileName, cfg.ConfigDir)
+		if cfg.ProfileName() != "test" || cfg.ConfigDir() != dir {
+			t.Errorf("ProfileName = %q, ConfigDir = %q, want the profile recorded so the provider can refresh", cfg.ProfileName(), cfg.ConfigDir())
 		}
 	})
 }
@@ -1247,8 +1247,8 @@ func TestGetConfigurationForProfile(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "auth_other" {
-			t.Errorf("AuthToken = %q, want %q", cfg.AuthToken, "auth_other")
+		if cfg.Token() != "auth_other" {
+			t.Errorf("AuthToken = %q, want %q", cfg.Token(), "auth_other")
 		}
 	})
 
@@ -1264,8 +1264,8 @@ func TestGetConfigurationForProfile(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.ProfileName != "named" {
-			t.Errorf("ProfileName = %q, want %q", cfg.ProfileName, "named")
+		if cfg.ProfileName() != "named" {
+			t.Errorf("ProfileName = %q, want %q", cfg.ProfileName(), "named")
 		}
 	})
 
@@ -1304,16 +1304,16 @@ func TestGetConfigurationForProfile(t *testing.T) {
 		if exchanges != 0 {
 			t.Errorf("token exchanges = %d, want 0", exchanges)
 		}
-		if cfg.AuthToken != "dash0_at_stale" {
-			t.Errorf("AuthToken = %q, want the stored %q", cfg.AuthToken, "dash0_at_stale")
+		if cfg.Token() != "dash0_at_stale" {
+			t.Errorf("AuthToken = %q, want the stored %q", cfg.Token(), "dash0_at_stale")
 		}
 		// The lookup still has to leave the configuration refreshable, or the
 		// provider has nowhere to write the rotated token back to.
-		if cfg.ProfileName != "oauth" {
-			t.Errorf("ProfileName = %q, want %q", cfg.ProfileName, "oauth")
+		if cfg.ProfileName() != "oauth" {
+			t.Errorf("ProfileName = %q, want %q", cfg.ProfileName(), "oauth")
 		}
-		if cfg.ConfigDir != dir {
-			t.Errorf("ConfigDir = %q, want %q", cfg.ConfigDir, dir)
+		if cfg.ConfigDir() != dir {
+			t.Errorf("ConfigDir = %q, want %q", cfg.ConfigDir(), dir)
 		}
 	})
 
@@ -1332,11 +1332,11 @@ func TestGetConfigurationForProfile(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.AuthToken != "auth_from_env" {
-			t.Errorf("AuthToken = %q, want the env override", cfg.AuthToken)
+		if cfg.Token() != "auth_from_env" {
+			t.Errorf("AuthToken = %q, want the env override", cfg.Token())
 		}
-		if cfg.Dataset != "from-profile" {
-			t.Errorf("Dataset = %q, want the profile value retained", cfg.Dataset)
+		if cfg.Dataset() != "from-profile" {
+			t.Errorf("Dataset = %q, want the profile value retained", cfg.Dataset())
 		}
 	})
 
@@ -1359,4 +1359,199 @@ func TestGetConfigurationForProfile(t *testing.T) {
 			t.Error("expected an error for an empty profile name")
 		}
 	})
+}
+
+// writeRawProfilesFile writes profiles.json byte for byte, so tests can seed
+// the format older releases wrote.
+func writeRawProfilesFile(t *testing.T, dir, content string) {
+	t.Helper()
+	if err := os.WriteFile(filepath.Join(dir, ProfilesFileName), []byte(content), 0o600); err != nil {
+		t.Fatalf("failed to write profiles file: %v", err)
+	}
+}
+
+// readRawProfiles returns each profile's "configuration" object from
+// profiles.json as generic JSON, keyed by profile name.
+func readRawProfiles(t *testing.T, dir string) map[string]map[string]any {
+	t.Helper()
+	data, err := os.ReadFile(filepath.Join(dir, ProfilesFileName))
+	if err != nil {
+		t.Fatalf("failed to read profiles file: %v", err)
+	}
+	var file struct {
+		Profiles []struct {
+			Name          string         `json:"name"`
+			Configuration map[string]any `json:"configuration"`
+		} `json:"profiles"`
+	}
+	if err := json.Unmarshal(data, &file); err != nil {
+		t.Fatalf("failed to parse profiles file: %v", err)
+	}
+	byName := map[string]map[string]any{}
+	for _, profile := range file.Profiles {
+		byName[profile.Name] = profile.Configuration
+	}
+	return byName
+}
+
+// profilesFileBeforeAccessTokenMove is profiles.json as releases before the
+// access token moved into the OAuth state wrote it.
+const profilesFileBeforeAccessTokenMove = `{
+  "profiles": [
+    {"name": "oauth", "configuration": {"apiUrl": "https://api.example.com", "authToken": "dash0_at_old",
+      "oauth": {"clientId": "cid", "refreshToken": "rt", "expiresAt": "2030-01-01T00:00:00Z"}}},
+    {"name": "oauth-empty", "configuration": {"apiUrl": "https://api.example.com", "authToken": "", "oauth": {}}},
+    {"name": "static", "configuration": {"apiUrl": "https://api.example.com", "authToken": "auth_static"}},
+    {"name": "static-empty", "configuration": {"apiUrl": "https://api.example.com", "authToken": ""}}
+  ]
+}`
+
+func TestGetProfilesMigratesTheAccessToken(t *testing.T) {
+	store, dir := newTestStore(t)
+	writeRawProfilesFile(t, dir, profilesFileBeforeAccessTokenMove)
+
+	profiles, err := store.GetProfiles()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	want := map[string]struct {
+		authToken   string
+		accessToken string
+		oauth       bool
+	}{
+		"oauth":        {authToken: "", accessToken: "dash0_at_old", oauth: true},
+		"oauth-empty":  {authToken: "", accessToken: "", oauth: true},
+		"static":       {authToken: "auth_static"},
+		"static-empty": {authToken: ""},
+	}
+	if len(profiles) != len(want) {
+		t.Fatalf("got %d profiles, want %d", len(profiles), len(want))
+	}
+	for _, profile := range profiles {
+		expected := want[profile.Name]
+		cfg := profile.Configuration
+		if cfg.AuthToken != expected.authToken {
+			t.Errorf("%s: AuthToken = %q, want %q", profile.Name, cfg.AuthToken, expected.authToken)
+		}
+		if (cfg.OAuth != nil) != expected.oauth {
+			t.Errorf("%s: OAuth = %+v, want present=%v", profile.Name, cfg.OAuth, expected.oauth)
+			continue
+		}
+		if cfg.OAuth != nil && cfg.OAuth.AccessToken != expected.accessToken {
+			t.Errorf("%s: OAuth.AccessToken = %q, want %q", profile.Name, cfg.OAuth.AccessToken, expected.accessToken)
+		}
+	}
+}
+
+func TestGetProfilesDoesNotRewriteTheFile(t *testing.T) {
+	store, dir := newTestStore(t)
+	writeRawProfilesFile(t, dir, profilesFileBeforeAccessTokenMove)
+	setActiveProfile(t, dir, "oauth")
+
+	if _, err := store.GetActiveConfiguration(); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, ProfilesFileName))
+	if err != nil {
+		t.Fatalf("failed to read profiles file: %v", err)
+	}
+	if string(data) != profilesFileBeforeAccessTokenMove {
+		t.Errorf("a read rewrote profiles.json:\n%s", data)
+	}
+}
+
+func TestGetActiveConfigurationServesAMigratedAccessToken(t *testing.T) {
+	store, dir := newTestStore(t)
+	writeRawProfilesFile(t, dir, profilesFileBeforeAccessTokenMove)
+	setActiveProfile(t, dir, "oauth")
+
+	cfg, err := store.GetActiveConfiguration()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.Token() != "dash0_at_old" {
+		t.Errorf("Token() = %q, want %q", cfg.Token(), "dash0_at_old")
+	}
+	if cfg.OAuth() == nil || cfg.OAuth().RefreshToken != "rt" {
+		t.Errorf("OAuth() = %+v, want the stored refresh token", cfg.OAuth())
+	}
+}
+
+func TestSaveProfilesWritesTheMigratedFormat(t *testing.T) {
+	store, dir := newTestStore(t)
+	writeRawProfilesFile(t, dir, profilesFileBeforeAccessTokenMove)
+
+	if err := store.UpdateProfile("static", func(cfg *Configuration) { cfg.Dataset = "updated" }); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	raw := readRawProfiles(t, dir)
+
+	oauthProfile := raw["oauth"]
+	oauthState, _ := oauthProfile["oauth"].(map[string]any)
+	if oauthState["accessToken"] != "dash0_at_old" {
+		t.Errorf("oauth: accessToken = %v, want %q", oauthState["accessToken"], "dash0_at_old")
+	}
+	// Mirrored for older readers until the release after the move.
+	if oauthProfile["authToken"] != "dash0_at_old" {
+		t.Errorf("oauth: authToken = %v, want the mirrored %q", oauthProfile["authToken"], "dash0_at_old")
+	}
+
+	emptyProfile := raw["oauth-empty"]
+	emptyState, _ := emptyProfile["oauth"].(map[string]any)
+	if _, ok := emptyState["accessToken"]; ok {
+		t.Errorf("oauth-empty: accessToken = %v, want it omitted", emptyState["accessToken"])
+	}
+	if emptyProfile["authToken"] != "" {
+		t.Errorf("oauth-empty: authToken = %v, want \"\"", emptyProfile["authToken"])
+	}
+
+	if raw["static"]["authToken"] != "auth_static" || raw["static"]["oauth"] != nil {
+		t.Errorf("static: got %v, want the static token and no OAuth state", raw["static"])
+	}
+	if raw["static-empty"]["authToken"] != "" {
+		t.Errorf("static-empty: authToken = %v, want \"\"", raw["static-empty"]["authToken"])
+	}
+}
+
+func TestSaveProfilesMovesAnAccessTokenWrittenToAuthToken(t *testing.T) {
+	store, dir := newTestStore(t)
+
+	// A caller written before the move puts the access token in AuthToken.
+	if err := store.AddProfile(Profile{Name: "oauth", Configuration: Configuration{
+		ApiUrl:    "https://api.example.com",
+		AuthToken: "dash0_at_login",
+		OAuth:     &OAuthState{RefreshToken: "rt"},
+	}}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	cfg, err := store.GetConfigurationForProfile(context.Background(), "oauth")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if cfg.Token() != "dash0_at_login" {
+		t.Errorf("Token() = %q, want %q", cfg.Token(), "dash0_at_login")
+	}
+	oauthState, _ := readRawProfiles(t, dir)["oauth"]["oauth"].(map[string]any)
+	if oauthState["accessToken"] != "dash0_at_login" {
+		t.Errorf("accessToken = %v, want %q", oauthState["accessToken"], "dash0_at_login")
+	}
+}
+
+func TestSaveProfilesDoesNotChangeTheCallersProfiles(t *testing.T) {
+	store, _ := newTestStore(t)
+	profiles := []Profile{{Name: "oauth", Configuration: Configuration{
+		OAuth: &OAuthState{AccessToken: "dash0_at_x"},
+	}}}
+
+	if err := store.saveProfiles(profiles); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if profiles[0].Configuration.AuthToken != "" {
+		t.Errorf("AuthToken = %q, want the mirror kept out of the caller's slice", profiles[0].Configuration.AuthToken)
+	}
 }

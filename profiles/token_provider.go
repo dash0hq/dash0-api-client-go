@@ -22,29 +22,28 @@ import (
 // it comes within [OAuthRefreshThreshold] of expiry, which keeps such an
 // operation running on a single interactive login.
 //
-// For a configuration with no OAuth state the returned provider serves
-// cfg.AuthToken unchanged, so callers do not need to branch on the profile's
-// auth kind.
+// For a configuration with no OAuth state the returned provider serves the
+// static auth token unchanged, so callers do not need to branch on the
+// profile's auth kind.
 //
 // The returned provider is safe for concurrent use and holds its own copy of
 // cfg, so refreshes are visible to every request the client issues but do not
-// mutate the caller's [Configuration].
-func (cfg *Configuration) AuthTokenProvider(opts ...StoreOption) dash0.AuthTokenProvider {
-	if cfg.OAuth == nil {
-		return dash0.StaticAuthTokenProvider(cfg.AuthToken)
+// mutate the caller's [ResolvedConfiguration].
+func (cfg *ResolvedConfiguration) AuthTokenProvider(opts ...StoreOption) dash0.AuthTokenProvider {
+	if cfg.OAuth() == nil {
+		return dash0.StaticAuthTokenProvider(cfg.Token())
 	}
 
 	provider := &authTokenProvider{cfg: *cfg}
-	// Copy the OAuth state as well. The shallow struct copy above shares the
-	// pointer, and refreshOAuthToken writes through it.
-	oauthState := *cfg.OAuth
-	provider.cfg.OAuth = &oauthState
+	// The struct copy above shares the OAuth pointer, and refreshOAuthToken
+	// writes through it.
+	provider.cfg.values.OAuth = cfg.OAuth()
 
 	// Default to the directory this configuration was resolved from, so a caller
 	// that built its Store with WithConfigDir does not silently refresh against
 	// a different profiles.json. Caller-supplied options come after, and win.
-	if cfg.ConfigDir != "" {
-		opts = append([]StoreOption{WithConfigDir(cfg.ConfigDir)}, opts...)
+	if cfg.configDir != "" {
+		opts = append([]StoreOption{WithConfigDir(cfg.configDir)}, opts...)
 	}
 
 	store, err := NewStore(opts...)
@@ -72,8 +71,7 @@ var _ dash0.RefreshingAuthTokenProvider = (*authTokenProvider)(nil)
 // ask it for a replacement token after the authorization server rejects one the
 // provider still considered valid.
 type authTokenProvider struct {
-	// mu guards cfg. refreshOAuthToken writes cfg.AuthToken and the OAuth
-	// state, and the API client calls AuthToken from up to
+	// mu guards cfg. refreshOAuthToken writes the OAuth state, and the API client calls AuthToken from up to
 	// [dash0.MaxConcurrentRequests] goroutines at once. The cross-process file
 	// lock inside refreshOAuthToken serializes the refresh itself; mu is what
 	// makes the in-memory struct safe.
@@ -83,7 +81,7 @@ type authTokenProvider struct {
 	// Holding an exclusive lock for those would serialize every request in a
 	// large batch behind a lock none of them needs to write to.
 	mu  sync.RWMutex
-	cfg Configuration
+	cfg ResolvedConfiguration
 
 	store    *Store
 	storeErr error
@@ -98,7 +96,7 @@ type authTokenProvider struct {
 // through this provider costs no meaningful contention.
 func (p *authTokenProvider) AuthToken(ctx context.Context) (string, error) {
 	p.mu.RLock()
-	authToken, servable := p.cfg.AuthToken, p.servableWithoutRefresh()
+	authToken, servable := p.cfg.Token(), p.servableWithoutRefresh()
 	p.mu.RUnlock()
 	if servable {
 		return authToken, nil
@@ -110,12 +108,12 @@ func (p *authTokenProvider) AuthToken(ctx context.Context) (string, error) {
 	// Re-check under the write lock: another goroutine may have refreshed while
 	// this one waited for it.
 	if p.servableWithoutRefresh() {
-		return p.cfg.AuthToken, nil
+		return p.cfg.Token(), nil
 	}
 	if err := p.refresh(ctx, refreshIfExpiring); err != nil {
 		return "", err
 	}
-	return p.cfg.AuthToken, nil
+	return p.cfg.Token(), nil
 }
 
 // servableWithoutRefresh reports whether the token currently held can be handed
@@ -129,10 +127,10 @@ func (p *authTokenProvider) servableWithoutRefresh() bool {
 	if p.storeErr != nil {
 		return false
 	}
-	if p.cfg.OAuth == nil {
-		return p.cfg.AuthToken != ""
+	if p.cfg.values.OAuth == nil {
+		return p.cfg.Token() != ""
 	}
-	return time.Until(p.cfg.OAuth.ExpiresAt) > OAuthRefreshThreshold
+	return time.Until(p.cfg.values.OAuth.ExpiresAt) > OAuthRefreshThreshold
 }
 
 // ForceRefreshAuthToken implements [dash0.RefreshingAuthTokenProvider].
@@ -154,13 +152,13 @@ func (p *authTokenProvider) ForceRefreshAuthToken(ctx context.Context, staleAuth
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	if p.cfg.AuthToken != "" && p.cfg.AuthToken != staleAuthToken {
-		return p.cfg.AuthToken, nil
+	if p.cfg.Token() != "" && p.cfg.Token() != staleAuthToken {
+		return p.cfg.Token(), nil
 	}
 	if err := p.refresh(ctx, forceRefresh); err != nil {
 		return "", err
 	}
-	return p.cfg.AuthToken, nil
+	return p.cfg.Token(), nil
 }
 
 // refresh refreshes the provider's own configuration copy.
@@ -168,12 +166,6 @@ func (p *authTokenProvider) ForceRefreshAuthToken(ctx context.Context, staleAuth
 func (p *authTokenProvider) refresh(ctx context.Context, mode refreshMode) error {
 	if p.storeErr != nil {
 		return p.storeErr
-	}
-	if p.cfg.ProfileName == "" {
-		// An empty ConfigDir is fine: the store then resolves the directory from
-		// DASH0_CONFIG_DIR or the home directory. An empty profile name is not,
-		// because there is nowhere to write the rotated tokens.
-		return ErrNoAssociatedProfile
 	}
 	// Detach from the caller's context. A refresh cancelled between the
 	// authorization server rotating the refresh token and the response being
@@ -189,10 +181,10 @@ func (p *authTokenProvider) refresh(ctx context.Context, mode refreshMode) error
 	refreshCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), OAuthRefreshTimeout)
 	defer cancel()
 
-	if err := refreshOAuthToken(refreshCtx, p.store, p.cfg.ProfileName, &p.cfg, mode); err != nil {
+	if err := refreshOAuthToken(refreshCtx, p.store, p.cfg.profileName, &p.cfg.values, mode); err != nil {
 		return err
 	}
-	if p.cfg.OAuth == nil && p.cfg.AuthToken == "" {
+	if p.cfg.Token() == "" {
 		// The refresh cleared the profile's OAuth state -- the refresh token was
 		// rejected, or it was cleared concurrently -- leaving no credential to
 		// serve. Report the terminal condition rather than handing back an empty

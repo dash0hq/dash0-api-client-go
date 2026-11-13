@@ -12,16 +12,15 @@ func newBenchProvider(tb testing.TB) *authTokenProvider {
 	tb.Helper()
 	store, _ := newTestStore(tb)
 	provider := &authTokenProvider{
-		cfg: Configuration{
-			ApiUrl:      "https://api.example.com",
-			AuthToken:   "dash0_at_current",
-			ProfileName: "test",
+		cfg: *newResolved(Configuration{
+			ApiUrl: "https://api.example.com",
 			OAuth: &OAuthState{
 				ClientID:     "cid",
+				AccessToken:  "dash0_at_current",
 				RefreshToken: "rt",
 				ExpiresAt:    time.Now().Add(1 * time.Hour),
 			},
-		},
+		}, "test", ""),
 		store: store,
 	}
 	return provider

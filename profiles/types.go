@@ -17,65 +17,158 @@ import (
 	dash0 "github.com/dash0hq/dash0-api-client-go"
 )
 
-// Configuration represents a Dash0 configuration with connection parameters.
+// Configuration is the schema of one profile in profiles.json.
+//
+// It is what [Store.AddProfile] and [Store.UpdateProfile] read and write.
+// To call the API, resolve a [ResolvedConfiguration] through a [Store] or one
+// of the ResolveConfiguration functions instead.
 type Configuration struct {
-	ApiUrl    string `json:"apiUrl"`
+	ApiUrl string `json:"apiUrl"`
+	// AuthToken is a static auth token.
+	// An OAuth profile keeps its access token in [OAuthState.AccessToken].
 	AuthToken string `json:"authToken"`
 	OtlpUrl   string `json:"otlpUrl,omitempty"`
 	Dataset   string `json:"dataset,omitempty"`
 
-	// OAuth is set when the profile should authorize using an OAuth access token.
-	// Refreshed per request by [Configuration.AuthTokenProvider], never on load.
-	// The actual OAuth access token is located within the AuthToken field.
+	// OAuth is set when the profile authorizes with an OAuth access token.
+	// Refreshed per request by [ResolvedConfiguration.AuthTokenProvider], never on load.
 	OAuth *OAuthState `json:"oauth,omitempty"`
-
-	// ProfileName and ConfigDir record where this configuration was resolved
-	// from, and are both empty when it came from environment variables or
-	// explicit parameters alone.
-	//
-	// Refreshing an OAuth access token needs both: ProfileName locates the
-	// profile the rotated tokens are written back to, and ConfigDir says which
-	// profiles.json holds it. The store sets them when it resolves a
-	// configuration, so callers normally do not.
-	// Set them together or not at all; a name without a directory refreshes
-	// against whichever profiles.json the environment happens to point at. See
-	// [Configuration.AuthTokenProvider].
-	//
-	// Neither is serialized. ProfileName would duplicate the key its [Profile]
-	// is stored under, and ConfigDir is the directory the file itself lives in.
-	ProfileName string `json:"-"`
-	ConfigDir   string `json:"-"`
 }
 
 // OAuthState carries the OAuth-specific state that must survive across CLI
 // invocations: the dynamic client identifier issued at registration (RFC 7591),
-// the long-lived refresh token used to mint new access tokens, and the access
-// token's expiry deadline.
-// The current access token lives in [Configuration.AuthToken]; OAuthState only
-// describes how to refresh it.
+// the current access token, the long-lived refresh token used to mint new
+// access tokens, and the access token's expiry deadline.
 type OAuthState struct {
 	ClientID     string    `json:"clientId,omitempty"`
+	AccessToken  string    `json:"accessToken,omitempty"`
 	RefreshToken string    `json:"refreshToken,omitempty"`
 	ExpiresAt    time.Time `json:"expiresAt,omitzero"`
 }
 
-// HasCredentials reports whether the configuration carries a credential of any
-// kind, static or OAuth.
-//
-// It exists so callers do not have to know that an absent static token is an
-// empty string while absent OAuth state is a nil pointer. Both representations
-// are right for what they hold: encoding/json needs a pointer to tell an absent
-// nested object from a zero one, and a string needs no such indirection. Asking
-// one question keeps that difference in a single place instead of spreading a
-// mixed `!= ""` and `!= nil` test across every caller.
+// HasCredentials reports whether the profile holds a static auth token or an
+// OAuth access token.
 func (cfg *Configuration) HasCredentials() bool {
-	return cfg.AuthToken != "" || cfg.OAuth != nil
+	if cfg == nil {
+		return false
+	}
+	return cfg.AuthToken != "" || (cfg.OAuth != nil && cfg.OAuth.AccessToken != "")
 }
 
 // DatasetPtr returns the dataset as a *string suitable for Dash0 API calls.
 // It returns nil for empty strings and "default", matching [dash0.DatasetPtr].
 func (cfg *Configuration) DatasetPtr() *string {
+	if cfg == nil {
+		return nil
+	}
 	return dash0.DatasetPtr(cfg.Dataset)
+}
+
+// migrateAccessToken moves the OAuth access token from AuthToken, where
+// releases before <NEXT_RELEASE> stored it, into [OAuthState.AccessToken].
+// It also drops the AuthToken copy that [mirrorAccessToken] writes, so in
+// memory AuthToken only ever holds a static token.
+func migrateAccessToken(cfg *Configuration) {
+	if cfg.OAuth == nil {
+		return
+	}
+	if cfg.OAuth.AccessToken == "" {
+		cfg.OAuth.AccessToken = cfg.AuthToken
+	}
+	cfg.AuthToken = ""
+}
+
+// ResolvedConfiguration is a configuration resolved from a profile,
+// environment variables, and caller arguments.
+//
+// Only a [Store] and the ResolveConfiguration functions build one, so a
+// configuration with OAuth state always knows the profile its refreshed tokens
+// are written back to.
+// The zero value has no credentials.
+// All methods are safe to call on a nil pointer.
+type ResolvedConfiguration struct {
+	values      Configuration
+	profileName string
+	configDir   string
+}
+
+// ApiUrl returns the API URL.
+func (cfg *ResolvedConfiguration) ApiUrl() string {
+	if cfg == nil {
+		return ""
+	}
+	return cfg.values.ApiUrl
+}
+
+// OtlpUrl returns the OTLP URL.
+func (cfg *ResolvedConfiguration) OtlpUrl() string {
+	if cfg == nil {
+		return ""
+	}
+	return cfg.values.OtlpUrl
+}
+
+// Dataset returns the dataset.
+func (cfg *ResolvedConfiguration) Dataset() string {
+	if cfg == nil {
+		return ""
+	}
+	return cfg.values.Dataset
+}
+
+// DatasetPtr returns the dataset as a *string suitable for Dash0 API calls.
+// It returns nil for empty strings and "default", matching [dash0.DatasetPtr].
+func (cfg *ResolvedConfiguration) DatasetPtr() *string {
+	return dash0.DatasetPtr(cfg.Dataset())
+}
+
+// Token returns the credential as resolved: the OAuth access token for an
+// OAuth profile, otherwise the static auth token.
+// An OAuth access token may be expired.
+// To authenticate requests, use [ResolvedConfiguration.AuthTokenProvider],
+// which refreshes it.
+func (cfg *ResolvedConfiguration) Token() string {
+	if cfg == nil {
+		return ""
+	}
+	if cfg.values.OAuth != nil {
+		return cfg.values.OAuth.AccessToken
+	}
+	return cfg.values.AuthToken
+}
+
+// OAuth returns a copy of the OAuth state, or nil when the configuration uses a
+// static auth token.
+func (cfg *ResolvedConfiguration) OAuth() *OAuthState {
+	if cfg == nil || cfg.values.OAuth == nil {
+		return nil
+	}
+	oauthState := *cfg.values.OAuth
+	return &oauthState
+}
+
+// ProfileName returns the name of the profile the configuration was resolved
+// from, or "" when it came from environment variables or caller arguments
+// alone.
+func (cfg *ResolvedConfiguration) ProfileName() string {
+	if cfg == nil {
+		return ""
+	}
+	return cfg.profileName
+}
+
+// ConfigDir returns the directory of the profiles.json the configuration was
+// resolved from, or "" when [ResolvedConfiguration.ProfileName] is "".
+func (cfg *ResolvedConfiguration) ConfigDir() string {
+	if cfg == nil {
+		return ""
+	}
+	return cfg.configDir
+}
+
+// HasCredentials reports whether [ResolvedConfiguration.Token] is non-empty.
+func (cfg *ResolvedConfiguration) HasCredentials() bool {
+	return cfg.Token() != ""
 }
 
 // Profile represents a named configuration profile.

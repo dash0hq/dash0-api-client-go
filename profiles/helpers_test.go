@@ -123,3 +123,9 @@ func newRevokeServer(t *testing.T, lastRequest *map[string]string) *httptest.Ser
 		w.WriteHeader(http.StatusOK)
 	}))
 }
+
+// newResolved builds a [ResolvedConfiguration] the way the store does, for
+// tests that need one without a profiles.json.
+func newResolved(cfg Configuration, profileName, configDir string) *ResolvedConfiguration {
+	return &ResolvedConfiguration{values: cfg, profileName: profileName, configDir: configDir}
+}
