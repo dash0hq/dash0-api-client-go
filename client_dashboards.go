@@ -137,10 +137,13 @@ func StripDashboardServerFields(dashboard *DashboardDefinition) {
 	}
 }
 
-// ClearDashboardID removes the ID from a dashboard definition.
+// ClearDashboardID removes the ID from a dashboard definition, both the dash0.com/id label and metadata.dash0Extensions.id.
 func ClearDashboardID(dashboard *DashboardDefinition) {
 	if dashboard == nil {
 		return
+	}
+	if dashboard.Metadata.Labels != nil {
+		dashboard.Metadata.Labels.Dash0Comid = nil
 	}
 	if dashboard.Metadata.Dash0Extensions != nil {
 		dashboard.Metadata.Dash0Extensions.Id = nil
@@ -189,7 +192,11 @@ func SetDashboardDataset(dashboard *DashboardDefinition, dataset string) {
 }
 
 // GetDashboardID extracts the ID from a dashboard definition.
+// It returns the dash0.com/id label, or metadata.dash0Extensions.id when the label is absent.
 func GetDashboardID(dashboard *DashboardDefinition) string {
+	if dashboard != nil && dashboard.Metadata.Labels != nil && dashboard.Metadata.Labels.Dash0Comid != nil && *dashboard.Metadata.Labels.Dash0Comid != "" {
+		return *dashboard.Metadata.Labels.Dash0Comid
+	}
 	if dashboard == nil || dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id == "" {
 		return ""
 	}
@@ -218,6 +225,10 @@ func SetDashboardID(dashboard *DashboardDefinition, id string) {
 	if dashboard == nil {
 		return
 	}
+	// The dash0.com/id label is server-set and POST rejects it, so drop it rather than write the new id there.
+	if dashboard.Metadata.Labels != nil {
+		dashboard.Metadata.Labels.Dash0Comid = nil
+	}
 	if dashboard.Metadata.Dash0Extensions == nil {
 		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
 	}
@@ -226,8 +237,12 @@ func SetDashboardID(dashboard *DashboardDefinition, id string) {
 
 // SetDashboardIDIfAbsent sets the ID on a dashboard definition only if it is
 // not already set, initializing the dash0Extensions struct if needed.
+// A dash0.com/id label counts as a set ID.
 func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
 	if dashboard == nil {
+		return
+	}
+	if dashboard.Metadata.Labels != nil && dashboard.Metadata.Labels.Dash0Comid != nil && *dashboard.Metadata.Labels.Dash0Comid != "" {
 		return
 	}
 	if dashboard.Metadata.Dash0Extensions == nil {
@@ -240,8 +255,14 @@ func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
 
 var _ AssetMetadata = (*DashboardDefinition)(nil)
 
-// GetOrigin returns "", because the only origin field, metadata.dash0Extensions.origin, is deprecated in favor of the id.
-func (*DashboardDefinition) GetOrigin() string                 { return "" }
+// GetOrigin returns the dash0.com/origin label.
+// It does not fall back to the deprecated metadata.dash0Extensions.origin.
+func (dashboard *DashboardDefinition) GetOrigin() string {
+	if dashboard == nil || dashboard.Metadata.Labels == nil || dashboard.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *dashboard.Metadata.Labels.Dash0Comorigin
+}
 func (dashboard *DashboardDefinition) GetID() string           { return GetDashboardID(dashboard) }
 func (dashboard *DashboardDefinition) GetName() string         { return GetDashboardName(dashboard) }
-func (*DashboardDefinition) UpsertKeys() (byOrigin, byID bool) { return false, true }
+func (*DashboardDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }

@@ -227,6 +227,9 @@ package dash0
 // Use [MetricsRetentionClassN13M] on these fields, and update code that compares them to PinnedRetentionClassN30d.
 // There is no alias, because a struct field type cannot be aliased.
 // [PinnedRetentionClass] stays the type of [DatasetProfilingSettings].Retention and [DatasetRetention].Profiles.
+//
+// [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
+// [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
