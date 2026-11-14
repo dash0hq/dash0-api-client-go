@@ -280,6 +280,23 @@ func TestSetDashboardIDIfAbsent_NoOpWhenAlreadySet(t *testing.T) {
 	}
 }
 
+func TestSetDashboardID_OverwritesLabel(t *testing.T) {
+	d := &DashboardDefinition{Metadata: DashboardMetadata{
+		Labels: &DashboardLabels{Dash0Comid: Ptr("label-id"), Dash0Comorigin: Ptr("keep-origin")},
+	}}
+	SetDashboardID(d, "new-id")
+	assertEqual(t, "id", GetDashboardID(d), "new-id")
+	assertEqual(t, "origin", d.GetOrigin(), "keep-origin")
+}
+
+func TestSetDashboardIDIfAbsent_EmptyLabel(t *testing.T) {
+	d := &DashboardDefinition{Metadata: DashboardMetadata{
+		Labels: &DashboardLabels{Dash0Comid: Ptr("")},
+	}}
+	SetDashboardIDIfAbsent(d, "new-id")
+	assertEqual(t, "id", GetDashboardID(d), "new-id")
+}
+
 func TestSetDashboardIDIfAbsent_NoOpWhenLabelSet(t *testing.T) {
 	d := &DashboardDefinition{Metadata: DashboardMetadata{
 		Labels: &DashboardLabels{Dash0Comid: Ptr("label-id")},

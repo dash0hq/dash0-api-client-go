@@ -225,6 +225,10 @@ func SetDashboardID(dashboard *DashboardDefinition, id string) {
 	if dashboard == nil {
 		return
 	}
+	// The dash0.com/id label is server-set and POST rejects it, so drop it rather than write the new id there.
+	if dashboard.Metadata.Labels != nil {
+		dashboard.Metadata.Labels.Dash0Comid = nil
+	}
 	if dashboard.Metadata.Dash0Extensions == nil {
 		dashboard.Metadata.Dash0Extensions = &DashboardMetadataExtensions{}
 	}
@@ -238,7 +242,7 @@ func SetDashboardIDIfAbsent(dashboard *DashboardDefinition, id string) {
 	if dashboard == nil {
 		return
 	}
-	if dashboard.Metadata.Labels != nil && dashboard.Metadata.Labels.Dash0Comid != nil {
+	if dashboard.Metadata.Labels != nil && dashboard.Metadata.Labels.Dash0Comid != nil && *dashboard.Metadata.Labels.Dash0Comid != "" {
 		return
 	}
 	if dashboard.Metadata.Dash0Extensions == nil {

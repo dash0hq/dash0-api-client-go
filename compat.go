@@ -229,7 +229,7 @@ package dash0
 // [PinnedRetentionClass] stays the type of [DatasetProfilingSettings].Retention and [DatasetRetention].Profiles.
 //
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
-// [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [ClearDashboardID] and [SetDashboardIDIfAbsent] honor it too.
+// [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
