@@ -220,7 +220,7 @@ package dash0
 // [LinearReleaseAgenticWorkflowTriggerSpec] and [LinearReleaseNoteAgenticWorkflowTriggerSpec] lost PipelineIds.
 // Use PipelineNames or PipelineRegex instead, which match the release pipeline name rather than its UUID.
 //
-// # Migration guide (v1.33.x to <NEXT_RELEASE>)
+// # Migration guide (v1.33.x to v1.34.0)
 //
 // [DatasetMetricsSettings].Retention and [DatasetRetention].Metrics changed from [PinnedRetentionClass] to the new [MetricsRetentionClass].
 // Metrics retention is now always 13 months: responses return [MetricsRetentionClassN13M], and the API normalizes a written 30d to 13M.

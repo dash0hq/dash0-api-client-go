@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.34.0
+
+
+### Bug Fixes
+- stop refreshing the OAuth token when loading the active profile (#86)
+
+### Features
+- read the origin and id from the dash0.com labels (#90)
+- regenerate from the latest spec (#89)
+- split the on-disk schema from the resolved configuration (#87)
+
+### Refactoring
+- declare each annotation and label key once (#85)
+
 ## v1.33.0
 
 
