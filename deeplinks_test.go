@@ -302,3 +302,68 @@ func TestExplorerURL_EmptyAPIURL(t *testing.T) {
 		t.Errorf("TracesExplorerURL empty api url = %q, want empty", got)
 	}
 }
+
+func TestExplorerURL_SendsAbsoluteTimesWithMilliseconds(t *testing.T) {
+	tests := []struct {
+		in   string
+		want string
+	}{
+		{"2026-11-15T09:00:00Z", "2026-11-15T09:00:00.000Z"},
+		{"2026-11-15T09:00:00.123Z", "2026-11-15T09:00:00.123Z"},
+		{"2026-11-15T11:00:00+02:00", "2026-11-15T09:00:00.000Z"},
+		{"2026-11-15T09:00:00", "2026-11-15T09:00:00.000Z"},
+		{"2026-11-15", "2026-11-15T00:00:00.000Z"},
+		{"now-1h", "now-1h"},
+		{"not-a-time", "not-a-time"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.in, func(t *testing.T) {
+			q := parseURL(t, LogsExplorerURL("https://api.dash0.com", nil, tt.in, tt.in, nil)).Query()
+			if q.Get("from") != tt.want {
+				t.Errorf("from = %q, want %q", q.Get("from"), tt.want)
+			}
+			if q.Get("to") != tt.want {
+				t.Errorf("to = %q, want %q", q.Get("to"), tt.want)
+			}
+		})
+	}
+}
+
+func TestMetricsQueryBuilderURL(t *testing.T) {
+	promql := `sum(rate(http_server_request_duration_seconds_count[5m]))`
+	u := parseURL(t, MetricsQueryBuilderURL("https://api.us-west-2.aws.dash0.com", promql, "now-1h", "2026-11-15T10:00:00Z", Ptr("production")))
+	if u.Host != "app.dash0.com" {
+		t.Errorf("host = %q, want app.dash0.com", u.Host)
+	}
+	if u.Path != "/goto/metrics/query-builder" {
+		t.Errorf("path = %q, want /goto/metrics/query-builder", u.Path)
+	}
+	q := u.Query()
+	if q.Get("query") != promql {
+		t.Errorf("query = %q, want %q", q.Get("query"), promql)
+	}
+	if q.Get("from") != "now-1h" {
+		t.Errorf("from = %q, want now-1h", q.Get("from"))
+	}
+	if q.Get("to") != "2026-11-15T10:00:00.000Z" {
+		t.Errorf("to = %q, want 2026-11-15T10:00:00.000Z", q.Get("to"))
+	}
+	if q.Get("dataset") != "production" {
+		t.Errorf("dataset = %q, want production", q.Get("dataset"))
+	}
+}
+
+func TestMetricsQueryBuilderURL_WithoutTimeRange(t *testing.T) {
+	q := parseURL(t, MetricsQueryBuilderURL("https://api.dash0.com", "up", "", "", nil)).Query()
+	for _, key := range []string{"from", "to", "dataset"} {
+		if _, ok := q[key]; ok {
+			t.Errorf("%s query param should be absent", key)
+		}
+	}
+}
+
+func TestMetricsQueryBuilderURL_EmptyAPIURL(t *testing.T) {
+	if got := MetricsQueryBuilderURL("", "up", "", "", nil); got != "" {
+		t.Errorf("MetricsQueryBuilderURL empty api url = %q, want empty", got)
+	}
+}
