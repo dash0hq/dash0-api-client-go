@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.35.0
+
+
+### Features
+- add MetricsQueryBuilderURL and write absolute times with milliseconds (#91)
+
 ## v1.34.0
 
 
