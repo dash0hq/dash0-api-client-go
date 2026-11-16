@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // DeeplinkAssetType identifies a Dash0 asset type for which a web app deep link
@@ -43,6 +44,8 @@ const (
 	deeplinkPathViewResources    = "/goto/resources/table"
 	deeplinkPathViewFailedChecks = "/goto/alerting/failed-checks"
 	deeplinkPathViewWebEvents    = "/goto/web-events/explorer"
+
+	deeplinkPathMetricsQueryBuilder = "/goto/metrics/query-builder"
 
 	// Query parameter names per asset type.
 	deeplinkQueryDashboard           = "dashboard_id"
@@ -329,7 +332,48 @@ func explorerParams(filters []DeeplinkFilter, from, to string, dataset *string) 
 			params.Set("filter", string(filterJSON))
 		}
 	}
-	params.Set("from", from)
-	params.Set("to", to)
+	params.Set("from", deeplinkTime(from))
+	params.Set("to", deeplinkTime(to))
 	return params
+}
+
+// MetricsQueryBuilderURL builds a deep link to the Dash0 metrics query builder
+// with a PromQL query loaded.
+// from and to are optional: when either is empty, the link carries no time
+// range and the query builder opens on its default range.
+// It returns an empty string if the API URL is empty or cannot be parsed.
+func MetricsQueryBuilderURL(apiURL, query, from, to string, dataset *string) string {
+	baseURL := AppBaseURL(apiURL)
+	if baseURL == "" {
+		return ""
+	}
+
+	params := url.Values{}
+	if dataset != nil && *dataset != "" {
+		params.Set("dataset", *dataset)
+	}
+	params.Set("query", query)
+	if from != "" && to != "" {
+		params.Set("from", deeplinkTime(from))
+		params.Set("to", deeplinkTime(to))
+	}
+	return fmt.Sprintf("%s%s?%s", baseURL, deeplinkPathMetricsQueryBuilder, params.Encode())
+}
+
+// deeplinkTime writes an absolute time with milliseconds, because the web app
+// rejects a link whose from or to lacks them, such as 2026-11-15T09:00:00Z.
+// Relative expressions such as now-1h, and values it cannot parse, pass
+// through unchanged.
+func deeplinkTime(value string) string {
+	layouts := []string{
+		time.RFC3339Nano,
+		"2006-01-02T15:04:05",
+		"2006-01-02",
+	}
+	for _, layout := range layouts {
+		if parsed, err := time.Parse(layout, value); err == nil {
+			return parsed.UTC().Format("2006-01-02T15:04:05.000Z")
+		}
+	}
+	return value
 }
