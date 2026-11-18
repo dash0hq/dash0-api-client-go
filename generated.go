@@ -241,6 +241,24 @@ func (e AgenticWorkflowDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for AgenticWorkflowSystemVisibility.
+const (
+	AgenticWorkflowSystemVisibilityHidden  AgenticWorkflowSystemVisibility = "hidden"
+	AgenticWorkflowSystemVisibilityManaged AgenticWorkflowSystemVisibility = "managed"
+)
+
+// Valid indicates whether the value is a known member of the AgenticWorkflowSystemVisibility enum.
+func (e AgenticWorkflowSystemVisibility) Valid() bool {
+	switch e {
+	case AgenticWorkflowSystemVisibilityHidden:
+		return true
+	case AgenticWorkflowSystemVisibilityManaged:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AgenticWorkflowTriggerDelivery.
 const (
 	AgenticWorkflowTriggerDeliveryContinue AgenticWorkflowTriggerDelivery = "continue"
@@ -532,6 +550,84 @@ func (e AuthTokenResponseDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for AwsLogGroupPolicyApiVersion.
+const (
+	AwsLogGroupPolicyApiVersionDash0Comv1alpha1 AwsLogGroupPolicyApiVersion = "dash0.com/v1alpha1"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyApiVersion enum.
+func (e AwsLogGroupPolicyApiVersion) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyApiVersionDash0Comv1alpha1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyDisposition.
+const (
+	AwsLogGroupPolicyDispositionKeep   AwsLogGroupPolicyDisposition = "keep"
+	AwsLogGroupPolicyDispositionRemove AwsLogGroupPolicyDisposition = "remove"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyDisposition enum.
+func (e AwsLogGroupPolicyDisposition) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyDispositionKeep:
+		return true
+	case AwsLogGroupPolicyDispositionRemove:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyKind.
+const (
+	Dash0AwsLogGroupInstrumentationPolicy AwsLogGroupPolicyKind = "Dash0AwsLogGroupInstrumentationPolicy"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyKind enum.
+func (e AwsLogGroupPolicyKind) Valid() bool {
+	switch e {
+	case Dash0AwsLogGroupInstrumentationPolicy:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyOperator.
+const (
+	AwsLogGroupPolicyOperatorContains   AwsLogGroupPolicyOperator = "contains"
+	AwsLogGroupPolicyOperatorEndsWith   AwsLogGroupPolicyOperator = "ends_with"
+	AwsLogGroupPolicyOperatorIs         AwsLogGroupPolicyOperator = "is"
+	AwsLogGroupPolicyOperatorIsOneOf    AwsLogGroupPolicyOperator = "is_one_of"
+	AwsLogGroupPolicyOperatorIsSet      AwsLogGroupPolicyOperator = "is_set"
+	AwsLogGroupPolicyOperatorStartsWith AwsLogGroupPolicyOperator = "starts_with"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyOperator enum.
+func (e AwsLogGroupPolicyOperator) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyOperatorContains:
+		return true
+	case AwsLogGroupPolicyOperatorEndsWith:
+		return true
+	case AwsLogGroupPolicyOperatorIs:
+		return true
+	case AwsLogGroupPolicyOperatorIsOneOf:
+		return true
+	case AwsLogGroupPolicyOperatorIsSet:
+		return true
+	case AwsLogGroupPolicyOperatorStartsWith:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AwsMetricScrapeConfigApiVersion.
 const (
 	AwsMetricScrapeConfigApiVersionDash0Comv1alpha1 AwsMetricScrapeConfigApiVersion = "dash0.com/v1alpha1"
@@ -756,13 +852,16 @@ func (e DarkplaneEvaluationTriggerVariableName) Valid() bool {
 
 // Defines values for DarkplaneProvider.
 const (
-	DarkplaneProviderGithub DarkplaneProvider = "github"
-	DarkplaneProviderGitlab DarkplaneProvider = "gitlab"
+	DarkplaneProviderBitbucket DarkplaneProvider = "bitbucket"
+	DarkplaneProviderGithub    DarkplaneProvider = "github"
+	DarkplaneProviderGitlab    DarkplaneProvider = "gitlab"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneProvider enum.
 func (e DarkplaneProvider) Valid() bool {
 	switch e {
+	case DarkplaneProviderBitbucket:
+		return true
 	case DarkplaneProviderGithub:
 		return true
 	case DarkplaneProviderGitlab:
@@ -5247,19 +5346,19 @@ func (e LinearReleaseTriggerVariableName) Valid() bool {
 
 // Defines values for LinearWebhookAction.
 const (
-	Create LinearWebhookAction = "create"
-	Remove LinearWebhookAction = "remove"
-	Update LinearWebhookAction = "update"
+	LinearWebhookActionCreate LinearWebhookAction = "create"
+	LinearWebhookActionRemove LinearWebhookAction = "remove"
+	LinearWebhookActionUpdate LinearWebhookAction = "update"
 )
 
 // Valid indicates whether the value is a known member of the LinearWebhookAction enum.
 func (e LinearWebhookAction) Valid() bool {
 	switch e {
-	case Create:
+	case LinearWebhookActionCreate:
 		return true
-	case Remove:
+	case LinearWebhookActionRemove:
 		return true
-	case Update:
+	case LinearWebhookActionUpdate:
 		return true
 	default:
 		return false
@@ -8310,6 +8409,21 @@ type Agent0SandboxResources struct {
 // AgenticWorkflowAction defines model for AgenticWorkflowAction.
 type AgenticWorkflowAction string
 
+// AgenticWorkflowAgent Opt-in reusable-agent definition. When present, a person can call this automation from an
+// Agent0 chat as `@<name>`. Absent, the automation is not offered as an agent. Only an
+// organization's own automations may set it: a write that sets it on a platform-owned
+// automation is rejected with 400.
+type AgenticWorkflowAgent struct {
+	// Description When Agent0 should use this agent: the tasks it handles and the situations it fits.
+	Description string `json:"description"`
+
+	// Name The handle a person types after `@` in Agent0 to call this automation, in kebab case
+	// (lowercase letters and digits separated by single hyphens). Unique within a dataset.
+	// `thread` and `threads` are reserved for the composer's built-in `@thread`, and a request
+	// that sets either is refused with 400.
+	Name string `json:"name"`
+}
+
 // AgenticWorkflowAnnotations defines model for AgenticWorkflowAnnotations.
 type AgenticWorkflowAnnotations struct {
 	// Dash0ComcreatedAt The time at which this automation was originally created.
@@ -8330,6 +8444,15 @@ type AgenticWorkflowAnnotations struct {
 
 	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComsystemVersion The version of the Dash0 definition a system automation runs. Set by Dash0 on
+	// automations whose `dash0.com/origin` starts with `system_`; absent on every other
+	// automation.
+	Dash0ComsystemVersion *string `json:"dash0.com/system-version,omitempty"`
+
+	// Dash0ComsystemVisibility Who sees a Dash0 system automation. Set by Dash0 on automations whose `dash0.com/origin`
+	// starts with `system_`; absent on every other automation.
+	Dash0ComsystemVisibility *AgenticWorkflowSystemVisibility `json:"dash0.com/system-visibility,omitempty"`
 
 	// Dash0ComwebhookSecret The plaintext webhook secret, returned exactly once: immediately after the backend
 	// auto-provisions it on create or update (the first time a webhook trigger is added).
@@ -8594,6 +8717,12 @@ type AgenticWorkflowSandbox struct {
 
 // AgenticWorkflowSpec defines model for AgenticWorkflowSpec.
 type AgenticWorkflowSpec struct {
+	// Agent Opt-in reusable-agent definition. When present, a person can call this automation from an
+	// Agent0 chat as `@<name>`. Absent, the automation is not offered as an agent. Only an
+	// organization's own automations may set it: a write that sets it on a platform-owned
+	// automation is rejected with 400.
+	Agent *AgenticWorkflowAgent `json:"agent,omitempty"`
+
 	// Constants Static key-value pairs the automation's author defines, available by name as
 	// {{theKeyName}} in the prompt and in tool parameter overrides. Surfaced in the UI as
 	// "Parameters". Always available regardless of trigger type. On a name conflict a
@@ -8650,6 +8779,14 @@ type AgenticWorkflowSpec struct {
 	Starred  *bool                    `json:"starred,omitempty"`
 	Triggers []AgenticWorkflowTrigger `json:"triggers"`
 }
+
+// AgenticWorkflowSystemVisibility Who sees a Dash0 system automation. Neither kind is reachable through the generic
+// automation API.
+//   - `managed`: the customer sees the agent, its runs and threads through the agent's own
+//     API and UI, which also decide what the customer may change.
+//   - `hidden`: the customer sees only its results inside the owning feature. Its runs and
+//     threads are absent from run history, the thread list and the customer API.
+type AgenticWorkflowSystemVisibility string
 
 // AgenticWorkflowToolParameterOverride Key-value pairs merged into tool arguments at invocation time. Keys are parameter
 // names (use dot notation for nested parameters, e.g. "timeframe.from"), values are
@@ -9011,6 +9148,101 @@ type AuthTokenSpec struct {
 
 // AuthTokenUpdateRequest defines model for AuthTokenUpdateRequest.
 type AuthTokenUpdateRequest = AuthTokenDefinition
+
+// AwsLogGroupInstrumentationPolicy defines model for AwsLogGroupInstrumentationPolicy.
+type AwsLogGroupInstrumentationPolicy struct {
+	ApiVersion AwsLogGroupPolicyApiVersion `json:"apiVersion"`
+	Kind       AwsLogGroupPolicyKind       `json:"kind"`
+	Metadata   AwsLogGroupPolicyMetadata   `json:"metadata"`
+	Spec       AwsLogGroupPolicySpec       `json:"spec"`
+}
+
+// AwsLogGroupPolicyAnnotations Server-managed timestamps and deletion disposition. Ignored on write.
+type AwsLogGroupPolicyAnnotations struct {
+	Dash0ComcreatedAt           *time.Time                    `json:"dash0.com/created-at,omitempty"`
+	Dash0ComdeletedAt           *time.Time                    `json:"dash0.com/deleted-at,omitempty"`
+	Dash0ComdeletionDisposition *AwsLogGroupPolicyDisposition `json:"dash0.com/deletion-disposition,omitempty"`
+	Dash0ComupdatedAt           *time.Time                    `json:"dash0.com/updated-at,omitempty"`
+}
+
+// AwsLogGroupPolicyApiVersion defines model for AwsLogGroupPolicyApiVersion.
+type AwsLogGroupPolicyApiVersion string
+
+// AwsLogGroupPolicyCondition defines model for AwsLogGroupPolicyCondition.
+type AwsLogGroupPolicyCondition struct {
+	// Key AWS log-group tag expressed as dash0.cloud.tags.<tag name>, consistent with metric-scrape filters. Only the log group's own tags are matched.
+	Key string `json:"key"`
+
+	// Operator The positive, literal AttributeFilterOperator subset supported for AWS tags. Matching is case-sensitive; regex and exclusion operators are not supported.
+	Operator AwsLogGroupPolicyOperator `json:"operator"`
+
+	// Value Required for is, starts_with, ends_with and contains. Substring operands must be nonempty.
+	Value *string `json:"value,omitempty"`
+
+	// Values Required only for is_one_of. Other operators do not accept values. is_set takes neither value nor values.
+	Values *[]string `json:"values,omitempty"`
+}
+
+// AwsLogGroupPolicyDisposition defines model for AwsLogGroupPolicyDisposition.
+type AwsLogGroupPolicyDisposition string
+
+// AwsLogGroupPolicyKind defines model for AwsLogGroupPolicyKind.
+type AwsLogGroupPolicyKind string
+
+// AwsLogGroupPolicyLabels Server-managed id, dataset, source and version; origin is client-settable on creation.
+type AwsLogGroupPolicyLabels struct {
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+}
+
+// AwsLogGroupPolicyMetadata defines model for AwsLogGroupPolicyMetadata.
+type AwsLogGroupPolicyMetadata struct {
+	// Annotations Server-managed timestamps and deletion disposition. Ignored on write.
+	Annotations *AwsLogGroupPolicyAnnotations `json:"annotations,omitempty"`
+
+	// Labels Server-managed id, dataset, source and version; origin is client-settable on creation.
+	Labels *AwsLogGroupPolicyLabels `json:"labels,omitempty"`
+
+	// Name The integration identifier. Ignored on write.
+	Name *string `json:"name,omitempty"`
+}
+
+// AwsLogGroupPolicyOperator The positive, literal AttributeFilterOperator subset supported for AWS tags. Matching is case-sensitive; regex and exclusion operators are not supported.
+type AwsLogGroupPolicyOperator string
+
+// AwsLogGroupPolicyRule defines model for AwsLogGroupPolicyRule.
+type AwsLogGroupPolicyRule struct {
+	Conditions []AwsLogGroupPolicyCondition `json:"conditions"`
+}
+
+// AwsLogGroupPolicySpec defines model for AwsLogGroupPolicySpec.
+type AwsLogGroupPolicySpec struct {
+	// OnNoLongerMatching Defaults to keep.
+	OnNoLongerMatching *AwsLogGroupPolicyDisposition `json:"onNoLongerMatching,omitempty"`
+
+	// Rules Rules are ORed; each rule's conditions are ANDed. Matching is case-sensitive.
+	Rules []AwsLogGroupPolicyRule `json:"rules"`
+}
 
 // AwsMetricScrapeConfigAnnotations Server-managed and ignored on write. Absent for an integration whose config was never written
 // or has been cleared.
@@ -10140,7 +10372,7 @@ type GenerativeAiEvaluationJudgeOutputNumericKind string
 type GenerativeAiEvaluationJudgeOutputNumericSpec struct {
 	// Threshold A value between 0 and 1, inclusive. Absent when the eval declares no
 	// threshold.
-	Threshold *float32 `json:"threshold,omitempty"`
+	Threshold *float64 `json:"threshold,omitempty"`
 }
 
 // GenerativeAiEvaluationLabels defines model for GenerativeAiEvaluationLabels.
@@ -16732,22 +16964,30 @@ type SloComparisonOperator string
 // `openslo/v1`) is required so the same document is installable as a Kubernetes
 // CustomResourceDefinition, whose API group must contain a dot.
 //
-// Currently supported: a single objective with an inline `ratioMetric` indicator,
-// `Occurrences` budgeting, and a rolling `4w` (28d) time window.
+// Currently supported: a single objective and a rolling `4w` (28d) time window, with either
+//   - an inline `ratioMetric` indicator and `Occurrences` budgeting, or
+//   - an inline `thresholdMetric` indicator and `Timeslices` budgeting, where the objective sets
+//     `op` and `value`. Every minute is one time slice: it is good when the indicator's value
+//     meets `op value`, bad when it does not, and not counted when the query returns no value.
 //
-// Not currently supported — requests using any of these are rejected with a 400 (the one
-// exception is `alertPolicies`, see below): `thresholdMetric` SLIs; `indicatorRef`;
+// Threshold SLOs (the second option) are enabled per organization. In an organization where
+// they are not enabled, a create or update that uses a `thresholdMetric` indicator or
+// `Timeslices` budgeting is rejected with a 400.
+//
+// The following are not currently supported, and requests that use any of them are rejected
+// with a 400 (the one exception is `alertPolicies`, see below): `indicatorRef`;
 // `metricSource.metricSourceRef`; multiple or composite objectives (`compositeWeight`,
-// per-objective `indicator`/`indicatorRef`); threshold objective fields (`op`/`value`);
-// time-slice objective fields (`timeSliceTarget`/`timeSliceWindow`); `Timeslices` and
+// per-objective `indicator`/`indicatorRef`); `op`/`value` and time-slice fields on an
+// `Occurrences` SLO; a `thresholdMetric` with `Occurrences` or a `ratioMetric` with
+// `Timeslices`; time slices other than `1m`; `timeSliceTarget` other than 1;
 // `RatioTimeslices` budgeting; and calendar-aligned time windows.
 //
 // Alerting on SLOs (spec.alertPolicies) is not supported. Unlike the other unsupported
-// fields, `alertPolicies` is accepted for OpenSLO compatibility but silently ignored — it
+// fields, `alertPolicies` is accepted for OpenSLO compatibility but silently ignored. It
 // is not stored, evaluated, or returned on read; see spec.alertPolicies for details.
 //
-// SLOs evaluate with a fixed 5-minute settling delay applied automatically: at any
-// moment, the SLI reflects telemetry that arrived at least 5 minutes ago. This
+// SLOs evaluate with a fixed 2-minute settling delay applied automatically: at any
+// moment, the SLI reflects telemetry that arrived at least 2 minutes ago. This
 // ensures late-arriving signals are included in the SLI computation, at the cost of a
 // small, fixed lag between live behavior and SLO state.
 type SloDefinition struct {
@@ -16768,7 +17008,7 @@ type SloIndicator struct {
 	// Metadata Metadata for the inline SLI.
 	Metadata *SloIndicatorMetadata `json:"metadata,omitempty"`
 
-	// Spec SLI specification. A ratioMetric must be provided; thresholdMetric is not currently supported.
+	// Spec SLI specification. Exactly one of ratioMetric (with Occurrences budgeting) or thresholdMetric (with Timeslices budgeting) must be provided.
 	Spec SloIndicatorSpec `json:"spec"`
 }
 
@@ -16781,7 +17021,7 @@ type SloIndicatorMetadata struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// SloIndicatorSpec SLI specification. A ratioMetric must be provided; thresholdMetric is not currently supported.
+// SloIndicatorSpec SLI specification. Exactly one of ratioMetric (with Occurrences budgeting) or thresholdMetric (with Timeslices budgeting) must be provided.
 type SloIndicatorSpec struct {
 	// Description Optional description of the SLI, up to 1050 characters.
 	Description *string `json:"description,omitempty"`
@@ -16789,7 +17029,7 @@ type SloIndicatorSpec struct {
 	// RatioMetric Ratio-based SLI metric. Provide either good+total, bad+total, or raw with rawType.
 	RatioMetric *SloRatioMetric `json:"ratioMetric,omitempty"`
 
-	// ThresholdMetric Not currently supported — use a ratioMetric instead. Requests with a thresholdMetric SLI are rejected with a 400.
+	// ThresholdMetric Threshold SLI, scored once per 1m time slice against the objective's op and value. Requires Timeslices budgeting and an organization that has threshold SLOs enabled; otherwise a create or update is rejected with a 400.
 	ThresholdMetric *SloThresholdMetric `json:"thresholdMetric,omitempty"`
 }
 
@@ -16885,7 +17125,7 @@ type SloObjective struct {
 	// IndicatorRef Reference to an external SLI for composite SLOs. Composite SLOs are not currently supported — requests that set it are rejected with a 400.
 	IndicatorRef *string `json:"indicatorRef,omitempty"`
 
-	// Op Comparison operator used to compare the SLI against the value (for thresholdMetric SLIs). Not currently supported — requests that set it are rejected with a 400.
+	// Op Comparison operator a time slice's value must satisfy against `value` to be good. Required for thresholdMetric SLIs; rejected with a 400 on Occurrences SLOs.
 	Op *SloComparisonOperator `json:"op,omitempty"`
 
 	// Target Budget target for this objective as a fraction [0.0, 1.0). Mutually exclusive with targetPercent; one of the two must be provided.
@@ -16894,13 +17134,13 @@ type SloObjective struct {
 	// TargetPercent Budget target for this objective as a percentage [0.0, 100). Mutually exclusive with target; one of the two must be provided.
 	TargetPercent *float32 `json:"targetPercent,omitempty"`
 
-	// TimeSliceTarget Target for the ratio of good time slices to total time slices (0.0, 1.0] (for Timeslices budgeting). Not currently supported — requests that set it are rejected with a 400.
+	// TimeSliceTarget Fraction of a time slice that must be good for the slice to count as good (for Timeslices budgeting). Optional; only 1, the default, is currently supported. Other values, and any value on an Occurrences SLO, are rejected with a 400.
 	TimeSliceTarget *float32 `json:"timeSliceTarget,omitempty"`
 
-	// TimeSliceWindow Size of a time slice for evaluation (for Timeslices/RatioTimeslices budgeting). Not currently supported — requests that set it are rejected with a 400.
+	// TimeSliceWindow Size of a time slice for evaluation (for Timeslices budgeting). Optional; only `1m`, the default, is currently supported. Other sizes, and any value on an Occurrences SLO, are rejected with a 400.
 	TimeSliceWindow *Duration `json:"timeSliceWindow,omitempty"`
 
-	// Value Threshold value to compare against (for thresholdMetric SLIs). Not currently supported — requests that set it are rejected with a 400.
+	// Value Threshold a time slice's value is compared against, in the unit of the query result. Required for thresholdMetric SLIs; rejected with a 400 on Occurrences SLOs.
 	Value *float32 `json:"value,omitempty"`
 }
 
@@ -16938,7 +17178,7 @@ type SloSpec struct {
 	// Not supported by Dash0. This field is accepted for OpenSLO compatibility, but any alert policies are ignored: they are not stored, not evaluated, and not returned when reading the SLO back.
 	AlertPolicies *[]SloAlertPolicy `json:"alertPolicies,omitempty"`
 
-	// BudgetingMethod Only `Occurrences` is currently supported. `Timeslices` and `RatioTimeslices` are not currently supported and requests using them are rejected with a 400.
+	// BudgetingMethod `Occurrences` for a `ratioMetric` indicator, `Timeslices` for a `thresholdMetric` indicator. `RatioTimeslices` is not currently supported and requests using it are rejected with a 400.
 	BudgetingMethod SloBudgetingMethod `json:"budgetingMethod"`
 
 	// Description Optional description of the SLO, up to 1050 characters.
@@ -16960,7 +17200,42 @@ type SloSpec struct {
 	TimeWindow *[]SloTimeWindow `json:"timeWindow,omitempty"`
 }
 
-// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against objective thresholds (op and value on the objective, not here). Not currently supported — use a ratioMetric instead.
+// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against
+// objective thresholds (op and value on the objective, not here), once per 1m time slice.
+//
+// The query must evaluate to an instant vector, for example
+// `histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[1m])))`.
+// Each range must be longer than 0s and at most 1m. A range inside a subquery is added to the
+// range of every subquery around it, and the sum must also be at most 1m. A subquery step must
+// not be longer than the subquery range, and a subquery without a step uses a step of 1m. A
+// duration expression such as `[30s + 30s]` is checked after it is resolved, and every
+// duration must be a whole number of milliseconds. The query must not use `step()` or
+// `range()`, which are always 0 in an SLO. It must not use the `@` modifier, the `smoothed`
+// modifier or a negative offset, because these read samples from outside the time slice. A
+// positive offset reads earlier minutes and does not count toward the 1m limit, so a query
+// that combines several offsets lets one minute affect more than one slice.
+//
+// Dash0 adds the `anchored` modifier to the range selectors of `rate`, `increase`, `delta`,
+// `changes` and `resets`, so a 1m range counts the change from the last sample before the
+// minute to the last sample in it. A query can also set `anchored` itself, but only on these
+// functions. When exports are late or missing, a minute can have no value, or can include the
+// change of a missed minute. With an export interval that does not divide 1m, such as 40s, a
+// minute counts the change of one or two exports, so a steady rate alternates between
+// minutes. A range shorter than the export interval can make a rate too high or leave minutes
+// without a value, so use `[1m]`. `irate`, `idelta`, `deriv`, `predict_linear` and
+// `double_exponential_smoothing` need at least two samples inside the minute. A selector
+// without a range returns its latest sample from the last 5 minutes, so a metric that stops
+// reporting is still scored on its last value for up to 5 minutes.
+//
+// When the query returns several series, the slice is scored on the worst one: the highest
+// value for `lt`/`lte`, the lowest for `gt`/`gte`. A slice whose query returns no value, or
+// only NaN, is not counted. A query that returns histogram samples is never scored; wrap it
+// in `histogram_quantile`, `histogram_avg`, `histogram_count` or `histogram_sum`. A comparison
+// without `bool`, such as `max(x) > 2`, removes the series that fail it, so a minute in which
+// every series fails is not counted; set the limit with `op` and `value` on the objective
+// instead. A histogram quantile never exceeds the highest finite bucket bound, so set the
+// limit below that bound. Otherwise, a minute in which all observations fall above the bound
+// can still count as good.
 type SloThresholdMetric struct {
 	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide the query under `spec.query`. With counter true or omitted, a good, bad or total query must be a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`), because Dash0 wraps it in `sum(increase(...[5m]))`. With counter false, these queries accept any PromQL expression that evaluates to an instant vector, including histogram_count(increase(...[5m])). Raw queries also accept instant-vector expressions. Dash0 wraps counter-false and raw queries only in `sum(...)`.
 	MetricSource SloMetricSource `json:"metricSource"`
@@ -17632,7 +17907,8 @@ type SyntheticCheckEnvVar struct {
 // a new property here, so a client written against this version keeps working.
 type SyntheticCheckEnvVarSource struct {
 	// PlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
-	// `synthetics` in its `usableIn`.
+	// `synthetics` in its `usableIn`. The name resolves to a variable of the check's dataset
+	// first, then to an organization variable, and never to a personal one.
 	PlatformVariableRef *SyntheticCheckPlatformVariableRef `json:"platformVariableRef,omitempty"`
 }
 
@@ -17723,7 +17999,8 @@ type SyntheticCheckPermission struct {
 }
 
 // SyntheticCheckPlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
-// `synthetics` in its `usableIn`.
+// `synthetics` in its `usableIn`. The name resolves to a variable of the check's dataset
+// first, then to an organization variable, and never to a personal one.
 type SyntheticCheckPlatformVariableRef struct {
 	// Name Name of the platform variable, not the environment variable name the script reads.
 	Name string `json:"name"`
@@ -19006,6 +19283,12 @@ type PutApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams defines parameters for DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId.
+type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams struct {
+	Disposition      AwsLogGroupPolicyDisposition `form:"disposition" json:"disposition"`
+	ExpectedRevision *int64                       `form:"expectedRevision,omitempty" json:"expectedRevision,omitempty"`
+}
+
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
 type GetApiDashboardsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -19533,6 +19816,9 @@ type PostApiAuthTokensJSONRequestBody = AuthTokenCreateRequest
 
 // PutApiAuthTokensOriginOrIdJSONRequestBody defines body for PutApiAuthTokensOriginOrId for application/json ContentType.
 type PutApiAuthTokensOriginOrIdJSONRequestBody = AuthTokenUpdateRequest
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody defines body for PutApiAwsLogGroupInstrumentationPoliciesIntegrationId for application/json ContentType.
+type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody = AwsLogGroupInstrumentationPolicy
 
 // PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody defines body for PutApiAwsMetricScrapeConfigsIntegrationId for application/json ContentType.
 type PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody = AwsMetricScrapeConfigDefinition
@@ -23312,6 +23598,52 @@ type ClientInterface interface {
 	// Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 	PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId Delete an AWS log-group instrumentation policy
+	//
+	// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+	// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+	// including regions no longer selected by the integration. A 503 with error type
+	// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+	// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+	// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+	// changed, review the current policy before deleting again. Both choices dispatch unfinished
+	// work. Keep may restore forwarding
+	// when it cancels a pending policy removal. No workflow starts when no work remains.
+	//
+	// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAwsLogGroupInstrumentationPoliciesIntegrationId Get an AWS log-group instrumentation policy
+	//
+	// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationId Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiAwsMetricScrapeConfigsIntegrationId Clear the CloudWatch metric scrape config of an AWS integration
 	//
 	// Removes every namespace and the integration filter, which stops all scraping for the
@@ -25785,6 +26117,92 @@ func (c *generatedClient) PutApiAuthTokensOriginOrIdWithBody(ctx context.Context
 // Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 func (c *generatedClient) PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiAuthTokensOriginOrIdRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId Delete an AWS log-group instrumentation policy
+//
+// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+// including regions no longer selected by the integration. A 503 with error type
+// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+// changed, review the current policy before deleting again. Both choices dispatch unfinished
+// work. Keep may restore forwarding
+// when it cancels a pending policy removal. No workflow starts when no work remains.
+//
+// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiAwsLogGroupInstrumentationPoliciesIntegrationId Get an AWS log-group instrumentation policy
+//
+// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(c.Server, integrationId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationId Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -30653,6 +31071,156 @@ func NewPutApiAuthTokensOriginOrIdRequestWithBody(server string, originOrId stri
 	}
 
 	operationPath := fmt.Sprintf("/api/auth-tokens/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest constructs an http.Request for the DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId method
+func NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "disposition", params.Disposition, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.ExpectedRevision != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "expectedRevision", *params.ExpectedRevision, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest constructs an http.Request for the GetApiAwsLogGroupInstrumentationPoliciesIntegrationId method
+func NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest calls the generic PutApiAwsLogGroupInstrumentationPoliciesIntegrationId builder with application/json body
+func NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(server, integrationId, "application/json", bodyReader)
+}
+
+// NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody constructs an http.Request for the PutApiAwsLogGroupInstrumentationPoliciesIntegrationId method, with any body, and a specified content type
+func NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(server string, integrationId openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -37678,6 +38246,56 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 	PutApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error)
 
+	// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Delete an AWS log-group instrumentation policy
+	//
+	// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+	// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+	// including regions no longer selected by the integration. A 503 with error type
+	// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+	// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+	// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+	// changed, review the current policy before deleting again. Both choices dispatch unfinished
+	// work. Keep may restore forwarding
+	// when it cancels a pending policy removal. No workflow starts when no work remains.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Get an AWS log-group instrumentation policy
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
 	// DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse Clear the CloudWatch metric scrape config of an AWS integration
 	//
 	// Removes every namespace and the integration filter, which stops all scraping for the
@@ -40792,6 +41410,150 @@ func (r PutApiAuthTokensOriginOrIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PutApiAuthTokensOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -46993,6 +47755,80 @@ func (c *ClientWithResponses) PutApiAuthTokensOriginOrIdWithResponse(ctx context
 	return ParsePutApiAuthTokensOriginOrIdResponse(rsp)
 }
 
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Delete an AWS log-group instrumentation policy
+//
+// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+// including regions no longer selected by the integration. A 503 with error type
+// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+// changed, review the current policy before deleting again. Both choices dispatch unfinished
+// work. Keep may restore forwarding
+// when it cancels a pending policy removal. No workflow starts when no work remains.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Get an AWS log-group instrumentation policy
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx, integrationId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
 // DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse Clear the CloudWatch metric scrape config of an AWS integration
 //
 // Removes every namespace and the integration filter, which stops all scraping for the
@@ -50858,6 +51694,105 @@ func ParsePutApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*PutApiAuthTok
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

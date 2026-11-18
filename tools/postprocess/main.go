@@ -131,6 +131,14 @@ var constRenames = map[string]string{
 	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
 	// Pinned before release so a future enum sharing this value cannot rename it.
 	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	// Pinned before release so a future enum sharing these values cannot rename them.
+	"Hidden":  "AgenticWorkflowSystemVisibilityHidden",
+	"Managed": "AgenticWorkflowSystemVisibilityManaged",
+	// AwsLogGroupPolicyDisposition shares "remove", so oapi-codegen prefixes these
+	// only while it exists. Pin the prefixed names; compat.go keeps the bare ones.
+	"Create": "LinearWebhookActionCreate",
+	"Remove": "LinearWebhookActionRemove",
+	"Update": "LinearWebhookActionUpdate",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

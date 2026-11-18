@@ -80,6 +80,11 @@ type MockClient struct {
 	UpdateAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string, cfg *dash0.AwsMetricScrapeConfigDefinition) (*dash0.AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string) error
 
+	// AWS log-group instrumentation policies
+	GetAwsLogGroupInstrumentationPolicyFunc    func(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+	UpdateAwsLogGroupInstrumentationPolicyFunc func(ctx context.Context, integrationID string, policy *dash0.AwsLogGroupInstrumentationPolicy) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+	DeleteAwsLogGroupInstrumentationPolicyFunc func(ctx context.Context, integrationID string, disposition dash0.AwsLogGroupPolicyDisposition, expectedRevision *int64) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -446,6 +451,29 @@ func (m *MockClient) DeleteAwsMetricScrapeConfig(ctx context.Context, integratio
 		return m.DeleteAwsMetricScrapeConfigFunc(ctx, integrationID)
 	}
 	return nil
+}
+
+// AWS log-group instrumentation policies
+
+func (m *MockClient) GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.GetAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.GetAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *dash0.AwsLogGroupInstrumentationPolicy) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.UpdateAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.UpdateAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID, policy)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, disposition dash0.AwsLogGroupPolicyDisposition, expectedRevision *int64) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.DeleteAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.DeleteAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID, disposition, expectedRevision)
+	}
+	return nil, nil
 }
 
 // Auth tokens

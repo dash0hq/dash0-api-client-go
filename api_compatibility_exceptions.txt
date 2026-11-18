@@ -7,3 +7,6 @@
 # Note: interface method additions (": added") are filtered out automatically
 # and do not need to be listed here.
 
+# <NEXT_RELEASE>: the spec now declares the numeric judge threshold as a double.
+# Struct field types cannot be aliased.
+GenerativeAiEvaluationJudgeOutputNumericSpec.Threshold

@@ -72,6 +72,11 @@ type Client interface {
 	UpdateAwsMetricScrapeConfig(ctx context.Context, integrationID string, cfg *AwsMetricScrapeConfigDefinition) (*AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfig(ctx context.Context, integrationID string) error
 
+	// AWS log-group instrumentation policies
+	GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*AwsLogGroupInstrumentationPolicy, error)
+	UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *AwsLogGroupInstrumentationPolicy) (*AwsLogGroupInstrumentationPolicy, error)
+	DeleteAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, disposition AwsLogGroupPolicyDisposition, expectedRevision *int64) (*AwsLogGroupInstrumentationPolicy, error)
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)
