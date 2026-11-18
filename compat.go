@@ -220,6 +220,19 @@ package dash0
 // [LinearReleaseAgenticWorkflowTriggerSpec] and [LinearReleaseNoteAgenticWorkflowTriggerSpec] lost PipelineIds.
 // Use PipelineNames or PipelineRegex instead, which match the release pipeline name rather than its UUID.
 //
+// # Migration guide (v1.35.x to <NEXT_RELEASE>)
+//
+// [Client] gained [Client.GetAwsLogGroupInstrumentationPolicy], [Client.UpdateAwsLogGroupInstrumentationPolicy], and [Client.DeleteAwsLogGroupInstrumentationPolicy].
+// Custom [Client] implementations and wrappers must add them.
+// dash0test.MockClient implements them through new *Func fields.
+//
+// The [LinearWebhookAction] constants are now [LinearWebhookActionCreate], [LinearWebhookActionRemove], and [LinearWebhookActionUpdate], because [AwsLogGroupPolicyDisposition] shares the "remove" value.
+// The bare names Create, Remove, and Update stay as deprecated aliases.
+//
+// [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64, because the spec now declares it as a double.
+// Update float32 variables and casts to float64.
+// There is no alias, because a struct field type cannot be aliased.
+//
 // # Migration guide (v1.33.x to v1.34.0)
 //
 // [DatasetMetricsSettings].Retention and [DatasetRetention].Metrics changed from [PinnedRetentionClass] to the new [MetricsRetentionClass].
@@ -735,3 +748,18 @@ const Txt = WebEventExportFormatTxt
 //
 // Deprecated: since v1.29.0. Use [WebEventExportFormatYaml] instead.
 const Yaml = WebEventExportFormatYaml
+
+// Create is a deprecated alias for [LinearWebhookActionCreate].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionCreate] instead.
+const Create = LinearWebhookActionCreate
+
+// Remove is a deprecated alias for [LinearWebhookActionRemove].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionRemove] instead.
+const Remove = LinearWebhookActionRemove
+
+// Update is a deprecated alias for [LinearWebhookActionUpdate].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionUpdate] instead.
+const Update = LinearWebhookActionUpdate
