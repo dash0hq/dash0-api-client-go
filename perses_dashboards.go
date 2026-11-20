@@ -53,7 +53,7 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefini
 	if annotations != nil {
 		dashboard.Metadata.Annotations = annotations
 	}
-	labels := convertPersesDashboardLabels(perses.Metadata.Annotations)
+	labels := convertPersesDashboardLabels(perses.Metadata.Annotations, perses.Metadata.Labels)
 	if labels != nil {
 		dashboard.Metadata.Labels = labels
 	}
@@ -101,17 +101,28 @@ func convertPersesDashboardAnnotations(annotations map[string]string) *Dashboard
 	return &result
 }
 
-// convertPersesDashboardLabels copies labels-equivalent values that the Perses
-// CRD carries on its annotation map into the typed DashboardLabels struct.
-// Currently this only covers the source field, which the upstream spec moved
-// from DashboardAnnotations to DashboardLabels.
-func convertPersesDashboardLabels(annotations map[string]string) *DashboardLabels {
-	v, ok := annotations[AnnotationSource]
-	if !ok {
+// convertPersesDashboardLabels builds the typed DashboardLabels struct from a
+// PersesDashboard CRD.
+// It copies dash0.com/source from the annotation map, because the upstream spec
+// moved that field from DashboardAnnotations to DashboardLabels, and
+// dash0.com/origin from the label map, so the converted dashboard keeps the
+// origin it is routed by.
+func convertPersesDashboardLabels(annotations, persesLabels map[string]string) *DashboardLabels {
+	var result DashboardLabels
+	hasAny := false
+	if v, ok := annotations[AnnotationSource]; ok {
+		source := CrdSource(v)
+		result.Dash0Comsource = &source
+		hasAny = true
+	}
+	if v := persesLabels[LabelOrigin]; v != "" {
+		result.Dash0Comorigin = &v
+		hasAny = true
+	}
+	if !hasAny {
 		return nil
 	}
-	source := CrdSource(v)
-	return &DashboardLabels{Dash0Comsource: &source}
+	return &result
 }
 
 // extractDisplayName reads spec.display.name from a dashboard spec map.
