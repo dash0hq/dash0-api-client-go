@@ -358,3 +358,52 @@ func TestGetPersesDashboardID(t *testing.T) {
 		t.Errorf("got %q, want empty for nil", got)
 	}
 }
+
+func TestConvertPersesDashboardToDashboard_Labels(t *testing.T) {
+	tests := []struct {
+		name        string
+		labels      map[string]string
+		wantOrigin  string
+		wantID      string
+		wantDataset string
+	}{
+		{
+			name:        "origin present is kept",
+			labels:      map[string]string{LabelOrigin: "my-origin", LabelID: "my-id", LabelDataset: "my-dataset"},
+			wantOrigin:  "my-origin",
+			wantID:      "my-id",
+			wantDataset: "my-dataset",
+		},
+		{
+			name:        "origin absent leaves no origin label",
+			labels:      map[string]string{LabelID: "my-id", LabelDataset: "my-dataset"},
+			wantID:      "my-id",
+			wantDataset: "my-dataset",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			perses := &PersesDashboard{
+				Metadata: PersesDashboardMetadata{Name: "test", Labels: tt.labels},
+				Spec:     map[string]interface{}{},
+			}
+			d := ConvertPersesDashboardToDashboard(perses)
+			var origin string
+			if d.Metadata.Labels != nil && d.Metadata.Labels.Dash0Comorigin != nil {
+				origin = *d.Metadata.Labels.Dash0Comorigin
+			} else if tt.wantOrigin == "" && d.Metadata.Labels != nil {
+				t.Errorf("Labels = %+v, want nil when there is no origin or source", d.Metadata.Labels)
+			}
+			if origin != tt.wantOrigin {
+				t.Errorf("origin = %q, want %q", origin, tt.wantOrigin)
+			}
+			ext := d.Metadata.Dash0Extensions
+			if ext == nil || ext.Id == nil || *ext.Id != tt.wantID {
+				t.Errorf("dash0Extensions.id = %v, want %q", ext, tt.wantID)
+			}
+			if ext == nil || ext.Dataset == nil || string(*ext.Dataset) != tt.wantDataset {
+				t.Errorf("dash0Extensions.dataset = %v, want %q", ext, tt.wantDataset)
+			}
+		})
+	}
+}
