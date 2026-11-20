@@ -7,3 +7,4 @@
 # Note: interface method additions (": added") are filtered out automatically
 # and do not need to be listed here.
 
+GenerativeAiEvaluationJudgeOutputNumericSpec.Threshold
