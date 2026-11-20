@@ -230,6 +230,15 @@ package dash0
 //
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
 // [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
+//
+// # Migration guide (<NEXT_RELEASE>)
+//
+// The spec added [AwsLogGroupPolicyDisposition], whose "remove" value collides with [LinearWebhookAction].
+// Create, Remove, and Update are now [LinearWebhookActionCreate], [LinearWebhookActionRemove], and [LinearWebhookActionUpdate].
+// The bare names stay as deprecated aliases.
+//
+// [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64.
+// There is no alias, because a struct field type cannot be aliased.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
@@ -735,3 +744,18 @@ const Txt = WebEventExportFormatTxt
 //
 // Deprecated: since v1.29.0. Use [WebEventExportFormatYaml] instead.
 const Yaml = WebEventExportFormatYaml
+
+// Create is a deprecated alias for [LinearWebhookActionCreate].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionCreate] instead.
+const Create = LinearWebhookActionCreate
+
+// Remove is a deprecated alias for [LinearWebhookActionRemove].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionRemove] instead.
+const Remove = LinearWebhookActionRemove
+
+// Update is a deprecated alias for [LinearWebhookActionUpdate].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionUpdate] instead.
+const Update = LinearWebhookActionUpdate
