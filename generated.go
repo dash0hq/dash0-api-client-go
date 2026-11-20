@@ -241,6 +241,24 @@ func (e AgenticWorkflowDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for AgenticWorkflowSystemVisibility.
+const (
+	AgenticWorkflowSystemVisibilityBackground AgenticWorkflowSystemVisibility = "background"
+	AgenticWorkflowSystemVisibilityManaged    AgenticWorkflowSystemVisibility = "managed"
+)
+
+// Valid indicates whether the value is a known member of the AgenticWorkflowSystemVisibility enum.
+func (e AgenticWorkflowSystemVisibility) Valid() bool {
+	switch e {
+	case AgenticWorkflowSystemVisibilityBackground:
+		return true
+	case AgenticWorkflowSystemVisibilityManaged:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AgenticWorkflowTriggerDelivery.
 const (
 	AgenticWorkflowTriggerDeliveryContinue AgenticWorkflowTriggerDelivery = "continue"
@@ -532,6 +550,84 @@ func (e AuthTokenResponseDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for AwsLogGroupPolicyApiVersion.
+const (
+	AwsLogGroupPolicyApiVersionDash0Comv1alpha1 AwsLogGroupPolicyApiVersion = "dash0.com/v1alpha1"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyApiVersion enum.
+func (e AwsLogGroupPolicyApiVersion) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyApiVersionDash0Comv1alpha1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyDisposition.
+const (
+	AwsLogGroupPolicyDispositionKeep   AwsLogGroupPolicyDisposition = "keep"
+	AwsLogGroupPolicyDispositionRemove AwsLogGroupPolicyDisposition = "remove"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyDisposition enum.
+func (e AwsLogGroupPolicyDisposition) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyDispositionKeep:
+		return true
+	case AwsLogGroupPolicyDispositionRemove:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyKind.
+const (
+	AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy AwsLogGroupPolicyKind = "Dash0AwsLogGroupInstrumentationPolicy"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyKind enum.
+func (e AwsLogGroupPolicyKind) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyOperator.
+const (
+	AwsLogGroupPolicyOperatorContains   AwsLogGroupPolicyOperator = "contains"
+	AwsLogGroupPolicyOperatorEndsWith   AwsLogGroupPolicyOperator = "ends_with"
+	AwsLogGroupPolicyOperatorIs         AwsLogGroupPolicyOperator = "is"
+	AwsLogGroupPolicyOperatorIsOneOf    AwsLogGroupPolicyOperator = "is_one_of"
+	AwsLogGroupPolicyOperatorIsSet      AwsLogGroupPolicyOperator = "is_set"
+	AwsLogGroupPolicyOperatorStartsWith AwsLogGroupPolicyOperator = "starts_with"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyOperator enum.
+func (e AwsLogGroupPolicyOperator) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyOperatorContains:
+		return true
+	case AwsLogGroupPolicyOperatorEndsWith:
+		return true
+	case AwsLogGroupPolicyOperatorIs:
+		return true
+	case AwsLogGroupPolicyOperatorIsOneOf:
+		return true
+	case AwsLogGroupPolicyOperatorIsSet:
+		return true
+	case AwsLogGroupPolicyOperatorStartsWith:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AwsMetricScrapeConfigApiVersion.
 const (
 	AwsMetricScrapeConfigApiVersionDash0Comv1alpha1 AwsMetricScrapeConfigApiVersion = "dash0.com/v1alpha1"
@@ -756,13 +852,16 @@ func (e DarkplaneEvaluationTriggerVariableName) Valid() bool {
 
 // Defines values for DarkplaneProvider.
 const (
-	DarkplaneProviderGithub DarkplaneProvider = "github"
-	DarkplaneProviderGitlab DarkplaneProvider = "gitlab"
+	DarkplaneProviderBitbucket DarkplaneProvider = "bitbucket"
+	DarkplaneProviderGithub    DarkplaneProvider = "github"
+	DarkplaneProviderGitlab    DarkplaneProvider = "gitlab"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneProvider enum.
 func (e DarkplaneProvider) Valid() bool {
 	switch e {
+	case DarkplaneProviderBitbucket:
+		return true
 	case DarkplaneProviderGithub:
 		return true
 	case DarkplaneProviderGitlab:
@@ -906,14 +1005,16 @@ func (e DashboardKind) Valid() bool {
 
 // Defines values for DatasetAction.
 const (
-	DatasetCreateAgent0Automation   DatasetAction = "dataset:createAgent0Automation"
-	DatasetCreateCheckRule          DatasetAction = "dataset:createCheckRule"
-	DatasetCreateRecordingRuleGroup DatasetAction = "dataset:createRecordingRuleGroup"
-	DatasetCreateSLO                DatasetAction = "dataset:createSLO"
-	DatasetCreateSyntheticCheck     DatasetAction = "dataset:createSyntheticCheck"
-	DatasetDelete                   DatasetAction = "dataset:delete"
-	DatasetRead                     DatasetAction = "dataset:read"
-	DatasetWrite                    DatasetAction = "dataset:write"
+	DatasetCreateAgent0Automation            DatasetAction = "dataset:createAgent0Automation"
+	DatasetCreateCheckRule                   DatasetAction = "dataset:createCheckRule"
+	DatasetCreateRecordingRuleGroup          DatasetAction = "dataset:createRecordingRuleGroup"
+	DatasetCreateSLO                         DatasetAction = "dataset:createSLO"
+	DatasetCreateSyntheticCheck              DatasetAction = "dataset:createSyntheticCheck"
+	DatasetDelete                            DatasetAction = "dataset:delete"
+	DatasetManagePlatformVariablesAndSecrets DatasetAction = "dataset:managePlatformVariablesAndSecrets"
+	DatasetManageSandboxEnvironments         DatasetAction = "dataset:manageSandboxEnvironments"
+	DatasetRead                              DatasetAction = "dataset:read"
+	DatasetWrite                             DatasetAction = "dataset:write"
 )
 
 // Valid indicates whether the value is a known member of the DatasetAction enum.
@@ -930,6 +1031,10 @@ func (e DatasetAction) Valid() bool {
 	case DatasetCreateSyntheticCheck:
 		return true
 	case DatasetDelete:
+		return true
+	case DatasetManagePlatformVariablesAndSecrets:
+		return true
+	case DatasetManageSandboxEnvironments:
 		return true
 	case DatasetRead:
 		return true
@@ -1104,6 +1209,7 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 
 // Defines values for FailedCheckSilencedTriggerVariableName.
 const (
+	FailedCheckSilencedTriggerVariableNameIssueId     FailedCheckSilencedTriggerVariableName = "issue.id"
 	IssueSilenced                                     FailedCheckSilencedTriggerVariableName = "issue.silenced"
 	FailedCheckSilencedTriggerVariableNameIssueStatus FailedCheckSilencedTriggerVariableName = "issue.status"
 )
@@ -1111,6 +1217,8 @@ const (
 // Valid indicates whether the value is a known member of the FailedCheckSilencedTriggerVariableName enum.
 func (e FailedCheckSilencedTriggerVariableName) Valid() bool {
 	switch e {
+	case FailedCheckSilencedTriggerVariableNameIssueId:
+		return true
 	case IssueSilenced:
 		return true
 	case FailedCheckSilencedTriggerVariableNameIssueStatus:
@@ -5247,19 +5355,19 @@ func (e LinearReleaseTriggerVariableName) Valid() bool {
 
 // Defines values for LinearWebhookAction.
 const (
-	Create LinearWebhookAction = "create"
-	Remove LinearWebhookAction = "remove"
-	Update LinearWebhookAction = "update"
+	LinearWebhookActionCreate LinearWebhookAction = "create"
+	LinearWebhookActionRemove LinearWebhookAction = "remove"
+	LinearWebhookActionUpdate LinearWebhookAction = "update"
 )
 
 // Valid indicates whether the value is a known member of the LinearWebhookAction enum.
 func (e LinearWebhookAction) Valid() bool {
 	switch e {
-	case Create:
+	case LinearWebhookActionCreate:
 		return true
-	case Remove:
+	case LinearWebhookActionRemove:
 		return true
-	case Update:
+	case LinearWebhookActionUpdate:
 		return true
 	default:
 		return false
@@ -7492,6 +7600,81 @@ func (e TelemetryFilterContext) Valid() bool {
 	}
 }
 
+// Defines values for TelemetryTransformationRuleContext.
+const (
+	TelemetryTransformationRuleContextDatapoint TelemetryTransformationRuleContext = "datapoint"
+	TelemetryTransformationRuleContextLog       TelemetryTransformationRuleContext = "log"
+	TelemetryTransformationRuleContextMetric    TelemetryTransformationRuleContext = "metric"
+	TelemetryTransformationRuleContextProfile   TelemetryTransformationRuleContext = "profile"
+	TelemetryTransformationRuleContextResource  TelemetryTransformationRuleContext = "resource"
+	TelemetryTransformationRuleContextScope     TelemetryTransformationRuleContext = "scope"
+	TelemetryTransformationRuleContextSpan      TelemetryTransformationRuleContext = "span"
+	TelemetryTransformationRuleContextSpanevent TelemetryTransformationRuleContext = "spanevent"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleContext enum.
+func (e TelemetryTransformationRuleContext) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleContextDatapoint:
+		return true
+	case TelemetryTransformationRuleContextLog:
+		return true
+	case TelemetryTransformationRuleContextMetric:
+		return true
+	case TelemetryTransformationRuleContextProfile:
+		return true
+	case TelemetryTransformationRuleContextResource:
+		return true
+	case TelemetryTransformationRuleContextScope:
+		return true
+	case TelemetryTransformationRuleContextSpan:
+		return true
+	case TelemetryTransformationRuleContextSpanevent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleDefinitionKind.
+const (
+	TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleDefinitionKind enum.
+func (e TelemetryTransformationRuleDefinitionKind) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleSignalType.
+const (
+	TelemetryTransformationRuleSignalTypeLogs     TelemetryTransformationRuleSignalType = "logs"
+	TelemetryTransformationRuleSignalTypeMetrics  TelemetryTransformationRuleSignalType = "metrics"
+	TelemetryTransformationRuleSignalTypeProfiles TelemetryTransformationRuleSignalType = "profiles"
+	TelemetryTransformationRuleSignalTypeTraces   TelemetryTransformationRuleSignalType = "traces"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleSignalType enum.
+func (e TelemetryTransformationRuleSignalType) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleSignalTypeLogs:
+		return true
+	case TelemetryTransformationRuleSignalTypeMetrics:
+		return true
+	case TelemetryTransformationRuleSignalTypeProfiles:
+		return true
+	case TelemetryTransformationRuleSignalTypeTraces:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TimeSeriesAggregationAttributeModificationKind.
 const (
 	DropAttributes TimeSeriesAggregationAttributeModificationKind = "drop_attributes"
@@ -8310,6 +8493,21 @@ type Agent0SandboxResources struct {
 // AgenticWorkflowAction defines model for AgenticWorkflowAction.
 type AgenticWorkflowAction string
 
+// AgenticWorkflowAgent Opt-in reusable-agent definition. When present, a person can call this automation from an
+// Agent0 chat as `@<name>`. Absent, the automation is not offered as an agent. Only an
+// organization's own automations may set it: a write that sets it on a platform-owned
+// automation is rejected with 400.
+type AgenticWorkflowAgent struct {
+	// Description When Agent0 should use this agent: the tasks it handles and the situations it fits.
+	Description string `json:"description"`
+
+	// Name The handle a person types after `@` in Agent0 to call this automation, in kebab case
+	// (lowercase letters and digits separated by single hyphens). Unique within a dataset.
+	// `thread` and `threads` are reserved for the composer's built-in `@thread`, and a request
+	// that sets either is refused with 400.
+	Name string `json:"name"`
+}
+
 // AgenticWorkflowAnnotations defines model for AgenticWorkflowAnnotations.
 type AgenticWorkflowAnnotations struct {
 	// Dash0ComcreatedAt The time at which this automation was originally created.
@@ -8330,6 +8528,15 @@ type AgenticWorkflowAnnotations struct {
 
 	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComsystemVersion The version of the Dash0 definition a system automation runs. Set by Dash0 on
+	// automations whose `dash0.com/origin` starts with `system_`; absent on every other
+	// automation.
+	Dash0ComsystemVersion *string `json:"dash0.com/system-version,omitempty"`
+
+	// Dash0ComsystemVisibility Who sees a Dash0 system automation. Set by Dash0 on automations whose `dash0.com/origin`
+	// starts with `system_`; absent on every other automation.
+	Dash0ComsystemVisibility *AgenticWorkflowSystemVisibility `json:"dash0.com/system-visibility,omitempty"`
 
 	// Dash0ComwebhookSecret The plaintext webhook secret, returned exactly once: immediately after the backend
 	// auto-provisions it on create or update (the first time a webhook trigger is added).
@@ -8504,6 +8711,11 @@ type AgenticWorkflowMetadata struct {
 // AgenticWorkflowNotifications Notification channels to notify when an automation run completes, grouped by outcome.
 // Both lists are optional; omit one to skip notifying on that outcome.
 type AgenticWorkflowNotifications struct {
+	// IncludeRunOutput When `true`, the notification for a successful run carries Agent0's final answer, and
+	// notification channels that support it show the answer with the notification. Absent or
+	// `false` keeps the notification as a status message with a link to the run.
+	IncludeRunOutput *bool `json:"includeRunOutput,omitempty"`
+
 	// OnBudgetWarningChannels Notification channels to notify when this workflow's rolling credit budget crosses its
 	// warning threshold (`guardrails.creditBudgetWindow.warningThreshold`). Each value is an opaque channel
 	// identifier: either the channel's UUID or its origin. An empty or absent list notifies no
@@ -8594,6 +8806,12 @@ type AgenticWorkflowSandbox struct {
 
 // AgenticWorkflowSpec defines model for AgenticWorkflowSpec.
 type AgenticWorkflowSpec struct {
+	// Agent Opt-in reusable-agent definition. When present, a person can call this automation from an
+	// Agent0 chat as `@<name>`. Absent, the automation is not offered as an agent. Only an
+	// organization's own automations may set it: a write that sets it on a platform-owned
+	// automation is rejected with 400.
+	Agent *AgenticWorkflowAgent `json:"agent,omitempty"`
+
 	// Constants Static key-value pairs the automation's author defines, available by name as
 	// {{theKeyName}} in the prompt and in tool parameter overrides. Surfaced in the UI as
 	// "Parameters". Always available regardless of trigger type. On a name conflict a
@@ -8650,6 +8868,14 @@ type AgenticWorkflowSpec struct {
 	Starred  *bool                    `json:"starred,omitempty"`
 	Triggers []AgenticWorkflowTrigger `json:"triggers"`
 }
+
+// AgenticWorkflowSystemVisibility Who sees a Dash0 system automation. Neither kind is reachable through the generic
+// automation API.
+//   - `managed`: the customer sees the agent, its runs and threads through the agent's own
+//     API and UI, which also decide what the customer may change.
+//   - `background`: the customer sees only its results inside the owning feature. Its runs and
+//     threads are absent from run history, the thread list and the customer API.
+type AgenticWorkflowSystemVisibility string
 
 // AgenticWorkflowToolParameterOverride Key-value pairs merged into tool arguments at invocation time. Keys are parameter
 // names (use dot notation for nested parameters, e.g. "timeframe.from"), values are
@@ -9011,6 +9237,101 @@ type AuthTokenSpec struct {
 
 // AuthTokenUpdateRequest defines model for AuthTokenUpdateRequest.
 type AuthTokenUpdateRequest = AuthTokenDefinition
+
+// AwsLogGroupInstrumentationPolicy defines model for AwsLogGroupInstrumentationPolicy.
+type AwsLogGroupInstrumentationPolicy struct {
+	ApiVersion AwsLogGroupPolicyApiVersion `json:"apiVersion"`
+	Kind       AwsLogGroupPolicyKind       `json:"kind"`
+	Metadata   AwsLogGroupPolicyMetadata   `json:"metadata"`
+	Spec       AwsLogGroupPolicySpec       `json:"spec"`
+}
+
+// AwsLogGroupPolicyAnnotations Server-managed timestamps and deletion disposition. Ignored on write.
+type AwsLogGroupPolicyAnnotations struct {
+	Dash0ComcreatedAt           *time.Time                    `json:"dash0.com/created-at,omitempty"`
+	Dash0ComdeletedAt           *time.Time                    `json:"dash0.com/deleted-at,omitempty"`
+	Dash0ComdeletionDisposition *AwsLogGroupPolicyDisposition `json:"dash0.com/deletion-disposition,omitempty"`
+	Dash0ComupdatedAt           *time.Time                    `json:"dash0.com/updated-at,omitempty"`
+}
+
+// AwsLogGroupPolicyApiVersion defines model for AwsLogGroupPolicyApiVersion.
+type AwsLogGroupPolicyApiVersion string
+
+// AwsLogGroupPolicyCondition defines model for AwsLogGroupPolicyCondition.
+type AwsLogGroupPolicyCondition struct {
+	// Key AWS log-group tag expressed as dash0.cloud.tags.<tag name>, consistent with metric-scrape filters. Only the log group's own tags are matched.
+	Key string `json:"key"`
+
+	// Operator The positive, literal AttributeFilterOperator subset supported for AWS tags. Matching is case-sensitive; regex and exclusion operators are not supported.
+	Operator AwsLogGroupPolicyOperator `json:"operator"`
+
+	// Value Required for is, starts_with, ends_with and contains. Substring operands must be nonempty.
+	Value *string `json:"value,omitempty"`
+
+	// Values Required only for is_one_of. Other operators do not accept values. is_set takes neither value nor values.
+	Values *[]string `json:"values,omitempty"`
+}
+
+// AwsLogGroupPolicyDisposition defines model for AwsLogGroupPolicyDisposition.
+type AwsLogGroupPolicyDisposition string
+
+// AwsLogGroupPolicyKind defines model for AwsLogGroupPolicyKind.
+type AwsLogGroupPolicyKind string
+
+// AwsLogGroupPolicyLabels Server-managed id, dataset, source and version; origin is client-settable on creation.
+type AwsLogGroupPolicyLabels struct {
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+}
+
+// AwsLogGroupPolicyMetadata defines model for AwsLogGroupPolicyMetadata.
+type AwsLogGroupPolicyMetadata struct {
+	// Annotations Server-managed timestamps and deletion disposition. Ignored on write.
+	Annotations *AwsLogGroupPolicyAnnotations `json:"annotations,omitempty"`
+
+	// Labels Server-managed id, dataset, source and version; origin is client-settable on creation.
+	Labels *AwsLogGroupPolicyLabels `json:"labels,omitempty"`
+
+	// Name The integration identifier. Ignored on write.
+	Name *string `json:"name,omitempty"`
+}
+
+// AwsLogGroupPolicyOperator The positive, literal AttributeFilterOperator subset supported for AWS tags. Matching is case-sensitive; regex and exclusion operators are not supported.
+type AwsLogGroupPolicyOperator string
+
+// AwsLogGroupPolicyRule defines model for AwsLogGroupPolicyRule.
+type AwsLogGroupPolicyRule struct {
+	Conditions []AwsLogGroupPolicyCondition `json:"conditions"`
+}
+
+// AwsLogGroupPolicySpec defines model for AwsLogGroupPolicySpec.
+type AwsLogGroupPolicySpec struct {
+	// OnNoLongerMatching Defaults to keep.
+	OnNoLongerMatching *AwsLogGroupPolicyDisposition `json:"onNoLongerMatching,omitempty"`
+
+	// Rules Rules are ORed; each rule's conditions are ANDed. Matching is case-sensitive.
+	Rules []AwsLogGroupPolicyRule `json:"rules"`
+}
 
 // AwsMetricScrapeConfigAnnotations Server-managed and ignored on write. Absent for an integration whose config was never written
 // or has been cleared.
@@ -9955,6 +10276,7 @@ type FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item struct {
 //
 // - `issue.silenced`: `true` when a silence covered the failed check when it fired, `false` otherwise.
 // - `issue.status`: `degraded` or `critical`, the highest status the failed check reached by the time it fired. Absent when the dispatching producer predates the field.
+// - `issue.id`: The ID of the failed check that fired. Absent when the dispatching producer predates the field.
 type FailedCheckSilencedTriggerVariableName string
 
 // FailedCheckTriggerVariableName Variables provided by every failed-check trigger.
@@ -10140,7 +10462,7 @@ type GenerativeAiEvaluationJudgeOutputNumericKind string
 type GenerativeAiEvaluationJudgeOutputNumericSpec struct {
 	// Threshold A value between 0 and 1, inclusive. Absent when the eval declares no
 	// threshold.
-	Threshold *float32 `json:"threshold,omitempty"`
+	Threshold *float64 `json:"threshold,omitempty"`
 }
 
 // GenerativeAiEvaluationLabels defines model for GenerativeAiEvaluationLabels.
@@ -14355,6 +14677,29 @@ type OAuthTokenType string
 //   - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
 type OTTLCondition = string
 
+// OTTLConditions defines model for OTTLConditions.
+type OTTLConditions = []OTTLCondition
+
+// OTTLStatement The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
+// process data with OpenTelemetry-native concepts and constructs. An OTTL *Statement* is an expression that
+// performs an action on telemetry data, such as setting, deleting, or transforming attributes.
+//
+// OTTL statements are used by the OpenTelemetry Transform Processor to modify telemetry data as it passes
+// through the collector pipeline:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/transformprocessor/README.md
+//
+// Statements are only valid for specific evaluation contexts:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
+//
+// Examples:
+//   - `set(attributes["http.request.method"], "GET")` sets an attribute value.
+//   - `delete_key(attributes, "http.request.header.authorization")` removes a sensitive attribute.
+//   - `truncate_all(attributes, 100)` truncates all attribute values to 100 characters.
+type OTTLStatement = string
+
+// OTTLStatements defines model for OTTLStatements.
+type OTTLStatements = []OTTLStatement
+
 // OpsgenieConfig defines model for OpsgenieConfig.
 type OpsgenieConfig struct {
 	ApiKey   string                 `json:"apiKey"`
@@ -14714,6 +15059,11 @@ type PrometheusAlertRule struct {
 	//
 	// The "summary" and "description" annotations are expected and are used as the human-readable
 	// summary and description of the check rule.
+	//
+	// The "dash0.com/on-no-data" annotation sets the evaluation outcome when the expression returns no
+	// data. The values are `critical`, `degraded` and `ignored`. An absent key or an empty value
+	// means `ignored`. Any other value is rejected with a 400. Set it here, in the rule-level
+	// annotations; it is rejected in `metadata.annotations`.
 	Annotations *PrometheusAlertRule_Annotations `json:"annotations,omitempty"`
 
 	// Dataset The dataset the check rule belongs to. On create, update and import, the `dataset` query parameter, or the `Dash0-Dataset` header when the parameter is absent, wins over this field.
@@ -14809,6 +15159,11 @@ type PrometheusAlertRule struct {
 //
 // The "summary" and "description" annotations are expected and are used as the human-readable
 // summary and description of the check rule.
+//
+// The "dash0.com/on-no-data" annotation sets the evaluation outcome when the expression returns no
+// data. The values are `critical`, `degraded` and `ignored`. An absent key or an empty value
+// means `ignored`. Any other value is rejected with a 400. Set it here, in the rule-level
+// annotations; it is rejected in `metadata.annotations`.
 type PrometheusAlertRule_Annotations struct {
 	// Description Human-readable and templatable description for the check that allows you to customize the way the
 	// rationale of the check is textually described in the Dash0 UI, in notifications, etc. This will
@@ -15161,6 +15516,9 @@ type PrometheusRuleDefinition struct {
 	//   The annotation declares the routing in full: a channel it does not name is unlinked,
 	//   and a channel it names without the suffix notifies on every issue, including when the
 	//   only-on-critical trigger had been set in the UI.
+	// - `dash0.com/on-no-data`: The evaluation outcome when the expression returns no data. The
+	//   values are `critical`, `degraded` and `ignored`. An absent key or an empty value means
+	//   `ignored`. Any other value is rejected.
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
 	// Expr PromQL expression to evaluate.
@@ -16732,22 +17090,30 @@ type SloComparisonOperator string
 // `openslo/v1`) is required so the same document is installable as a Kubernetes
 // CustomResourceDefinition, whose API group must contain a dot.
 //
-// Currently supported: a single objective with an inline `ratioMetric` indicator,
-// `Occurrences` budgeting, and a rolling `4w` (28d) time window.
+// Currently supported: a single objective and a rolling `4w` (28d) time window, with either
+//   - an inline `ratioMetric` indicator and `Occurrences` budgeting, or
+//   - an inline `thresholdMetric` indicator and `Timeslices` budgeting, where the objective sets
+//     `op` and `value`. Every minute is one time slice: it is good when the indicator's value
+//     meets `op value`, bad when it does not, and not counted when the query returns no value.
 //
-// Not currently supported — requests using any of these are rejected with a 400 (the one
-// exception is `alertPolicies`, see below): `thresholdMetric` SLIs; `indicatorRef`;
+// Threshold SLOs (the second option) are enabled per organization. In an organization where
+// they are not enabled, a create or update that uses a `thresholdMetric` indicator or
+// `Timeslices` budgeting is rejected with a 400.
+//
+// The following are not currently supported, and requests that use any of them are rejected
+// with a 400 (the one exception is `alertPolicies`, see below): `indicatorRef`;
 // `metricSource.metricSourceRef`; multiple or composite objectives (`compositeWeight`,
-// per-objective `indicator`/`indicatorRef`); threshold objective fields (`op`/`value`);
-// time-slice objective fields (`timeSliceTarget`/`timeSliceWindow`); `Timeslices` and
+// per-objective `indicator`/`indicatorRef`); `op`/`value` and time-slice fields on an
+// `Occurrences` SLO; a `thresholdMetric` with `Occurrences` or a `ratioMetric` with
+// `Timeslices`; time slices other than `1m`; `timeSliceTarget` other than 1;
 // `RatioTimeslices` budgeting; and calendar-aligned time windows.
 //
 // Alerting on SLOs (spec.alertPolicies) is not supported. Unlike the other unsupported
-// fields, `alertPolicies` is accepted for OpenSLO compatibility but silently ignored — it
+// fields, `alertPolicies` is accepted for OpenSLO compatibility but silently ignored. It
 // is not stored, evaluated, or returned on read; see spec.alertPolicies for details.
 //
-// SLOs evaluate with a fixed 5-minute settling delay applied automatically: at any
-// moment, the SLI reflects telemetry that arrived at least 5 minutes ago. This
+// SLOs evaluate with a fixed 2-minute settling delay applied automatically: at any
+// moment, the SLI reflects telemetry that arrived at least 2 minutes ago. This
 // ensures late-arriving signals are included in the SLI computation, at the cost of a
 // small, fixed lag between live behavior and SLO state.
 type SloDefinition struct {
@@ -16768,7 +17134,7 @@ type SloIndicator struct {
 	// Metadata Metadata for the inline SLI.
 	Metadata *SloIndicatorMetadata `json:"metadata,omitempty"`
 
-	// Spec SLI specification. A ratioMetric must be provided; thresholdMetric is not currently supported.
+	// Spec SLI specification. Exactly one of ratioMetric (with Occurrences budgeting) or thresholdMetric (with Timeslices budgeting) must be provided.
 	Spec SloIndicatorSpec `json:"spec"`
 }
 
@@ -16781,7 +17147,7 @@ type SloIndicatorMetadata struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// SloIndicatorSpec SLI specification. A ratioMetric must be provided; thresholdMetric is not currently supported.
+// SloIndicatorSpec SLI specification. Exactly one of ratioMetric (with Occurrences budgeting) or thresholdMetric (with Timeslices budgeting) must be provided.
 type SloIndicatorSpec struct {
 	// Description Optional description of the SLI, up to 1050 characters.
 	Description *string `json:"description,omitempty"`
@@ -16789,7 +17155,7 @@ type SloIndicatorSpec struct {
 	// RatioMetric Ratio-based SLI metric. Provide either good+total, bad+total, or raw with rawType.
 	RatioMetric *SloRatioMetric `json:"ratioMetric,omitempty"`
 
-	// ThresholdMetric Not currently supported — use a ratioMetric instead. Requests with a thresholdMetric SLI are rejected with a 400.
+	// ThresholdMetric Threshold SLI, scored once per 1m time slice against the objective's op and value. Requires Timeslices budgeting and an organization that has threshold SLOs enabled; otherwise a create or update is rejected with a 400.
 	ThresholdMetric *SloThresholdMetric `json:"thresholdMetric,omitempty"`
 }
 
@@ -16885,7 +17251,7 @@ type SloObjective struct {
 	// IndicatorRef Reference to an external SLI for composite SLOs. Composite SLOs are not currently supported — requests that set it are rejected with a 400.
 	IndicatorRef *string `json:"indicatorRef,omitempty"`
 
-	// Op Comparison operator used to compare the SLI against the value (for thresholdMetric SLIs). Not currently supported — requests that set it are rejected with a 400.
+	// Op Comparison operator a time slice's value must satisfy against `value` to be good. Required for thresholdMetric SLIs; rejected with a 400 on Occurrences SLOs.
 	Op *SloComparisonOperator `json:"op,omitempty"`
 
 	// Target Budget target for this objective as a fraction [0.0, 1.0). Mutually exclusive with targetPercent; one of the two must be provided.
@@ -16894,13 +17260,13 @@ type SloObjective struct {
 	// TargetPercent Budget target for this objective as a percentage [0.0, 100). Mutually exclusive with target; one of the two must be provided.
 	TargetPercent *float32 `json:"targetPercent,omitempty"`
 
-	// TimeSliceTarget Target for the ratio of good time slices to total time slices (0.0, 1.0] (for Timeslices budgeting). Not currently supported — requests that set it are rejected with a 400.
+	// TimeSliceTarget Fraction of a time slice that must be good for the slice to count as good (for Timeslices budgeting). Optional; only 1, the default, is currently supported. Other values, and any value on an Occurrences SLO, are rejected with a 400.
 	TimeSliceTarget *float32 `json:"timeSliceTarget,omitempty"`
 
-	// TimeSliceWindow Size of a time slice for evaluation (for Timeslices/RatioTimeslices budgeting). Not currently supported — requests that set it are rejected with a 400.
+	// TimeSliceWindow Size of a time slice for evaluation (for Timeslices budgeting). Optional; only `1m`, the default, is currently supported. Other sizes, and any value on an Occurrences SLO, are rejected with a 400.
 	TimeSliceWindow *Duration `json:"timeSliceWindow,omitempty"`
 
-	// Value Threshold value to compare against (for thresholdMetric SLIs). Not currently supported — requests that set it are rejected with a 400.
+	// Value Threshold a time slice's value is compared against, in the unit of the query result. Required for thresholdMetric SLIs; rejected with a 400 on Occurrences SLOs.
 	Value *float32 `json:"value,omitempty"`
 }
 
@@ -16938,7 +17304,7 @@ type SloSpec struct {
 	// Not supported by Dash0. This field is accepted for OpenSLO compatibility, but any alert policies are ignored: they are not stored, not evaluated, and not returned when reading the SLO back.
 	AlertPolicies *[]SloAlertPolicy `json:"alertPolicies,omitempty"`
 
-	// BudgetingMethod Only `Occurrences` is currently supported. `Timeslices` and `RatioTimeslices` are not currently supported and requests using them are rejected with a 400.
+	// BudgetingMethod `Occurrences` for a `ratioMetric` indicator, `Timeslices` for a `thresholdMetric` indicator. `RatioTimeslices` is not currently supported and requests using it are rejected with a 400.
 	BudgetingMethod SloBudgetingMethod `json:"budgetingMethod"`
 
 	// Description Optional description of the SLO, up to 1050 characters.
@@ -16960,7 +17326,42 @@ type SloSpec struct {
 	TimeWindow *[]SloTimeWindow `json:"timeWindow,omitempty"`
 }
 
-// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against objective thresholds (op and value on the objective, not here). Not currently supported — use a ratioMetric instead.
+// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against
+// objective thresholds (op and value on the objective, not here), once per 1m time slice.
+//
+// The query must evaluate to an instant vector, for example
+// `histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[1m])))`.
+// Each range must be longer than 0s and at most 1m. A range inside a subquery is added to the
+// range of every subquery around it, and the sum must also be at most 1m. A subquery step must
+// not be longer than the subquery range, and a subquery without a step uses a step of 1m. A
+// duration expression such as `[30s + 30s]` is checked after it is resolved, and every
+// duration must be a whole number of milliseconds. The query must not use `step()` or
+// `range()`, which are always 0 in an SLO. It must not use the `@` modifier, the `smoothed`
+// modifier or a negative offset, because these read samples from outside the time slice. A
+// positive offset reads earlier minutes and does not count toward the 1m limit, so a query
+// that combines several offsets lets one minute affect more than one slice.
+//
+// Dash0 adds the `anchored` modifier to the range selectors of `rate`, `increase`, `delta`,
+// `changes` and `resets`, so a 1m range counts the change from the last sample before the
+// minute to the last sample in it. A query can also set `anchored` itself, but only on these
+// functions. When exports are late or missing, a minute can have no value, or can include the
+// change of a missed minute. With an export interval that does not divide 1m, such as 40s, a
+// minute counts the change of one or two exports, so a steady rate alternates between
+// minutes. A range shorter than the export interval can make a rate too high or leave minutes
+// without a value, so use `[1m]`. `irate`, `idelta`, `deriv`, `predict_linear` and
+// `double_exponential_smoothing` need at least two samples inside the minute. A selector
+// without a range returns its latest sample from the last 5 minutes, so a metric that stops
+// reporting is still scored on its last value for up to 5 minutes.
+//
+// When the query returns several series, the slice is scored on the worst one: the highest
+// value for `lt`/`lte`, the lowest for `gt`/`gte`. A slice whose query returns no value, or
+// only NaN, is not counted. A query that returns histogram samples is never scored; wrap it
+// in `histogram_quantile`, `histogram_avg`, `histogram_count` or `histogram_sum`. A comparison
+// without `bool`, such as `max(x) > 2`, removes the series that fail it, so a minute in which
+// every series fails is not counted; set the limit with `op` and `value` on the objective
+// instead. A histogram quantile never exceeds the highest finite bucket bound, so set the
+// limit below that bound. Otherwise, a minute in which all observations fall above the bound
+// can still count as good.
 type SloThresholdMetric struct {
 	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide the query under `spec.query`. With counter true or omitted, a good, bad or total query must be a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`), because Dash0 wraps it in `sum(increase(...[5m]))`. With counter false, these queries accept any PromQL expression that evaluates to an instant vector, including histogram_count(increase(...[5m])). Raw queries also accept instant-vector expressions. Dash0 wraps counter-false and raw queries only in `sum(...)`.
 	MetricSource SloMetricSource `json:"metricSource"`
@@ -17393,8 +17794,8 @@ type SyntheticBrowserCheckPluginKind string
 // SyntheticBrowserCheckPluginSpec A browser check runs a Playwright test script. A browser check runs only on private locations.
 type SyntheticBrowserCheckPluginSpec struct {
 	// Env Environment variables the script reads. Each name is unique within the check. The runner
-	// sets `PATH`, `HOME`, `TMPDIR`, `PLAYWRIGHT_BROWSERS_PATH`, `TRACEPARENT`, `CI` and
-	// `NODE_OPTIONS` itself, so a check cannot set them.
+	// sets `PATH`, `HOME`, `TMPDIR`, `PLAYWRIGHT_BROWSERS_PATH`, `TRACEPARENT`, `CI`,
+	// `NODE_OPTIONS`, `DASH0_RELAY_URL` and `DASH0_RELAY_TOKEN` itself, so a check cannot set them.
 	Env *[]SyntheticCheckEnvVar `json:"env,omitempty"`
 
 	// Script The Playwright test script, at most 65536 characters.
@@ -17632,7 +18033,8 @@ type SyntheticCheckEnvVar struct {
 // a new property here, so a client written against this version keeps working.
 type SyntheticCheckEnvVarSource struct {
 	// PlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
-	// `synthetics` in its `usableIn`.
+	// `synthetics` in its `usableIn`. The name resolves to a variable of the check's dataset
+	// first, then to an organization variable, and never to a personal one.
 	PlatformVariableRef *SyntheticCheckPlatformVariableRef `json:"platformVariableRef,omitempty"`
 }
 
@@ -17723,7 +18125,8 @@ type SyntheticCheckPermission struct {
 }
 
 // SyntheticCheckPlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
-// `synthetics` in its `usableIn`.
+// `synthetics` in its `usableIn`. The name resolves to a variable of the check's dataset
+// first, then to an organization variable, and never to a personal one.
 type SyntheticCheckPlatformVariableRef struct {
 	// Name Name of the platform variable, not the environment variable name the script reads.
 	Name string `json:"name"`
@@ -18112,6 +18515,238 @@ type TelemetryFilter struct {
 // TelemetryFilterContext The telemetry unit a filter rule is evaluated against, and that a matching rule drops.
 // `profile_sample` evaluates each sample of a profile and drops matching samples individually.
 type TelemetryFilterContext string
+
+// TelemetryTransformationRuleAnnotations defines model for TelemetryTransformationRuleAnnotations.
+type TelemetryTransformationRuleAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Timestamp of the deletion. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update, set by the server. It is the concurrency token: send the value you read
+	// back on PUT. A stale value returns 400 with the error type `superseded_version`. UI sessions must send it.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// TelemetryTransformationRuleContext The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+// Not all contexts are valid for all signal types:
+//
+// For `traces`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `span`: Transform individual span properties and attributes.
+// - `spanevent`: Transform individual span event properties and attributes.
+//
+// For `metrics`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `metric`: Transform metric-level properties (name, description, type).
+// - `datapoint`: Transform individual metric data point attributes.
+//
+// For `logs`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `log`: Transform individual log record properties (body, severity, attributes).
+//
+// For `profiles`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `profile`: Transform individual profile properties and attributes.
+//
+// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+// resource, but a `metric` context cannot access individual data points.
+type TelemetryTransformationRuleContext string
+
+// TelemetryTransformationRuleDefinition defines model for TelemetryTransformationRuleDefinition.
+type TelemetryTransformationRuleDefinition struct {
+	Kind     TelemetryTransformationRuleDefinitionKind `json:"kind"`
+	Metadata TelemetryTransformationRuleMetadata       `json:"metadata"`
+	Spec     TelemetryTransformationRuleSpec           `json:"spec"`
+}
+
+// TelemetryTransformationRuleDefinitionKind defines model for TelemetryTransformationRuleDefinition.Kind.
+type TelemetryTransformationRuleDefinitionKind string
+
+// TelemetryTransformationRuleDisplay defines model for TelemetryTransformationRuleDisplay.
+type TelemetryTransformationRuleDisplay struct {
+	// Description Optional note on what the rule is for, shown with the rule's name. Collectors ignore it.
+	Description *string `json:"description,omitempty"`
+
+	// Name Name of the rule, shown in the rule list.
+	Name string `json:"name"`
+}
+
+// TelemetryTransformationRuleError defines model for TelemetryTransformationRuleError.
+type TelemetryTransformationRuleError struct {
+	// Code HTTP status code.
+	Code int `json:"code"`
+
+	// Message Human-readable description of the error. Safe to display.
+	Message string `json:"message"`
+
+	// TraceId Trace ID for the request that produced the error.
+	TraceId *string `json:"traceId,omitempty"`
+
+	// Type Stable `snake_case` identifier for the kind of error. `invalid_rule` when `violations` is set.
+	Type *string `json:"type,omitempty"`
+
+	// Violations Why the rule was rejected. Set only when `type` is `invalid_rule`.
+	Violations *[]TelemetryTransformationRuleViolation `json:"violations,omitempty"`
+}
+
+// TelemetryTransformationRuleErrorResponse defines model for TelemetryTransformationRuleErrorResponse.
+type TelemetryTransformationRuleErrorResponse struct {
+	Error TelemetryTransformationRuleError `json:"error"`
+}
+
+// TelemetryTransformationRuleExample defines model for TelemetryTransformationRuleExample.
+type TelemetryTransformationRuleExample struct {
+	// Name Label of the example, shown in the UI.
+	Name string `json:"name"`
+
+	// Otlp One OTLP/JSON export request for `spec.signal`, for example `{"resourceLogs": [...]}` for a `logs` rule.
+	// It keeps resource and scope, so resource and scope conditions can match. It must hold at least one log
+	// record, span, data point or profile, and at most 64 KiB of compact JSON. The server returns it with
+	// its keys and whitespace normalized.
+	Otlp map[string]interface{} `json:"otlp"`
+}
+
+// TelemetryTransformationRuleLabels defines model for TelemetryTransformationRuleLabels.
+type TelemetryTransformationRuleLabels struct {
+	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the telemetry transformation rule. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed rules, e.g. the CRD name from an operator or a Terraform resource ID. Set by the client on create; immutable afterwards. Empty for rules created in the UI. Rules created with a machine token that has no user get an `api-<uuid>` origin.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// TelemetryTransformationRuleListResponse defines model for TelemetryTransformationRuleListResponse.
+type TelemetryTransformationRuleListResponse struct {
+	// TelemetryTransformationRules The rules without `spec.examples`. Get a single rule to read its examples.
+	TelemetryTransformationRules []TelemetryTransformationRuleResponse `json:"telemetryTransformationRules"`
+}
+
+// TelemetryTransformationRuleMetadata defines model for TelemetryTransformationRuleMetadata.
+type TelemetryTransformationRuleMetadata struct {
+	Annotations *TelemetryTransformationRuleAnnotations `json:"annotations,omitempty"`
+	Labels      *TelemetryTransformationRuleLabels      `json:"labels,omitempty"`
+	Name        string                                  `json:"name"`
+}
+
+// TelemetryTransformationRuleResponse defines model for TelemetryTransformationRuleResponse.
+type TelemetryTransformationRuleResponse = TelemetryTransformationRuleDefinition
+
+// TelemetryTransformationRuleSignalType The signal type that this transformation rule applies to.
+// - `traces`: Apply transformations to trace data (spans and span events).
+// - `metrics`: Apply transformations to metric data (metrics and data points).
+// - `logs`: Apply transformations to log data (log records).
+// - `profiles`: Apply transformations to profile data.
+type TelemetryTransformationRuleSignalType string
+
+// TelemetryTransformationRuleSpec defines model for TelemetryTransformationRuleSpec.
+type TelemetryTransformationRuleSpec struct {
+	// Conditions A list of OTTL conditions that act as a gate for all transformations of this rule. The conditions
+	// are ORed together, so only one condition needs to evaluate to true for the transformations to run.
+	Conditions *OTTLConditions `json:"conditions,omitempty"`
+
+	// Context The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+	// Not all contexts are valid for all signal types:
+	//
+	// For `traces`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `span`: Transform individual span properties and attributes.
+	// - `spanevent`: Transform individual span event properties and attributes.
+	//
+	// For `metrics`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `metric`: Transform metric-level properties (name, description, type).
+	// - `datapoint`: Transform individual metric data point attributes.
+	//
+	// For `logs`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `log`: Transform individual log record properties (body, severity, attributes).
+	//
+	// For `profiles`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `profile`: Transform individual profile properties and attributes.
+	//
+	// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+	// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+	// resource, but a `metric` context cannot access individual data points.
+	Context TelemetryTransformationRuleContext  `json:"context"`
+	Display *TelemetryTransformationRuleDisplay `json:"display,omitempty"`
+	Enabled bool                                `json:"enabled"`
+
+	// Examples Example signals to test the rule against in the UI. Collectors never receive them, and changing them
+	// does not change the ruleset version collectors poll for. At most 10 examples.
+	//
+	// PUT replaces the whole rule, so a PUT without `examples` removes the stored examples. On rules with a
+	// `dash0.com/origin`, the owning tool manages examples like the rest of the rule; the UI cannot edit them.
+	//
+	// Examples are stored as rule configuration. Telemetry retention does not apply to them, so do not put
+	// sensitive data in them. Deleting the rule deletes its examples.
+	Examples *[]TelemetryTransformationRuleExample `json:"examples,omitempty"`
+
+	// Priority Order in which rules for the same signal run: 0, 100, 200, 300 or 400. Rules with a lower value run
+	// first. Defaults to 200, the middle value, so a rule can be ranked above and below the default. Rules
+	// with the same priority run in order of `metadata.name`, then `dash0.com/created-at`, then
+	// `dash0.com/id`.
+	Priority *int `json:"priority,omitempty"`
+
+	// Signal The signal type that this transformation rule applies to.
+	// - `traces`: Apply transformations to trace data (spans and span events).
+	// - `metrics`: Apply transformations to metric data (metrics and data points).
+	// - `logs`: Apply transformations to log data (log records).
+	// - `profiles`: Apply transformations to profile data.
+	Signal          TelemetryTransformationRuleSignalType       `json:"signal"`
+	Transformations []TelemetryTransformationRuleTransformation `json:"transformations"`
+}
+
+// TelemetryTransformationRuleTransformation defines model for TelemetryTransformationRuleTransformation.
+type TelemetryTransformationRuleTransformation struct {
+	// Name Short name for the transformation, shown in the rule's list of transformations.
+	Name       string         `json:"name"`
+	Statements OTTLStatements `json:"statements"`
+}
+
+// TelemetryTransformationRuleViolation One reason a rule was rejected.
+type TelemetryTransformationRuleViolation struct {
+	// Attribute The attribute or field the rule may not use. For `compile`, the expression that did not compile.
+	Attribute string `json:"attribute"`
+
+	// Kind `secret`, `protected`, `read_only` or `compile`. Treat an unknown value like `compile`.
+	Kind string `json:"kind"`
+
+	// Message Human-readable description of the violation. Safe to display.
+	Message string `json:"message"`
+}
 
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
@@ -19006,6 +19641,12 @@ type PutApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams defines parameters for DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId.
+type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams struct {
+	Disposition      AwsLogGroupPolicyDisposition `form:"disposition" json:"disposition"`
+	ExpectedRevision *int64                       `form:"expectedRevision,omitempty" json:"expectedRevision,omitempty"`
+}
+
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
 type GetApiDashboardsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -19430,6 +20071,37 @@ type PutApiSyntheticChecksOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiTelemetryTransformationRulesParams defines parameters for GetApiTelemetryTransformationRules.
+type GetApiTelemetryTransformationRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+}
+
+// PostApiTelemetryTransformationRulesParams defines parameters for PostApiTelemetryTransformationRules.
+type PostApiTelemetryTransformationRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrIdParams defines parameters for DeleteApiTelemetryTransformationRulesOriginOrId.
+type DeleteApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// UpdatedAt The rule's `dash0.com/updated-at` as last read. When given, the delete fails with error type `superseded_version` if the rule changed since. Omit it to delete unconditionally.
+	UpdatedAt *time.Time `form:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+}
+
+// GetApiTelemetryTransformationRulesOriginOrIdParams defines parameters for GetApiTelemetryTransformationRulesOriginOrId.
+type GetApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdParams defines parameters for PutApiTelemetryTransformationRulesOriginOrId.
+type PutApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiTimeSeriesAggregationsParams defines parameters for GetApiTimeSeriesAggregations.
 type GetApiTimeSeriesAggregationsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -19533,6 +20205,9 @@ type PostApiAuthTokensJSONRequestBody = AuthTokenCreateRequest
 
 // PutApiAuthTokensOriginOrIdJSONRequestBody defines body for PutApiAuthTokensOriginOrId for application/json ContentType.
 type PutApiAuthTokensOriginOrIdJSONRequestBody = AuthTokenUpdateRequest
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody defines body for PutApiAwsLogGroupInstrumentationPoliciesIntegrationId for application/json ContentType.
+type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody = AwsLogGroupInstrumentationPolicy
 
 // PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody defines body for PutApiAwsMetricScrapeConfigsIntegrationId for application/json ContentType.
 type PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody = AwsMetricScrapeConfigDefinition
@@ -19695,6 +20370,12 @@ type PutApiTeamsOriginOrIdDisplayJSONRequestBody = TeamDisplay
 
 // PostApiTeamsOriginOrIdMembersJSONRequestBody defines body for PostApiTeamsOriginOrIdMembers for application/json ContentType.
 type PostApiTeamsOriginOrIdMembersJSONRequestBody = AddTeamMembersRequest
+
+// PostApiTelemetryTransformationRulesJSONRequestBody defines body for PostApiTelemetryTransformationRules for application/json ContentType.
+type PostApiTelemetryTransformationRulesJSONRequestBody = TelemetryTransformationRuleDefinition
+
+// PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody defines body for PutApiTelemetryTransformationRulesOriginOrId for application/json ContentType.
+type PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody = TelemetryTransformationRuleDefinition
 
 // PostApiTimeSeriesAggregationsJSONRequestBody defines body for PostApiTimeSeriesAggregations for application/json ContentType.
 type PostApiTimeSeriesAggregationsJSONRequestBody = TimeSeriesAggregationDefinition
@@ -23312,6 +23993,58 @@ type ClientInterface interface {
 	// Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 	PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId Delete an AWS log-group instrumentation policy
+	//
+	// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+	// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+	// including regions no longer selected by the integration. A 503 with error type
+	// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+	// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+	// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+	// changed, review the current policy before deleting again. Both choices dispatch unfinished
+	// work. Keep may restore forwarding
+	// when it cancels a pending policy removal. No workflow starts when no work remains.
+	//
+	// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAwsLogGroupInstrumentationPoliciesIntegrationId Get an AWS log-group instrumentation policy
+	//
+	// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationId Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiAwsMetricScrapeConfigsIntegrationId Clear the CloudWatch metric scrape config of an AWS integration
 	//
 	// Removes every namespace and the integration filter, which stops all scraping for the
@@ -24830,6 +25563,49 @@ type ClientInterface interface {
 	// Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 	DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiTelemetryTransformationRules Retrieve a list of telemetry transformation rules
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+	GetApiTelemetryTransformationRules(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTelemetryTransformationRulesWithBody Create a new telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithBody(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTelemetryTransformationRules Create a new telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRules(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiTelemetryTransformationRulesOriginOrId Delete a specific telemetry transformation rule
+	//
+	// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+	DeleteApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiTelemetryTransformationRulesOriginOrId Retrieve the latest version of a specific telemetry transformation rule
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+	GetApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithBody Update a specific telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrId Update a specific telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiTimeSeriesAggregations List all time series aggregations for the organization
 	//
 	// Returns all time series aggregation rules configured for your organization.
@@ -25785,6 +26561,98 @@ func (c *generatedClient) PutApiAuthTokensOriginOrIdWithBody(ctx context.Context
 // Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 func (c *generatedClient) PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiAuthTokensOriginOrIdRequest(c.Server, originOrId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId Delete an AWS log-group instrumentation policy
+//
+// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+// including regions no longer selected by the integration. A 503 with error type
+// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+// changed, review the current policy before deleting again. Both choices dispatch unfinished
+// work. Keep may restore forwarding
+// when it cancels a pending policy removal. No workflow starts when no work remains.
+//
+// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiAwsLogGroupInstrumentationPoliciesIntegrationId Get an AWS log-group instrumentation policy
+//
+// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(c.Server, integrationId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationId Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -28843,6 +29711,119 @@ func (c *generatedClient) DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Co
 	return c.Client.Do(req)
 }
 
+// GetApiTelemetryTransformationRules Retrieve a list of telemetry transformation rules
+//
+// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) GetApiTelemetryTransformationRules(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTelemetryTransformationRulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiTelemetryTransformationRulesWithBody Create a new telemetry transformation rule
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) PostApiTelemetryTransformationRulesWithBody(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTelemetryTransformationRulesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiTelemetryTransformationRules Create a new telemetry transformation rule
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) PostApiTelemetryTransformationRules(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTelemetryTransformationRulesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrId Delete a specific telemetry transformation rule
+//
+// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) DeleteApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiTelemetryTransformationRulesOriginOrId Retrieve the latest version of a specific telemetry transformation rule
+//
+// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) GetApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithBody Update a specific telemetry transformation rule
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrId Update a specific telemetry transformation rule
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) PutApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetApiTimeSeriesAggregations List all time series aggregations for the organization
 //
 // Returns all time series aggregation rules configured for your organization.
@@ -30653,6 +31634,156 @@ func NewPutApiAuthTokensOriginOrIdRequestWithBody(server string, originOrId stri
 	}
 
 	operationPath := fmt.Sprintf("/api/auth-tokens/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest constructs an http.Request for the DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId method
+func NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "disposition", params.Disposition, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.ExpectedRevision != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "expectedRevision", *params.ExpectedRevision, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest constructs an http.Request for the GetApiAwsLogGroupInstrumentationPoliciesIntegrationId method
+func NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest calls the generic PutApiAwsLogGroupInstrumentationPoliciesIntegrationId builder with application/json body
+func NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(server, integrationId, "application/json", bodyReader)
+}
+
+// NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody constructs an http.Request for the PutApiAwsLogGroupInstrumentationPoliciesIntegrationId method, with any body, and a specified content type
+func NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(server string, integrationId openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -36267,6 +37398,347 @@ func NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(server string, originOrId
 	return req, nil
 }
 
+// NewGetApiTelemetryTransformationRulesRequest constructs an http.Request for the GetApiTelemetryTransformationRules method
+func NewGetApiTelemetryTransformationRulesRequest(server string, params *GetApiTelemetryTransformationRulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "originPrefix", *params.OriginPrefix, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiTelemetryTransformationRulesRequest calls the generic PostApiTelemetryTransformationRules builder with application/json body
+func NewPostApiTelemetryTransformationRulesRequest(server string, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTelemetryTransformationRulesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiTelemetryTransformationRulesRequestWithBody constructs an http.Request for the PostApiTelemetryTransformationRules method, with any body, and a specified content type
+func NewPostApiTelemetryTransformationRulesRequestWithBody(server string, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest constructs an http.Request for the DeleteApiTelemetryTransformationRulesOriginOrId method
+func NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.UpdatedAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updatedAt", *params.UpdatedAt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiTelemetryTransformationRulesOriginOrIdRequest constructs an http.Request for the GetApiTelemetryTransformationRulesOriginOrId method
+func NewGetApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiTelemetryTransformationRulesOriginOrIdRequest calls the generic PutApiTelemetryTransformationRulesOriginOrId builder with application/json body
+func NewPutApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody constructs an http.Request for the PutApiTelemetryTransformationRulesOriginOrId method, with any body, and a specified content type
+func NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiTimeSeriesAggregationsRequest constructs an http.Request for the GetApiTimeSeriesAggregations method
 func NewGetApiTimeSeriesAggregationsRequest(server string, params *GetApiTimeSeriesAggregationsParams) (*http.Request, error) {
 	var err error
@@ -37677,6 +39149,62 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 	PutApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error)
+
+	// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Delete an AWS log-group instrumentation policy
+	//
+	// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+	// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+	// including regions no longer selected by the integration. A 503 with error type
+	// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+	// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+	// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+	// changed, review the current policy before deleting again. Both choices dispatch unfinished
+	// work. Keep may restore forwarding
+	// when it cancels a pending policy removal. No workflow starts when no work remains.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Get an AWS log-group instrumentation policy
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
 
 	// DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse Clear the CloudWatch metric scrape config of an AWS integration
 	//
@@ -39300,6 +40828,55 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 	DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error)
 
+	// GetApiTelemetryTransformationRulesWithResponse Retrieve a list of telemetry transformation rules
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+	GetApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesResponse, error)
+
+	// PostApiTelemetryTransformationRulesWithBodyWithResponse Create a new telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithBodyWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error)
+
+	// PostApiTelemetryTransformationRulesWithResponse Create a new telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error)
+
+	// DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse Delete a specific telemetry transformation rule
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+	DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// GetApiTelemetryTransformationRulesOriginOrIdWithResponse Retrieve the latest version of a specific telemetry transformation rule
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+	GetApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse Update a specific telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithResponse Update a specific telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
 	// GetApiTimeSeriesAggregationsWithResponse List all time series aggregations for the organization
 	//
 	// Returns all time series aggregation rules configured for your organization.
@@ -40792,6 +42369,150 @@ func (r PutApiAuthTokensOriginOrIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PutApiAuthTokensOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -45580,6 +47301,323 @@ func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) ContentType() string {
 	return ""
 }
 
+type GetApiTelemetryTransformationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleListResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSON200() *TelemetryTransformationRuleListResponse {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiTelemetryTransformationRulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTelemetryTransformationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTelemetryTransformationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiTelemetryTransformationRulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostApiTelemetryTransformationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *TelemetryTransformationRuleErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON400() *TelemetryTransformationRuleErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PostApiTelemetryTransformationRulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTelemetryTransformationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTelemetryTransformationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostApiTelemetryTransformationRulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON400() *ErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *TelemetryTransformationRuleErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON400() *TelemetryTransformationRuleErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetApiTimeSeriesAggregationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -46991,6 +49029,86 @@ func (c *ClientWithResponses) PutApiAuthTokensOriginOrIdWithResponse(ctx context
 		return nil, err
 	}
 	return ParsePutApiAuthTokensOriginOrIdResponse(rsp)
+}
+
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Delete an AWS log-group instrumentation policy
+//
+// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+// including regions no longer selected by the integration. A 503 with error type
+// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+// changed, review the current policy before deleting again. Both choices dispatch unfinished
+// work. Keep may restore forwarding
+// when it cancels a pending policy removal. No workflow starts when no work remains.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Get an AWS log-group instrumentation policy
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx, integrationId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
 }
 
 // DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse Clear the CloudWatch metric scrape config of an AWS integration
@@ -49533,6 +51651,97 @@ func (c *ClientWithResponses) DeleteApiTeamsOriginOrIdMembersMemberIDWithRespons
 	return ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp)
 }
 
+// GetApiTelemetryTransformationRulesWithResponse Retrieve a list of telemetry transformation rules
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) GetApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.GetApiTelemetryTransformationRules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// PostApiTelemetryTransformationRulesWithBodyWithResponse Create a new telemetry transformation rule
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) PostApiTelemetryTransformationRulesWithBodyWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.PostApiTelemetryTransformationRulesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// PostApiTelemetryTransformationRulesWithResponse Create a new telemetry transformation rule
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) PostApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.PostApiTelemetryTransformationRules(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse Delete a specific telemetry transformation rule
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// GetApiTelemetryTransformationRulesOriginOrIdWithResponse Retrieve the latest version of a specific telemetry transformation rule
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) GetApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.GetApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse Update a specific telemetry transformation rule
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithResponse Update a specific telemetry transformation rule
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
 // GetApiTimeSeriesAggregationsWithResponse List all time series aggregations for the organization
 //
 // Returns all time series aggregation rules configured for your organization.
@@ -50858,6 +53067,105 @@ func ParsePutApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*PutApiAuthTok
 			return nil, err
 		}
 		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
@@ -54248,6 +56556,251 @@ func ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp *http.Response) (*
 	switch {
 	case rsp.StatusCode == 204:
 		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTelemetryTransformationRulesResponse parses an HTTP response from a GetApiTelemetryTransformationRulesWithResponse call
+func ParseGetApiTelemetryTransformationRulesResponse(rsp *http.Response) (*GetApiTelemetryTransformationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTelemetryTransformationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTelemetryTransformationRulesResponse parses an HTTP response from a PostApiTelemetryTransformationRulesWithResponse call
+func ParsePostApiTelemetryTransformationRulesResponse(rsp *http.Response) (*PostApiTelemetryTransformationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTelemetryTransformationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TelemetryTransformationRuleErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a GetApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParseGetApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a PutApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TelemetryTransformationRuleErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

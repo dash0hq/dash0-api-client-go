@@ -130,7 +130,12 @@ var constRenames = map[string]string{
 	"EphemeralDashboard": "DashboardKindEphemeralDashboard",
 	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
 	// Pinned before release so a future enum sharing this value cannot rename it.
-	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	"IssueStatus":                           "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	"Background":                            "AgenticWorkflowSystemVisibilityBackground",
+	"Managed":                               "AgenticWorkflowSystemVisibilityManaged",
+	"Dash0AwsLogGroupInstrumentationPolicy": "AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy",
+	"IssueId":                               "FailedCheckSilencedTriggerVariableNameIssueId",
+	"Dash0TelemetryTransformationRule":      "TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry
