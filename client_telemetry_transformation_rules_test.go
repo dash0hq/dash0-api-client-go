@@ -276,7 +276,10 @@ func TestTelemetryTransformationRules_APIError(t *testing.T) {
 			return err
 		}},
 		{"delete forbidden", 403, `{"error":{"code":403,"message":"forbidden","traceId":"body-trace-41"}}`, "", "body-trace-41", func(c Client) error {
-			return c.DeleteTelemetryTransformationRule(context.Background(), "rule-71", Ptr("production"))
+			return c.DeleteTelemetryTransformationRule(context.Background(), "rule-71", nil, Ptr("production"))
+		}},
+		{"delete stale", 400, `{"error":{"code":400,"type":"superseded_version","message":"rule changed","traceId":"body-trace-41"}}`, "", "body-trace-41", func(c Client) error {
+			return c.DeleteTelemetryTransformationRule(context.Background(), "rule-71", Ptr(time.Date(2026, 10, 27, 14, 3, 8, 123456789, time.UTC)), Ptr("production"))
 		}},
 		{"iterator server error", 500, `{"error":{"code":500,"message":"unavailable","traceId":"body-trace-41"}}`, "", "body-trace-41", func(c Client) error {
 			iter := c.ListTelemetryTransformationRulesIter(context.Background(), Ptr("production"))
@@ -350,7 +353,7 @@ func TestTelemetryTransformationRules_RequestRouting(t *testing.T) {
 			return err
 		}},
 		{http.MethodDelete, "/terraform-checkout-19", func(c Client, dataset *string) error {
-			return c.DeleteTelemetryTransformationRule(context.Background(), "terraform-checkout-19", dataset)
+			return c.DeleteTelemetryTransformationRule(context.Background(), "terraform-checkout-19", nil, dataset)
 		}},
 	} {
 		for _, dataset := range []*string{nil, Ptr("non-default")} {
@@ -549,7 +552,7 @@ func TestTelemetryTransformationRules_APINotConfigured(t *testing.T) {
 	if _, err := c.UpdateTelemetryTransformationRule(ctx, "rule-71", rule, nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("update error = %v, want ErrAPINotConfigured", err)
 	}
-	if err := c.DeleteTelemetryTransformationRule(ctx, "rule-71", nil); !errors.Is(err, ErrAPINotConfigured) {
+	if err := c.DeleteTelemetryTransformationRule(ctx, "rule-71", nil, nil); !errors.Is(err, ErrAPINotConfigured) {
 		t.Errorf("delete error = %v, want ErrAPINotConfigured", err)
 	}
 	iter := c.ListTelemetryTransformationRulesIter(ctx, nil)
@@ -574,5 +577,20 @@ func TestTelemetryTransformationRules_NilInput(t *testing.T) {
 	}
 	if requests.Load() != 0 {
 		t.Errorf("nil input must not reach the server, got %d requests", requests.Load())
+	}
+}
+
+func TestTelemetryTransformationRules_ConditionalDeleteSendsUpdatedAt(t *testing.T) {
+	updatedAt := time.Date(2026, 10, 27, 14, 3, 8, 123456789, time.UTC)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assertEqual(t, "method", r.Method, http.MethodDelete)
+		assertEqual(t, "path", r.URL.Path, "/api/telemetry-transformation-rules/rule-71")
+		assertEqual(t, "updatedAt", r.URL.Query().Get("updatedAt"), "2026-10-27T14:03:08.123456789Z")
+		assertEqual(t, "dataset", r.URL.Query().Get("dataset"), "production")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+	if err := newTestClient(t, server.URL).DeleteTelemetryTransformationRule(context.Background(), "rule-71", &updatedAt, Ptr("production")); err != nil {
+		t.Fatal(err)
 	}
 }

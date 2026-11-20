@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // UnmarshalJSON decodes OTLP numbers as json.Number: float64 would round integers above 2^53.
+// encoding/json and sigs.k8s.io/yaml write them back as numbers; go.yaml.in/yaml/v3 writes them as quoted strings.
 func (e *TelemetryTransformationRuleExample) UnmarshalJSON(data []byte) error {
 	type plain TelemetryTransformationRuleExample
 	decoder := json.NewDecoder(bytes.NewReader(data))
@@ -100,12 +102,14 @@ func (c *client) UpdateTelemetryTransformationRule(ctx context.Context, originOr
 	return resp.JSON200, nil
 }
 
-// DeleteTelemetryTransformationRule deletes a rule unconditionally by origin or ID.
-func (c *client) DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) error {
+// DeleteTelemetryTransformationRule deletes a rule by origin or ID.
+// Pass the rule's dash0.com/updated-at as updatedAt to delete only if the rule has not changed since; a stale value fails with superseded_version.
+// A nil updatedAt deletes unconditionally.
+func (c *client) DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error {
 	if err := c.requireAPI(); err != nil {
 		return err
 	}
-	params := &DeleteApiTelemetryTransformationRulesOriginOrIdParams{Dataset: dataset}
+	params := &DeleteApiTelemetryTransformationRulesOriginOrIdParams{Dataset: dataset, UpdatedAt: updatedAt}
 	resp, err := c.inner.DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx, originOrID, params)
 	if err != nil {
 		return fmt.Errorf("dash0: delete telemetry transformation rule failed: %w", err)
@@ -125,8 +129,9 @@ func (c *client) ListTelemetryTransformationRulesIter(ctx context.Context, datas
 	return newIter(items, false, nil, nil)
 }
 
-// StripTelemetryTransformationRuleServerFields keeps identity, origin, dataset, and the update concurrency token.
-// Call ClearTelemetryTransformationRuleID as well when preparing a new rule.
+// StripTelemetryTransformationRuleServerFields prepares a fetched rule for an update.
+// It keeps identity, origin, dataset, and the update concurrency token.
+// To create a copy, also call ClearTelemetryTransformationRuleID and remove or change dash0.com/origin: POST rejects an origin that already exists with 409.
 func StripTelemetryTransformationRuleServerFields(rule *TelemetryTransformationRuleDefinition) {
 	if rule == nil {
 		return

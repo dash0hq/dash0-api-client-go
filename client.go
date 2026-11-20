@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -93,7 +94,7 @@ type Client interface {
 	GetTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) (*TelemetryTransformationRuleDefinition, error)
 	CreateTelemetryTransformationRule(ctx context.Context, rule *TelemetryTransformationRuleDefinition, dataset *string) (*TelemetryTransformationRuleDefinition, error)
 	UpdateTelemetryTransformationRule(ctx context.Context, originOrID string, rule *TelemetryTransformationRuleDefinition, dataset *string) (*TelemetryTransformationRuleDefinition, error)
-	DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) error
+	DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error
 	ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string) *Iter[TelemetryTransformationRuleDefinition]
 
 	// Time Series Aggregations

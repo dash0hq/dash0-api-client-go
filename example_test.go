@@ -943,7 +943,7 @@ func ExampleClient_DeleteTelemetryTransformationRule() {
 	}
 	defer func() { _ = client.Close(context.Background()) }()
 
-	if err := client.DeleteTelemetryTransformationRule(context.Background(), "ttr-123", dash0.Ptr("production")); err != nil {
+	if err := client.DeleteTelemetryTransformationRule(context.Background(), "ttr-123", nil, dash0.Ptr("production")); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("deleted")

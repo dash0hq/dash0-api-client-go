@@ -2,6 +2,7 @@ package dash0test
 
 import (
 	"context"
+	"time"
 
 	"github.com/dash0hq/dash0-api-client-go"
 	"go.opentelemetry.io/collector/pdata/plog"
@@ -101,7 +102,7 @@ type MockClient struct {
 	GetTelemetryTransformationRuleFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
 	CreateTelemetryTransformationRuleFunc    func(ctx context.Context, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
 	UpdateTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
-	DeleteTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
+	DeleteTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error
 	ListTelemetryTransformationRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition]
 
 	// Time Series Aggregations
@@ -618,9 +619,9 @@ func (m *MockClient) UpdateTelemetryTransformationRule(ctx context.Context, orig
 	return nil, nil
 }
 
-func (m *MockClient) DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) error {
+func (m *MockClient) DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error {
 	if m.DeleteTelemetryTransformationRuleFunc != nil {
-		return m.DeleteTelemetryTransformationRuleFunc(ctx, originOrID, dataset)
+		return m.DeleteTelemetryTransformationRuleFunc(ctx, originOrID, updatedAt, dataset)
 	}
 	return nil
 }
