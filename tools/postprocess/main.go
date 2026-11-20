@@ -130,12 +130,18 @@ var constRenames = map[string]string{
 	"EphemeralDashboard": "DashboardKindEphemeralDashboard",
 	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
 	// Pinned before release so a future enum sharing this value cannot rename it.
-	"IssueStatus":                           "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	// Pinned before release so a future enum sharing these values cannot rename them.
+	"IssueId":                               "FailedCheckSilencedTriggerVariableNameIssueId",
 	"Background":                            "AgenticWorkflowSystemVisibilityBackground",
 	"Managed":                               "AgenticWorkflowSystemVisibilityManaged",
 	"Dash0AwsLogGroupInstrumentationPolicy": "AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy",
-	"IssueId":                               "FailedCheckSilencedTriggerVariableNameIssueId",
 	"Dash0TelemetryTransformationRule":      "TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule",
+	// AwsLogGroupPolicyDisposition shares "remove", which flipped these to prefixed names.
+	// compat.go keeps the bare names.
+	"Create": "LinearWebhookActionCreate",
+	"Remove": "LinearWebhookActionRemove",
+	"Update": "LinearWebhookActionUpdate",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

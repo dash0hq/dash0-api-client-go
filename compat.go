@@ -238,6 +238,7 @@ package dash0
 // The bare names stay as deprecated aliases.
 //
 // [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64.
+// Update float32 variables or casts to float64.
 // There is no alias, because a struct field type cannot be aliased.
 //
 // [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
