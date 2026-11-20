@@ -76,10 +76,12 @@ spec:
 		log.Fatal(err)
 	}
 	fmt.Println(dashboard.Metadata.Name)
+	fmt.Println(dash0.GetDashboardName(dashboard))
 	fmt.Println(dash0.GetDashboardID(dashboard))
 	fmt.Println(string(*dashboard.Metadata.Dash0Extensions.Dataset))
 	fmt.Println(*dashboard.Metadata.Annotations.Dash0ComfolderPath)
 	// Output:
+	// my-perses-dashboard
 	// SRE Overview
 	// perses-123
 	// production

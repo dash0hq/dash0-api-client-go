@@ -1487,7 +1487,10 @@ func ExampleConvertPersesDashboardToDashboard() {
 	}
 	dashboard := dash0.ConvertPersesDashboardToDashboard(perses)
 	fmt.Println(dashboard.Metadata.Name)
-	// Output: Perses Dashboard
+	fmt.Println(dash0.GetDashboardName(dashboard))
+	// Output:
+	// my-perses-dashboard
+	// Perses Dashboard
 }
 
 func ExampleGetPersesDashboardFolderPath() {

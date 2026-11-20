@@ -43,8 +43,8 @@ spec:
 	if err != nil {
 		t.Fatal(err)
 	}
-	if dashboard.Metadata.Name != "My Perses Dashboard" {
-		t.Errorf("Name = %q, want %q", dashboard.Metadata.Name, "My Perses Dashboard")
+	if dashboard.Metadata.Name != "my-perses-dashboard" {
+		t.Errorf("Name = %q, want %q", dashboard.Metadata.Name, "my-perses-dashboard")
 	}
 	if dashboard.Metadata.Dash0Extensions == nil || dashboard.Metadata.Dash0Extensions.Id == nil || *dashboard.Metadata.Dash0Extensions.Id != "perses-123" {
 		t.Error("expected dash0Extensions.id = perses-123")

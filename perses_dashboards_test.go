@@ -12,8 +12,11 @@ func TestConvertPersesDashboardToDashboard_WithDisplayName(t *testing.T) {
 		},
 	}
 	d := ConvertPersesDashboardToDashboard(perses)
-	if d.Metadata.Name != "Display Name" {
-		t.Errorf("Name = %q, want %q", d.Metadata.Name, "Display Name")
+	if d.Metadata.Name != "meta-name" {
+		t.Errorf("Name = %q, want %q", d.Metadata.Name, "meta-name")
+	}
+	if GetDashboardName(d) != "Display Name" {
+		t.Errorf("DisplayName = %q, want %q", GetDashboardName(d), "Display Name")
 	}
 }
 
@@ -57,8 +60,11 @@ func TestConvertPersesDashboardToDashboard_V1Alpha2(t *testing.T) {
 		},
 	}
 	d := ConvertPersesDashboardToDashboard(perses)
-	if d.Metadata.Name != "V1Alpha2 Name" {
-		t.Errorf("Name = %q, want %q", d.Metadata.Name, "V1Alpha2 Name")
+	if d.Metadata.Name != "meta-name" {
+		t.Errorf("Name = %q, want %q", d.Metadata.Name, "meta-name")
+	}
+	if GetDashboardName(d) != "V1Alpha2 Name" {
+		t.Errorf("DisplayName = %q, want %q", GetDashboardName(d), "V1Alpha2 Name")
 	}
 }
 

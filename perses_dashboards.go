@@ -33,15 +33,12 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefini
 		}
 	}
 
-	displayName := extractDisplayName(spec)
-	if displayName == "" {
-		displayName = perses.Metadata.Name
-	}
-
+	// metadata.name names the dashboard, and spec.display.name is only its title,
+	// so renaming the title must not rename the dashboard.
 	dashboard := &DashboardDefinition{
 		Kind: Dashboard,
 		Metadata: DashboardMetadata{
-			Name: displayName,
+			Name: perses.Metadata.Name,
 		},
 		Spec: spec,
 	}
