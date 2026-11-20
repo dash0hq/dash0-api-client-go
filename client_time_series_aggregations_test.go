@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -627,6 +628,40 @@ func TestStripTimeSeriesAggregationServerFields_ZeroValue(t *testing.T) {
 
 func TestStripTimeSeriesAggregationServerFields_Nil(t *testing.T) {
 	StripTimeSeriesAggregationServerFields(nil) // should not panic
+}
+
+func TestTimeSeriesAggregationSpec_JSONRoundTrip(t *testing.T) {
+	const in = `{
+		"enabled": true,
+		"gaugeAggregation": "max",
+		"match": {"metricNameMatcher": {"operator": "is_set"}},
+		"sample": {"interval": "60s"},
+		"attributeModifications": [
+			{"kind": "keep_entity", "spec": {"entities": ["k8s.deployment", "k8s.namespace"]}},
+			{"kind": "drop_attributes", "spec": {"context": "datapoint", "keyMatcher": {"operator": "is", "value": "pod"}}}
+		]
+	}`
+
+	var spec TimeSeriesAggregationSpec
+	if err := json.Unmarshal([]byte(in), &spec); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	out, err := json.Marshal(spec)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+
+	var want, got any
+	if err := json.Unmarshal([]byte(in), &want); err != nil {
+		t.Fatalf("unmarshal want: %v", err)
+	}
+	if err := json.Unmarshal(out, &got); err != nil {
+		t.Fatalf("unmarshal got: %v", err)
+	}
+	// The keep_entity rule has no keyMatcher, so a KeyMatcher without omitzero fails here too.
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("round trip lost data:\n got: %s\nwant: %s", out, in)
+	}
 }
 
 func TestGetTimeSeriesAggregationName(t *testing.T) {
