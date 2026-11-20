@@ -131,6 +131,16 @@ var constRenames = map[string]string{
 	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
 	// Pinned before release so a future enum sharing this value cannot rename it.
 	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	// TimeSeriesAggregationGaugeAggregation shares "max" with Agent0ReasoningEffort,
+	// so oapi-codegen prefixes these. Keep the released bare names.
+	"Agent0ReasoningEffortHigh":   "High",
+	"Agent0ReasoningEffortLow":    "Low",
+	"Agent0ReasoningEffortMax":    "Max",
+	"Agent0ReasoningEffortMedium": "Medium",
+	"Agent0ReasoningEffortXhigh":  "Xhigh",
+	// Pinned before release so a future enum sharing these values cannot rename them.
+	"DropEntity": "TimeSeriesAggregationAttributeModificationKindDropEntity",
+	"KeepEntity": "TimeSeriesAggregationAttributeModificationKindKeepEntity",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry

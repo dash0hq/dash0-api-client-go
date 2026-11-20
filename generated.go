@@ -7492,24 +7492,6 @@ func (e TelemetryFilterContext) Valid() bool {
 	}
 }
 
-// Defines values for TimeSeriesAggregationAttributeModificationKind.
-const (
-	DropAttributes TimeSeriesAggregationAttributeModificationKind = "drop_attributes"
-	KeepAttributes TimeSeriesAggregationAttributeModificationKind = "keep_attributes"
-)
-
-// Valid indicates whether the value is a known member of the TimeSeriesAggregationAttributeModificationKind enum.
-func (e TimeSeriesAggregationAttributeModificationKind) Valid() bool {
-	switch e {
-	case DropAttributes:
-		return true
-	case KeepAttributes:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for TimeSeriesAggregationAttributeModificationContext.
 const (
 	TimeSeriesAggregationAttributeModificationContextDatapoint TimeSeriesAggregationAttributeModificationContext = "datapoint"
@@ -7531,6 +7513,30 @@ func (e TimeSeriesAggregationAttributeModificationContext) Valid() bool {
 	}
 }
 
+// Defines values for TimeSeriesAggregationAttributeModificationKind.
+const (
+	DropAttributes                                           TimeSeriesAggregationAttributeModificationKind = "drop_attributes"
+	TimeSeriesAggregationAttributeModificationKindDropEntity TimeSeriesAggregationAttributeModificationKind = "drop_entity"
+	KeepAttributes                                           TimeSeriesAggregationAttributeModificationKind = "keep_attributes"
+	TimeSeriesAggregationAttributeModificationKindKeepEntity TimeSeriesAggregationAttributeModificationKind = "keep_entity"
+)
+
+// Valid indicates whether the value is a known member of the TimeSeriesAggregationAttributeModificationKind enum.
+func (e TimeSeriesAggregationAttributeModificationKind) Valid() bool {
+	switch e {
+	case DropAttributes:
+		return true
+	case TimeSeriesAggregationAttributeModificationKindDropEntity:
+		return true
+	case KeepAttributes:
+		return true
+	case TimeSeriesAggregationAttributeModificationKindKeepEntity:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TimeSeriesAggregationDefinitionKind.
 const (
 	Dash0TimeSeriesAggregation TimeSeriesAggregationDefinitionKind = "Dash0TimeSeriesAggregation"
@@ -7540,6 +7546,33 @@ const (
 func (e TimeSeriesAggregationDefinitionKind) Valid() bool {
 	switch e {
 	case Dash0TimeSeriesAggregation:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TimeSeriesAggregationGaugeAggregation.
+const (
+	TimeSeriesAggregationGaugeAggregationAvg  TimeSeriesAggregationGaugeAggregation = "avg"
+	TimeSeriesAggregationGaugeAggregationLast TimeSeriesAggregationGaugeAggregation = "last"
+	TimeSeriesAggregationGaugeAggregationMax  TimeSeriesAggregationGaugeAggregation = "max"
+	TimeSeriesAggregationGaugeAggregationMin  TimeSeriesAggregationGaugeAggregation = "min"
+	TimeSeriesAggregationGaugeAggregationSum  TimeSeriesAggregationGaugeAggregation = "sum"
+)
+
+// Valid indicates whether the value is a known member of the TimeSeriesAggregationGaugeAggregation enum.
+func (e TimeSeriesAggregationGaugeAggregation) Valid() bool {
+	switch e {
+	case TimeSeriesAggregationGaugeAggregationAvg:
+		return true
+	case TimeSeriesAggregationGaugeAggregationLast:
+		return true
+	case TimeSeriesAggregationGaugeAggregationMax:
+		return true
+	case TimeSeriesAggregationGaugeAggregationMin:
+		return true
+	case TimeSeriesAggregationGaugeAggregationSum:
 		return true
 	default:
 		return false
@@ -18181,12 +18214,13 @@ type TimeSeriesAggregationAnnotations struct {
 
 // TimeSeriesAggregationAttributeModification defines model for TimeSeriesAggregationAttributeModification.
 type TimeSeriesAggregationAttributeModification struct {
+	// Kind - `keep_attributes`: keeps only the attributes whose keys `keyMatcher` matches.
+	// - `drop_attributes`: removes the attributes whose keys `keyMatcher` matches.
+	// - `keep_entity`: keeps only the resource attributes of the `entities`.
+	// - `drop_entity`: removes the resource attributes of the `entities`.
 	Kind TimeSeriesAggregationAttributeModificationKind `json:"kind"`
 	Spec TimeSeriesAggregationAttributeModificationSpec `json:"spec"`
 }
-
-// TimeSeriesAggregationAttributeModificationKind defines model for TimeSeriesAggregationAttributeModification.Kind.
-type TimeSeriesAggregationAttributeModificationKind string
 
 // TimeSeriesAggregationAttributeModificationContext The attributes a modification applies to:
 // - `resource`: resource attributes.
@@ -18194,11 +18228,31 @@ type TimeSeriesAggregationAttributeModificationKind string
 // - `datapoint`: data point attributes.
 type TimeSeriesAggregationAttributeModificationContext string
 
+// TimeSeriesAggregationAttributeModificationKind - `keep_attributes`: keeps only the attributes whose keys `keyMatcher` matches.
+// - `drop_attributes`: removes the attributes whose keys `keyMatcher` matches.
+// - `keep_entity`: keeps only the resource attributes of the `entities`.
+// - `drop_entity`: removes the resource attributes of the `entities`.
+type TimeSeriesAggregationAttributeModificationKind string
+
 // TimeSeriesAggregationAttributeModificationSpec defines model for TimeSeriesAggregationAttributeModificationSpec.
 type TimeSeriesAggregationAttributeModificationSpec struct {
-	// Context When omitted, the modification applies to all three contexts.
-	Context    *TimeSeriesAggregationAttributeModificationContext `json:"context,omitempty"`
-	KeyMatcher Matcher                                            `json:"keyMatcher"`
+	// Context When omitted, the modification applies to all three contexts, `resource` included.
+	//
+	// When a modification removes a resource attribute, the aggregated series no longer
+	// belongs to one real resource. Dash0 stores it under a synthetic resource that holds the
+	// remaining resource attributes, apart from the resources it came from.
+	Context *TimeSeriesAggregationAttributeModificationContext `json:"context,omitempty"`
+
+	// Entities OpenTelemetry semantic-convention entity types, such as `k8s.deployment`, for the kinds
+	// `keep_entity` and `drop_entity`, which work like `keep_attributes` and `drop_attributes`
+	// in the resource context for every identifying and descriptive key of the entities,
+	// templated ones such as `k8s.deployment.label.<key>` included. Entity kinds set neither
+	// `context` nor `keyMatcher`. The other kinds must not set `entities`.
+	Entities *[]string `json:"entities,omitempty"`
+
+	// KeyMatcher The attribute keys the modification applies to. Required for `keep_attributes` and
+	// `drop_attributes`. Leave it out for `keep_entity` and `drop_entity`.
+	KeyMatcher Matcher `json:"keyMatcher,omitempty,omitzero"`
 }
 
 // TimeSeriesAggregationDefinition defines model for TimeSeriesAggregationDefinition.
@@ -18217,6 +18271,16 @@ type TimeSeriesAggregationDisplay struct {
 	// the screen when the view is selected.
 	Name string `json:"name"`
 }
+
+// TimeSeriesAggregationGaugeAggregation How gauges from several source time series are merged into one aggregated time series.
+//
+// - `last`: the most recently reported value.
+// - `sum`, `min`, `max`: the sum, minimum, or maximum of the latest value of each source.
+// - `avg`: the unweighted mean of the latest value of each source.
+//
+// With any value other than `last`, a source without a data point in a window still
+// contributes its latest value until it has reported nothing for `staleAfter`.
+type TimeSeriesAggregationGaugeAggregation string
 
 // TimeSeriesAggregationLabels defines model for TimeSeriesAggregationLabels.
 type TimeSeriesAggregationLabels struct {
@@ -18310,13 +18374,19 @@ type TimeSeriesAggregationSpec struct {
 	// they match and remove every other attribute in that context. A `drop_attributes`
 	// modification removes every attribute in its context whose key it matches, even if a
 	// `keep_attributes` modification also matches that key. The order of the modifications
-	// does not matter.
+	// does not matter. `keep_entity` and `drop_entity` count as `keep_attributes` and
+	// `drop_attributes` in the `resource` context.
 	//
-	// Modifications never remove attributes whose keys start with `dash0.`.
+	// Modifications never remove `telemetry.sdk.name` or attributes whose keys start with
+	// `dash0.`. The API rejects a drop that names one of these keys in the `resource` context
+	// with `is`, `is_one_of`, or `starts_with`.
 	AttributeModifications *[]TimeSeriesAggregationAttributeModification `json:"attributeModifications,omitempty"`
 	Display                *TimeSeriesAggregationDisplay                 `json:"display,omitempty"`
 	Enabled                bool                                          `json:"enabled"`
-	Match                  TimeSeriesAggregationMetricNameMatch          `json:"match"`
+
+	// GaugeAggregation Applies to every gauge the rule matches; other metric types ignore it. Defaults to `avg`.
+	GaugeAggregation *TimeSeriesAggregationGaugeAggregation `json:"gaugeAggregation,omitempty"`
+	Match            TimeSeriesAggregationMetricNameMatch   `json:"match"`
 
 	// Priority Precedence when more than one rule matches a metric. Lower values are evaluated first
 	// (higher precedence). Defaults to 2, the middle of the range, so a rule can be ranked

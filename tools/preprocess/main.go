@@ -2,6 +2,8 @@
 // operationId before oapi-codegen runs. oapi-codegen names client methods after
 // the operationId when one is present, so keeping them would rename every
 // method (GetApiDatasets becomes GetOrganizationDatasets).
+// It also keeps one released value field from turning into a pointer
+// (see keepKeyMatcherValue).
 //
 // TODO(v2): remove this tool and generate from the published spec directly.
 //
@@ -39,6 +41,9 @@ func run(source, output string) error {
 		return fmt.Errorf("parse spec: %w", err)
 	}
 	removed := removeOperationIDs(&doc)
+	if err := keepKeyMatcherValue(&doc); err != nil {
+		return err
+	}
 	out, err := yaml.Marshal(&doc)
 	if err != nil {
 		return fmt.Errorf("encode spec: %w", err)
@@ -85,8 +90,35 @@ func removeOperationIDs(doc *yaml.Node) int {
 	return removed
 }
 
+// keepKeyMatcherValue keeps TimeSeriesAggregationAttributeModificationSpec.KeyMatcher
+// the Matcher value it was released as. The spec made keyMatcher optional for the
+// keep_entity and drop_entity kinds, and oapi-codegen turns optional properties
+// into pointers. x-go-type-skip-optional-pointer keeps the value type, and
+// x-omitzero leaves the zero Matcher out of the JSON. It fails when the property
+// is missing, because the field would otherwise turn into a pointer unnoticed.
+func keepKeyMatcherValue(doc *yaml.Node) error {
+	var root *yaml.Node
+	if doc.Kind == yaml.DocumentNode && len(doc.Content) > 0 {
+		root = doc.Content[0]
+	}
+	prop := root
+	for _, key := range []string{"components", "schemas", "TimeSeriesAggregationAttributeModificationSpec", "properties", "keyMatcher"} {
+		prop = mappingValue(prop, key)
+	}
+	if prop == nil || prop.Kind != yaml.MappingNode {
+		return fmt.Errorf("TimeSeriesAggregationAttributeModificationSpec.keyMatcher not found in the spec")
+	}
+	for _, hint := range []string{"x-go-type-skip-optional-pointer", "x-omitzero"} {
+		deleteKey(prop, hint)
+		prop.Content = append(prop.Content,
+			&yaml.Node{Kind: yaml.ScalarNode, Value: hint},
+			&yaml.Node{Kind: yaml.ScalarNode, Tag: "!!bool", Value: "true"})
+	}
+	return nil
+}
+
 func mappingValue(node *yaml.Node, key string) *yaml.Node {
-	if node.Kind != yaml.MappingNode {
+	if node == nil || node.Kind != yaml.MappingNode {
 		return nil
 	}
 	for i := 0; i+1 < len(node.Content); i += 2 {
