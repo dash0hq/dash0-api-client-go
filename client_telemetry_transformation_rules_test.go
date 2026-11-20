@@ -594,3 +594,60 @@ func TestTelemetryTransformationRules_ConditionalDeleteSendsUpdatedAt(t *testing
 		t.Fatal(err)
 	}
 }
+
+func TestTelemetryTransformationRules_NilListsAreSentEmpty(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		call func(Client, *TelemetryTransformationRuleDefinition) error
+	}{
+		{"create", func(c Client, rule *TelemetryTransformationRuleDefinition) error {
+			_, err := c.CreateTelemetryTransformationRule(context.Background(), rule, nil)
+			return err
+		}},
+		{"update", func(c Client, rule *TelemetryTransformationRuleDefinition) error {
+			_, err := c.UpdateTelemetryTransformationRule(context.Background(), "rule-71", rule, nil)
+			return err
+		}},
+	} {
+		for _, transformations := range [][]TelemetryTransformationRuleTransformation{nil, {{Statements: nil}}} {
+			name := tt.name + "/nil transformations"
+			if transformations != nil {
+				name = tt.name + "/nil statements"
+			}
+			t.Run(name, func(t *testing.T) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					raw, err := io.ReadAll(r.Body)
+					if err != nil {
+						t.Errorf("read body: %v", err)
+						return
+					}
+					if strings.Contains(string(raw), "null") {
+						t.Errorf("body must send [] for nil lists, got %s", raw)
+					}
+					w.Header().Set("Content-Type", "application/json")
+					_, _ = io.WriteString(w, telemetryTransformationRuleJSON)
+				}))
+				defer server.Close()
+				rule := newTestTelemetryTransformationRule(t)
+				rule.Spec.Transformations = transformations
+				if err := tt.call(newTestClient(t, server.URL), rule); err != nil {
+					t.Fatal(err)
+				}
+				if transformations == nil && rule.Spec.Transformations != nil {
+					t.Error("the caller's rule must not change")
+				}
+				if transformations != nil && rule.Spec.Transformations[0].Statements != nil {
+					t.Error("the caller's rule must not change")
+				}
+			})
+		}
+	}
+}
+
+func TestGetTelemetryTransformationRuleOrigin(t *testing.T) {
+	assertEqual(t, "nil rule", GetTelemetryTransformationRuleOrigin(nil), "")
+	assertEqual(t, "no labels", GetTelemetryTransformationRuleOrigin(&TelemetryTransformationRuleDefinition{}), "")
+	rule := newTestTelemetryTransformationRule(t)
+	rule.Metadata.Labels.Dash0Comorigin = Ptr("terraform-checkout-19")
+	assertEqual(t, "origin", GetTelemetryTransformationRuleOrigin(rule), "terraform-checkout-19")
+}

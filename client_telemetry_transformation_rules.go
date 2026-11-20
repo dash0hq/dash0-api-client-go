@@ -66,7 +66,7 @@ func (c *client) CreateTelemetryTransformationRule(ctx context.Context, rule *Te
 		return nil, fmt.Errorf("dash0: create telemetry transformation rule requires a non-nil rule")
 	}
 	params := &PostApiTelemetryTransformationRulesParams{Dataset: dataset}
-	resp, err := c.inner.PostApiTelemetryTransformationRulesWithResponse(ctx, params, *rule)
+	resp, err := c.inner.PostApiTelemetryTransformationRulesWithResponse(ctx, params, withEmptyTelemetryTransformationRuleLists(rule))
 	if err != nil {
 		return nil, fmt.Errorf("dash0: create telemetry transformation rule failed: %w", err)
 	}
@@ -89,7 +89,7 @@ func (c *client) UpdateTelemetryTransformationRule(ctx context.Context, originOr
 		return nil, fmt.Errorf("dash0: update telemetry transformation rule requires a non-nil rule")
 	}
 	params := &PutApiTelemetryTransformationRulesOriginOrIdParams{Dataset: dataset}
-	resp, err := c.inner.PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx, originOrID, params, *rule)
+	resp, err := c.inner.PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx, originOrID, params, withEmptyTelemetryTransformationRuleLists(rule))
 	if err != nil {
 		return nil, fmt.Errorf("dash0: update telemetry transformation rule failed: %w", err)
 	}
@@ -118,6 +118,20 @@ func (c *client) DeleteTelemetryTransformationRule(ctx context.Context, originOr
 		return newAPIErrorWithBody(resp.HTTPResponse, resp.Body)
 	}
 	return nil
+}
+
+// withEmptyTelemetryTransformationRuleLists returns a copy of rule whose nil transformation and statement lists are empty.
+// The spec types both as non-nullable arrays, so they must be sent as [] rather than null.
+func withEmptyTelemetryTransformationRuleLists(rule *TelemetryTransformationRuleDefinition) TelemetryTransformationRuleDefinition {
+	body := *rule
+	body.Spec.Transformations = make([]TelemetryTransformationRuleTransformation, len(rule.Spec.Transformations))
+	for i, transformation := range rule.Spec.Transformations {
+		if transformation.Statements == nil {
+			transformation.Statements = OTTLStatements{}
+		}
+		body.Spec.Transformations[i] = transformation
+	}
+	return body
 }
 
 // ListTelemetryTransformationRulesIter iterates over rules without stored examples.
@@ -159,6 +173,14 @@ func GetTelemetryTransformationRuleID(rule *TelemetryTransformationRuleDefinitio
 		return ""
 	}
 	return *rule.Metadata.Labels.Dash0Comid
+}
+
+// GetTelemetryTransformationRuleOrigin returns an empty string when the origin is absent.
+func GetTelemetryTransformationRuleOrigin(rule *TelemetryTransformationRuleDefinition) string {
+	if rule == nil || rule.Metadata.Labels == nil || rule.Metadata.Labels.Dash0Comorigin == nil {
+		return ""
+	}
+	return *rule.Metadata.Labels.Dash0Comorigin
 }
 
 // GetTelemetryTransformationRuleName falls back to metadata.name when the display name is absent or empty.
@@ -214,3 +236,16 @@ func SetTelemetryTransformationRuleDataset(rule *TelemetryTransformationRuleDefi
 	}
 	rule.Metadata.Labels.Dash0Comdataset = &dataset
 }
+
+var _ AssetMetadata = (*TelemetryTransformationRuleDefinition)(nil)
+
+func (rule *TelemetryTransformationRuleDefinition) GetOrigin() string {
+	return GetTelemetryTransformationRuleOrigin(rule)
+}
+func (rule *TelemetryTransformationRuleDefinition) GetID() string {
+	return GetTelemetryTransformationRuleID(rule)
+}
+func (rule *TelemetryTransformationRuleDefinition) GetName() string {
+	return GetTelemetryTransformationRuleName(rule)
+}
+func (*TelemetryTransformationRuleDefinition) UpsertKeys() (byOrigin, byID bool) { return true, true }
