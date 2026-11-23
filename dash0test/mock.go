@@ -98,12 +98,12 @@ type MockClient struct {
 	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
 
 	// Telemetry Transformation Rules
-	ListTelemetryTransformationRulesFunc     func(ctx context.Context, dataset *string) ([]*dash0.TelemetryTransformationRuleDefinition, error)
+	ListTelemetryTransformationRulesFunc     func(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.TelemetryTransformationRuleDefinition, error)
 	GetTelemetryTransformationRuleFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
 	CreateTelemetryTransformationRuleFunc    func(ctx context.Context, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
 	UpdateTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
 	DeleteTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error
-	ListTelemetryTransformationRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition]
+	ListTelemetryTransformationRulesIterFunc func(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition]
 
 	// Time Series Aggregations
 	ListTimeSeriesAggregationsFunc     func(ctx context.Context, dataset *string) ([]*dash0.TimeSeriesAggregationDefinition, error)
@@ -591,9 +591,9 @@ func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string)
 
 // Telemetry Transformation Rules
 
-func (m *MockClient) ListTelemetryTransformationRules(ctx context.Context, dataset *string) ([]*dash0.TelemetryTransformationRuleDefinition, error) {
+func (m *MockClient) ListTelemetryTransformationRules(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.TelemetryTransformationRuleDefinition, error) {
 	if m.ListTelemetryTransformationRulesFunc != nil {
-		return m.ListTelemetryTransformationRulesFunc(ctx, dataset)
+		return m.ListTelemetryTransformationRulesFunc(ctx, dataset, opts...)
 	}
 	return nil, nil
 }
@@ -626,9 +626,9 @@ func (m *MockClient) DeleteTelemetryTransformationRule(ctx context.Context, orig
 	return nil
 }
 
-func (m *MockClient) ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition] {
+func (m *MockClient) ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition] {
 	if m.ListTelemetryTransformationRulesIterFunc != nil {
-		return m.ListTelemetryTransformationRulesIterFunc(ctx, dataset)
+		return m.ListTelemetryTransformationRulesIterFunc(ctx, dataset, opts...)
 	}
 	return nil
 }

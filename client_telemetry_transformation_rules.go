@@ -20,11 +20,17 @@ func (e *TelemetryTransformationRuleExample) UnmarshalJSON(data []byte) error {
 
 // ListTelemetryTransformationRules retrieves rules without their stored examples.
 // Use GetTelemetryTransformationRule before a read-modify-write update to preserve examples.
-func (c *client) ListTelemetryTransformationRules(ctx context.Context, dataset *string) ([]*TelemetryTransformationRuleDefinition, error) {
+// Pass [WithOriginPrefix] to restrict the result to rules whose origin starts with a given prefix.
+// Any other [ListOption] filter returns an error, because the endpoint does not support it.
+func (c *client) ListTelemetryTransformationRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*TelemetryTransformationRuleDefinition, error) {
 	if err := c.requireAPI(); err != nil {
 		return nil, err
 	}
-	params := &GetApiTelemetryTransformationRulesParams{Dataset: dataset}
+	options := NewListOptions(opts...)
+	if err := options.requireOnly("list telemetry transformation rules", filterOriginPrefix); err != nil {
+		return nil, err
+	}
+	params := &GetApiTelemetryTransformationRulesParams{Dataset: dataset, OriginPrefix: options.OriginPrefix}
 	resp, err := c.inner.GetApiTelemetryTransformationRulesWithResponse(ctx, params)
 	if err != nil {
 		return nil, fmt.Errorf("dash0: list telemetry transformation rules failed: %w", err)
@@ -120,8 +126,8 @@ func (c *client) DeleteTelemetryTransformationRule(ctx context.Context, originOr
 	return nil
 }
 
-// withEmptyTelemetryTransformationRuleLists returns a copy of rule whose nil transformation and statement lists are empty.
-// The spec types both as non-nullable arrays, so they must be sent as [] rather than null.
+// withEmptyTelemetryTransformationRuleLists returns a copy of rule whose nil transformation, statement, condition, and example lists are empty.
+// The spec types them as non-nullable arrays, so they must be sent as [] rather than null; an absent conditions or examples pointer stays absent.
 func withEmptyTelemetryTransformationRuleLists(rule *TelemetryTransformationRuleDefinition) TelemetryTransformationRuleDefinition {
 	body := *rule
 	body.Spec.Transformations = make([]TelemetryTransformationRuleTransformation, len(rule.Spec.Transformations))
@@ -131,12 +137,18 @@ func withEmptyTelemetryTransformationRuleLists(rule *TelemetryTransformationRule
 		}
 		body.Spec.Transformations[i] = transformation
 	}
+	if rule.Spec.Conditions != nil && *rule.Spec.Conditions == nil {
+		body.Spec.Conditions = &OTTLConditions{}
+	}
+	if rule.Spec.Examples != nil && *rule.Spec.Examples == nil {
+		body.Spec.Examples = &[]TelemetryTransformationRuleExample{}
+	}
 	return body
 }
 
 // ListTelemetryTransformationRulesIter iterates over rules without stored examples.
-func (c *client) ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string) *Iter[TelemetryTransformationRuleDefinition] {
-	items, err := c.ListTelemetryTransformationRules(ctx, dataset)
+func (c *client) ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[TelemetryTransformationRuleDefinition] {
+	items, err := c.ListTelemetryTransformationRules(ctx, dataset, opts...)
 	if err != nil {
 		return newIterWithError[TelemetryTransformationRuleDefinition](err)
 	}

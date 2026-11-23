@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -650,4 +651,103 @@ func TestGetTelemetryTransformationRuleOrigin(t *testing.T) {
 	rule := newTestTelemetryTransformationRule(t)
 	rule.Metadata.Labels.Dash0Comorigin = Ptr("terraform-checkout-19")
 	assertEqual(t, "origin", GetTelemetryTransformationRuleOrigin(rule), "terraform-checkout-19")
+}
+
+func TestListTelemetryTransformationRules_OriginPrefix(t *testing.T) {
+	tests := []struct {
+		name       string
+		opts       []ListOption
+		wantPrefix string
+		wantSet    bool
+	}{
+		{"sends the prefix", []ListOption{WithOriginPrefix("terraform_")}, "terraform_", true},
+		{"omits the parameter without options", nil, "", false},
+		{"omits the parameter for an empty prefix", []ListOption{WithOriginPrefix("")}, "", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var gotQuery url.Values
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				gotQuery = r.URL.Query()
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = io.WriteString(w, `{"telemetryTransformationRules":[]}`)
+			}))
+			defer server.Close()
+
+			c := newTestClient(t, server.URL)
+			if _, err := c.ListTelemetryTransformationRules(context.Background(), Ptr("production"), tt.opts...); err != nil {
+				t.Fatalf("ListTelemetryTransformationRules failed: %v", err)
+			}
+			_, gotSet := gotQuery["originPrefix"]
+			if gotSet != tt.wantSet {
+				t.Errorf("originPrefix present = %v, want %v", gotSet, tt.wantSet)
+			}
+			assertEqual(t, "originPrefix", gotQuery.Get("originPrefix"), tt.wantPrefix)
+			assertEqual(t, "dataset", gotQuery.Get("dataset"), "production")
+
+			iter := c.ListTelemetryTransformationRulesIter(context.Background(), Ptr("production"), tt.opts...)
+			if err := iter.Err(); err != nil {
+				t.Fatalf("ListTelemetryTransformationRulesIter failed: %v", err)
+			}
+			assertEqual(t, "iter originPrefix", gotQuery.Get("originPrefix"), tt.wantPrefix)
+		})
+	}
+}
+
+func TestListTelemetryTransformationRules_RejectsUnsupportedFilters(t *testing.T) {
+	for filter, opt := range map[string]ListOption{"name": WithSignalToMetricsName("checkout"), "signal": WithSignal(SignalToMetricsSignalTypeSpans), "enabled": WithEnabled(false)} {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			t.Error("no request should reach the server")
+		}))
+		c := newTestClient(t, server.URL)
+		if _, err := c.ListTelemetryTransformationRules(context.Background(), nil, opt); err == nil {
+			t.Errorf("ListTelemetryTransformationRules with the %s filter succeeded, want an error", filter)
+		}
+		if err := c.ListTelemetryTransformationRulesIter(context.Background(), nil, opt).Err(); err == nil {
+			t.Errorf("ListTelemetryTransformationRulesIter with the %s filter succeeded, want an error", filter)
+		}
+		server.Close()
+	}
+}
+
+func TestTelemetryTransformationRules_NilConditionsAndExamplesAreSentEmpty(t *testing.T) {
+	for _, tt := range []struct {
+		name  string
+		field string
+		set   func(*TelemetryTransformationRuleDefinition)
+		check func(*TelemetryTransformationRuleDefinition) bool
+	}{
+		{"conditions", "conditions",
+			func(rule *TelemetryTransformationRuleDefinition) { rule.Spec.Conditions = new(OTTLConditions) },
+			func(rule *TelemetryTransformationRuleDefinition) bool { return *rule.Spec.Conditions == nil }},
+		{"examples", "examples",
+			func(rule *TelemetryTransformationRuleDefinition) {
+				rule.Spec.Examples = new([]TelemetryTransformationRuleExample)
+			},
+			func(rule *TelemetryTransformationRuleDefinition) bool { return *rule.Spec.Examples == nil }},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var body struct {
+					Spec map[string]json.RawMessage `json:"spec"`
+				}
+				if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+					t.Errorf("decode body: %v", err)
+					return
+				}
+				assertEqual(t, tt.field, string(body.Spec[tt.field]), "[]")
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = io.WriteString(w, telemetryTransformationRuleJSON)
+			}))
+			defer server.Close()
+			rule := newTestTelemetryTransformationRule(t)
+			tt.set(rule)
+			if _, err := newTestClient(t, server.URL).UpdateTelemetryTransformationRule(context.Background(), "rule-71", rule, nil); err != nil {
+				t.Fatal(err)
+			}
+			if !tt.check(rule) {
+				t.Error("the caller's rule must not change")
+			}
+		})
+	}
 }
