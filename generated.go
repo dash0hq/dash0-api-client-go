@@ -20464,8 +20464,8 @@ type RepositorySettingsRequest struct {
 
 	// Metadata The one piece of metadata a write may carry: the optimistic concurrency
 	// token in `labels."dash0.com/version"`. Send the version you read (a
-	// positive integer) to reject the write if the settings changed since;
-	// omit it, or send `0`, to overwrite unconditionally.
+	// positive integer) to reject the write if the settings changed since.
+	// An API token may omit it, or send `0`, to overwrite unconditionally.
 	Metadata *RepositorySettingsRequestMetadata `json:"metadata,omitempty"`
 
 	// Spec The reviewer and auto-approval configuration for a repository. A repository that
@@ -20479,8 +20479,8 @@ type RepositorySettingsRequestKind string
 
 // RepositorySettingsRequestMetadata The one piece of metadata a write may carry: the optimistic concurrency
 // token in `labels."dash0.com/version"`. Send the version you read (a
-// positive integer) to reject the write if the settings changed since;
-// omit it, or send `0`, to overwrite unconditionally.
+// positive integer) to reject the write if the settings changed since.
+// An API token may omit it, or send `0`, to overwrite unconditionally.
 type RepositorySettingsRequestMetadata struct {
 	// Labels Identity labels shared by every Darkplane CRD resource.
 	Labels *ResourceLabels `json:"labels,omitempty"`
@@ -20716,9 +20716,9 @@ type ResourceLabels struct {
 	// types sharing this schema never set it. Server-set on read, and the
 	// version a write is based on: a write carrying a positive version
 	// that is no longer the latest is rejected as superseded.
-	// Omit it, or send `0`, to skip the precondition; a value that is
-	// present but is not a non-negative integer is rejected as a bad
-	// request.
+	// An API token may omit it, or send `0`, to skip the precondition; a
+	// Dash0 UI session always has it checked. A value that is present but
+	// is not a non-negative integer is rejected as a bad request.
 	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
 }
 
@@ -29364,6 +29364,8 @@ type ClientInterface interface {
 
 	// GetApiDarkplaneRepositories List the repositories Darkplane observes for the caller's organization
 	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
 	// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
 	GetApiDarkplaneRepositories(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -29373,6 +29375,8 @@ type ClientInterface interface {
 	// that has never been configured returns the documented defaults (bot
 	// `off`, manual trigger, the starting scoring criteria) rather than `null`.
 	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
 	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
 	GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -29380,6 +29384,10 @@ type ClientInterface interface {
 	//
 	// Replaces the repository's auto-approval configuration wholesale and
 	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -29390,6 +29398,10 @@ type ClientInterface interface {
 	//
 	// Replaces the repository's auto-approval configuration wholesale and
 	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -29404,6 +29416,8 @@ type ClientInterface interface {
 	// Read-only: restoring an older version is a normal write through the
 	// settings endpoint, so a rollback appends a new version rather than
 	// rewriting the history.
+	//
+	// Needs a token with the `*` or `*:read` permission.
 	//
 	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
 	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -32068,6 +32082,8 @@ func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.
 
 // GetApiDarkplaneRepositories List the repositories Darkplane observes for the caller's organization
 //
+// Needs a token with the `*` or `*:read` permission.
+//
 // Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
 func (c *generatedClient) GetApiDarkplaneRepositories(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiDarkplaneRepositoriesRequest(c.Server, params)
@@ -32087,6 +32103,8 @@ func (c *generatedClient) GetApiDarkplaneRepositories(ctx context.Context, param
 // that has never been configured returns the documented defaults (bot
 // `off`, manual trigger, the starting scoring criteria) rather than `null`.
 //
+// Needs a token with the `*` or `*:read` permission.
+//
 // Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
 func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest(c.Server, repositoryId)
@@ -32104,6 +32122,10 @@ func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx co
 //
 // Replaces the repository's auto-approval configuration wholesale and
 // returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
 //
 // Takes any type of body and a specified content type.
 //
@@ -32124,6 +32146,10 @@ func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBod
 //
 // Replaces the repository's auto-approval configuration wholesale and
 // returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -32148,6 +32174,8 @@ func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx co
 // Read-only: restoring an older version is a normal write through the
 // settings endpoint, so a rollback appends a new version rather than
 // rewriting the history.
+//
+// Needs a token with the `*` or `*:read` permission.
 //
 // Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
 func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -44900,6 +44928,8 @@ type ClientWithResponsesInterface interface {
 
 	// GetApiDarkplaneRepositoriesWithResponse List the repositories Darkplane observes for the caller's organization
 	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
@@ -44911,6 +44941,8 @@ type ClientWithResponsesInterface interface {
 	// that has never been configured returns the documented defaults (bot
 	// `off`, manual trigger, the starting scoring criteria) rather than `null`.
 	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
 	// Returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
@@ -44921,6 +44953,10 @@ type ClientWithResponsesInterface interface {
 	// Replaces the repository's auto-approval configuration wholesale and
 	// returns the stored result.
 	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
@@ -44930,6 +44966,10 @@ type ClientWithResponsesInterface interface {
 	//
 	// Replaces the repository's auto-approval configuration wholesale and
 	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -44944,6 +44984,8 @@ type ClientWithResponsesInterface interface {
 	// Read-only: restoring an older version is a normal write through the
 	// settings endpoint, so a rollback appends a new version rather than
 	// rewriting the history.
+	//
+	// Needs a token with the `*` or `*:read` permission.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -48406,6 +48448,8 @@ type PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse struct {
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
 	JSON200 *RepositorySettingsDefinition
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
 	// JSONDefault the response for an HTTP default `application/json` response
 	JSONDefault *ErrorResponse
 }
@@ -48413,6 +48457,11 @@ type PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse struct {
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON200() *RepositorySettingsDefinition {
 	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
 }
 
 // GetJSONDefault returns the response for an HTTP default `application/json` response
@@ -55073,6 +55122,8 @@ func (c *ClientWithResponses) PutApiAwsMetricScrapeConfigsIntegrationIdWithRespo
 
 // GetApiDarkplaneRepositoriesWithResponse List the repositories Darkplane observes for the caller's organization
 //
+// Needs a token with the `*` or `*:read` permission.
+//
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
@@ -55090,6 +55141,8 @@ func (c *ClientWithResponses) GetApiDarkplaneRepositoriesWithResponse(ctx contex
 // that has never been configured returns the documented defaults (bot
 // `off`, manual trigger, the starting scoring criteria) rather than `null`.
 //
+// Needs a token with the `*` or `*:read` permission.
+//
 // Returns a wrapper object for the known response body format(s).
 //
 // Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
@@ -55106,6 +55159,10 @@ func (c *ClientWithResponses) GetApiDarkplaneRepositoriesRepositoryIdSettingsWit
 // Replaces the repository's auto-approval configuration wholesale and
 // returns the stored result.
 //
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
@@ -55121,6 +55178,10 @@ func (c *ClientWithResponses) PutApiDarkplaneRepositoriesRepositoryIdSettingsWit
 //
 // Replaces the repository's auto-approval configuration wholesale and
 // returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -55141,6 +55202,8 @@ func (c *ClientWithResponses) PutApiDarkplaneRepositoriesRepositoryIdSettingsWit
 // Read-only: restoring an older version is a normal write through the
 // settings endpoint, so a rollback appends a new version rather than
 // rewriting the history.
+//
+// Needs a token with the `*` or `*:read` permission.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -59283,6 +59346,13 @@ func ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp *http.Resp
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse
