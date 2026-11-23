@@ -7,3 +7,6 @@
 # Note: interface method additions (": added") are filtered out automatically
 # and do not need to be listed here.
 
+# <NEXT_RELEASE>: the spec widens the generative AI evaluation threshold to a
+# double. Struct field types cannot be aliased.
+GenerativeAiEvaluationJudgeOutputNumericSpec.Threshold

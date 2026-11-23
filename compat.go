@@ -230,6 +230,24 @@ package dash0
 //
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
 // [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
+//
+// # Migration guide (<NEXT_RELEASE>)
+//
+// The spec added [AwsLogGroupPolicyDisposition], whose "remove" value collides with [LinearWebhookAction].
+// Create, Remove, and Update are now [LinearWebhookActionCreate], [LinearWebhookActionRemove], and [LinearWebhookActionUpdate].
+// The bare names stay as deprecated aliases.
+//
+// [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64.
+// Update float32 variables or casts to float64.
+// There is no alias, because a struct field type cannot be aliased.
+//
+// [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
+// Custom [Client] implementations and wrappers must add all 6 methods.
+// dash0test.MockClient implements them through new ListTelemetryTransformationRulesFunc, GetTelemetryTransformationRuleFunc, CreateTelemetryTransformationRuleFunc, UpdateTelemetryTransformationRuleFunc, DeleteTelemetryTransformationRuleFunc, and ListTelemetryTransformationRulesIterFunc fields.
+//
+// List responses omit spec.examples, so fetch the full rule with [Client.GetTelemetryTransformationRule] before updating it.
+// PUT replaces the whole rule, and omitting spec.examples removes the stored examples.
+// Preserve dash0.com/updated-at from GET as the concurrency token for PUT; [StripTelemetryTransformationRuleServerFields] keeps it and spec.examples intact.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
@@ -735,3 +753,18 @@ const Txt = WebEventExportFormatTxt
 //
 // Deprecated: since v1.29.0. Use [WebEventExportFormatYaml] instead.
 const Yaml = WebEventExportFormatYaml
+
+// Create is a deprecated alias for [LinearWebhookActionCreate].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionCreate] instead.
+const Create = LinearWebhookActionCreate
+
+// Remove is a deprecated alias for [LinearWebhookActionRemove].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionRemove] instead.
+const Remove = LinearWebhookActionRemove
+
+// Update is a deprecated alias for [LinearWebhookActionUpdate].
+//
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionUpdate] instead.
+const Update = LinearWebhookActionUpdate
