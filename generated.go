@@ -303,6 +303,7 @@ const (
 	AgenticWorkflowTriggerKindJiraIssue                      AgenticWorkflowTriggerKind = "jira.issue"
 	AgenticWorkflowTriggerKindJiraIssueLink                  AgenticWorkflowTriggerKind = "jira.issue_link"
 	AgenticWorkflowTriggerKindJiraProject                    AgenticWorkflowTriggerKind = "jira.project"
+	AgenticWorkflowTriggerKindJiraSprint                     AgenticWorkflowTriggerKind = "jira.sprint"
 	AgenticWorkflowTriggerKindJiraVersion                    AgenticWorkflowTriggerKind = "jira.version"
 	AgenticWorkflowTriggerKindJiraWorklog                    AgenticWorkflowTriggerKind = "jira.worklog"
 	AgenticWorkflowTriggerKindLinearComment                  AgenticWorkflowTriggerKind = "linear.comment"
@@ -374,6 +375,8 @@ func (e AgenticWorkflowTriggerKind) Valid() bool {
 	case AgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case AgenticWorkflowTriggerKindJiraProject:
+		return true
+	case AgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case AgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -924,6 +927,7 @@ const (
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssue                      DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.issue"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssueLink                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.issue_link"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraProject                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.project"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraSprint                     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.sprint"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraVersion                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.version"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraWorklog                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.worklog"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearComment                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.comment"
@@ -995,6 +999,8 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -1173,6 +1179,7 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindJiraIssue                      FailedCheckAgenticWorkflowTriggerKind = "jira.issue"
 	FailedCheckAgenticWorkflowTriggerKindJiraIssueLink                  FailedCheckAgenticWorkflowTriggerKind = "jira.issue_link"
 	FailedCheckAgenticWorkflowTriggerKindJiraProject                    FailedCheckAgenticWorkflowTriggerKind = "jira.project"
+	FailedCheckAgenticWorkflowTriggerKindJiraSprint                     FailedCheckAgenticWorkflowTriggerKind = "jira.sprint"
 	FailedCheckAgenticWorkflowTriggerKindJiraVersion                    FailedCheckAgenticWorkflowTriggerKind = "jira.version"
 	FailedCheckAgenticWorkflowTriggerKindJiraWorklog                    FailedCheckAgenticWorkflowTriggerKind = "jira.worklog"
 	FailedCheckAgenticWorkflowTriggerKindLinearComment                  FailedCheckAgenticWorkflowTriggerKind = "linear.comment"
@@ -1244,6 +1251,8 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 	case FailedCheckAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -1494,6 +1503,7 @@ const (
 	GitHubCheckRunAgenticWorkflowTriggerKindJiraIssue                      GitHubCheckRunAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubCheckRunAgenticWorkflowTriggerKindJiraIssueLink                  GitHubCheckRunAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubCheckRunAgenticWorkflowTriggerKindJiraProject                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.project"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraSprint                     GitHubCheckRunAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubCheckRunAgenticWorkflowTriggerKindJiraVersion                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.version"
 	GitHubCheckRunAgenticWorkflowTriggerKindJiraWorklog                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearComment                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.comment"
@@ -1565,6 +1575,8 @@ func (e GitHubCheckRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckRunAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -1704,6 +1716,7 @@ const (
 	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssue                      GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssueLink                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraProject                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.project"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraSprint                     GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraVersion                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.version"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraWorklog                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearComment                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.comment"
@@ -1775,6 +1788,8 @@ func (e GitHubCheckSuiteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -1911,6 +1926,7 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindJiraIssue                      GitHubDeploymentAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubDeploymentAgenticWorkflowTriggerKindJiraIssueLink                  GitHubDeploymentAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubDeploymentAgenticWorkflowTriggerKindJiraProject                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.project"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraSprint                     GitHubDeploymentAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubDeploymentAgenticWorkflowTriggerKindJiraVersion                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.version"
 	GitHubDeploymentAgenticWorkflowTriggerKindJiraWorklog                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.comment"
@@ -1983,6 +1999,8 @@ func (e GitHubDeploymentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindJiraWorklog:
@@ -2052,6 +2070,7 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraIssue                      GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraIssueLink                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraProject                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.project"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraSprint                     GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraVersion                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.version"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraWorklog                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.comment"
@@ -2124,6 +2143,8 @@ func (e GitHubDeploymentStatusAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraWorklog:
@@ -2193,6 +2214,7 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindJiraIssue                      GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubIssueCommentAgenticWorkflowTriggerKindJiraIssueLink                  GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubIssueCommentAgenticWorkflowTriggerKindJiraProject                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.project"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraSprint                     GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubIssueCommentAgenticWorkflowTriggerKindJiraVersion                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.version"
 	GitHubIssueCommentAgenticWorkflowTriggerKindJiraWorklog                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearComment                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.comment"
@@ -2265,6 +2287,8 @@ func (e GitHubIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraWorklog:
@@ -2334,6 +2358,7 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindJiraIssue                      GitHubPullRequestAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubPullRequestAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPullRequestAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubPullRequestAgenticWorkflowTriggerKindJiraProject                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraSprint                     GitHubPullRequestAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubPullRequestAgenticWorkflowTriggerKindJiraVersion                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.version"
 	GitHubPullRequestAgenticWorkflowTriggerKindJiraWorklog                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.comment"
@@ -2406,6 +2431,8 @@ func (e GitHubPullRequestAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindJiraWorklog:
@@ -2475,6 +2502,7 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraIssue                      GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraProject                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraSprint                     GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraVersion                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.version"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraWorklog                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.comment"
@@ -2547,6 +2575,8 @@ func (e GitHubPullRequestReviewAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraWorklog:
@@ -2616,6 +2646,7 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraIssue                      GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraProject                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraSprint                     GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraVersion                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.version"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraWorklog                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.comment"
@@ -2688,6 +2719,8 @@ func (e GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraWorklog:
@@ -2757,6 +2790,7 @@ const (
 	GitHubPushAgenticWorkflowTriggerKindJiraIssue                      GitHubPushAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubPushAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPushAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubPushAgenticWorkflowTriggerKindJiraProject                    GitHubPushAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPushAgenticWorkflowTriggerKindJiraSprint                     GitHubPushAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubPushAgenticWorkflowTriggerKindJiraVersion                    GitHubPushAgenticWorkflowTriggerKind = "jira.version"
 	GitHubPushAgenticWorkflowTriggerKindJiraWorklog                    GitHubPushAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPushAgenticWorkflowTriggerKindLinearComment                  GitHubPushAgenticWorkflowTriggerKind = "linear.comment"
@@ -2829,6 +2863,8 @@ func (e GitHubPushAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubPushAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindJiraWorklog:
@@ -2898,6 +2934,7 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindJiraIssue                      GitHubReleaseAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubReleaseAgenticWorkflowTriggerKindJiraIssueLink                  GitHubReleaseAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubReleaseAgenticWorkflowTriggerKindJiraProject                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.project"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraSprint                     GitHubReleaseAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubReleaseAgenticWorkflowTriggerKindJiraVersion                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.version"
 	GitHubReleaseAgenticWorkflowTriggerKindJiraWorklog                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearComment                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.comment"
@@ -2969,6 +3006,8 @@ func (e GitHubReleaseAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubReleaseAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -3168,6 +3207,7 @@ const (
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraIssue                      GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraIssueLink                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraProject                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.project"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraSprint                     GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraVersion                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.version"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraWorklog                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.comment"
@@ -3240,6 +3280,8 @@ func (e GitHubWorkflowDispatchAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraWorklog:
@@ -3309,6 +3351,7 @@ const (
 	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssue                      GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssueLink                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraProject                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.project"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraSprint                     GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraVersion                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.version"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraWorklog                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.comment"
@@ -3380,6 +3423,8 @@ func (e GitHubWorkflowJobAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -3483,6 +3528,7 @@ const (
 	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssue                      GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.issue"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssueLink                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraProject                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.project"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraSprint                     GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.sprint"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraVersion                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.version"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraWorklog                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.comment"
@@ -3554,6 +3600,8 @@ func (e GitHubWorkflowRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -3663,6 +3711,7 @@ const (
 	GitLabMergeRequestAgenticWorkflowTriggerKindJiraIssue                      GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.issue"
 	GitLabMergeRequestAgenticWorkflowTriggerKindJiraIssueLink                  GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitLabMergeRequestAgenticWorkflowTriggerKindJiraProject                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.project"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraSprint                     GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.sprint"
 	GitLabMergeRequestAgenticWorkflowTriggerKindJiraVersion                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.version"
 	GitLabMergeRequestAgenticWorkflowTriggerKindJiraWorklog                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.worklog"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearComment                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.comment"
@@ -3735,6 +3784,8 @@ func (e GitLabMergeRequestAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraWorklog:
@@ -3804,6 +3855,7 @@ const (
 	GitLabNoteAgenticWorkflowTriggerKindJiraIssue                      GitLabNoteAgenticWorkflowTriggerKind = "jira.issue"
 	GitLabNoteAgenticWorkflowTriggerKindJiraIssueLink                  GitLabNoteAgenticWorkflowTriggerKind = "jira.issue_link"
 	GitLabNoteAgenticWorkflowTriggerKindJiraProject                    GitLabNoteAgenticWorkflowTriggerKind = "jira.project"
+	GitLabNoteAgenticWorkflowTriggerKindJiraSprint                     GitLabNoteAgenticWorkflowTriggerKind = "jira.sprint"
 	GitLabNoteAgenticWorkflowTriggerKindJiraVersion                    GitLabNoteAgenticWorkflowTriggerKind = "jira.version"
 	GitLabNoteAgenticWorkflowTriggerKindJiraWorklog                    GitLabNoteAgenticWorkflowTriggerKind = "jira.worklog"
 	GitLabNoteAgenticWorkflowTriggerKindLinearComment                  GitLabNoteAgenticWorkflowTriggerKind = "linear.comment"
@@ -3875,6 +3927,8 @@ func (e GitLabNoteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitLabNoteAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -4137,6 +4191,7 @@ const (
 	JiraAttachmentAgenticWorkflowTriggerKindJiraIssue                      JiraAttachmentAgenticWorkflowTriggerKind = "jira.issue"
 	JiraAttachmentAgenticWorkflowTriggerKindJiraIssueLink                  JiraAttachmentAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraAttachmentAgenticWorkflowTriggerKindJiraProject                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.project"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraSprint                     JiraAttachmentAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraAttachmentAgenticWorkflowTriggerKindJiraVersion                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.version"
 	JiraAttachmentAgenticWorkflowTriggerKindJiraWorklog                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraAttachmentAgenticWorkflowTriggerKindLinearComment                  JiraAttachmentAgenticWorkflowTriggerKind = "linear.comment"
@@ -4208,6 +4263,8 @@ func (e JiraAttachmentAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraAttachmentAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraAttachmentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraAttachmentAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -4332,6 +4389,7 @@ const (
 	JiraBoardAgenticWorkflowTriggerKindJiraIssue                      JiraBoardAgenticWorkflowTriggerKind = "jira.issue"
 	JiraBoardAgenticWorkflowTriggerKindJiraIssueLink                  JiraBoardAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraBoardAgenticWorkflowTriggerKindJiraProject                    JiraBoardAgenticWorkflowTriggerKind = "jira.project"
+	JiraBoardAgenticWorkflowTriggerKindJiraSprint                     JiraBoardAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraBoardAgenticWorkflowTriggerKindJiraVersion                    JiraBoardAgenticWorkflowTriggerKind = "jira.version"
 	JiraBoardAgenticWorkflowTriggerKindJiraWorklog                    JiraBoardAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraBoardAgenticWorkflowTriggerKindLinearComment                  JiraBoardAgenticWorkflowTriggerKind = "linear.comment"
@@ -4403,6 +4461,8 @@ func (e JiraBoardAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraBoardAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraBoardAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraBoardAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -4503,6 +4563,7 @@ const (
 	JiraCommentAgenticWorkflowTriggerKindJiraIssue                      JiraCommentAgenticWorkflowTriggerKind = "jira.issue"
 	JiraCommentAgenticWorkflowTriggerKindJiraIssueLink                  JiraCommentAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraCommentAgenticWorkflowTriggerKindJiraProject                    JiraCommentAgenticWorkflowTriggerKind = "jira.project"
+	JiraCommentAgenticWorkflowTriggerKindJiraSprint                     JiraCommentAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraCommentAgenticWorkflowTriggerKindJiraVersion                    JiraCommentAgenticWorkflowTriggerKind = "jira.version"
 	JiraCommentAgenticWorkflowTriggerKindJiraWorklog                    JiraCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraCommentAgenticWorkflowTriggerKindLinearComment                  JiraCommentAgenticWorkflowTriggerKind = "linear.comment"
@@ -4574,6 +4635,8 @@ func (e JiraCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraCommentAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraCommentAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -4695,6 +4758,7 @@ const (
 	JiraComponentAgenticWorkflowTriggerKindJiraIssue                      JiraComponentAgenticWorkflowTriggerKind = "jira.issue"
 	JiraComponentAgenticWorkflowTriggerKindJiraIssueLink                  JiraComponentAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraComponentAgenticWorkflowTriggerKindJiraProject                    JiraComponentAgenticWorkflowTriggerKind = "jira.project"
+	JiraComponentAgenticWorkflowTriggerKindJiraSprint                     JiraComponentAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraComponentAgenticWorkflowTriggerKindJiraVersion                    JiraComponentAgenticWorkflowTriggerKind = "jira.version"
 	JiraComponentAgenticWorkflowTriggerKindJiraWorklog                    JiraComponentAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraComponentAgenticWorkflowTriggerKindLinearComment                  JiraComponentAgenticWorkflowTriggerKind = "linear.comment"
@@ -4766,6 +4830,8 @@ func (e JiraComponentAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraComponentAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraComponentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraComponentAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -4852,6 +4918,7 @@ func (e JiraComponentTriggerVariableName) Valid() bool {
 // Defines values for JiraEventAction.
 const (
 	JiraEventActionArchived    JiraEventAction = "archived"
+	JiraEventActionClosed      JiraEventAction = "closed"
 	JiraEventActionCreated     JiraEventAction = "created"
 	JiraEventActionDeleted     JiraEventAction = "deleted"
 	JiraEventActionMerged      JiraEventAction = "merged"
@@ -4859,6 +4926,7 @@ const (
 	JiraEventActionReleased    JiraEventAction = "released"
 	JiraEventActionRestored    JiraEventAction = "restored"
 	JiraEventActionSoftdeleted JiraEventAction = "softdeleted"
+	JiraEventActionStarted     JiraEventAction = "started"
 	JiraEventActionUnarchived  JiraEventAction = "unarchived"
 	JiraEventActionUnreleased  JiraEventAction = "unreleased"
 	JiraEventActionUpdated     JiraEventAction = "updated"
@@ -4868,6 +4936,8 @@ const (
 func (e JiraEventAction) Valid() bool {
 	switch e {
 	case JiraEventActionArchived:
+		return true
+	case JiraEventActionClosed:
 		return true
 	case JiraEventActionCreated:
 		return true
@@ -4882,6 +4952,8 @@ func (e JiraEventAction) Valid() bool {
 	case JiraEventActionRestored:
 		return true
 	case JiraEventActionSoftdeleted:
+		return true
+	case JiraEventActionStarted:
 		return true
 	case JiraEventActionUnarchived:
 		return true
@@ -4920,6 +4992,7 @@ const (
 	JiraIssueAgenticWorkflowTriggerKindJiraIssue                      JiraIssueAgenticWorkflowTriggerKind = "jira.issue"
 	JiraIssueAgenticWorkflowTriggerKindJiraIssueLink                  JiraIssueAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraIssueAgenticWorkflowTriggerKindJiraProject                    JiraIssueAgenticWorkflowTriggerKind = "jira.project"
+	JiraIssueAgenticWorkflowTriggerKindJiraSprint                     JiraIssueAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraIssueAgenticWorkflowTriggerKindJiraVersion                    JiraIssueAgenticWorkflowTriggerKind = "jira.version"
 	JiraIssueAgenticWorkflowTriggerKindJiraWorklog                    JiraIssueAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraIssueAgenticWorkflowTriggerKindLinearComment                  JiraIssueAgenticWorkflowTriggerKind = "linear.comment"
@@ -4992,6 +5065,8 @@ func (e JiraIssueAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case JiraIssueAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case JiraIssueAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case JiraIssueAgenticWorkflowTriggerKindJiraWorklog:
@@ -5061,6 +5136,7 @@ const (
 	JiraIssueLinkAgenticWorkflowTriggerKindJiraIssue                      JiraIssueLinkAgenticWorkflowTriggerKind = "jira.issue"
 	JiraIssueLinkAgenticWorkflowTriggerKindJiraIssueLink                  JiraIssueLinkAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraIssueLinkAgenticWorkflowTriggerKindJiraProject                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.project"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraSprint                     JiraIssueLinkAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraIssueLinkAgenticWorkflowTriggerKindJiraVersion                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.version"
 	JiraIssueLinkAgenticWorkflowTriggerKindJiraWorklog                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraIssueLinkAgenticWorkflowTriggerKindLinearComment                  JiraIssueLinkAgenticWorkflowTriggerKind = "linear.comment"
@@ -5132,6 +5208,8 @@ func (e JiraIssueLinkAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraIssueLinkAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraIssueLinkAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraIssueLinkAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -5298,6 +5376,7 @@ const (
 	JiraProjectAgenticWorkflowTriggerKindJiraIssue                      JiraProjectAgenticWorkflowTriggerKind = "jira.issue"
 	JiraProjectAgenticWorkflowTriggerKindJiraIssueLink                  JiraProjectAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraProjectAgenticWorkflowTriggerKindJiraProject                    JiraProjectAgenticWorkflowTriggerKind = "jira.project"
+	JiraProjectAgenticWorkflowTriggerKindJiraSprint                     JiraProjectAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraProjectAgenticWorkflowTriggerKindJiraVersion                    JiraProjectAgenticWorkflowTriggerKind = "jira.version"
 	JiraProjectAgenticWorkflowTriggerKindJiraWorklog                    JiraProjectAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraProjectAgenticWorkflowTriggerKindLinearComment                  JiraProjectAgenticWorkflowTriggerKind = "linear.comment"
@@ -5369,6 +5448,8 @@ func (e JiraProjectAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraProjectAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraProjectAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraProjectAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -5443,6 +5524,204 @@ func (e JiraProjectTriggerVariableName) Valid() bool {
 	}
 }
 
+// Defines values for JiraSprintAgenticWorkflowTriggerKind.
+const (
+	JiraSprintAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraSprintAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraSprintAgenticWorkflowTriggerKindFailedCheckNew                 JiraSprintAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraSprintAgenticWorkflowTriggerKindGithubCheckRun                 JiraSprintAgenticWorkflowTriggerKind = "github.check_run"
+	JiraSprintAgenticWorkflowTriggerKindGithubCheckSuite               JiraSprintAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraSprintAgenticWorkflowTriggerKindGithubDeployment               JiraSprintAgenticWorkflowTriggerKind = "github.deployment"
+	JiraSprintAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraSprintAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraSprintAgenticWorkflowTriggerKindGithubIssueComment             JiraSprintAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraSprintAgenticWorkflowTriggerKindGithubPullRequest              JiraSprintAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReview        JiraSprintAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraSprintAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraSprintAgenticWorkflowTriggerKindGithubPush                     JiraSprintAgenticWorkflowTriggerKind = "github.push"
+	JiraSprintAgenticWorkflowTriggerKindGithubRelease                  JiraSprintAgenticWorkflowTriggerKind = "github.release"
+	JiraSprintAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraSprintAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraSprintAgenticWorkflowTriggerKindGithubWorkflowJob              JiraSprintAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraSprintAgenticWorkflowTriggerKindGithubWorkflowRun              JiraSprintAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraSprintAgenticWorkflowTriggerKindGitlabMergeRequest             JiraSprintAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraSprintAgenticWorkflowTriggerKindGitlabNote                     JiraSprintAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraSprintAgenticWorkflowTriggerKindJiraAttachment                 JiraSprintAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraSprintAgenticWorkflowTriggerKindJiraBoard                      JiraSprintAgenticWorkflowTriggerKind = "jira.board"
+	JiraSprintAgenticWorkflowTriggerKindJiraComment                    JiraSprintAgenticWorkflowTriggerKind = "jira.comment"
+	JiraSprintAgenticWorkflowTriggerKindJiraComponent                  JiraSprintAgenticWorkflowTriggerKind = "jira.component"
+	JiraSprintAgenticWorkflowTriggerKindJiraIssue                      JiraSprintAgenticWorkflowTriggerKind = "jira.issue"
+	JiraSprintAgenticWorkflowTriggerKindJiraIssueLink                  JiraSprintAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraSprintAgenticWorkflowTriggerKindJiraProject                    JiraSprintAgenticWorkflowTriggerKind = "jira.project"
+	JiraSprintAgenticWorkflowTriggerKindJiraSprint                     JiraSprintAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraSprintAgenticWorkflowTriggerKindJiraVersion                    JiraSprintAgenticWorkflowTriggerKind = "jira.version"
+	JiraSprintAgenticWorkflowTriggerKindJiraWorklog                    JiraSprintAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraSprintAgenticWorkflowTriggerKindLinearComment                  JiraSprintAgenticWorkflowTriggerKind = "linear.comment"
+	JiraSprintAgenticWorkflowTriggerKindLinearCommentReaction          JiraSprintAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraSprintAgenticWorkflowTriggerKindLinearInitiative               JiraSprintAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraSprintAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraSprintAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraSprintAgenticWorkflowTriggerKindLinearIssue                    JiraSprintAgenticWorkflowTriggerKind = "linear.issue"
+	JiraSprintAgenticWorkflowTriggerKindLinearIssueAttachment          JiraSprintAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraSprintAgenticWorkflowTriggerKindLinearIssueComment             JiraSprintAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraSprintAgenticWorkflowTriggerKindLinearProject                  JiraSprintAgenticWorkflowTriggerKind = "linear.project"
+	JiraSprintAgenticWorkflowTriggerKindLinearProjectUpdate            JiraSprintAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraSprintAgenticWorkflowTriggerKindLinearRelease                  JiraSprintAgenticWorkflowTriggerKind = "linear.release"
+	JiraSprintAgenticWorkflowTriggerKindLinearReleaseNote              JiraSprintAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraSprintAgenticWorkflowTriggerKindManual                         JiraSprintAgenticWorkflowTriggerKind = "manual"
+	JiraSprintAgenticWorkflowTriggerKindSchedule                       JiraSprintAgenticWorkflowTriggerKind = "schedule"
+	JiraSprintAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraSprintAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraSprintAgenticWorkflowTriggerKindSlackBotMessage                JiraSprintAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraSprintAgenticWorkflowTriggerKindSlackBotReaction               JiraSprintAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraSprintAgenticWorkflowTriggerKindWebhook                        JiraSprintAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraSprintAgenticWorkflowTriggerKind enum.
+func (e JiraSprintAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraSprintAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraSprintTriggerVariableName.
+const (
+	JiraSprintTriggerVariableNameJiraAction             JiraSprintTriggerVariableName = "jira.action"
+	JiraSprintTriggerVariableNameJiraActorName          JiraSprintTriggerVariableName = "jira.actor.name"
+	JiraSprintTriggerVariableNameJiraBoardId            JiraSprintTriggerVariableName = "jira.board.id"
+	JiraSprintTriggerVariableNameJiraProjectId          JiraSprintTriggerVariableName = "jira.project.id"
+	JiraSprintTriggerVariableNameJiraProjectKey         JiraSprintTriggerVariableName = "jira.project.key"
+	JiraSprintTriggerVariableNameJiraProjectName        JiraSprintTriggerVariableName = "jira.project.name"
+	JiraSprintTriggerVariableNameJiraSiteUrl            JiraSprintTriggerVariableName = "jira.site_url"
+	JiraSprintTriggerVariableNameJiraSprintCompleteDate JiraSprintTriggerVariableName = "jira.sprint.complete_date"
+	JiraSprintTriggerVariableNameJiraSprintEndDate      JiraSprintTriggerVariableName = "jira.sprint.end_date"
+	JiraSprintTriggerVariableNameJiraSprintGoal         JiraSprintTriggerVariableName = "jira.sprint.goal"
+	JiraSprintTriggerVariableNameJiraSprintId           JiraSprintTriggerVariableName = "jira.sprint.id"
+	JiraSprintTriggerVariableNameJiraSprintName         JiraSprintTriggerVariableName = "jira.sprint.name"
+	JiraSprintTriggerVariableNameJiraSprintStartDate    JiraSprintTriggerVariableName = "jira.sprint.start_date"
+	JiraSprintTriggerVariableNameJiraSprintState        JiraSprintTriggerVariableName = "jira.sprint.state"
+)
+
+// Valid indicates whether the value is a known member of the JiraSprintTriggerVariableName enum.
+func (e JiraSprintTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraSprintTriggerVariableNameJiraAction:
+		return true
+	case JiraSprintTriggerVariableNameJiraActorName:
+		return true
+	case JiraSprintTriggerVariableNameJiraBoardId:
+		return true
+	case JiraSprintTriggerVariableNameJiraProjectId:
+		return true
+	case JiraSprintTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraSprintTriggerVariableNameJiraProjectName:
+		return true
+	case JiraSprintTriggerVariableNameJiraSiteUrl:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintCompleteDate:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintEndDate:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintGoal:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintId:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintName:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintStartDate:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintState:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for JiraVersionAgenticWorkflowTriggerKind.
 const (
 	JiraVersionAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraVersionAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
@@ -5469,6 +5748,7 @@ const (
 	JiraVersionAgenticWorkflowTriggerKindJiraIssue                      JiraVersionAgenticWorkflowTriggerKind = "jira.issue"
 	JiraVersionAgenticWorkflowTriggerKindJiraIssueLink                  JiraVersionAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraVersionAgenticWorkflowTriggerKindJiraProject                    JiraVersionAgenticWorkflowTriggerKind = "jira.project"
+	JiraVersionAgenticWorkflowTriggerKindJiraSprint                     JiraVersionAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraVersionAgenticWorkflowTriggerKindJiraVersion                    JiraVersionAgenticWorkflowTriggerKind = "jira.version"
 	JiraVersionAgenticWorkflowTriggerKindJiraWorklog                    JiraVersionAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraVersionAgenticWorkflowTriggerKindLinearComment                  JiraVersionAgenticWorkflowTriggerKind = "linear.comment"
@@ -5540,6 +5820,8 @@ func (e JiraVersionAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraVersionAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraVersionAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraVersionAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -5637,17 +5919,23 @@ func (e JiraVersionTriggerVariableName) Valid() bool {
 
 // Defines values for JiraWebhookAction.
 const (
+	JiraWebhookActionClosed  JiraWebhookAction = "closed"
 	JiraWebhookActionCreated JiraWebhookAction = "created"
 	JiraWebhookActionDeleted JiraWebhookAction = "deleted"
+	JiraWebhookActionStarted JiraWebhookAction = "started"
 	JiraWebhookActionUpdated JiraWebhookAction = "updated"
 )
 
 // Valid indicates whether the value is a known member of the JiraWebhookAction enum.
 func (e JiraWebhookAction) Valid() bool {
 	switch e {
+	case JiraWebhookActionClosed:
+		return true
 	case JiraWebhookActionCreated:
 		return true
 	case JiraWebhookActionDeleted:
+		return true
+	case JiraWebhookActionStarted:
 		return true
 	case JiraWebhookActionUpdated:
 		return true
@@ -5682,6 +5970,7 @@ const (
 	JiraWorklogAgenticWorkflowTriggerKindJiraIssue                      JiraWorklogAgenticWorkflowTriggerKind = "jira.issue"
 	JiraWorklogAgenticWorkflowTriggerKindJiraIssueLink                  JiraWorklogAgenticWorkflowTriggerKind = "jira.issue_link"
 	JiraWorklogAgenticWorkflowTriggerKindJiraProject                    JiraWorklogAgenticWorkflowTriggerKind = "jira.project"
+	JiraWorklogAgenticWorkflowTriggerKindJiraSprint                     JiraWorklogAgenticWorkflowTriggerKind = "jira.sprint"
 	JiraWorklogAgenticWorkflowTriggerKindJiraVersion                    JiraWorklogAgenticWorkflowTriggerKind = "jira.version"
 	JiraWorklogAgenticWorkflowTriggerKindJiraWorklog                    JiraWorklogAgenticWorkflowTriggerKind = "jira.worklog"
 	JiraWorklogAgenticWorkflowTriggerKindLinearComment                  JiraWorklogAgenticWorkflowTriggerKind = "linear.comment"
@@ -5753,6 +6042,8 @@ func (e JiraWorklogAgenticWorkflowTriggerKind) Valid() bool {
 	case JiraWorklogAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case JiraWorklogAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case JiraWorklogAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -5880,6 +6171,7 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindJiraIssue                      LinearCommentAgenticWorkflowTriggerKind = "jira.issue"
 	LinearCommentAgenticWorkflowTriggerKindJiraIssueLink                  LinearCommentAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearCommentAgenticWorkflowTriggerKindJiraProject                    LinearCommentAgenticWorkflowTriggerKind = "jira.project"
+	LinearCommentAgenticWorkflowTriggerKindJiraSprint                     LinearCommentAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearCommentAgenticWorkflowTriggerKindJiraVersion                    LinearCommentAgenticWorkflowTriggerKind = "jira.version"
 	LinearCommentAgenticWorkflowTriggerKindJiraWorklog                    LinearCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearCommentAgenticWorkflowTriggerKindLinearComment                  LinearCommentAgenticWorkflowTriggerKind = "linear.comment"
@@ -5952,6 +6244,8 @@ func (e LinearCommentAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case LinearCommentAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindJiraWorklog:
@@ -6021,6 +6315,7 @@ const (
 	LinearCommentReactionAgenticWorkflowTriggerKindJiraIssue                      LinearCommentReactionAgenticWorkflowTriggerKind = "jira.issue"
 	LinearCommentReactionAgenticWorkflowTriggerKindJiraIssueLink                  LinearCommentReactionAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearCommentReactionAgenticWorkflowTriggerKindJiraProject                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.project"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraSprint                     LinearCommentReactionAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearCommentReactionAgenticWorkflowTriggerKindJiraVersion                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.version"
 	LinearCommentReactionAgenticWorkflowTriggerKindJiraWorklog                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearComment                  LinearCommentReactionAgenticWorkflowTriggerKind = "linear.comment"
@@ -6092,6 +6387,8 @@ func (e LinearCommentReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearCommentReactionAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -6237,6 +6534,7 @@ const (
 	LinearInitiativeAgenticWorkflowTriggerKindJiraIssue                      LinearInitiativeAgenticWorkflowTriggerKind = "jira.issue"
 	LinearInitiativeAgenticWorkflowTriggerKindJiraIssueLink                  LinearInitiativeAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearInitiativeAgenticWorkflowTriggerKindJiraProject                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.project"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraSprint                     LinearInitiativeAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearInitiativeAgenticWorkflowTriggerKindJiraVersion                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.version"
 	LinearInitiativeAgenticWorkflowTriggerKindJiraWorklog                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearComment                  LinearInitiativeAgenticWorkflowTriggerKind = "linear.comment"
@@ -6308,6 +6606,8 @@ func (e LinearInitiativeAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -6414,6 +6714,7 @@ const (
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssue                      LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.issue"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssueLink                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraProject                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.project"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraSprint                     LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraVersion                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.version"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraWorklog                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearComment                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.comment"
@@ -6485,6 +6786,8 @@ func (e LinearInitiativeUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -6594,6 +6897,7 @@ const (
 	LinearIssueAgenticWorkflowTriggerKindJiraIssue                      LinearIssueAgenticWorkflowTriggerKind = "jira.issue"
 	LinearIssueAgenticWorkflowTriggerKindJiraIssueLink                  LinearIssueAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearIssueAgenticWorkflowTriggerKindJiraProject                    LinearIssueAgenticWorkflowTriggerKind = "jira.project"
+	LinearIssueAgenticWorkflowTriggerKindJiraSprint                     LinearIssueAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearIssueAgenticWorkflowTriggerKindJiraVersion                    LinearIssueAgenticWorkflowTriggerKind = "jira.version"
 	LinearIssueAgenticWorkflowTriggerKindJiraWorklog                    LinearIssueAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearIssueAgenticWorkflowTriggerKindLinearComment                  LinearIssueAgenticWorkflowTriggerKind = "linear.comment"
@@ -6666,6 +6970,8 @@ func (e LinearIssueAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case LinearIssueAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindJiraWorklog:
@@ -6735,6 +7041,7 @@ const (
 	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssue                      LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.issue"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssueLink                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraProject                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.project"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraSprint                     LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraVersion                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.version"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraWorklog                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearComment                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.comment"
@@ -6806,6 +7113,8 @@ func (e LinearIssueAttachmentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -6930,6 +7239,7 @@ const (
 	LinearIssueCommentAgenticWorkflowTriggerKindJiraIssue                      LinearIssueCommentAgenticWorkflowTriggerKind = "jira.issue"
 	LinearIssueCommentAgenticWorkflowTriggerKindJiraIssueLink                  LinearIssueCommentAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearIssueCommentAgenticWorkflowTriggerKindJiraProject                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.project"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraSprint                     LinearIssueCommentAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearIssueCommentAgenticWorkflowTriggerKindJiraVersion                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.version"
 	LinearIssueCommentAgenticWorkflowTriggerKindJiraWorklog                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearComment                  LinearIssueCommentAgenticWorkflowTriggerKind = "linear.comment"
@@ -7001,6 +7311,8 @@ func (e LinearIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueCommentAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -7185,6 +7497,7 @@ const (
 	LinearProjectAgenticWorkflowTriggerKindJiraIssue                      LinearProjectAgenticWorkflowTriggerKind = "jira.issue"
 	LinearProjectAgenticWorkflowTriggerKindJiraIssueLink                  LinearProjectAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearProjectAgenticWorkflowTriggerKindJiraProject                    LinearProjectAgenticWorkflowTriggerKind = "jira.project"
+	LinearProjectAgenticWorkflowTriggerKindJiraSprint                     LinearProjectAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearProjectAgenticWorkflowTriggerKindJiraVersion                    LinearProjectAgenticWorkflowTriggerKind = "jira.version"
 	LinearProjectAgenticWorkflowTriggerKindJiraWorklog                    LinearProjectAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearProjectAgenticWorkflowTriggerKindLinearComment                  LinearProjectAgenticWorkflowTriggerKind = "linear.comment"
@@ -7256,6 +7569,8 @@ func (e LinearProjectAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -7362,6 +7677,7 @@ const (
 	LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssue                      LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.issue"
 	LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssueLink                  LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearProjectUpdateAgenticWorkflowTriggerKindJiraProject                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.project"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraSprint                     LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearProjectUpdateAgenticWorkflowTriggerKindJiraVersion                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.version"
 	LinearProjectUpdateAgenticWorkflowTriggerKindJiraWorklog                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearComment                  LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.comment"
@@ -7433,6 +7749,8 @@ func (e LinearProjectUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -7542,6 +7860,7 @@ const (
 	LinearReleaseAgenticWorkflowTriggerKindJiraIssue                      LinearReleaseAgenticWorkflowTriggerKind = "jira.issue"
 	LinearReleaseAgenticWorkflowTriggerKindJiraIssueLink                  LinearReleaseAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearReleaseAgenticWorkflowTriggerKindJiraProject                    LinearReleaseAgenticWorkflowTriggerKind = "jira.project"
+	LinearReleaseAgenticWorkflowTriggerKindJiraSprint                     LinearReleaseAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearReleaseAgenticWorkflowTriggerKindJiraVersion                    LinearReleaseAgenticWorkflowTriggerKind = "jira.version"
 	LinearReleaseAgenticWorkflowTriggerKindJiraWorklog                    LinearReleaseAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearReleaseAgenticWorkflowTriggerKindLinearComment                  LinearReleaseAgenticWorkflowTriggerKind = "linear.comment"
@@ -7614,6 +7933,8 @@ func (e LinearReleaseAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case LinearReleaseAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case LinearReleaseAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case LinearReleaseAgenticWorkflowTriggerKindJiraWorklog:
@@ -7683,6 +8004,7 @@ const (
 	LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssue                      LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.issue"
 	LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssueLink                  LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.issue_link"
 	LinearReleaseNoteAgenticWorkflowTriggerKindJiraProject                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.project"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraSprint                     LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.sprint"
 	LinearReleaseNoteAgenticWorkflowTriggerKindJiraVersion                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.version"
 	LinearReleaseNoteAgenticWorkflowTriggerKindJiraWorklog                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearReleaseNoteAgenticWorkflowTriggerKindLinearComment                  LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.comment"
@@ -7754,6 +8076,8 @@ func (e LinearReleaseNoteAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -7950,6 +8274,7 @@ const (
 	ManualAgenticWorkflowTriggerKindJiraIssue                      ManualAgenticWorkflowTriggerKind = "jira.issue"
 	ManualAgenticWorkflowTriggerKindJiraIssueLink                  ManualAgenticWorkflowTriggerKind = "jira.issue_link"
 	ManualAgenticWorkflowTriggerKindJiraProject                    ManualAgenticWorkflowTriggerKind = "jira.project"
+	ManualAgenticWorkflowTriggerKindJiraSprint                     ManualAgenticWorkflowTriggerKind = "jira.sprint"
 	ManualAgenticWorkflowTriggerKindJiraVersion                    ManualAgenticWorkflowTriggerKind = "jira.version"
 	ManualAgenticWorkflowTriggerKindJiraWorklog                    ManualAgenticWorkflowTriggerKind = "jira.worklog"
 	ManualAgenticWorkflowTriggerKindLinearComment                  ManualAgenticWorkflowTriggerKind = "linear.comment"
@@ -8021,6 +8346,8 @@ func (e ManualAgenticWorkflowTriggerKind) Valid() bool {
 	case ManualAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case ManualAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case ManualAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -8805,6 +9132,7 @@ const (
 	ScheduledAgenticWorkflowTriggerKindJiraIssue                      ScheduledAgenticWorkflowTriggerKind = "jira.issue"
 	ScheduledAgenticWorkflowTriggerKindJiraIssueLink                  ScheduledAgenticWorkflowTriggerKind = "jira.issue_link"
 	ScheduledAgenticWorkflowTriggerKindJiraProject                    ScheduledAgenticWorkflowTriggerKind = "jira.project"
+	ScheduledAgenticWorkflowTriggerKindJiraSprint                     ScheduledAgenticWorkflowTriggerKind = "jira.sprint"
 	ScheduledAgenticWorkflowTriggerKindJiraVersion                    ScheduledAgenticWorkflowTriggerKind = "jira.version"
 	ScheduledAgenticWorkflowTriggerKindJiraWorklog                    ScheduledAgenticWorkflowTriggerKind = "jira.worklog"
 	ScheduledAgenticWorkflowTriggerKindLinearComment                  ScheduledAgenticWorkflowTriggerKind = "linear.comment"
@@ -8876,6 +9204,8 @@ func (e ScheduledAgenticWorkflowTriggerKind) Valid() bool {
 	case ScheduledAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -9195,6 +9525,7 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraIssue                      SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.issue"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraIssueLink                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.issue_link"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraProject                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.project"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraSprint                     SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.sprint"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraVersion                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.version"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraWorklog                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.worklog"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearComment                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.comment"
@@ -9267,6 +9598,8 @@ func (e SlackBotFailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraWorklog:
@@ -9336,6 +9669,7 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindJiraIssue                      SlackBotMessageAgenticWorkflowTriggerKind = "jira.issue"
 	SlackBotMessageAgenticWorkflowTriggerKindJiraIssueLink                  SlackBotMessageAgenticWorkflowTriggerKind = "jira.issue_link"
 	SlackBotMessageAgenticWorkflowTriggerKindJiraProject                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.project"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraSprint                     SlackBotMessageAgenticWorkflowTriggerKind = "jira.sprint"
 	SlackBotMessageAgenticWorkflowTriggerKindJiraVersion                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.version"
 	SlackBotMessageAgenticWorkflowTriggerKindJiraWorklog                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.worklog"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearComment                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.comment"
@@ -9408,6 +9742,8 @@ func (e SlackBotMessageAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindJiraProject:
 		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraSprint:
+		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindJiraVersion:
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindJiraWorklog:
@@ -9477,6 +9813,7 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindJiraIssue                      SlackBotReactionAgenticWorkflowTriggerKind = "jira.issue"
 	SlackBotReactionAgenticWorkflowTriggerKindJiraIssueLink                  SlackBotReactionAgenticWorkflowTriggerKind = "jira.issue_link"
 	SlackBotReactionAgenticWorkflowTriggerKindJiraProject                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.project"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraSprint                     SlackBotReactionAgenticWorkflowTriggerKind = "jira.sprint"
 	SlackBotReactionAgenticWorkflowTriggerKindJiraVersion                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.version"
 	SlackBotReactionAgenticWorkflowTriggerKindJiraWorklog                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.worklog"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearComment                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.comment"
@@ -9548,6 +9885,8 @@ func (e SlackBotReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case SlackBotReactionAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -10821,6 +11160,7 @@ const (
 	WebhookAgenticWorkflowTriggerKindJiraIssue                      WebhookAgenticWorkflowTriggerKind = "jira.issue"
 	WebhookAgenticWorkflowTriggerKindJiraIssueLink                  WebhookAgenticWorkflowTriggerKind = "jira.issue_link"
 	WebhookAgenticWorkflowTriggerKindJiraProject                    WebhookAgenticWorkflowTriggerKind = "jira.project"
+	WebhookAgenticWorkflowTriggerKindJiraSprint                     WebhookAgenticWorkflowTriggerKind = "jira.sprint"
 	WebhookAgenticWorkflowTriggerKindJiraVersion                    WebhookAgenticWorkflowTriggerKind = "jira.version"
 	WebhookAgenticWorkflowTriggerKindJiraWorklog                    WebhookAgenticWorkflowTriggerKind = "jira.worklog"
 	WebhookAgenticWorkflowTriggerKindLinearComment                  WebhookAgenticWorkflowTriggerKind = "linear.comment"
@@ -10892,6 +11232,8 @@ func (e WebhookAgenticWorkflowTriggerKind) Valid() bool {
 	case WebhookAgenticWorkflowTriggerKindJiraIssueLink:
 		return true
 	case WebhookAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraSprint:
 		return true
 	case WebhookAgenticWorkflowTriggerKindJiraVersion:
 		return true
@@ -11630,6 +11972,7 @@ type AgenticWorkflowTriggerDelivery string
 // - `jira.attachment`: Triggered when an attachment is added to or deleted from a Jira Cloud issue in the selected projects. `actions` narrows which; `updated` never matches. Not accepted on write yet.
 // - `jira.comment`: Triggered when a comment on a Jira issue is created, updated, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
 // - `jira.component`: Triggered when a Jira component is created, updated, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Jira Cloud only. Not accepted on write yet.
+// - `jira.sprint`: Triggered when a Jira Software sprint is created, started, updated, closed, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
 // - `webhook`: Triggered via an external webhook call.
 // - `manual`: Triggered manually via the UI. Runtime-only — not valid in `spec.triggers[]`.
 type AgenticWorkflowTriggerKind string
@@ -15938,7 +16281,9 @@ type JiraComponentTriggerVariableName string
 // of the version webhook events, such as `released` in `jira:version_released`.
 //
 // - `created`: The entity was created.
+// - `started`: The sprint was started.
 // - `updated`: The entity was updated.
+// - `closed`: The sprint was closed (completed).
 // - `deleted`: The entity was deleted. For a project, deleted permanently.
 // - `softdeleted`: The project was moved to the trash.
 // - `archived`: The project or version was archived.
@@ -16266,6 +16611,103 @@ type JiraSenderFilters struct {
 	Senders *[]string `json:"senders,omitempty"`
 }
 
+// JiraSprintAgenticWorkflowTrigger defines model for JiraSprintAgenticWorkflowTrigger.
+type JiraSprintAgenticWorkflowTrigger struct {
+	Kind JiraSprintAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created, started, updated, closed, or deleted the sprint. A sprint
+	// has no author, so `authors` and `authorRegex` never match it. The sprint's project is the
+	// location project of the board the sprint was created on; sprints of a board without one
+	// never match. Every filter combines with every other filter as AND.
+	Spec JiraSprintAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraSprintAgenticWorkflowTriggerKind defines model for JiraSprintAgenticWorkflowTrigger.Kind.
+type JiraSprintAgenticWorkflowTriggerKind string
+
+// JiraSprintAgenticWorkflowTriggerSpec The sender is whoever created, started, updated, closed, or deleted the sprint. A sprint
+// has no author, so `authors` and `authorRegex` never match it. The sprint's project is the
+// location project of the board the sprint was created on; sprints of a board without one
+// never match. Every filter combines with every other filter as AND.
+type JiraSprintAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraSprintTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraSprintTriggerVariableName Variables provided by the `jira.sprint` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `started`, `updated`, `closed`, or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the location project of the sprint's board.
+// - `jira.project.key`: Short key of that project (e.g., `ENG`).
+// - `jira.project.name`: Display name of that project.
+// - `jira.board.id`: ID of the board the sprint was created on.
+// - `jira.sprint.id`: ID of the sprint.
+// - `jira.sprint.name`: Name of the sprint.
+// - `jira.sprint.state`: State of the sprint: `future`, `active`, or `closed`.
+// - `jira.sprint.goal`: Goal of the sprint.
+// - `jira.sprint.start_date`: Planned start date of the sprint (ISO 8601).
+// - `jira.sprint.end_date`: Planned end date of the sprint (ISO 8601).
+// - `jira.sprint.complete_date`: Date the sprint was closed (ISO 8601).
+type JiraSprintTriggerVariableName string
+
 // JiraVersionAgenticWorkflowTrigger defines model for JiraVersionAgenticWorkflowTrigger.
 type JiraVersionAgenticWorkflowTrigger struct {
 	Kind JiraVersionAgenticWorkflowTriggerKind `json:"kind"`
@@ -16359,11 +16801,15 @@ type JiraVersionAgenticWorkflowTriggerSpec struct {
 // - `jira.version.release_date`: Release date of the version (`YYYY-MM-DD`), when set.
 type JiraVersionTriggerVariableName string
 
-// JiraWebhookAction What happened to the Jira entity behind a webhook event, in Jira's own words: the suffix of
-// the event name, such as `created` in `jira:issue_created` or `comment_created`.
+// JiraWebhookAction What happened to the Jira entity behind a webhook event, in Jira's own words: the verb of
+// the event name, such as `created` in `jira:issue_created` or `started` in
+// `avi:jira-software:started:sprint`. Each trigger kind accepts only the actions its events
+// carry.
 //
 // - `created`: The entity was created.
+// - `started`: The sprint was started. Sent for `jira.sprint` only.
 // - `updated`: The entity was updated.
+// - `closed`: The sprint was closed (completed). Sent for `jira.sprint` only.
 // - `deleted`: The entity was deleted.
 type JiraWebhookAction string
 
@@ -25634,6 +26080,32 @@ func (t *AgenticWorkflowTrigger) FromJiraComponentAgenticWorkflowTrigger(v JiraC
 
 // MergeJiraComponentAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraComponentAgenticWorkflowTrigger
 func (t *AgenticWorkflowTrigger) MergeJiraComponentAgenticWorkflowTrigger(v JiraComponentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraSprintAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraSprintAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraSprintAgenticWorkflowTrigger() (JiraSprintAgenticWorkflowTrigger, error) {
+	var body JiraSprintAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraSprintAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraSprintAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraSprintAgenticWorkflowTrigger(v JiraSprintAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraSprintAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraSprintAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraSprintAgenticWorkflowTrigger(v JiraSprintAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
