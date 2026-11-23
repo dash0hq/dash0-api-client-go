@@ -105,13 +105,13 @@ func (e Agent0ModelMaker) Valid() bool {
 
 // Defines values for Agent0ModelSpecReasoningSummary.
 const (
-	Auto Agent0ModelSpecReasoningSummary = "auto"
+	Agent0ModelSpecReasoningSummaryAuto Agent0ModelSpecReasoningSummary = "auto"
 )
 
 // Valid indicates whether the value is a known member of the Agent0ModelSpecReasoningSummary enum.
 func (e Agent0ModelSpecReasoningSummary) Valid() bool {
 	switch e {
-	case Auto:
+	case Agent0ModelSpecReasoningSummaryAuto:
 		return true
 	default:
 		return false
@@ -241,6 +241,24 @@ func (e AgenticWorkflowDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for AgenticWorkflowSystemVisibility.
+const (
+	Background AgenticWorkflowSystemVisibility = "background"
+	Managed    AgenticWorkflowSystemVisibility = "managed"
+)
+
+// Valid indicates whether the value is a known member of the AgenticWorkflowSystemVisibility enum.
+func (e AgenticWorkflowSystemVisibility) Valid() bool {
+	switch e {
+	case Background:
+		return true
+	case Managed:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AgenticWorkflowTriggerDelivery.
 const (
 	AgenticWorkflowTriggerDeliveryContinue AgenticWorkflowTriggerDelivery = "continue"
@@ -278,6 +296,16 @@ const (
 	AgenticWorkflowTriggerKindGithubWorkflowRun              AgenticWorkflowTriggerKind = "github.workflow_run"
 	AgenticWorkflowTriggerKindGitlabMergeRequest             AgenticWorkflowTriggerKind = "gitlab.merge_request"
 	AgenticWorkflowTriggerKindGitlabNote                     AgenticWorkflowTriggerKind = "gitlab.note"
+	AgenticWorkflowTriggerKindJiraAttachment                 AgenticWorkflowTriggerKind = "jira.attachment"
+	AgenticWorkflowTriggerKindJiraBoard                      AgenticWorkflowTriggerKind = "jira.board"
+	AgenticWorkflowTriggerKindJiraComment                    AgenticWorkflowTriggerKind = "jira.comment"
+	AgenticWorkflowTriggerKindJiraComponent                  AgenticWorkflowTriggerKind = "jira.component"
+	AgenticWorkflowTriggerKindJiraIssue                      AgenticWorkflowTriggerKind = "jira.issue"
+	AgenticWorkflowTriggerKindJiraIssueLink                  AgenticWorkflowTriggerKind = "jira.issue_link"
+	AgenticWorkflowTriggerKindJiraProject                    AgenticWorkflowTriggerKind = "jira.project"
+	AgenticWorkflowTriggerKindJiraSprint                     AgenticWorkflowTriggerKind = "jira.sprint"
+	AgenticWorkflowTriggerKindJiraVersion                    AgenticWorkflowTriggerKind = "jira.version"
+	AgenticWorkflowTriggerKindJiraWorklog                    AgenticWorkflowTriggerKind = "jira.worklog"
 	AgenticWorkflowTriggerKindLinearComment                  AgenticWorkflowTriggerKind = "linear.comment"
 	AgenticWorkflowTriggerKindLinearCommentReaction          AgenticWorkflowTriggerKind = "linear.comment_reaction"
 	AgenticWorkflowTriggerKindLinearInitiative               AgenticWorkflowTriggerKind = "linear.initiative"
@@ -333,6 +361,26 @@ func (e AgenticWorkflowTriggerKind) Valid() bool {
 	case AgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case AgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case AgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case AgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case AgenticWorkflowTriggerKindJiraComment:
+		return true
+	case AgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case AgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case AgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case AgenticWorkflowTriggerKindJiraProject:
+		return true
+	case AgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case AgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case AgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case AgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -532,6 +580,84 @@ func (e AuthTokenResponseDefinitionKind) Valid() bool {
 	}
 }
 
+// Defines values for AwsLogGroupPolicyApiVersion.
+const (
+	AwsLogGroupPolicyApiVersionDash0Comv1alpha1 AwsLogGroupPolicyApiVersion = "dash0.com/v1alpha1"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyApiVersion enum.
+func (e AwsLogGroupPolicyApiVersion) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyApiVersionDash0Comv1alpha1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyDisposition.
+const (
+	AwsLogGroupPolicyDispositionKeep   AwsLogGroupPolicyDisposition = "keep"
+	AwsLogGroupPolicyDispositionRemove AwsLogGroupPolicyDisposition = "remove"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyDisposition enum.
+func (e AwsLogGroupPolicyDisposition) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyDispositionKeep:
+		return true
+	case AwsLogGroupPolicyDispositionRemove:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyKind.
+const (
+	Dash0AwsLogGroupInstrumentationPolicy AwsLogGroupPolicyKind = "Dash0AwsLogGroupInstrumentationPolicy"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyKind enum.
+func (e AwsLogGroupPolicyKind) Valid() bool {
+	switch e {
+	case Dash0AwsLogGroupInstrumentationPolicy:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AwsLogGroupPolicyOperator.
+const (
+	AwsLogGroupPolicyOperatorContains   AwsLogGroupPolicyOperator = "contains"
+	AwsLogGroupPolicyOperatorEndsWith   AwsLogGroupPolicyOperator = "ends_with"
+	AwsLogGroupPolicyOperatorIs         AwsLogGroupPolicyOperator = "is"
+	AwsLogGroupPolicyOperatorIsOneOf    AwsLogGroupPolicyOperator = "is_one_of"
+	AwsLogGroupPolicyOperatorIsSet      AwsLogGroupPolicyOperator = "is_set"
+	AwsLogGroupPolicyOperatorStartsWith AwsLogGroupPolicyOperator = "starts_with"
+)
+
+// Valid indicates whether the value is a known member of the AwsLogGroupPolicyOperator enum.
+func (e AwsLogGroupPolicyOperator) Valid() bool {
+	switch e {
+	case AwsLogGroupPolicyOperatorContains:
+		return true
+	case AwsLogGroupPolicyOperatorEndsWith:
+		return true
+	case AwsLogGroupPolicyOperatorIs:
+		return true
+	case AwsLogGroupPolicyOperatorIsOneOf:
+		return true
+	case AwsLogGroupPolicyOperatorIsSet:
+		return true
+	case AwsLogGroupPolicyOperatorStartsWith:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AwsMetricScrapeConfigApiVersion.
 const (
 	AwsMetricScrapeConfigApiVersionDash0Comv1alpha1 AwsMetricScrapeConfigApiVersion = "dash0.com/v1alpha1"
@@ -574,6 +700,30 @@ func (e AxisScale) Valid() bool {
 	case AxisScaleLinear:
 		return true
 	case AxisScaleLog10:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BotMode.
+const (
+	BotModeAutoApprove BotMode = "auto_approve"
+	BotModeAutoMerge   BotMode = "auto_merge"
+	BotModeDryRun      BotMode = "dry_run"
+	BotModeOff         BotMode = "off"
+)
+
+// Valid indicates whether the value is a known member of the BotMode enum.
+func (e BotMode) Valid() bool {
+	switch e {
+	case BotModeAutoApprove:
+		return true
+	case BotModeAutoMerge:
+		return true
+	case BotModeDryRun:
+		return true
+	case BotModeOff:
 		return true
 	default:
 		return false
@@ -654,16 +804,16 @@ func (e CustomSkillAction) Valid() bool {
 
 // Defines values for DarkplaneAutoApprovalDecision.
 const (
-	Approve DarkplaneAutoApprovalDecision = "approve"
-	Hold    DarkplaneAutoApprovalDecision = "hold"
+	DarkplaneAutoApprovalDecisionApprove DarkplaneAutoApprovalDecision = "approve"
+	DarkplaneAutoApprovalDecisionHold    DarkplaneAutoApprovalDecision = "hold"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneAutoApprovalDecision enum.
 func (e DarkplaneAutoApprovalDecision) Valid() bool {
 	switch e {
-	case Approve:
+	case DarkplaneAutoApprovalDecisionApprove:
 		return true
-	case Hold:
+	case DarkplaneAutoApprovalDecisionHold:
 		return true
 	default:
 		return false
@@ -672,19 +822,19 @@ func (e DarkplaneAutoApprovalDecision) Valid() bool {
 
 // Defines values for DarkplaneAutoApprovalMode.
 const (
-	AutoApprove DarkplaneAutoApprovalMode = "auto_approve"
-	AutoMerge   DarkplaneAutoApprovalMode = "auto_merge"
-	DryRun      DarkplaneAutoApprovalMode = "dry_run"
+	DarkplaneAutoApprovalModeAutoApprove DarkplaneAutoApprovalMode = "auto_approve"
+	DarkplaneAutoApprovalModeAutoMerge   DarkplaneAutoApprovalMode = "auto_merge"
+	DarkplaneAutoApprovalModeDryRun      DarkplaneAutoApprovalMode = "dry_run"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneAutoApprovalMode enum.
 func (e DarkplaneAutoApprovalMode) Valid() bool {
 	switch e {
-	case AutoApprove:
+	case DarkplaneAutoApprovalModeAutoApprove:
 		return true
-	case AutoMerge:
+	case DarkplaneAutoApprovalModeAutoMerge:
 		return true
-	case DryRun:
+	case DarkplaneAutoApprovalModeDryRun:
 		return true
 	default:
 		return false
@@ -708,18 +858,18 @@ func (e DarkplaneEvaluationTriggerDelivery) Valid() bool {
 
 // Defines values for DarkplaneEvaluationTriggerVariableName.
 const (
-	DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.decision"
-	DarkplaneAutoApprovalEvaluationId                          DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.evaluation_id"
-	DarkplaneEvaluationTriggerVariableNameAutoApprovalMode     DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.mode"
-	DarkplaneAutoApprovalReasoning                             DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.reasoning"
-	DarkplaneAutoApprovalScore                                 DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.score"
-	DarkplaneCommitSha                                         DarkplaneEvaluationTriggerVariableName = "darkplane.commit_sha"
-	DarkplaneEvaluationTriggerVariableNameProvider             DarkplaneEvaluationTriggerVariableName = "darkplane.provider"
-	DarkplanePullRequestId                                     DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_id"
-	DarkplanePullRequestNumber                                 DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_number"
-	DarkplanePullRequestUrl                                    DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_url"
-	DarkplaneRepository                                        DarkplaneEvaluationTriggerVariableName = "darkplane.repository"
-	DarkplaneRepositoryId                                      DarkplaneEvaluationTriggerVariableName = "darkplane.repository_id"
+	DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision              DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.decision"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.evaluation_id"
+	DarkplaneEvaluationTriggerVariableNameAutoApprovalMode                  DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.mode"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning    DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.reasoning"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore        DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.score"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha                DarkplaneEvaluationTriggerVariableName = "darkplane.commit_sha"
+	DarkplaneEvaluationTriggerVariableNameProvider                          DarkplaneEvaluationTriggerVariableName = "darkplane.provider"
+	DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId            DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_id"
+	DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber        DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_number"
+	DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl           DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_url"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneRepository               DarkplaneEvaluationTriggerVariableName = "darkplane.repository"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId             DarkplaneEvaluationTriggerVariableName = "darkplane.repository_id"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneEvaluationTriggerVariableName enum.
@@ -727,27 +877,27 @@ func (e DarkplaneEvaluationTriggerVariableName) Valid() bool {
 	switch e {
 	case DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision:
 		return true
-	case DarkplaneAutoApprovalEvaluationId:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId:
 		return true
 	case DarkplaneEvaluationTriggerVariableNameAutoApprovalMode:
 		return true
-	case DarkplaneAutoApprovalReasoning:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning:
 		return true
-	case DarkplaneAutoApprovalScore:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore:
 		return true
-	case DarkplaneCommitSha:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha:
 		return true
 	case DarkplaneEvaluationTriggerVariableNameProvider:
 		return true
-	case DarkplanePullRequestId:
+	case DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId:
 		return true
-	case DarkplanePullRequestNumber:
+	case DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber:
 		return true
-	case DarkplanePullRequestUrl:
+	case DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl:
 		return true
-	case DarkplaneRepository:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneRepository:
 		return true
-	case DarkplaneRepositoryId:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId:
 		return true
 	default:
 		return false
@@ -756,13 +906,16 @@ func (e DarkplaneEvaluationTriggerVariableName) Valid() bool {
 
 // Defines values for DarkplaneProvider.
 const (
-	DarkplaneProviderGithub DarkplaneProvider = "github"
-	DarkplaneProviderGitlab DarkplaneProvider = "gitlab"
+	DarkplaneProviderBitbucket DarkplaneProvider = "bitbucket"
+	DarkplaneProviderGithub    DarkplaneProvider = "github"
+	DarkplaneProviderGitlab    DarkplaneProvider = "gitlab"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneProvider enum.
 func (e DarkplaneProvider) Valid() bool {
 	switch e {
+	case DarkplaneProviderBitbucket:
+		return true
 	case DarkplaneProviderGithub:
 		return true
 	case DarkplaneProviderGitlab:
@@ -791,6 +944,16 @@ const (
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGithubWorkflowRun              DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "github.workflow_run"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabMergeRequest             DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabNote                     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "gitlab.note"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraAttachment                 DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.attachment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraBoard                      DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.board"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraComment                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.comment"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraComponent                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.component"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssue                      DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.issue"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssueLink                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.issue_link"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraProject                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.project"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraSprint                     DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.sprint"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraVersion                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.version"
+	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraWorklog                    DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "jira.worklog"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearComment                  DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.comment"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearCommentReaction          DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearInitiative               DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind = "linear.initiative"
@@ -847,6 +1010,26 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindGitlabNote:
 		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindJiraWorklog:
+		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearComment:
 		return true
 	case DarkplanePullRequestEvaluationAgenticWorkflowTriggerKindLinearCommentReaction:
@@ -886,6 +1069,27 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 	}
 }
 
+// Defines values for DarkplaneRepositoryConnection.
+const (
+	DarkplaneRepositoryConnectionConnected    DarkplaneRepositoryConnection = "connected"
+	DarkplaneRepositoryConnectionDisconnected DarkplaneRepositoryConnection = "disconnected"
+	DarkplaneRepositoryConnectionUnknown      DarkplaneRepositoryConnection = "unknown"
+)
+
+// Valid indicates whether the value is a known member of the DarkplaneRepositoryConnection enum.
+func (e DarkplaneRepositoryConnection) Valid() bool {
+	switch e {
+	case DarkplaneRepositoryConnectionConnected:
+		return true
+	case DarkplaneRepositoryConnectionDisconnected:
+		return true
+	case DarkplaneRepositoryConnectionUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DashboardKind.
 const (
 	Dashboard                       DashboardKind = "Dashboard"
@@ -906,14 +1110,16 @@ func (e DashboardKind) Valid() bool {
 
 // Defines values for DatasetAction.
 const (
-	DatasetCreateAgent0Automation   DatasetAction = "dataset:createAgent0Automation"
-	DatasetCreateCheckRule          DatasetAction = "dataset:createCheckRule"
-	DatasetCreateRecordingRuleGroup DatasetAction = "dataset:createRecordingRuleGroup"
-	DatasetCreateSLO                DatasetAction = "dataset:createSLO"
-	DatasetCreateSyntheticCheck     DatasetAction = "dataset:createSyntheticCheck"
-	DatasetDelete                   DatasetAction = "dataset:delete"
-	DatasetRead                     DatasetAction = "dataset:read"
-	DatasetWrite                    DatasetAction = "dataset:write"
+	DatasetCreateAgent0Automation            DatasetAction = "dataset:createAgent0Automation"
+	DatasetCreateCheckRule                   DatasetAction = "dataset:createCheckRule"
+	DatasetCreateRecordingRuleGroup          DatasetAction = "dataset:createRecordingRuleGroup"
+	DatasetCreateSLO                         DatasetAction = "dataset:createSLO"
+	DatasetCreateSyntheticCheck              DatasetAction = "dataset:createSyntheticCheck"
+	DatasetDelete                            DatasetAction = "dataset:delete"
+	DatasetManagePlatformVariablesAndSecrets DatasetAction = "dataset:managePlatformVariablesAndSecrets"
+	DatasetManageSandboxEnvironments         DatasetAction = "dataset:manageSandboxEnvironments"
+	DatasetRead                              DatasetAction = "dataset:read"
+	DatasetWrite                             DatasetAction = "dataset:write"
 )
 
 // Valid indicates whether the value is a known member of the DatasetAction enum.
@@ -930,6 +1136,10 @@ func (e DatasetAction) Valid() bool {
 	case DatasetCreateSyntheticCheck:
 		return true
 	case DatasetDelete:
+		return true
+	case DatasetManagePlatformVariablesAndSecrets:
+		return true
+	case DatasetManageSandboxEnvironments:
 		return true
 	case DatasetRead:
 		return true
@@ -988,6 +1198,81 @@ func (e ErrorAssertionKind) Valid() bool {
 	}
 }
 
+// Defines values for EvalToolId.
+const (
+	EvalToolIdAuthorDeliveryRecord             EvalToolId = "author_delivery_record"
+	EvalToolIdCheckRuleStatus                  EvalToolId = "check_rule_status"
+	EvalToolIdCodingSessionEngineeringActivity EvalToolId = "coding_session_engineering_activity"
+	EvalToolIdCodingSessionHarness             EvalToolId = "coding_session_harness"
+	EvalToolIdCodingSessionToolsAndSkills      EvalToolId = "coding_session_tools_and_skills"
+	EvalToolIdCommitVerification               EvalToolId = "commit_verification"
+	EvalToolIdEvaluationHistory                EvalToolId = "evaluation_history"
+	EvalToolIdGitBlame                         EvalToolId = "git_blame"
+	EvalToolIdGitDiffBase                      EvalToolId = "git_diff_base"
+	EvalToolIdGitLog                           EvalToolId = "git_log"
+	EvalToolIdGrep                             EvalToolId = "grep"
+	EvalToolIdListFiles                        EvalToolId = "list_files"
+	EvalToolIdPathAuthorship                   EvalToolId = "path_authorship"
+	EvalToolIdPrChecks                         EvalToolId = "pr_checks"
+	EvalToolIdPrFiles                          EvalToolId = "pr_files"
+	EvalToolIdPrMetadata                       EvalToolId = "pr_metadata"
+	EvalToolIdPrReviewsAndComments             EvalToolId = "pr_reviews_and_comments"
+	EvalToolIdReadFile                         EvalToolId = "read_file"
+	EvalToolIdReadSteeringFiles                EvalToolId = "read_steering_files"
+	EvalToolIdReviewAgentStats                 EvalToolId = "review_agent_stats"
+	EvalToolIdSloStatus                        EvalToolId = "slo_status"
+)
+
+// Valid indicates whether the value is a known member of the EvalToolId enum.
+func (e EvalToolId) Valid() bool {
+	switch e {
+	case EvalToolIdAuthorDeliveryRecord:
+		return true
+	case EvalToolIdCheckRuleStatus:
+		return true
+	case EvalToolIdCodingSessionEngineeringActivity:
+		return true
+	case EvalToolIdCodingSessionHarness:
+		return true
+	case EvalToolIdCodingSessionToolsAndSkills:
+		return true
+	case EvalToolIdCommitVerification:
+		return true
+	case EvalToolIdEvaluationHistory:
+		return true
+	case EvalToolIdGitBlame:
+		return true
+	case EvalToolIdGitDiffBase:
+		return true
+	case EvalToolIdGitLog:
+		return true
+	case EvalToolIdGrep:
+		return true
+	case EvalToolIdListFiles:
+		return true
+	case EvalToolIdPathAuthorship:
+		return true
+	case EvalToolIdPrChecks:
+		return true
+	case EvalToolIdPrFiles:
+		return true
+	case EvalToolIdPrMetadata:
+		return true
+	case EvalToolIdPrReviewsAndComments:
+		return true
+	case EvalToolIdReadFile:
+		return true
+	case EvalToolIdReadSteeringFiles:
+		return true
+	case EvalToolIdReviewAgentStats:
+		return true
+	case EvalToolIdSloStatus:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FailedCheckAgenticWorkflowTriggerKind.
 const (
 	FailedCheckAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation FailedCheckAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
@@ -1007,6 +1292,16 @@ const (
 	FailedCheckAgenticWorkflowTriggerKindGithubWorkflowRun              FailedCheckAgenticWorkflowTriggerKind = "github.workflow_run"
 	FailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest             FailedCheckAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	FailedCheckAgenticWorkflowTriggerKindGitlabNote                     FailedCheckAgenticWorkflowTriggerKind = "gitlab.note"
+	FailedCheckAgenticWorkflowTriggerKindJiraAttachment                 FailedCheckAgenticWorkflowTriggerKind = "jira.attachment"
+	FailedCheckAgenticWorkflowTriggerKindJiraBoard                      FailedCheckAgenticWorkflowTriggerKind = "jira.board"
+	FailedCheckAgenticWorkflowTriggerKindJiraComment                    FailedCheckAgenticWorkflowTriggerKind = "jira.comment"
+	FailedCheckAgenticWorkflowTriggerKindJiraComponent                  FailedCheckAgenticWorkflowTriggerKind = "jira.component"
+	FailedCheckAgenticWorkflowTriggerKindJiraIssue                      FailedCheckAgenticWorkflowTriggerKind = "jira.issue"
+	FailedCheckAgenticWorkflowTriggerKindJiraIssueLink                  FailedCheckAgenticWorkflowTriggerKind = "jira.issue_link"
+	FailedCheckAgenticWorkflowTriggerKindJiraProject                    FailedCheckAgenticWorkflowTriggerKind = "jira.project"
+	FailedCheckAgenticWorkflowTriggerKindJiraSprint                     FailedCheckAgenticWorkflowTriggerKind = "jira.sprint"
+	FailedCheckAgenticWorkflowTriggerKindJiraVersion                    FailedCheckAgenticWorkflowTriggerKind = "jira.version"
+	FailedCheckAgenticWorkflowTriggerKindJiraWorklog                    FailedCheckAgenticWorkflowTriggerKind = "jira.worklog"
 	FailedCheckAgenticWorkflowTriggerKindLinearComment                  FailedCheckAgenticWorkflowTriggerKind = "linear.comment"
 	FailedCheckAgenticWorkflowTriggerKindLinearCommentReaction          FailedCheckAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	FailedCheckAgenticWorkflowTriggerKindLinearInitiative               FailedCheckAgenticWorkflowTriggerKind = "linear.initiative"
@@ -1063,6 +1358,26 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindGitlabNote:
 		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case FailedCheckAgenticWorkflowTriggerKindJiraWorklog:
+		return true
 	case FailedCheckAgenticWorkflowTriggerKindLinearComment:
 		return true
 	case FailedCheckAgenticWorkflowTriggerKindLinearCommentReaction:
@@ -1104,6 +1419,7 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 
 // Defines values for FailedCheckSilencedTriggerVariableName.
 const (
+	IssueId                                           FailedCheckSilencedTriggerVariableName = "issue.id"
 	IssueSilenced                                     FailedCheckSilencedTriggerVariableName = "issue.silenced"
 	FailedCheckSilencedTriggerVariableNameIssueStatus FailedCheckSilencedTriggerVariableName = "issue.status"
 )
@@ -1111,6 +1427,8 @@ const (
 // Valid indicates whether the value is a known member of the FailedCheckSilencedTriggerVariableName enum.
 func (e FailedCheckSilencedTriggerVariableName) Valid() bool {
 	switch e {
+	case IssueId:
+		return true
 	case IssueSilenced:
 		return true
 	case FailedCheckSilencedTriggerVariableNameIssueStatus:
@@ -1298,6 +1616,16 @@ const (
 	GitHubCheckRunAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubCheckRunAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubCheckRunAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubCheckRunAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubCheckRunAgenticWorkflowTriggerKindGitlabNote                     GitHubCheckRunAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraAttachment                 GitHubCheckRunAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraBoard                      GitHubCheckRunAgenticWorkflowTriggerKind = "jira.board"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraComment                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraComponent                  GitHubCheckRunAgenticWorkflowTriggerKind = "jira.component"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraIssue                      GitHubCheckRunAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraIssueLink                  GitHubCheckRunAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraProject                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.project"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraSprint                     GitHubCheckRunAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraVersion                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.version"
+	GitHubCheckRunAgenticWorkflowTriggerKindJiraWorklog                    GitHubCheckRunAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearComment                  GitHubCheckRunAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearCommentReaction          GitHubCheckRunAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubCheckRunAgenticWorkflowTriggerKindLinearInitiative               GitHubCheckRunAgenticWorkflowTriggerKind = "linear.initiative"
@@ -1353,6 +1681,26 @@ func (e GitHubCheckRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckRunAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubCheckRunAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubCheckRunAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -1481,6 +1829,16 @@ const (
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubCheckSuiteAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubCheckSuiteAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabNote                     GitHubCheckSuiteAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraAttachment                 GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraBoard                      GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.board"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraComment                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraComponent                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.component"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssue                      GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssueLink                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraProject                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.project"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraSprint                     GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraVersion                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.version"
+	GitHubCheckSuiteAgenticWorkflowTriggerKindJiraWorklog                    GitHubCheckSuiteAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearComment                  GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearCommentReaction          GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubCheckSuiteAgenticWorkflowTriggerKindLinearInitiative               GitHubCheckSuiteAgenticWorkflowTriggerKind = "linear.initiative"
@@ -1536,6 +1894,26 @@ func (e GitHubCheckSuiteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubCheckSuiteAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubCheckSuiteAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -1661,6 +2039,16 @@ const (
 	GitHubDeploymentAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubDeploymentAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubDeploymentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubDeploymentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubDeploymentAgenticWorkflowTriggerKindGitlabNote                     GitHubDeploymentAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraAttachment                 GitHubDeploymentAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraBoard                      GitHubDeploymentAgenticWorkflowTriggerKind = "jira.board"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraComment                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraComponent                  GitHubDeploymentAgenticWorkflowTriggerKind = "jira.component"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraIssue                      GitHubDeploymentAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraIssueLink                  GitHubDeploymentAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraProject                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.project"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraSprint                     GitHubDeploymentAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraVersion                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.version"
+	GitHubDeploymentAgenticWorkflowTriggerKindJiraWorklog                    GitHubDeploymentAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearCommentReaction          GitHubDeploymentAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubDeploymentAgenticWorkflowTriggerKindLinearInitiative               GitHubDeploymentAgenticWorkflowTriggerKind = "linear.initiative"
@@ -1716,6 +2104,26 @@ func (e GitHubDeploymentAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubDeploymentAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubDeploymentAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubDeploymentAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -1775,6 +2183,16 @@ const (
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubDeploymentStatusAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubDeploymentStatusAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabNote                     GitHubDeploymentStatusAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraAttachment                 GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraBoard                      GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.board"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraComment                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraComponent                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.component"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraIssue                      GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraIssueLink                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraProject                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.project"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraSprint                     GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraVersion                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.version"
+	GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraWorklog                    GitHubDeploymentStatusAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearComment                  GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearCommentReaction          GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearInitiative               GitHubDeploymentStatusAgenticWorkflowTriggerKind = "linear.initiative"
@@ -1830,6 +2248,26 @@ func (e GitHubDeploymentStatusAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubDeploymentStatusAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubDeploymentStatusAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -1889,6 +2327,16 @@ const (
 	GitHubIssueCommentAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubIssueCommentAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubIssueCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubIssueCommentAgenticWorkflowTriggerKindGitlabNote                     GitHubIssueCommentAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraAttachment                 GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraBoard                      GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.board"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraComment                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraComponent                  GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.component"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraIssue                      GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraIssueLink                  GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraProject                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.project"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraSprint                     GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraVersion                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.version"
+	GitHubIssueCommentAgenticWorkflowTriggerKindJiraWorklog                    GitHubIssueCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearComment                  GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearCommentReaction          GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubIssueCommentAgenticWorkflowTriggerKindLinearInitiative               GitHubIssueCommentAgenticWorkflowTriggerKind = "linear.initiative"
@@ -1944,6 +2392,26 @@ func (e GitHubIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubIssueCommentAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubIssueCommentAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubIssueCommentAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2003,6 +2471,16 @@ const (
 	GitHubPullRequestAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPullRequestAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubPullRequestAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPullRequestAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraAttachment                 GitHubPullRequestAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraBoard                      GitHubPullRequestAgenticWorkflowTriggerKind = "jira.board"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraComment                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraComponent                  GitHubPullRequestAgenticWorkflowTriggerKind = "jira.component"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraIssue                      GitHubPullRequestAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPullRequestAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraProject                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraSprint                     GitHubPullRequestAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraVersion                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.version"
+	GitHubPullRequestAgenticWorkflowTriggerKindJiraWorklog                    GitHubPullRequestAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearCommentReaction          GitHubPullRequestAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubPullRequestAgenticWorkflowTriggerKindLinearInitiative               GitHubPullRequestAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2058,6 +2536,26 @@ func (e GitHubPullRequestAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubPullRequestAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubPullRequestAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubPullRequestAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2117,6 +2615,16 @@ const (
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPullRequestReviewAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestReviewAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestReviewAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraAttachment                 GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraBoard                      GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.board"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraComment                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraComponent                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.component"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraIssue                      GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraProject                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraSprint                     GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraVersion                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.version"
+	GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraWorklog                    GitHubPullRequestReviewAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearCommentReaction          GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearInitiative               GitHubPullRequestReviewAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2172,6 +2680,26 @@ func (e GitHubPullRequestReviewAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubPullRequestReviewAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubPullRequestReviewAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2231,6 +2759,16 @@ const (
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabNote                     GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraAttachment                 GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraBoard                      GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.board"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraComment                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraComponent                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.component"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraIssue                      GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraProject                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraSprint                     GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraVersion                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.version"
+	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraWorklog                    GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearComment                  GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearCommentReaction          GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearInitiative               GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2286,6 +2824,26 @@ func (e GitHubPullRequestReviewCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubPullRequestReviewCommentAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2345,6 +2903,16 @@ const (
 	GitHubPushAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubPushAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubPushAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubPushAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubPushAgenticWorkflowTriggerKindGitlabNote                     GitHubPushAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubPushAgenticWorkflowTriggerKindJiraAttachment                 GitHubPushAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubPushAgenticWorkflowTriggerKindJiraBoard                      GitHubPushAgenticWorkflowTriggerKind = "jira.board"
+	GitHubPushAgenticWorkflowTriggerKindJiraComment                    GitHubPushAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubPushAgenticWorkflowTriggerKindJiraComponent                  GitHubPushAgenticWorkflowTriggerKind = "jira.component"
+	GitHubPushAgenticWorkflowTriggerKindJiraIssue                      GitHubPushAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubPushAgenticWorkflowTriggerKindJiraIssueLink                  GitHubPushAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubPushAgenticWorkflowTriggerKindJiraProject                    GitHubPushAgenticWorkflowTriggerKind = "jira.project"
+	GitHubPushAgenticWorkflowTriggerKindJiraSprint                     GitHubPushAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubPushAgenticWorkflowTriggerKindJiraVersion                    GitHubPushAgenticWorkflowTriggerKind = "jira.version"
+	GitHubPushAgenticWorkflowTriggerKindJiraWorklog                    GitHubPushAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubPushAgenticWorkflowTriggerKindLinearComment                  GitHubPushAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubPushAgenticWorkflowTriggerKindLinearCommentReaction          GitHubPushAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubPushAgenticWorkflowTriggerKindLinearInitiative               GitHubPushAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2400,6 +2968,26 @@ func (e GitHubPushAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubPushAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubPushAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubPushAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2459,6 +3047,16 @@ const (
 	GitHubReleaseAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubReleaseAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubReleaseAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubReleaseAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubReleaseAgenticWorkflowTriggerKindGitlabNote                     GitHubReleaseAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraAttachment                 GitHubReleaseAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraBoard                      GitHubReleaseAgenticWorkflowTriggerKind = "jira.board"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraComment                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraComponent                  GitHubReleaseAgenticWorkflowTriggerKind = "jira.component"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraIssue                      GitHubReleaseAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraIssueLink                  GitHubReleaseAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraProject                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.project"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraSprint                     GitHubReleaseAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraVersion                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.version"
+	GitHubReleaseAgenticWorkflowTriggerKindJiraWorklog                    GitHubReleaseAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearComment                  GitHubReleaseAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearCommentReaction          GitHubReleaseAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubReleaseAgenticWorkflowTriggerKindLinearInitiative               GitHubReleaseAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2514,6 +3112,26 @@ func (e GitHubReleaseAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubReleaseAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubReleaseAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubReleaseAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2702,6 +3320,16 @@ const (
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraAttachment                 GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraBoard                      GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.board"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraComment                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraComponent                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.component"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraIssue                      GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraIssueLink                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraProject                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.project"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraSprint                     GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraVersion                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.version"
+	GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraWorklog                    GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearCommentReaction          GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearInitiative               GitHubWorkflowDispatchAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2757,6 +3385,26 @@ func (e GitHubWorkflowDispatchAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubWorkflowDispatchAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2816,6 +3464,16 @@ const (
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubWorkflowJobAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowJobAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowJobAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraAttachment                 GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraBoard                      GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.board"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraComment                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraComponent                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.component"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssue                      GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssueLink                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraProject                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.project"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraSprint                     GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraVersion                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.version"
+	GitHubWorkflowJobAgenticWorkflowTriggerKindJiraWorklog                    GitHubWorkflowJobAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearCommentReaction          GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubWorkflowJobAgenticWorkflowTriggerKindLinearInitiative               GitHubWorkflowJobAgenticWorkflowTriggerKind = "linear.initiative"
@@ -2871,6 +3529,26 @@ func (e GitHubWorkflowJobAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubWorkflowJobAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubWorkflowJobAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -2963,6 +3641,16 @@ const (
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGithubWorkflowRun              GitHubWorkflowRunAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabMergeRequest             GitHubWorkflowRunAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabNote                     GitHubWorkflowRunAgenticWorkflowTriggerKind = "gitlab.note"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraAttachment                 GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.attachment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraBoard                      GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.board"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraComment                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.comment"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraComponent                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.component"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssue                      GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.issue"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssueLink                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraProject                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.project"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraSprint                     GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.sprint"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraVersion                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.version"
+	GitHubWorkflowRunAgenticWorkflowTriggerKindJiraWorklog                    GitHubWorkflowRunAgenticWorkflowTriggerKind = "jira.worklog"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearComment                  GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.comment"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearCommentReaction          GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitHubWorkflowRunAgenticWorkflowTriggerKindLinearInitiative               GitHubWorkflowRunAgenticWorkflowTriggerKind = "linear.initiative"
@@ -3018,6 +3706,26 @@ func (e GitHubWorkflowRunAgenticWorkflowTriggerKind) Valid() bool {
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitHubWorkflowRunAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitHubWorkflowRunAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -3116,6 +3824,16 @@ const (
 	GitLabMergeRequestAgenticWorkflowTriggerKindGithubWorkflowRun              GitLabMergeRequestAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGitlabMergeRequest             GitLabMergeRequestAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitLabMergeRequestAgenticWorkflowTriggerKindGitlabNote                     GitLabMergeRequestAgenticWorkflowTriggerKind = "gitlab.note"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraAttachment                 GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.attachment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraBoard                      GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.board"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraComment                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.comment"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraComponent                  GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.component"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraIssue                      GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.issue"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraIssueLink                  GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraProject                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.project"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraSprint                     GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.sprint"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraVersion                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.version"
+	GitLabMergeRequestAgenticWorkflowTriggerKindJiraWorklog                    GitLabMergeRequestAgenticWorkflowTriggerKind = "jira.worklog"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearComment                  GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.comment"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearCommentReaction          GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitLabMergeRequestAgenticWorkflowTriggerKindLinearInitiative               GitLabMergeRequestAgenticWorkflowTriggerKind = "linear.initiative"
@@ -3171,6 +3889,26 @@ func (e GitLabMergeRequestAgenticWorkflowTriggerKind) Valid() bool {
 	case GitLabMergeRequestAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitLabMergeRequestAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitLabMergeRequestAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -3230,6 +3968,16 @@ const (
 	GitLabNoteAgenticWorkflowTriggerKindGithubWorkflowRun              GitLabNoteAgenticWorkflowTriggerKind = "github.workflow_run"
 	GitLabNoteAgenticWorkflowTriggerKindGitlabMergeRequest             GitLabNoteAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	GitLabNoteAgenticWorkflowTriggerKindGitlabNote                     GitLabNoteAgenticWorkflowTriggerKind = "gitlab.note"
+	GitLabNoteAgenticWorkflowTriggerKindJiraAttachment                 GitLabNoteAgenticWorkflowTriggerKind = "jira.attachment"
+	GitLabNoteAgenticWorkflowTriggerKindJiraBoard                      GitLabNoteAgenticWorkflowTriggerKind = "jira.board"
+	GitLabNoteAgenticWorkflowTriggerKindJiraComment                    GitLabNoteAgenticWorkflowTriggerKind = "jira.comment"
+	GitLabNoteAgenticWorkflowTriggerKindJiraComponent                  GitLabNoteAgenticWorkflowTriggerKind = "jira.component"
+	GitLabNoteAgenticWorkflowTriggerKindJiraIssue                      GitLabNoteAgenticWorkflowTriggerKind = "jira.issue"
+	GitLabNoteAgenticWorkflowTriggerKindJiraIssueLink                  GitLabNoteAgenticWorkflowTriggerKind = "jira.issue_link"
+	GitLabNoteAgenticWorkflowTriggerKindJiraProject                    GitLabNoteAgenticWorkflowTriggerKind = "jira.project"
+	GitLabNoteAgenticWorkflowTriggerKindJiraSprint                     GitLabNoteAgenticWorkflowTriggerKind = "jira.sprint"
+	GitLabNoteAgenticWorkflowTriggerKindJiraVersion                    GitLabNoteAgenticWorkflowTriggerKind = "jira.version"
+	GitLabNoteAgenticWorkflowTriggerKindJiraWorklog                    GitLabNoteAgenticWorkflowTriggerKind = "jira.worklog"
 	GitLabNoteAgenticWorkflowTriggerKindLinearComment                  GitLabNoteAgenticWorkflowTriggerKind = "linear.comment"
 	GitLabNoteAgenticWorkflowTriggerKindLinearCommentReaction          GitLabNoteAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	GitLabNoteAgenticWorkflowTriggerKindLinearInitiative               GitLabNoteAgenticWorkflowTriggerKind = "linear.initiative"
@@ -3285,6 +4033,26 @@ func (e GitLabNoteAgenticWorkflowTriggerKind) Valid() bool {
 	case GitLabNoteAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case GitLabNoteAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case GitLabNoteAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -3517,6 +4285,1986 @@ func (e IpAddressStorageStrategy) Valid() bool {
 	}
 }
 
+// Defines values for JiraAttachmentAgenticWorkflowTriggerKind.
+const (
+	JiraAttachmentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraAttachmentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraAttachmentAgenticWorkflowTriggerKindFailedCheckNew                 JiraAttachmentAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubCheckRun                 JiraAttachmentAgenticWorkflowTriggerKind = "github.check_run"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubCheckSuite               JiraAttachmentAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubDeployment               JiraAttachmentAgenticWorkflowTriggerKind = "github.deployment"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraAttachmentAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubIssueComment             JiraAttachmentAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubPullRequest              JiraAttachmentAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubPullRequestReview        JiraAttachmentAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraAttachmentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubPush                     JiraAttachmentAgenticWorkflowTriggerKind = "github.push"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubRelease                  JiraAttachmentAgenticWorkflowTriggerKind = "github.release"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraAttachmentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubWorkflowJob              JiraAttachmentAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraAttachmentAgenticWorkflowTriggerKindGithubWorkflowRun              JiraAttachmentAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraAttachmentAgenticWorkflowTriggerKindGitlabMergeRequest             JiraAttachmentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraAttachmentAgenticWorkflowTriggerKindGitlabNote                     JiraAttachmentAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraAttachment                 JiraAttachmentAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraBoard                      JiraAttachmentAgenticWorkflowTriggerKind = "jira.board"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraComment                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.comment"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraComponent                  JiraAttachmentAgenticWorkflowTriggerKind = "jira.component"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraIssue                      JiraAttachmentAgenticWorkflowTriggerKind = "jira.issue"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraIssueLink                  JiraAttachmentAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraProject                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.project"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraSprint                     JiraAttachmentAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraVersion                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.version"
+	JiraAttachmentAgenticWorkflowTriggerKindJiraWorklog                    JiraAttachmentAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearComment                  JiraAttachmentAgenticWorkflowTriggerKind = "linear.comment"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearCommentReaction          JiraAttachmentAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearInitiative               JiraAttachmentAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraAttachmentAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearIssue                    JiraAttachmentAgenticWorkflowTriggerKind = "linear.issue"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearIssueAttachment          JiraAttachmentAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearIssueComment             JiraAttachmentAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearProject                  JiraAttachmentAgenticWorkflowTriggerKind = "linear.project"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearProjectUpdate            JiraAttachmentAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearRelease                  JiraAttachmentAgenticWorkflowTriggerKind = "linear.release"
+	JiraAttachmentAgenticWorkflowTriggerKindLinearReleaseNote              JiraAttachmentAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraAttachmentAgenticWorkflowTriggerKindManual                         JiraAttachmentAgenticWorkflowTriggerKind = "manual"
+	JiraAttachmentAgenticWorkflowTriggerKindSchedule                       JiraAttachmentAgenticWorkflowTriggerKind = "schedule"
+	JiraAttachmentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraAttachmentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraAttachmentAgenticWorkflowTriggerKindSlackBotMessage                JiraAttachmentAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraAttachmentAgenticWorkflowTriggerKindSlackBotReaction               JiraAttachmentAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraAttachmentAgenticWorkflowTriggerKindWebhook                        JiraAttachmentAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraAttachmentAgenticWorkflowTriggerKind enum.
+func (e JiraAttachmentAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraAttachmentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraAttachmentAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraAttachmentTriggerVariableName.
+const (
+	JiraAttachmentTriggerVariableNameJiraAction             JiraAttachmentTriggerVariableName = "jira.action"
+	JiraAttachmentTriggerVariableNameJiraActorName          JiraAttachmentTriggerVariableName = "jira.actor.name"
+	JiraAttachmentTriggerVariableNameJiraAttachmentFileName JiraAttachmentTriggerVariableName = "jira.attachment.file_name"
+	JiraAttachmentTriggerVariableNameJiraAttachmentId       JiraAttachmentTriggerVariableName = "jira.attachment.id"
+	JiraAttachmentTriggerVariableNameJiraAttachmentMimeType JiraAttachmentTriggerVariableName = "jira.attachment.mime_type"
+	JiraAttachmentTriggerVariableNameJiraAttachmentSize     JiraAttachmentTriggerVariableName = "jira.attachment.size"
+	JiraAttachmentTriggerVariableNameJiraIssueId            JiraAttachmentTriggerVariableName = "jira.issue.id"
+	JiraAttachmentTriggerVariableNameJiraIssueKey           JiraAttachmentTriggerVariableName = "jira.issue.key"
+	JiraAttachmentTriggerVariableNameJiraIssueSummary       JiraAttachmentTriggerVariableName = "jira.issue.summary"
+	JiraAttachmentTriggerVariableNameJiraIssueUrl           JiraAttachmentTriggerVariableName = "jira.issue.url"
+	JiraAttachmentTriggerVariableNameJiraProjectId          JiraAttachmentTriggerVariableName = "jira.project.id"
+	JiraAttachmentTriggerVariableNameJiraProjectKey         JiraAttachmentTriggerVariableName = "jira.project.key"
+	JiraAttachmentTriggerVariableNameJiraProjectName        JiraAttachmentTriggerVariableName = "jira.project.name"
+	JiraAttachmentTriggerVariableNameJiraSiteUrl            JiraAttachmentTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraAttachmentTriggerVariableName enum.
+func (e JiraAttachmentTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraAttachmentTriggerVariableNameJiraAction:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraActorName:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraAttachmentFileName:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraAttachmentId:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraAttachmentMimeType:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraAttachmentSize:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraIssueId:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraIssueKey:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraIssueSummary:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraIssueUrl:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraProjectId:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraProjectName:
+		return true
+	case JiraAttachmentTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraBoardAgenticWorkflowTriggerKind.
+const (
+	JiraBoardAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraBoardAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraBoardAgenticWorkflowTriggerKindFailedCheckNew                 JiraBoardAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraBoardAgenticWorkflowTriggerKindGithubCheckRun                 JiraBoardAgenticWorkflowTriggerKind = "github.check_run"
+	JiraBoardAgenticWorkflowTriggerKindGithubCheckSuite               JiraBoardAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraBoardAgenticWorkflowTriggerKindGithubDeployment               JiraBoardAgenticWorkflowTriggerKind = "github.deployment"
+	JiraBoardAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraBoardAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraBoardAgenticWorkflowTriggerKindGithubIssueComment             JiraBoardAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraBoardAgenticWorkflowTriggerKindGithubPullRequest              JiraBoardAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraBoardAgenticWorkflowTriggerKindGithubPullRequestReview        JiraBoardAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraBoardAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraBoardAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraBoardAgenticWorkflowTriggerKindGithubPush                     JiraBoardAgenticWorkflowTriggerKind = "github.push"
+	JiraBoardAgenticWorkflowTriggerKindGithubRelease                  JiraBoardAgenticWorkflowTriggerKind = "github.release"
+	JiraBoardAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraBoardAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraBoardAgenticWorkflowTriggerKindGithubWorkflowJob              JiraBoardAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraBoardAgenticWorkflowTriggerKindGithubWorkflowRun              JiraBoardAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraBoardAgenticWorkflowTriggerKindGitlabMergeRequest             JiraBoardAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraBoardAgenticWorkflowTriggerKindGitlabNote                     JiraBoardAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraBoardAgenticWorkflowTriggerKindJiraAttachment                 JiraBoardAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraBoardAgenticWorkflowTriggerKindJiraBoard                      JiraBoardAgenticWorkflowTriggerKind = "jira.board"
+	JiraBoardAgenticWorkflowTriggerKindJiraComment                    JiraBoardAgenticWorkflowTriggerKind = "jira.comment"
+	JiraBoardAgenticWorkflowTriggerKindJiraComponent                  JiraBoardAgenticWorkflowTriggerKind = "jira.component"
+	JiraBoardAgenticWorkflowTriggerKindJiraIssue                      JiraBoardAgenticWorkflowTriggerKind = "jira.issue"
+	JiraBoardAgenticWorkflowTriggerKindJiraIssueLink                  JiraBoardAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraBoardAgenticWorkflowTriggerKindJiraProject                    JiraBoardAgenticWorkflowTriggerKind = "jira.project"
+	JiraBoardAgenticWorkflowTriggerKindJiraSprint                     JiraBoardAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraBoardAgenticWorkflowTriggerKindJiraVersion                    JiraBoardAgenticWorkflowTriggerKind = "jira.version"
+	JiraBoardAgenticWorkflowTriggerKindJiraWorklog                    JiraBoardAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraBoardAgenticWorkflowTriggerKindLinearComment                  JiraBoardAgenticWorkflowTriggerKind = "linear.comment"
+	JiraBoardAgenticWorkflowTriggerKindLinearCommentReaction          JiraBoardAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraBoardAgenticWorkflowTriggerKindLinearInitiative               JiraBoardAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraBoardAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraBoardAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraBoardAgenticWorkflowTriggerKindLinearIssue                    JiraBoardAgenticWorkflowTriggerKind = "linear.issue"
+	JiraBoardAgenticWorkflowTriggerKindLinearIssueAttachment          JiraBoardAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraBoardAgenticWorkflowTriggerKindLinearIssueComment             JiraBoardAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraBoardAgenticWorkflowTriggerKindLinearProject                  JiraBoardAgenticWorkflowTriggerKind = "linear.project"
+	JiraBoardAgenticWorkflowTriggerKindLinearProjectUpdate            JiraBoardAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraBoardAgenticWorkflowTriggerKindLinearRelease                  JiraBoardAgenticWorkflowTriggerKind = "linear.release"
+	JiraBoardAgenticWorkflowTriggerKindLinearReleaseNote              JiraBoardAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraBoardAgenticWorkflowTriggerKindManual                         JiraBoardAgenticWorkflowTriggerKind = "manual"
+	JiraBoardAgenticWorkflowTriggerKindSchedule                       JiraBoardAgenticWorkflowTriggerKind = "schedule"
+	JiraBoardAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraBoardAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraBoardAgenticWorkflowTriggerKindSlackBotMessage                JiraBoardAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraBoardAgenticWorkflowTriggerKindSlackBotReaction               JiraBoardAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraBoardAgenticWorkflowTriggerKindWebhook                        JiraBoardAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraBoardAgenticWorkflowTriggerKind enum.
+func (e JiraBoardAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraBoardAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraBoardAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraBoardTriggerVariableName.
+const (
+	JiraBoardTriggerVariableNameJiraAction    JiraBoardTriggerVariableName = "jira.action"
+	JiraBoardTriggerVariableNameJiraActorName JiraBoardTriggerVariableName = "jira.actor.name"
+	JiraBoardTriggerVariableNameJiraBoardId   JiraBoardTriggerVariableName = "jira.board.id"
+	JiraBoardTriggerVariableNameJiraBoardName JiraBoardTriggerVariableName = "jira.board.name"
+	JiraBoardTriggerVariableNameJiraBoardType JiraBoardTriggerVariableName = "jira.board.type"
+	JiraBoardTriggerVariableNameJiraSiteUrl   JiraBoardTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraBoardTriggerVariableName enum.
+func (e JiraBoardTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraBoardTriggerVariableNameJiraAction:
+		return true
+	case JiraBoardTriggerVariableNameJiraActorName:
+		return true
+	case JiraBoardTriggerVariableNameJiraBoardId:
+		return true
+	case JiraBoardTriggerVariableNameJiraBoardName:
+		return true
+	case JiraBoardTriggerVariableNameJiraBoardType:
+		return true
+	case JiraBoardTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraCommentAgenticWorkflowTriggerKind.
+const (
+	JiraCommentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraCommentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraCommentAgenticWorkflowTriggerKindFailedCheckNew                 JiraCommentAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraCommentAgenticWorkflowTriggerKindGithubCheckRun                 JiraCommentAgenticWorkflowTriggerKind = "github.check_run"
+	JiraCommentAgenticWorkflowTriggerKindGithubCheckSuite               JiraCommentAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraCommentAgenticWorkflowTriggerKindGithubDeployment               JiraCommentAgenticWorkflowTriggerKind = "github.deployment"
+	JiraCommentAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraCommentAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraCommentAgenticWorkflowTriggerKindGithubIssueComment             JiraCommentAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraCommentAgenticWorkflowTriggerKindGithubPullRequest              JiraCommentAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraCommentAgenticWorkflowTriggerKindGithubPullRequestReview        JiraCommentAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraCommentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraCommentAgenticWorkflowTriggerKindGithubPush                     JiraCommentAgenticWorkflowTriggerKind = "github.push"
+	JiraCommentAgenticWorkflowTriggerKindGithubRelease                  JiraCommentAgenticWorkflowTriggerKind = "github.release"
+	JiraCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraCommentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraCommentAgenticWorkflowTriggerKindGithubWorkflowJob              JiraCommentAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraCommentAgenticWorkflowTriggerKindGithubWorkflowRun              JiraCommentAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraCommentAgenticWorkflowTriggerKindGitlabMergeRequest             JiraCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraCommentAgenticWorkflowTriggerKindGitlabNote                     JiraCommentAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraCommentAgenticWorkflowTriggerKindJiraAttachment                 JiraCommentAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraCommentAgenticWorkflowTriggerKindJiraBoard                      JiraCommentAgenticWorkflowTriggerKind = "jira.board"
+	JiraCommentAgenticWorkflowTriggerKindJiraComment                    JiraCommentAgenticWorkflowTriggerKind = "jira.comment"
+	JiraCommentAgenticWorkflowTriggerKindJiraComponent                  JiraCommentAgenticWorkflowTriggerKind = "jira.component"
+	JiraCommentAgenticWorkflowTriggerKindJiraIssue                      JiraCommentAgenticWorkflowTriggerKind = "jira.issue"
+	JiraCommentAgenticWorkflowTriggerKindJiraIssueLink                  JiraCommentAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraCommentAgenticWorkflowTriggerKindJiraProject                    JiraCommentAgenticWorkflowTriggerKind = "jira.project"
+	JiraCommentAgenticWorkflowTriggerKindJiraSprint                     JiraCommentAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraCommentAgenticWorkflowTriggerKindJiraVersion                    JiraCommentAgenticWorkflowTriggerKind = "jira.version"
+	JiraCommentAgenticWorkflowTriggerKindJiraWorklog                    JiraCommentAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraCommentAgenticWorkflowTriggerKindLinearComment                  JiraCommentAgenticWorkflowTriggerKind = "linear.comment"
+	JiraCommentAgenticWorkflowTriggerKindLinearCommentReaction          JiraCommentAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraCommentAgenticWorkflowTriggerKindLinearInitiative               JiraCommentAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraCommentAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraCommentAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraCommentAgenticWorkflowTriggerKindLinearIssue                    JiraCommentAgenticWorkflowTriggerKind = "linear.issue"
+	JiraCommentAgenticWorkflowTriggerKindLinearIssueAttachment          JiraCommentAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraCommentAgenticWorkflowTriggerKindLinearIssueComment             JiraCommentAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraCommentAgenticWorkflowTriggerKindLinearProject                  JiraCommentAgenticWorkflowTriggerKind = "linear.project"
+	JiraCommentAgenticWorkflowTriggerKindLinearProjectUpdate            JiraCommentAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraCommentAgenticWorkflowTriggerKindLinearRelease                  JiraCommentAgenticWorkflowTriggerKind = "linear.release"
+	JiraCommentAgenticWorkflowTriggerKindLinearReleaseNote              JiraCommentAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraCommentAgenticWorkflowTriggerKindManual                         JiraCommentAgenticWorkflowTriggerKind = "manual"
+	JiraCommentAgenticWorkflowTriggerKindSchedule                       JiraCommentAgenticWorkflowTriggerKind = "schedule"
+	JiraCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraCommentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraCommentAgenticWorkflowTriggerKindSlackBotMessage                JiraCommentAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraCommentAgenticWorkflowTriggerKindSlackBotReaction               JiraCommentAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraCommentAgenticWorkflowTriggerKindWebhook                        JiraCommentAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraCommentAgenticWorkflowTriggerKind enum.
+func (e JiraCommentAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraCommentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraCommentAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraCommentTriggerVariableName.
+const (
+	JiraCommentTriggerVariableNameJiraAction       JiraCommentTriggerVariableName = "jira.action"
+	JiraCommentTriggerVariableNameJiraActorName    JiraCommentTriggerVariableName = "jira.actor.name"
+	JiraCommentTriggerVariableNameJiraCommentBody  JiraCommentTriggerVariableName = "jira.comment.body"
+	JiraCommentTriggerVariableNameJiraCommentId    JiraCommentTriggerVariableName = "jira.comment.id"
+	JiraCommentTriggerVariableNameJiraCommentUrl   JiraCommentTriggerVariableName = "jira.comment.url"
+	JiraCommentTriggerVariableNameJiraIssueId      JiraCommentTriggerVariableName = "jira.issue.id"
+	JiraCommentTriggerVariableNameJiraIssueKey     JiraCommentTriggerVariableName = "jira.issue.key"
+	JiraCommentTriggerVariableNameJiraIssueSummary JiraCommentTriggerVariableName = "jira.issue.summary"
+	JiraCommentTriggerVariableNameJiraIssueUrl     JiraCommentTriggerVariableName = "jira.issue.url"
+	JiraCommentTriggerVariableNameJiraProjectId    JiraCommentTriggerVariableName = "jira.project.id"
+	JiraCommentTriggerVariableNameJiraProjectKey   JiraCommentTriggerVariableName = "jira.project.key"
+	JiraCommentTriggerVariableNameJiraProjectName  JiraCommentTriggerVariableName = "jira.project.name"
+	JiraCommentTriggerVariableNameJiraSiteUrl      JiraCommentTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraCommentTriggerVariableName enum.
+func (e JiraCommentTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraCommentTriggerVariableNameJiraAction:
+		return true
+	case JiraCommentTriggerVariableNameJiraActorName:
+		return true
+	case JiraCommentTriggerVariableNameJiraCommentBody:
+		return true
+	case JiraCommentTriggerVariableNameJiraCommentId:
+		return true
+	case JiraCommentTriggerVariableNameJiraCommentUrl:
+		return true
+	case JiraCommentTriggerVariableNameJiraIssueId:
+		return true
+	case JiraCommentTriggerVariableNameJiraIssueKey:
+		return true
+	case JiraCommentTriggerVariableNameJiraIssueSummary:
+		return true
+	case JiraCommentTriggerVariableNameJiraIssueUrl:
+		return true
+	case JiraCommentTriggerVariableNameJiraProjectId:
+		return true
+	case JiraCommentTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraCommentTriggerVariableNameJiraProjectName:
+		return true
+	case JiraCommentTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraComponentAgenticWorkflowTriggerKind.
+const (
+	JiraComponentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraComponentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraComponentAgenticWorkflowTriggerKindFailedCheckNew                 JiraComponentAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraComponentAgenticWorkflowTriggerKindGithubCheckRun                 JiraComponentAgenticWorkflowTriggerKind = "github.check_run"
+	JiraComponentAgenticWorkflowTriggerKindGithubCheckSuite               JiraComponentAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraComponentAgenticWorkflowTriggerKindGithubDeployment               JiraComponentAgenticWorkflowTriggerKind = "github.deployment"
+	JiraComponentAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraComponentAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraComponentAgenticWorkflowTriggerKindGithubIssueComment             JiraComponentAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraComponentAgenticWorkflowTriggerKindGithubPullRequest              JiraComponentAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraComponentAgenticWorkflowTriggerKindGithubPullRequestReview        JiraComponentAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraComponentAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraComponentAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraComponentAgenticWorkflowTriggerKindGithubPush                     JiraComponentAgenticWorkflowTriggerKind = "github.push"
+	JiraComponentAgenticWorkflowTriggerKindGithubRelease                  JiraComponentAgenticWorkflowTriggerKind = "github.release"
+	JiraComponentAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraComponentAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraComponentAgenticWorkflowTriggerKindGithubWorkflowJob              JiraComponentAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraComponentAgenticWorkflowTriggerKindGithubWorkflowRun              JiraComponentAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraComponentAgenticWorkflowTriggerKindGitlabMergeRequest             JiraComponentAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraComponentAgenticWorkflowTriggerKindGitlabNote                     JiraComponentAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraComponentAgenticWorkflowTriggerKindJiraAttachment                 JiraComponentAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraComponentAgenticWorkflowTriggerKindJiraBoard                      JiraComponentAgenticWorkflowTriggerKind = "jira.board"
+	JiraComponentAgenticWorkflowTriggerKindJiraComment                    JiraComponentAgenticWorkflowTriggerKind = "jira.comment"
+	JiraComponentAgenticWorkflowTriggerKindJiraComponent                  JiraComponentAgenticWorkflowTriggerKind = "jira.component"
+	JiraComponentAgenticWorkflowTriggerKindJiraIssue                      JiraComponentAgenticWorkflowTriggerKind = "jira.issue"
+	JiraComponentAgenticWorkflowTriggerKindJiraIssueLink                  JiraComponentAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraComponentAgenticWorkflowTriggerKindJiraProject                    JiraComponentAgenticWorkflowTriggerKind = "jira.project"
+	JiraComponentAgenticWorkflowTriggerKindJiraSprint                     JiraComponentAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraComponentAgenticWorkflowTriggerKindJiraVersion                    JiraComponentAgenticWorkflowTriggerKind = "jira.version"
+	JiraComponentAgenticWorkflowTriggerKindJiraWorklog                    JiraComponentAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraComponentAgenticWorkflowTriggerKindLinearComment                  JiraComponentAgenticWorkflowTriggerKind = "linear.comment"
+	JiraComponentAgenticWorkflowTriggerKindLinearCommentReaction          JiraComponentAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraComponentAgenticWorkflowTriggerKindLinearInitiative               JiraComponentAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraComponentAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraComponentAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraComponentAgenticWorkflowTriggerKindLinearIssue                    JiraComponentAgenticWorkflowTriggerKind = "linear.issue"
+	JiraComponentAgenticWorkflowTriggerKindLinearIssueAttachment          JiraComponentAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraComponentAgenticWorkflowTriggerKindLinearIssueComment             JiraComponentAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraComponentAgenticWorkflowTriggerKindLinearProject                  JiraComponentAgenticWorkflowTriggerKind = "linear.project"
+	JiraComponentAgenticWorkflowTriggerKindLinearProjectUpdate            JiraComponentAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraComponentAgenticWorkflowTriggerKindLinearRelease                  JiraComponentAgenticWorkflowTriggerKind = "linear.release"
+	JiraComponentAgenticWorkflowTriggerKindLinearReleaseNote              JiraComponentAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraComponentAgenticWorkflowTriggerKindManual                         JiraComponentAgenticWorkflowTriggerKind = "manual"
+	JiraComponentAgenticWorkflowTriggerKindSchedule                       JiraComponentAgenticWorkflowTriggerKind = "schedule"
+	JiraComponentAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraComponentAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraComponentAgenticWorkflowTriggerKindSlackBotMessage                JiraComponentAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraComponentAgenticWorkflowTriggerKindSlackBotReaction               JiraComponentAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraComponentAgenticWorkflowTriggerKindWebhook                        JiraComponentAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraComponentAgenticWorkflowTriggerKind enum.
+func (e JiraComponentAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraComponentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraComponentAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraComponentTriggerVariableName.
+const (
+	JiraComponentTriggerVariableNameJiraAction               JiraComponentTriggerVariableName = "jira.action"
+	JiraComponentTriggerVariableNameJiraActorName            JiraComponentTriggerVariableName = "jira.actor.name"
+	JiraComponentTriggerVariableNameJiraComponentDescription JiraComponentTriggerVariableName = "jira.component.description"
+	JiraComponentTriggerVariableNameJiraComponentId          JiraComponentTriggerVariableName = "jira.component.id"
+	JiraComponentTriggerVariableNameJiraComponentName        JiraComponentTriggerVariableName = "jira.component.name"
+	JiraComponentTriggerVariableNameJiraProjectId            JiraComponentTriggerVariableName = "jira.project.id"
+	JiraComponentTriggerVariableNameJiraProjectKey           JiraComponentTriggerVariableName = "jira.project.key"
+	JiraComponentTriggerVariableNameJiraProjectName          JiraComponentTriggerVariableName = "jira.project.name"
+	JiraComponentTriggerVariableNameJiraSiteUrl              JiraComponentTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraComponentTriggerVariableName enum.
+func (e JiraComponentTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraComponentTriggerVariableNameJiraAction:
+		return true
+	case JiraComponentTriggerVariableNameJiraActorName:
+		return true
+	case JiraComponentTriggerVariableNameJiraComponentDescription:
+		return true
+	case JiraComponentTriggerVariableNameJiraComponentId:
+		return true
+	case JiraComponentTriggerVariableNameJiraComponentName:
+		return true
+	case JiraComponentTriggerVariableNameJiraProjectId:
+		return true
+	case JiraComponentTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraComponentTriggerVariableNameJiraProjectName:
+		return true
+	case JiraComponentTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraEventAction.
+const (
+	JiraEventActionArchived    JiraEventAction = "archived"
+	JiraEventActionClosed      JiraEventAction = "closed"
+	JiraEventActionCreated     JiraEventAction = "created"
+	JiraEventActionDeleted     JiraEventAction = "deleted"
+	JiraEventActionMerged      JiraEventAction = "merged"
+	JiraEventActionMoved       JiraEventAction = "moved"
+	JiraEventActionReleased    JiraEventAction = "released"
+	JiraEventActionRestored    JiraEventAction = "restored"
+	JiraEventActionSoftdeleted JiraEventAction = "softdeleted"
+	JiraEventActionStarted     JiraEventAction = "started"
+	JiraEventActionUnarchived  JiraEventAction = "unarchived"
+	JiraEventActionUnreleased  JiraEventAction = "unreleased"
+	JiraEventActionUpdated     JiraEventAction = "updated"
+)
+
+// Valid indicates whether the value is a known member of the JiraEventAction enum.
+func (e JiraEventAction) Valid() bool {
+	switch e {
+	case JiraEventActionArchived:
+		return true
+	case JiraEventActionClosed:
+		return true
+	case JiraEventActionCreated:
+		return true
+	case JiraEventActionDeleted:
+		return true
+	case JiraEventActionMerged:
+		return true
+	case JiraEventActionMoved:
+		return true
+	case JiraEventActionReleased:
+		return true
+	case JiraEventActionRestored:
+		return true
+	case JiraEventActionSoftdeleted:
+		return true
+	case JiraEventActionStarted:
+		return true
+	case JiraEventActionUnarchived:
+		return true
+	case JiraEventActionUnreleased:
+		return true
+	case JiraEventActionUpdated:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraIssueAgenticWorkflowTriggerKind.
+const (
+	JiraIssueAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraIssueAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraIssueAgenticWorkflowTriggerKindFailedCheckNew                 JiraIssueAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraIssueAgenticWorkflowTriggerKindGithubCheckRun                 JiraIssueAgenticWorkflowTriggerKind = "github.check_run"
+	JiraIssueAgenticWorkflowTriggerKindGithubCheckSuite               JiraIssueAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraIssueAgenticWorkflowTriggerKindGithubDeployment               JiraIssueAgenticWorkflowTriggerKind = "github.deployment"
+	JiraIssueAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraIssueAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraIssueAgenticWorkflowTriggerKindGithubIssueComment             JiraIssueAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraIssueAgenticWorkflowTriggerKindGithubPullRequest              JiraIssueAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraIssueAgenticWorkflowTriggerKindGithubPullRequestReview        JiraIssueAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraIssueAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraIssueAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraIssueAgenticWorkflowTriggerKindGithubPush                     JiraIssueAgenticWorkflowTriggerKind = "github.push"
+	JiraIssueAgenticWorkflowTriggerKindGithubRelease                  JiraIssueAgenticWorkflowTriggerKind = "github.release"
+	JiraIssueAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraIssueAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraIssueAgenticWorkflowTriggerKindGithubWorkflowJob              JiraIssueAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraIssueAgenticWorkflowTriggerKindGithubWorkflowRun              JiraIssueAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraIssueAgenticWorkflowTriggerKindGitlabMergeRequest             JiraIssueAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraIssueAgenticWorkflowTriggerKindGitlabNote                     JiraIssueAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraIssueAgenticWorkflowTriggerKindJiraAttachment                 JiraIssueAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraIssueAgenticWorkflowTriggerKindJiraBoard                      JiraIssueAgenticWorkflowTriggerKind = "jira.board"
+	JiraIssueAgenticWorkflowTriggerKindJiraComment                    JiraIssueAgenticWorkflowTriggerKind = "jira.comment"
+	JiraIssueAgenticWorkflowTriggerKindJiraComponent                  JiraIssueAgenticWorkflowTriggerKind = "jira.component"
+	JiraIssueAgenticWorkflowTriggerKindJiraIssue                      JiraIssueAgenticWorkflowTriggerKind = "jira.issue"
+	JiraIssueAgenticWorkflowTriggerKindJiraIssueLink                  JiraIssueAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraIssueAgenticWorkflowTriggerKindJiraProject                    JiraIssueAgenticWorkflowTriggerKind = "jira.project"
+	JiraIssueAgenticWorkflowTriggerKindJiraSprint                     JiraIssueAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraIssueAgenticWorkflowTriggerKindJiraVersion                    JiraIssueAgenticWorkflowTriggerKind = "jira.version"
+	JiraIssueAgenticWorkflowTriggerKindJiraWorklog                    JiraIssueAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraIssueAgenticWorkflowTriggerKindLinearComment                  JiraIssueAgenticWorkflowTriggerKind = "linear.comment"
+	JiraIssueAgenticWorkflowTriggerKindLinearCommentReaction          JiraIssueAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraIssueAgenticWorkflowTriggerKindLinearInitiative               JiraIssueAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraIssueAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraIssueAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraIssueAgenticWorkflowTriggerKindLinearIssue                    JiraIssueAgenticWorkflowTriggerKind = "linear.issue"
+	JiraIssueAgenticWorkflowTriggerKindLinearIssueAttachment          JiraIssueAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraIssueAgenticWorkflowTriggerKindLinearIssueComment             JiraIssueAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraIssueAgenticWorkflowTriggerKindLinearProject                  JiraIssueAgenticWorkflowTriggerKind = "linear.project"
+	JiraIssueAgenticWorkflowTriggerKindLinearProjectUpdate            JiraIssueAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraIssueAgenticWorkflowTriggerKindLinearRelease                  JiraIssueAgenticWorkflowTriggerKind = "linear.release"
+	JiraIssueAgenticWorkflowTriggerKindLinearReleaseNote              JiraIssueAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraIssueAgenticWorkflowTriggerKindManual                         JiraIssueAgenticWorkflowTriggerKind = "manual"
+	JiraIssueAgenticWorkflowTriggerKindSchedule                       JiraIssueAgenticWorkflowTriggerKind = "schedule"
+	JiraIssueAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraIssueAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraIssueAgenticWorkflowTriggerKindSlackBotMessage                JiraIssueAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraIssueAgenticWorkflowTriggerKindSlackBotReaction               JiraIssueAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraIssueAgenticWorkflowTriggerKindWebhook                        JiraIssueAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraIssueAgenticWorkflowTriggerKind enum.
+func (e JiraIssueAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraIssueAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraIssueAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraIssueLinkAgenticWorkflowTriggerKind.
+const (
+	JiraIssueLinkAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraIssueLinkAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraIssueLinkAgenticWorkflowTriggerKindFailedCheckNew                 JiraIssueLinkAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubCheckRun                 JiraIssueLinkAgenticWorkflowTriggerKind = "github.check_run"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubCheckSuite               JiraIssueLinkAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubDeployment               JiraIssueLinkAgenticWorkflowTriggerKind = "github.deployment"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraIssueLinkAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubIssueComment             JiraIssueLinkAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubPullRequest              JiraIssueLinkAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubPullRequestReview        JiraIssueLinkAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraIssueLinkAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubPush                     JiraIssueLinkAgenticWorkflowTriggerKind = "github.push"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubRelease                  JiraIssueLinkAgenticWorkflowTriggerKind = "github.release"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraIssueLinkAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubWorkflowJob              JiraIssueLinkAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraIssueLinkAgenticWorkflowTriggerKindGithubWorkflowRun              JiraIssueLinkAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraIssueLinkAgenticWorkflowTriggerKindGitlabMergeRequest             JiraIssueLinkAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraIssueLinkAgenticWorkflowTriggerKindGitlabNote                     JiraIssueLinkAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraAttachment                 JiraIssueLinkAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraBoard                      JiraIssueLinkAgenticWorkflowTriggerKind = "jira.board"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraComment                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.comment"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraComponent                  JiraIssueLinkAgenticWorkflowTriggerKind = "jira.component"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraIssue                      JiraIssueLinkAgenticWorkflowTriggerKind = "jira.issue"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraIssueLink                  JiraIssueLinkAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraProject                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.project"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraSprint                     JiraIssueLinkAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraVersion                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.version"
+	JiraIssueLinkAgenticWorkflowTriggerKindJiraWorklog                    JiraIssueLinkAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearComment                  JiraIssueLinkAgenticWorkflowTriggerKind = "linear.comment"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearCommentReaction          JiraIssueLinkAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearInitiative               JiraIssueLinkAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraIssueLinkAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearIssue                    JiraIssueLinkAgenticWorkflowTriggerKind = "linear.issue"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearIssueAttachment          JiraIssueLinkAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearIssueComment             JiraIssueLinkAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearProject                  JiraIssueLinkAgenticWorkflowTriggerKind = "linear.project"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearProjectUpdate            JiraIssueLinkAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearRelease                  JiraIssueLinkAgenticWorkflowTriggerKind = "linear.release"
+	JiraIssueLinkAgenticWorkflowTriggerKindLinearReleaseNote              JiraIssueLinkAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraIssueLinkAgenticWorkflowTriggerKindManual                         JiraIssueLinkAgenticWorkflowTriggerKind = "manual"
+	JiraIssueLinkAgenticWorkflowTriggerKindSchedule                       JiraIssueLinkAgenticWorkflowTriggerKind = "schedule"
+	JiraIssueLinkAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraIssueLinkAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraIssueLinkAgenticWorkflowTriggerKindSlackBotMessage                JiraIssueLinkAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraIssueLinkAgenticWorkflowTriggerKindSlackBotReaction               JiraIssueLinkAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraIssueLinkAgenticWorkflowTriggerKindWebhook                        JiraIssueLinkAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraIssueLinkAgenticWorkflowTriggerKind enum.
+func (e JiraIssueLinkAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraIssueLinkAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraIssueLinkAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraIssueLinkTriggerVariableName.
+const (
+	JiraIssueLinkTriggerVariableNameJiraAction                        JiraIssueLinkTriggerVariableName = "jira.action"
+	JiraIssueLinkTriggerVariableNameJiraActorName                     JiraIssueLinkTriggerVariableName = "jira.actor.name"
+	JiraIssueLinkTriggerVariableNameJiraIssueLinkDestinationIssueId   JiraIssueLinkTriggerVariableName = "jira.issue_link.destination_issue.id"
+	JiraIssueLinkTriggerVariableNameJiraIssueLinkDestinationProjectId JiraIssueLinkTriggerVariableName = "jira.issue_link.destination_project.id"
+	JiraIssueLinkTriggerVariableNameJiraIssueLinkId                   JiraIssueLinkTriggerVariableName = "jira.issue_link.id"
+	JiraIssueLinkTriggerVariableNameJiraIssueLinkSourceIssueId        JiraIssueLinkTriggerVariableName = "jira.issue_link.source_issue.id"
+	JiraIssueLinkTriggerVariableNameJiraIssueLinkTypeId               JiraIssueLinkTriggerVariableName = "jira.issue_link.type.id"
+	JiraIssueLinkTriggerVariableNameJiraIssueLinkTypeName             JiraIssueLinkTriggerVariableName = "jira.issue_link.type.name"
+	JiraIssueLinkTriggerVariableNameJiraProjectId                     JiraIssueLinkTriggerVariableName = "jira.project.id"
+	JiraIssueLinkTriggerVariableNameJiraProjectKey                    JiraIssueLinkTriggerVariableName = "jira.project.key"
+	JiraIssueLinkTriggerVariableNameJiraProjectName                   JiraIssueLinkTriggerVariableName = "jira.project.name"
+	JiraIssueLinkTriggerVariableNameJiraSiteUrl                       JiraIssueLinkTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraIssueLinkTriggerVariableName enum.
+func (e JiraIssueLinkTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraIssueLinkTriggerVariableNameJiraAction:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraActorName:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraIssueLinkDestinationIssueId:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraIssueLinkDestinationProjectId:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraIssueLinkId:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraIssueLinkSourceIssueId:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraIssueLinkTypeId:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraIssueLinkTypeName:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraProjectId:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraProjectName:
+		return true
+	case JiraIssueLinkTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraIssueTriggerVariableName.
+const (
+	JiraIssueTriggerVariableNameJiraAction       JiraIssueTriggerVariableName = "jira.action"
+	JiraIssueTriggerVariableNameJiraActorName    JiraIssueTriggerVariableName = "jira.actor.name"
+	JiraIssueTriggerVariableNameJiraIssueId      JiraIssueTriggerVariableName = "jira.issue.id"
+	JiraIssueTriggerVariableNameJiraIssueKey     JiraIssueTriggerVariableName = "jira.issue.key"
+	JiraIssueTriggerVariableNameJiraIssueStatus  JiraIssueTriggerVariableName = "jira.issue.status"
+	JiraIssueTriggerVariableNameJiraIssueSummary JiraIssueTriggerVariableName = "jira.issue.summary"
+	JiraIssueTriggerVariableNameJiraIssueType    JiraIssueTriggerVariableName = "jira.issue.type"
+	JiraIssueTriggerVariableNameJiraIssueUrl     JiraIssueTriggerVariableName = "jira.issue.url"
+	JiraIssueTriggerVariableNameJiraProjectId    JiraIssueTriggerVariableName = "jira.project.id"
+	JiraIssueTriggerVariableNameJiraProjectKey   JiraIssueTriggerVariableName = "jira.project.key"
+	JiraIssueTriggerVariableNameJiraProjectName  JiraIssueTriggerVariableName = "jira.project.name"
+	JiraIssueTriggerVariableNameJiraSiteUrl      JiraIssueTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraIssueTriggerVariableName enum.
+func (e JiraIssueTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraIssueTriggerVariableNameJiraAction:
+		return true
+	case JiraIssueTriggerVariableNameJiraActorName:
+		return true
+	case JiraIssueTriggerVariableNameJiraIssueId:
+		return true
+	case JiraIssueTriggerVariableNameJiraIssueKey:
+		return true
+	case JiraIssueTriggerVariableNameJiraIssueStatus:
+		return true
+	case JiraIssueTriggerVariableNameJiraIssueSummary:
+		return true
+	case JiraIssueTriggerVariableNameJiraIssueType:
+		return true
+	case JiraIssueTriggerVariableNameJiraIssueUrl:
+		return true
+	case JiraIssueTriggerVariableNameJiraProjectId:
+		return true
+	case JiraIssueTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraIssueTriggerVariableNameJiraProjectName:
+		return true
+	case JiraIssueTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraProjectAgenticWorkflowTriggerKind.
+const (
+	JiraProjectAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraProjectAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraProjectAgenticWorkflowTriggerKindFailedCheckNew                 JiraProjectAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraProjectAgenticWorkflowTriggerKindGithubCheckRun                 JiraProjectAgenticWorkflowTriggerKind = "github.check_run"
+	JiraProjectAgenticWorkflowTriggerKindGithubCheckSuite               JiraProjectAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraProjectAgenticWorkflowTriggerKindGithubDeployment               JiraProjectAgenticWorkflowTriggerKind = "github.deployment"
+	JiraProjectAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraProjectAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraProjectAgenticWorkflowTriggerKindGithubIssueComment             JiraProjectAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraProjectAgenticWorkflowTriggerKindGithubPullRequest              JiraProjectAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraProjectAgenticWorkflowTriggerKindGithubPullRequestReview        JiraProjectAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraProjectAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraProjectAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraProjectAgenticWorkflowTriggerKindGithubPush                     JiraProjectAgenticWorkflowTriggerKind = "github.push"
+	JiraProjectAgenticWorkflowTriggerKindGithubRelease                  JiraProjectAgenticWorkflowTriggerKind = "github.release"
+	JiraProjectAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraProjectAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraProjectAgenticWorkflowTriggerKindGithubWorkflowJob              JiraProjectAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraProjectAgenticWorkflowTriggerKindGithubWorkflowRun              JiraProjectAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraProjectAgenticWorkflowTriggerKindGitlabMergeRequest             JiraProjectAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraProjectAgenticWorkflowTriggerKindGitlabNote                     JiraProjectAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraProjectAgenticWorkflowTriggerKindJiraAttachment                 JiraProjectAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraProjectAgenticWorkflowTriggerKindJiraBoard                      JiraProjectAgenticWorkflowTriggerKind = "jira.board"
+	JiraProjectAgenticWorkflowTriggerKindJiraComment                    JiraProjectAgenticWorkflowTriggerKind = "jira.comment"
+	JiraProjectAgenticWorkflowTriggerKindJiraComponent                  JiraProjectAgenticWorkflowTriggerKind = "jira.component"
+	JiraProjectAgenticWorkflowTriggerKindJiraIssue                      JiraProjectAgenticWorkflowTriggerKind = "jira.issue"
+	JiraProjectAgenticWorkflowTriggerKindJiraIssueLink                  JiraProjectAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraProjectAgenticWorkflowTriggerKindJiraProject                    JiraProjectAgenticWorkflowTriggerKind = "jira.project"
+	JiraProjectAgenticWorkflowTriggerKindJiraSprint                     JiraProjectAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraProjectAgenticWorkflowTriggerKindJiraVersion                    JiraProjectAgenticWorkflowTriggerKind = "jira.version"
+	JiraProjectAgenticWorkflowTriggerKindJiraWorklog                    JiraProjectAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraProjectAgenticWorkflowTriggerKindLinearComment                  JiraProjectAgenticWorkflowTriggerKind = "linear.comment"
+	JiraProjectAgenticWorkflowTriggerKindLinearCommentReaction          JiraProjectAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraProjectAgenticWorkflowTriggerKindLinearInitiative               JiraProjectAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraProjectAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraProjectAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraProjectAgenticWorkflowTriggerKindLinearIssue                    JiraProjectAgenticWorkflowTriggerKind = "linear.issue"
+	JiraProjectAgenticWorkflowTriggerKindLinearIssueAttachment          JiraProjectAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraProjectAgenticWorkflowTriggerKindLinearIssueComment             JiraProjectAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraProjectAgenticWorkflowTriggerKindLinearProject                  JiraProjectAgenticWorkflowTriggerKind = "linear.project"
+	JiraProjectAgenticWorkflowTriggerKindLinearProjectUpdate            JiraProjectAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraProjectAgenticWorkflowTriggerKindLinearRelease                  JiraProjectAgenticWorkflowTriggerKind = "linear.release"
+	JiraProjectAgenticWorkflowTriggerKindLinearReleaseNote              JiraProjectAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraProjectAgenticWorkflowTriggerKindManual                         JiraProjectAgenticWorkflowTriggerKind = "manual"
+	JiraProjectAgenticWorkflowTriggerKindSchedule                       JiraProjectAgenticWorkflowTriggerKind = "schedule"
+	JiraProjectAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraProjectAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraProjectAgenticWorkflowTriggerKindSlackBotMessage                JiraProjectAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraProjectAgenticWorkflowTriggerKindSlackBotReaction               JiraProjectAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraProjectAgenticWorkflowTriggerKindWebhook                        JiraProjectAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraProjectAgenticWorkflowTriggerKind enum.
+func (e JiraProjectAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraProjectAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraProjectAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraProjectTriggerVariableName.
+const (
+	JiraProjectTriggerVariableNameJiraAction      JiraProjectTriggerVariableName = "jira.action"
+	JiraProjectTriggerVariableNameJiraProjectId   JiraProjectTriggerVariableName = "jira.project.id"
+	JiraProjectTriggerVariableNameJiraProjectKey  JiraProjectTriggerVariableName = "jira.project.key"
+	JiraProjectTriggerVariableNameJiraProjectName JiraProjectTriggerVariableName = "jira.project.name"
+	JiraProjectTriggerVariableNameJiraProjectUrl  JiraProjectTriggerVariableName = "jira.project.url"
+	JiraProjectTriggerVariableNameJiraSiteUrl     JiraProjectTriggerVariableName = "jira.site_url"
+)
+
+// Valid indicates whether the value is a known member of the JiraProjectTriggerVariableName enum.
+func (e JiraProjectTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraProjectTriggerVariableNameJiraAction:
+		return true
+	case JiraProjectTriggerVariableNameJiraProjectId:
+		return true
+	case JiraProjectTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraProjectTriggerVariableNameJiraProjectName:
+		return true
+	case JiraProjectTriggerVariableNameJiraProjectUrl:
+		return true
+	case JiraProjectTriggerVariableNameJiraSiteUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraSprintAgenticWorkflowTriggerKind.
+const (
+	JiraSprintAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraSprintAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraSprintAgenticWorkflowTriggerKindFailedCheckNew                 JiraSprintAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraSprintAgenticWorkflowTriggerKindGithubCheckRun                 JiraSprintAgenticWorkflowTriggerKind = "github.check_run"
+	JiraSprintAgenticWorkflowTriggerKindGithubCheckSuite               JiraSprintAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraSprintAgenticWorkflowTriggerKindGithubDeployment               JiraSprintAgenticWorkflowTriggerKind = "github.deployment"
+	JiraSprintAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraSprintAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraSprintAgenticWorkflowTriggerKindGithubIssueComment             JiraSprintAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraSprintAgenticWorkflowTriggerKindGithubPullRequest              JiraSprintAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReview        JiraSprintAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraSprintAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraSprintAgenticWorkflowTriggerKindGithubPush                     JiraSprintAgenticWorkflowTriggerKind = "github.push"
+	JiraSprintAgenticWorkflowTriggerKindGithubRelease                  JiraSprintAgenticWorkflowTriggerKind = "github.release"
+	JiraSprintAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraSprintAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraSprintAgenticWorkflowTriggerKindGithubWorkflowJob              JiraSprintAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraSprintAgenticWorkflowTriggerKindGithubWorkflowRun              JiraSprintAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraSprintAgenticWorkflowTriggerKindGitlabMergeRequest             JiraSprintAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraSprintAgenticWorkflowTriggerKindGitlabNote                     JiraSprintAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraSprintAgenticWorkflowTriggerKindJiraAttachment                 JiraSprintAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraSprintAgenticWorkflowTriggerKindJiraBoard                      JiraSprintAgenticWorkflowTriggerKind = "jira.board"
+	JiraSprintAgenticWorkflowTriggerKindJiraComment                    JiraSprintAgenticWorkflowTriggerKind = "jira.comment"
+	JiraSprintAgenticWorkflowTriggerKindJiraComponent                  JiraSprintAgenticWorkflowTriggerKind = "jira.component"
+	JiraSprintAgenticWorkflowTriggerKindJiraIssue                      JiraSprintAgenticWorkflowTriggerKind = "jira.issue"
+	JiraSprintAgenticWorkflowTriggerKindJiraIssueLink                  JiraSprintAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraSprintAgenticWorkflowTriggerKindJiraProject                    JiraSprintAgenticWorkflowTriggerKind = "jira.project"
+	JiraSprintAgenticWorkflowTriggerKindJiraSprint                     JiraSprintAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraSprintAgenticWorkflowTriggerKindJiraVersion                    JiraSprintAgenticWorkflowTriggerKind = "jira.version"
+	JiraSprintAgenticWorkflowTriggerKindJiraWorklog                    JiraSprintAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraSprintAgenticWorkflowTriggerKindLinearComment                  JiraSprintAgenticWorkflowTriggerKind = "linear.comment"
+	JiraSprintAgenticWorkflowTriggerKindLinearCommentReaction          JiraSprintAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraSprintAgenticWorkflowTriggerKindLinearInitiative               JiraSprintAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraSprintAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraSprintAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraSprintAgenticWorkflowTriggerKindLinearIssue                    JiraSprintAgenticWorkflowTriggerKind = "linear.issue"
+	JiraSprintAgenticWorkflowTriggerKindLinearIssueAttachment          JiraSprintAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraSprintAgenticWorkflowTriggerKindLinearIssueComment             JiraSprintAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraSprintAgenticWorkflowTriggerKindLinearProject                  JiraSprintAgenticWorkflowTriggerKind = "linear.project"
+	JiraSprintAgenticWorkflowTriggerKindLinearProjectUpdate            JiraSprintAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraSprintAgenticWorkflowTriggerKindLinearRelease                  JiraSprintAgenticWorkflowTriggerKind = "linear.release"
+	JiraSprintAgenticWorkflowTriggerKindLinearReleaseNote              JiraSprintAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraSprintAgenticWorkflowTriggerKindManual                         JiraSprintAgenticWorkflowTriggerKind = "manual"
+	JiraSprintAgenticWorkflowTriggerKindSchedule                       JiraSprintAgenticWorkflowTriggerKind = "schedule"
+	JiraSprintAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraSprintAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraSprintAgenticWorkflowTriggerKindSlackBotMessage                JiraSprintAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraSprintAgenticWorkflowTriggerKindSlackBotReaction               JiraSprintAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraSprintAgenticWorkflowTriggerKindWebhook                        JiraSprintAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraSprintAgenticWorkflowTriggerKind enum.
+func (e JiraSprintAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraSprintAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraSprintAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraSprintTriggerVariableName.
+const (
+	JiraSprintTriggerVariableNameJiraAction             JiraSprintTriggerVariableName = "jira.action"
+	JiraSprintTriggerVariableNameJiraActorName          JiraSprintTriggerVariableName = "jira.actor.name"
+	JiraSprintTriggerVariableNameJiraBoardId            JiraSprintTriggerVariableName = "jira.board.id"
+	JiraSprintTriggerVariableNameJiraProjectId          JiraSprintTriggerVariableName = "jira.project.id"
+	JiraSprintTriggerVariableNameJiraProjectKey         JiraSprintTriggerVariableName = "jira.project.key"
+	JiraSprintTriggerVariableNameJiraProjectName        JiraSprintTriggerVariableName = "jira.project.name"
+	JiraSprintTriggerVariableNameJiraSiteUrl            JiraSprintTriggerVariableName = "jira.site_url"
+	JiraSprintTriggerVariableNameJiraSprintCompleteDate JiraSprintTriggerVariableName = "jira.sprint.complete_date"
+	JiraSprintTriggerVariableNameJiraSprintEndDate      JiraSprintTriggerVariableName = "jira.sprint.end_date"
+	JiraSprintTriggerVariableNameJiraSprintGoal         JiraSprintTriggerVariableName = "jira.sprint.goal"
+	JiraSprintTriggerVariableNameJiraSprintId           JiraSprintTriggerVariableName = "jira.sprint.id"
+	JiraSprintTriggerVariableNameJiraSprintName         JiraSprintTriggerVariableName = "jira.sprint.name"
+	JiraSprintTriggerVariableNameJiraSprintStartDate    JiraSprintTriggerVariableName = "jira.sprint.start_date"
+	JiraSprintTriggerVariableNameJiraSprintState        JiraSprintTriggerVariableName = "jira.sprint.state"
+)
+
+// Valid indicates whether the value is a known member of the JiraSprintTriggerVariableName enum.
+func (e JiraSprintTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraSprintTriggerVariableNameJiraAction:
+		return true
+	case JiraSprintTriggerVariableNameJiraActorName:
+		return true
+	case JiraSprintTriggerVariableNameJiraBoardId:
+		return true
+	case JiraSprintTriggerVariableNameJiraProjectId:
+		return true
+	case JiraSprintTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraSprintTriggerVariableNameJiraProjectName:
+		return true
+	case JiraSprintTriggerVariableNameJiraSiteUrl:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintCompleteDate:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintEndDate:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintGoal:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintId:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintName:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintStartDate:
+		return true
+	case JiraSprintTriggerVariableNameJiraSprintState:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraVersionAgenticWorkflowTriggerKind.
+const (
+	JiraVersionAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraVersionAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraVersionAgenticWorkflowTriggerKindFailedCheckNew                 JiraVersionAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraVersionAgenticWorkflowTriggerKindGithubCheckRun                 JiraVersionAgenticWorkflowTriggerKind = "github.check_run"
+	JiraVersionAgenticWorkflowTriggerKindGithubCheckSuite               JiraVersionAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraVersionAgenticWorkflowTriggerKindGithubDeployment               JiraVersionAgenticWorkflowTriggerKind = "github.deployment"
+	JiraVersionAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraVersionAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraVersionAgenticWorkflowTriggerKindGithubIssueComment             JiraVersionAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraVersionAgenticWorkflowTriggerKindGithubPullRequest              JiraVersionAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraVersionAgenticWorkflowTriggerKindGithubPullRequestReview        JiraVersionAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraVersionAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraVersionAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraVersionAgenticWorkflowTriggerKindGithubPush                     JiraVersionAgenticWorkflowTriggerKind = "github.push"
+	JiraVersionAgenticWorkflowTriggerKindGithubRelease                  JiraVersionAgenticWorkflowTriggerKind = "github.release"
+	JiraVersionAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraVersionAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraVersionAgenticWorkflowTriggerKindGithubWorkflowJob              JiraVersionAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraVersionAgenticWorkflowTriggerKindGithubWorkflowRun              JiraVersionAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraVersionAgenticWorkflowTriggerKindGitlabMergeRequest             JiraVersionAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraVersionAgenticWorkflowTriggerKindGitlabNote                     JiraVersionAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraVersionAgenticWorkflowTriggerKindJiraAttachment                 JiraVersionAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraVersionAgenticWorkflowTriggerKindJiraBoard                      JiraVersionAgenticWorkflowTriggerKind = "jira.board"
+	JiraVersionAgenticWorkflowTriggerKindJiraComment                    JiraVersionAgenticWorkflowTriggerKind = "jira.comment"
+	JiraVersionAgenticWorkflowTriggerKindJiraComponent                  JiraVersionAgenticWorkflowTriggerKind = "jira.component"
+	JiraVersionAgenticWorkflowTriggerKindJiraIssue                      JiraVersionAgenticWorkflowTriggerKind = "jira.issue"
+	JiraVersionAgenticWorkflowTriggerKindJiraIssueLink                  JiraVersionAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraVersionAgenticWorkflowTriggerKindJiraProject                    JiraVersionAgenticWorkflowTriggerKind = "jira.project"
+	JiraVersionAgenticWorkflowTriggerKindJiraSprint                     JiraVersionAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraVersionAgenticWorkflowTriggerKindJiraVersion                    JiraVersionAgenticWorkflowTriggerKind = "jira.version"
+	JiraVersionAgenticWorkflowTriggerKindJiraWorklog                    JiraVersionAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraVersionAgenticWorkflowTriggerKindLinearComment                  JiraVersionAgenticWorkflowTriggerKind = "linear.comment"
+	JiraVersionAgenticWorkflowTriggerKindLinearCommentReaction          JiraVersionAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraVersionAgenticWorkflowTriggerKindLinearInitiative               JiraVersionAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraVersionAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraVersionAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraVersionAgenticWorkflowTriggerKindLinearIssue                    JiraVersionAgenticWorkflowTriggerKind = "linear.issue"
+	JiraVersionAgenticWorkflowTriggerKindLinearIssueAttachment          JiraVersionAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraVersionAgenticWorkflowTriggerKindLinearIssueComment             JiraVersionAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraVersionAgenticWorkflowTriggerKindLinearProject                  JiraVersionAgenticWorkflowTriggerKind = "linear.project"
+	JiraVersionAgenticWorkflowTriggerKindLinearProjectUpdate            JiraVersionAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraVersionAgenticWorkflowTriggerKindLinearRelease                  JiraVersionAgenticWorkflowTriggerKind = "linear.release"
+	JiraVersionAgenticWorkflowTriggerKindLinearReleaseNote              JiraVersionAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraVersionAgenticWorkflowTriggerKindManual                         JiraVersionAgenticWorkflowTriggerKind = "manual"
+	JiraVersionAgenticWorkflowTriggerKindSchedule                       JiraVersionAgenticWorkflowTriggerKind = "schedule"
+	JiraVersionAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraVersionAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraVersionAgenticWorkflowTriggerKindSlackBotMessage                JiraVersionAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraVersionAgenticWorkflowTriggerKindSlackBotReaction               JiraVersionAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraVersionAgenticWorkflowTriggerKindWebhook                        JiraVersionAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraVersionAgenticWorkflowTriggerKind enum.
+func (e JiraVersionAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraVersionAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraVersionAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraVersionTriggerVariableName.
+const (
+	JiraVersionTriggerVariableNameJiraAction             JiraVersionTriggerVariableName = "jira.action"
+	JiraVersionTriggerVariableNameJiraActorName          JiraVersionTriggerVariableName = "jira.actor.name"
+	JiraVersionTriggerVariableNameJiraProjectId          JiraVersionTriggerVariableName = "jira.project.id"
+	JiraVersionTriggerVariableNameJiraProjectKey         JiraVersionTriggerVariableName = "jira.project.key"
+	JiraVersionTriggerVariableNameJiraProjectName        JiraVersionTriggerVariableName = "jira.project.name"
+	JiraVersionTriggerVariableNameJiraSiteUrl            JiraVersionTriggerVariableName = "jira.site_url"
+	JiraVersionTriggerVariableNameJiraVersionArchived    JiraVersionTriggerVariableName = "jira.version.archived"
+	JiraVersionTriggerVariableNameJiraVersionDescription JiraVersionTriggerVariableName = "jira.version.description"
+	JiraVersionTriggerVariableNameJiraVersionId          JiraVersionTriggerVariableName = "jira.version.id"
+	JiraVersionTriggerVariableNameJiraVersionName        JiraVersionTriggerVariableName = "jira.version.name"
+	JiraVersionTriggerVariableNameJiraVersionReleaseDate JiraVersionTriggerVariableName = "jira.version.release_date"
+	JiraVersionTriggerVariableNameJiraVersionReleased    JiraVersionTriggerVariableName = "jira.version.released"
+	JiraVersionTriggerVariableNameJiraVersionUrl         JiraVersionTriggerVariableName = "jira.version.url"
+)
+
+// Valid indicates whether the value is a known member of the JiraVersionTriggerVariableName enum.
+func (e JiraVersionTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraVersionTriggerVariableNameJiraAction:
+		return true
+	case JiraVersionTriggerVariableNameJiraActorName:
+		return true
+	case JiraVersionTriggerVariableNameJiraProjectId:
+		return true
+	case JiraVersionTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraVersionTriggerVariableNameJiraProjectName:
+		return true
+	case JiraVersionTriggerVariableNameJiraSiteUrl:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionArchived:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionDescription:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionId:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionName:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionReleaseDate:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionReleased:
+		return true
+	case JiraVersionTriggerVariableNameJiraVersionUrl:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraWebhookAction.
+const (
+	JiraWebhookActionClosed  JiraWebhookAction = "closed"
+	JiraWebhookActionCreated JiraWebhookAction = "created"
+	JiraWebhookActionDeleted JiraWebhookAction = "deleted"
+	JiraWebhookActionStarted JiraWebhookAction = "started"
+	JiraWebhookActionUpdated JiraWebhookAction = "updated"
+)
+
+// Valid indicates whether the value is a known member of the JiraWebhookAction enum.
+func (e JiraWebhookAction) Valid() bool {
+	switch e {
+	case JiraWebhookActionClosed:
+		return true
+	case JiraWebhookActionCreated:
+		return true
+	case JiraWebhookActionDeleted:
+		return true
+	case JiraWebhookActionStarted:
+		return true
+	case JiraWebhookActionUpdated:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraWorklogAgenticWorkflowTriggerKind.
+const (
+	JiraWorklogAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation JiraWorklogAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
+	JiraWorklogAgenticWorkflowTriggerKindFailedCheckNew                 JiraWorklogAgenticWorkflowTriggerKind = "failed_check.new"
+	JiraWorklogAgenticWorkflowTriggerKindGithubCheckRun                 JiraWorklogAgenticWorkflowTriggerKind = "github.check_run"
+	JiraWorklogAgenticWorkflowTriggerKindGithubCheckSuite               JiraWorklogAgenticWorkflowTriggerKind = "github.check_suite"
+	JiraWorklogAgenticWorkflowTriggerKindGithubDeployment               JiraWorklogAgenticWorkflowTriggerKind = "github.deployment"
+	JiraWorklogAgenticWorkflowTriggerKindGithubDeploymentStatus         JiraWorklogAgenticWorkflowTriggerKind = "github.deployment_status"
+	JiraWorklogAgenticWorkflowTriggerKindGithubIssueComment             JiraWorklogAgenticWorkflowTriggerKind = "github.issue_comment"
+	JiraWorklogAgenticWorkflowTriggerKindGithubPullRequest              JiraWorklogAgenticWorkflowTriggerKind = "github.pull_request"
+	JiraWorklogAgenticWorkflowTriggerKindGithubPullRequestReview        JiraWorklogAgenticWorkflowTriggerKind = "github.pull_request_review"
+	JiraWorklogAgenticWorkflowTriggerKindGithubPullRequestReviewComment JiraWorklogAgenticWorkflowTriggerKind = "github.pull_request_review_comment"
+	JiraWorklogAgenticWorkflowTriggerKindGithubPush                     JiraWorklogAgenticWorkflowTriggerKind = "github.push"
+	JiraWorklogAgenticWorkflowTriggerKindGithubRelease                  JiraWorklogAgenticWorkflowTriggerKind = "github.release"
+	JiraWorklogAgenticWorkflowTriggerKindGithubWorkflowDispatch         JiraWorklogAgenticWorkflowTriggerKind = "github.workflow_dispatch"
+	JiraWorklogAgenticWorkflowTriggerKindGithubWorkflowJob              JiraWorklogAgenticWorkflowTriggerKind = "github.workflow_job"
+	JiraWorklogAgenticWorkflowTriggerKindGithubWorkflowRun              JiraWorklogAgenticWorkflowTriggerKind = "github.workflow_run"
+	JiraWorklogAgenticWorkflowTriggerKindGitlabMergeRequest             JiraWorklogAgenticWorkflowTriggerKind = "gitlab.merge_request"
+	JiraWorklogAgenticWorkflowTriggerKindGitlabNote                     JiraWorklogAgenticWorkflowTriggerKind = "gitlab.note"
+	JiraWorklogAgenticWorkflowTriggerKindJiraAttachment                 JiraWorklogAgenticWorkflowTriggerKind = "jira.attachment"
+	JiraWorklogAgenticWorkflowTriggerKindJiraBoard                      JiraWorklogAgenticWorkflowTriggerKind = "jira.board"
+	JiraWorklogAgenticWorkflowTriggerKindJiraComment                    JiraWorklogAgenticWorkflowTriggerKind = "jira.comment"
+	JiraWorklogAgenticWorkflowTriggerKindJiraComponent                  JiraWorklogAgenticWorkflowTriggerKind = "jira.component"
+	JiraWorklogAgenticWorkflowTriggerKindJiraIssue                      JiraWorklogAgenticWorkflowTriggerKind = "jira.issue"
+	JiraWorklogAgenticWorkflowTriggerKindJiraIssueLink                  JiraWorklogAgenticWorkflowTriggerKind = "jira.issue_link"
+	JiraWorklogAgenticWorkflowTriggerKindJiraProject                    JiraWorklogAgenticWorkflowTriggerKind = "jira.project"
+	JiraWorklogAgenticWorkflowTriggerKindJiraSprint                     JiraWorklogAgenticWorkflowTriggerKind = "jira.sprint"
+	JiraWorklogAgenticWorkflowTriggerKindJiraVersion                    JiraWorklogAgenticWorkflowTriggerKind = "jira.version"
+	JiraWorklogAgenticWorkflowTriggerKindJiraWorklog                    JiraWorklogAgenticWorkflowTriggerKind = "jira.worklog"
+	JiraWorklogAgenticWorkflowTriggerKindLinearComment                  JiraWorklogAgenticWorkflowTriggerKind = "linear.comment"
+	JiraWorklogAgenticWorkflowTriggerKindLinearCommentReaction          JiraWorklogAgenticWorkflowTriggerKind = "linear.comment_reaction"
+	JiraWorklogAgenticWorkflowTriggerKindLinearInitiative               JiraWorklogAgenticWorkflowTriggerKind = "linear.initiative"
+	JiraWorklogAgenticWorkflowTriggerKindLinearInitiativeUpdate         JiraWorklogAgenticWorkflowTriggerKind = "linear.initiative_update"
+	JiraWorklogAgenticWorkflowTriggerKindLinearIssue                    JiraWorklogAgenticWorkflowTriggerKind = "linear.issue"
+	JiraWorklogAgenticWorkflowTriggerKindLinearIssueAttachment          JiraWorklogAgenticWorkflowTriggerKind = "linear.issue_attachment"
+	JiraWorklogAgenticWorkflowTriggerKindLinearIssueComment             JiraWorklogAgenticWorkflowTriggerKind = "linear.issue_comment"
+	JiraWorklogAgenticWorkflowTriggerKindLinearProject                  JiraWorklogAgenticWorkflowTriggerKind = "linear.project"
+	JiraWorklogAgenticWorkflowTriggerKindLinearProjectUpdate            JiraWorklogAgenticWorkflowTriggerKind = "linear.project_update"
+	JiraWorklogAgenticWorkflowTriggerKindLinearRelease                  JiraWorklogAgenticWorkflowTriggerKind = "linear.release"
+	JiraWorklogAgenticWorkflowTriggerKindLinearReleaseNote              JiraWorklogAgenticWorkflowTriggerKind = "linear.release_note"
+	JiraWorklogAgenticWorkflowTriggerKindManual                         JiraWorklogAgenticWorkflowTriggerKind = "manual"
+	JiraWorklogAgenticWorkflowTriggerKindSchedule                       JiraWorklogAgenticWorkflowTriggerKind = "schedule"
+	JiraWorklogAgenticWorkflowTriggerKindSlackBotFailedCheckNew         JiraWorklogAgenticWorkflowTriggerKind = "slack_bot.failed_check.new"
+	JiraWorklogAgenticWorkflowTriggerKindSlackBotMessage                JiraWorklogAgenticWorkflowTriggerKind = "slack_bot.message"
+	JiraWorklogAgenticWorkflowTriggerKindSlackBotReaction               JiraWorklogAgenticWorkflowTriggerKind = "slack_bot.reaction"
+	JiraWorklogAgenticWorkflowTriggerKindWebhook                        JiraWorklogAgenticWorkflowTriggerKind = "webhook"
+)
+
+// Valid indicates whether the value is a known member of the JiraWorklogAgenticWorkflowTriggerKind enum.
+func (e JiraWorklogAgenticWorkflowTriggerKind) Valid() bool {
+	switch e {
+	case JiraWorklogAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindFailedCheckNew:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubCheckRun:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubCheckSuite:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubDeployment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubDeploymentStatus:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubIssueComment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubPullRequest:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubPullRequestReview:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubPullRequestReviewComment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubPush:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubRelease:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubWorkflowDispatch:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubWorkflowJob:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGithubWorkflowRun:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGitlabMergeRequest:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindJiraWorklog:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearComment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearCommentReaction:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearInitiative:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearInitiativeUpdate:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearIssue:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearIssueAttachment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearIssueComment:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearProject:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearProjectUpdate:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearRelease:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindLinearReleaseNote:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindManual:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindSchedule:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindSlackBotFailedCheckNew:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindSlackBotMessage:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindSlackBotReaction:
+		return true
+	case JiraWorklogAgenticWorkflowTriggerKindWebhook:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for JiraWorklogTriggerVariableName.
+const (
+	JiraWorklogTriggerVariableNameJiraAction                  JiraWorklogTriggerVariableName = "jira.action"
+	JiraWorklogTriggerVariableNameJiraActorName               JiraWorklogTriggerVariableName = "jira.actor.name"
+	JiraWorklogTriggerVariableNameJiraIssueId                 JiraWorklogTriggerVariableName = "jira.issue.id"
+	JiraWorklogTriggerVariableNameJiraIssueKey                JiraWorklogTriggerVariableName = "jira.issue.key"
+	JiraWorklogTriggerVariableNameJiraIssueSummary            JiraWorklogTriggerVariableName = "jira.issue.summary"
+	JiraWorklogTriggerVariableNameJiraIssueUrl                JiraWorklogTriggerVariableName = "jira.issue.url"
+	JiraWorklogTriggerVariableNameJiraProjectId               JiraWorklogTriggerVariableName = "jira.project.id"
+	JiraWorklogTriggerVariableNameJiraProjectKey              JiraWorklogTriggerVariableName = "jira.project.key"
+	JiraWorklogTriggerVariableNameJiraProjectName             JiraWorklogTriggerVariableName = "jira.project.name"
+	JiraWorklogTriggerVariableNameJiraSiteUrl                 JiraWorklogTriggerVariableName = "jira.site_url"
+	JiraWorklogTriggerVariableNameJiraWorklogComment          JiraWorklogTriggerVariableName = "jira.worklog.comment"
+	JiraWorklogTriggerVariableNameJiraWorklogId               JiraWorklogTriggerVariableName = "jira.worklog.id"
+	JiraWorklogTriggerVariableNameJiraWorklogStarted          JiraWorklogTriggerVariableName = "jira.worklog.started"
+	JiraWorklogTriggerVariableNameJiraWorklogTimeSpent        JiraWorklogTriggerVariableName = "jira.worklog.time_spent"
+	JiraWorklogTriggerVariableNameJiraWorklogTimeSpentSeconds JiraWorklogTriggerVariableName = "jira.worklog.time_spent_seconds"
+)
+
+// Valid indicates whether the value is a known member of the JiraWorklogTriggerVariableName enum.
+func (e JiraWorklogTriggerVariableName) Valid() bool {
+	switch e {
+	case JiraWorklogTriggerVariableNameJiraAction:
+		return true
+	case JiraWorklogTriggerVariableNameJiraActorName:
+		return true
+	case JiraWorklogTriggerVariableNameJiraIssueId:
+		return true
+	case JiraWorklogTriggerVariableNameJiraIssueKey:
+		return true
+	case JiraWorklogTriggerVariableNameJiraIssueSummary:
+		return true
+	case JiraWorklogTriggerVariableNameJiraIssueUrl:
+		return true
+	case JiraWorklogTriggerVariableNameJiraProjectId:
+		return true
+	case JiraWorklogTriggerVariableNameJiraProjectKey:
+		return true
+	case JiraWorklogTriggerVariableNameJiraProjectName:
+		return true
+	case JiraWorklogTriggerVariableNameJiraSiteUrl:
+		return true
+	case JiraWorklogTriggerVariableNameJiraWorklogComment:
+		return true
+	case JiraWorklogTriggerVariableNameJiraWorklogId:
+		return true
+	case JiraWorklogTriggerVariableNameJiraWorklogStarted:
+		return true
+	case JiraWorklogTriggerVariableNameJiraWorklogTimeSpent:
+		return true
+	case JiraWorklogTriggerVariableNameJiraWorklogTimeSpentSeconds:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for LinearCommentAgenticWorkflowTriggerKind.
 const (
 	LinearCommentAgenticWorkflowTriggerKindDarkplanePullRequestEvaluation LinearCommentAgenticWorkflowTriggerKind = "darkplane.pull_request.evaluation"
@@ -3536,6 +6284,16 @@ const (
 	LinearCommentAgenticWorkflowTriggerKindGithubWorkflowRun              LinearCommentAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearCommentAgenticWorkflowTriggerKindGitlabMergeRequest             LinearCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearCommentAgenticWorkflowTriggerKindGitlabNote                     LinearCommentAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearCommentAgenticWorkflowTriggerKindJiraAttachment                 LinearCommentAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearCommentAgenticWorkflowTriggerKindJiraBoard                      LinearCommentAgenticWorkflowTriggerKind = "jira.board"
+	LinearCommentAgenticWorkflowTriggerKindJiraComment                    LinearCommentAgenticWorkflowTriggerKind = "jira.comment"
+	LinearCommentAgenticWorkflowTriggerKindJiraComponent                  LinearCommentAgenticWorkflowTriggerKind = "jira.component"
+	LinearCommentAgenticWorkflowTriggerKindJiraIssue                      LinearCommentAgenticWorkflowTriggerKind = "jira.issue"
+	LinearCommentAgenticWorkflowTriggerKindJiraIssueLink                  LinearCommentAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearCommentAgenticWorkflowTriggerKindJiraProject                    LinearCommentAgenticWorkflowTriggerKind = "jira.project"
+	LinearCommentAgenticWorkflowTriggerKindJiraSprint                     LinearCommentAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearCommentAgenticWorkflowTriggerKindJiraVersion                    LinearCommentAgenticWorkflowTriggerKind = "jira.version"
+	LinearCommentAgenticWorkflowTriggerKindJiraWorklog                    LinearCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearCommentAgenticWorkflowTriggerKindLinearComment                  LinearCommentAgenticWorkflowTriggerKind = "linear.comment"
 	LinearCommentAgenticWorkflowTriggerKindLinearCommentReaction          LinearCommentAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearCommentAgenticWorkflowTriggerKindLinearInitiative               LinearCommentAgenticWorkflowTriggerKind = "linear.initiative"
@@ -3591,6 +6349,26 @@ func (e LinearCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearCommentAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearCommentAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearCommentAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -3650,6 +6428,16 @@ const (
 	LinearCommentReactionAgenticWorkflowTriggerKindGithubWorkflowRun              LinearCommentReactionAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearCommentReactionAgenticWorkflowTriggerKindGitlabMergeRequest             LinearCommentReactionAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearCommentReactionAgenticWorkflowTriggerKindGitlabNote                     LinearCommentReactionAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraAttachment                 LinearCommentReactionAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraBoard                      LinearCommentReactionAgenticWorkflowTriggerKind = "jira.board"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraComment                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.comment"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraComponent                  LinearCommentReactionAgenticWorkflowTriggerKind = "jira.component"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraIssue                      LinearCommentReactionAgenticWorkflowTriggerKind = "jira.issue"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraIssueLink                  LinearCommentReactionAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraProject                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.project"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraSprint                     LinearCommentReactionAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraVersion                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.version"
+	LinearCommentReactionAgenticWorkflowTriggerKindJiraWorklog                    LinearCommentReactionAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearComment                  LinearCommentReactionAgenticWorkflowTriggerKind = "linear.comment"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearCommentReaction          LinearCommentReactionAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearCommentReactionAgenticWorkflowTriggerKindLinearInitiative               LinearCommentReactionAgenticWorkflowTriggerKind = "linear.initiative"
@@ -3705,6 +6493,26 @@ func (e LinearCommentReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearCommentReactionAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearCommentReactionAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearCommentReactionAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -3839,6 +6647,16 @@ const (
 	LinearInitiativeAgenticWorkflowTriggerKindGithubWorkflowRun              LinearInitiativeAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearInitiativeAgenticWorkflowTriggerKindGitlabMergeRequest             LinearInitiativeAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearInitiativeAgenticWorkflowTriggerKindGitlabNote                     LinearInitiativeAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraAttachment                 LinearInitiativeAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraBoard                      LinearInitiativeAgenticWorkflowTriggerKind = "jira.board"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraComment                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.comment"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraComponent                  LinearInitiativeAgenticWorkflowTriggerKind = "jira.component"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraIssue                      LinearInitiativeAgenticWorkflowTriggerKind = "jira.issue"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraIssueLink                  LinearInitiativeAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraProject                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.project"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraSprint                     LinearInitiativeAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraVersion                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.version"
+	LinearInitiativeAgenticWorkflowTriggerKindJiraWorklog                    LinearInitiativeAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearComment                  LinearInitiativeAgenticWorkflowTriggerKind = "linear.comment"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearCommentReaction          LinearInitiativeAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearInitiativeAgenticWorkflowTriggerKindLinearInitiative               LinearInitiativeAgenticWorkflowTriggerKind = "linear.initiative"
@@ -3894,6 +6712,26 @@ func (e LinearInitiativeAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearInitiativeAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearInitiativeAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -3989,6 +6827,16 @@ const (
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindGithubWorkflowRun              LinearInitiativeUpdateAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindGitlabMergeRequest             LinearInitiativeUpdateAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindGitlabNote                     LinearInitiativeUpdateAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraAttachment                 LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraBoard                      LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.board"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraComment                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.comment"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraComponent                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.component"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssue                      LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.issue"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssueLink                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraProject                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.project"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraSprint                     LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraVersion                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.version"
+	LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraWorklog                    LinearInitiativeUpdateAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearComment                  LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.comment"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearCommentReaction          LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearInitiative               LinearInitiativeUpdateAgenticWorkflowTriggerKind = "linear.initiative"
@@ -4044,6 +6892,26 @@ func (e LinearInitiativeUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearInitiativeUpdateAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearInitiativeUpdateAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -4142,6 +7010,16 @@ const (
 	LinearIssueAgenticWorkflowTriggerKindGithubWorkflowRun              LinearIssueAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearIssueAgenticWorkflowTriggerKindGitlabMergeRequest             LinearIssueAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearIssueAgenticWorkflowTriggerKindGitlabNote                     LinearIssueAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearIssueAgenticWorkflowTriggerKindJiraAttachment                 LinearIssueAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearIssueAgenticWorkflowTriggerKindJiraBoard                      LinearIssueAgenticWorkflowTriggerKind = "jira.board"
+	LinearIssueAgenticWorkflowTriggerKindJiraComment                    LinearIssueAgenticWorkflowTriggerKind = "jira.comment"
+	LinearIssueAgenticWorkflowTriggerKindJiraComponent                  LinearIssueAgenticWorkflowTriggerKind = "jira.component"
+	LinearIssueAgenticWorkflowTriggerKindJiraIssue                      LinearIssueAgenticWorkflowTriggerKind = "jira.issue"
+	LinearIssueAgenticWorkflowTriggerKindJiraIssueLink                  LinearIssueAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearIssueAgenticWorkflowTriggerKindJiraProject                    LinearIssueAgenticWorkflowTriggerKind = "jira.project"
+	LinearIssueAgenticWorkflowTriggerKindJiraSprint                     LinearIssueAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearIssueAgenticWorkflowTriggerKindJiraVersion                    LinearIssueAgenticWorkflowTriggerKind = "jira.version"
+	LinearIssueAgenticWorkflowTriggerKindJiraWorklog                    LinearIssueAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearIssueAgenticWorkflowTriggerKindLinearComment                  LinearIssueAgenticWorkflowTriggerKind = "linear.comment"
 	LinearIssueAgenticWorkflowTriggerKindLinearCommentReaction          LinearIssueAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearIssueAgenticWorkflowTriggerKindLinearInitiative               LinearIssueAgenticWorkflowTriggerKind = "linear.initiative"
@@ -4197,6 +7075,26 @@ func (e LinearIssueAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearIssueAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearIssueAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -4256,6 +7154,16 @@ const (
 	LinearIssueAttachmentAgenticWorkflowTriggerKindGithubWorkflowRun              LinearIssueAttachmentAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindGitlabMergeRequest             LinearIssueAttachmentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindGitlabNote                     LinearIssueAttachmentAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraAttachment                 LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraBoard                      LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.board"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraComment                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.comment"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraComponent                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.component"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssue                      LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.issue"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssueLink                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraProject                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.project"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraSprint                     LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraVersion                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.version"
+	LinearIssueAttachmentAgenticWorkflowTriggerKindJiraWorklog                    LinearIssueAttachmentAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearComment                  LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.comment"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearCommentReaction          LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearIssueAttachmentAgenticWorkflowTriggerKindLinearInitiative               LinearIssueAttachmentAgenticWorkflowTriggerKind = "linear.initiative"
@@ -4311,6 +7219,26 @@ func (e LinearIssueAttachmentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearIssueAttachmentAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearIssueAttachmentAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -4424,6 +7352,16 @@ const (
 	LinearIssueCommentAgenticWorkflowTriggerKindGithubWorkflowRun              LinearIssueCommentAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearIssueCommentAgenticWorkflowTriggerKindGitlabMergeRequest             LinearIssueCommentAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearIssueCommentAgenticWorkflowTriggerKindGitlabNote                     LinearIssueCommentAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraAttachment                 LinearIssueCommentAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraBoard                      LinearIssueCommentAgenticWorkflowTriggerKind = "jira.board"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraComment                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.comment"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraComponent                  LinearIssueCommentAgenticWorkflowTriggerKind = "jira.component"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraIssue                      LinearIssueCommentAgenticWorkflowTriggerKind = "jira.issue"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraIssueLink                  LinearIssueCommentAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraProject                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.project"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraSprint                     LinearIssueCommentAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraVersion                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.version"
+	LinearIssueCommentAgenticWorkflowTriggerKindJiraWorklog                    LinearIssueCommentAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearComment                  LinearIssueCommentAgenticWorkflowTriggerKind = "linear.comment"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearCommentReaction          LinearIssueCommentAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearIssueCommentAgenticWorkflowTriggerKindLinearInitiative               LinearIssueCommentAgenticWorkflowTriggerKind = "linear.initiative"
@@ -4479,6 +7417,26 @@ func (e LinearIssueCommentAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearIssueCommentAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearIssueCommentAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearIssueCommentAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -4652,6 +7610,16 @@ const (
 	LinearProjectAgenticWorkflowTriggerKindGithubWorkflowRun              LinearProjectAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearProjectAgenticWorkflowTriggerKindGitlabMergeRequest             LinearProjectAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearProjectAgenticWorkflowTriggerKindGitlabNote                     LinearProjectAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearProjectAgenticWorkflowTriggerKindJiraAttachment                 LinearProjectAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearProjectAgenticWorkflowTriggerKindJiraBoard                      LinearProjectAgenticWorkflowTriggerKind = "jira.board"
+	LinearProjectAgenticWorkflowTriggerKindJiraComment                    LinearProjectAgenticWorkflowTriggerKind = "jira.comment"
+	LinearProjectAgenticWorkflowTriggerKindJiraComponent                  LinearProjectAgenticWorkflowTriggerKind = "jira.component"
+	LinearProjectAgenticWorkflowTriggerKindJiraIssue                      LinearProjectAgenticWorkflowTriggerKind = "jira.issue"
+	LinearProjectAgenticWorkflowTriggerKindJiraIssueLink                  LinearProjectAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearProjectAgenticWorkflowTriggerKindJiraProject                    LinearProjectAgenticWorkflowTriggerKind = "jira.project"
+	LinearProjectAgenticWorkflowTriggerKindJiraSprint                     LinearProjectAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearProjectAgenticWorkflowTriggerKindJiraVersion                    LinearProjectAgenticWorkflowTriggerKind = "jira.version"
+	LinearProjectAgenticWorkflowTriggerKindJiraWorklog                    LinearProjectAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearProjectAgenticWorkflowTriggerKindLinearComment                  LinearProjectAgenticWorkflowTriggerKind = "linear.comment"
 	LinearProjectAgenticWorkflowTriggerKindLinearCommentReaction          LinearProjectAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearProjectAgenticWorkflowTriggerKindLinearInitiative               LinearProjectAgenticWorkflowTriggerKind = "linear.initiative"
@@ -4707,6 +7675,26 @@ func (e LinearProjectAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearProjectAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearProjectAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -4802,6 +7790,16 @@ const (
 	LinearProjectUpdateAgenticWorkflowTriggerKindGithubWorkflowRun              LinearProjectUpdateAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearProjectUpdateAgenticWorkflowTriggerKindGitlabMergeRequest             LinearProjectUpdateAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearProjectUpdateAgenticWorkflowTriggerKindGitlabNote                     LinearProjectUpdateAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraAttachment                 LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraBoard                      LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.board"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraComment                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.comment"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraComponent                  LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.component"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssue                      LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.issue"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssueLink                  LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraProject                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.project"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraSprint                     LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraVersion                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.version"
+	LinearProjectUpdateAgenticWorkflowTriggerKindJiraWorklog                    LinearProjectUpdateAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearComment                  LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.comment"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearCommentReaction          LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearProjectUpdateAgenticWorkflowTriggerKindLinearInitiative               LinearProjectUpdateAgenticWorkflowTriggerKind = "linear.initiative"
@@ -4857,6 +7855,26 @@ func (e LinearProjectUpdateAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearProjectUpdateAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearProjectUpdateAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearProjectUpdateAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -4955,6 +7973,16 @@ const (
 	LinearReleaseAgenticWorkflowTriggerKindGithubWorkflowRun              LinearReleaseAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearReleaseAgenticWorkflowTriggerKindGitlabMergeRequest             LinearReleaseAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearReleaseAgenticWorkflowTriggerKindGitlabNote                     LinearReleaseAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearReleaseAgenticWorkflowTriggerKindJiraAttachment                 LinearReleaseAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearReleaseAgenticWorkflowTriggerKindJiraBoard                      LinearReleaseAgenticWorkflowTriggerKind = "jira.board"
+	LinearReleaseAgenticWorkflowTriggerKindJiraComment                    LinearReleaseAgenticWorkflowTriggerKind = "jira.comment"
+	LinearReleaseAgenticWorkflowTriggerKindJiraComponent                  LinearReleaseAgenticWorkflowTriggerKind = "jira.component"
+	LinearReleaseAgenticWorkflowTriggerKindJiraIssue                      LinearReleaseAgenticWorkflowTriggerKind = "jira.issue"
+	LinearReleaseAgenticWorkflowTriggerKindJiraIssueLink                  LinearReleaseAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearReleaseAgenticWorkflowTriggerKindJiraProject                    LinearReleaseAgenticWorkflowTriggerKind = "jira.project"
+	LinearReleaseAgenticWorkflowTriggerKindJiraSprint                     LinearReleaseAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearReleaseAgenticWorkflowTriggerKindJiraVersion                    LinearReleaseAgenticWorkflowTriggerKind = "jira.version"
+	LinearReleaseAgenticWorkflowTriggerKindJiraWorklog                    LinearReleaseAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearReleaseAgenticWorkflowTriggerKindLinearComment                  LinearReleaseAgenticWorkflowTriggerKind = "linear.comment"
 	LinearReleaseAgenticWorkflowTriggerKindLinearCommentReaction          LinearReleaseAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearReleaseAgenticWorkflowTriggerKindLinearInitiative               LinearReleaseAgenticWorkflowTriggerKind = "linear.initiative"
@@ -5010,6 +8038,26 @@ func (e LinearReleaseAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearReleaseAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearReleaseAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearReleaseAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearReleaseAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -5069,6 +8117,16 @@ const (
 	LinearReleaseNoteAgenticWorkflowTriggerKindGithubWorkflowRun              LinearReleaseNoteAgenticWorkflowTriggerKind = "github.workflow_run"
 	LinearReleaseNoteAgenticWorkflowTriggerKindGitlabMergeRequest             LinearReleaseNoteAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	LinearReleaseNoteAgenticWorkflowTriggerKindGitlabNote                     LinearReleaseNoteAgenticWorkflowTriggerKind = "gitlab.note"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraAttachment                 LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.attachment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraBoard                      LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.board"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraComment                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.comment"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraComponent                  LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.component"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssue                      LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.issue"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssueLink                  LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.issue_link"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraProject                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.project"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraSprint                     LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.sprint"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraVersion                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.version"
+	LinearReleaseNoteAgenticWorkflowTriggerKindJiraWorklog                    LinearReleaseNoteAgenticWorkflowTriggerKind = "jira.worklog"
 	LinearReleaseNoteAgenticWorkflowTriggerKindLinearComment                  LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.comment"
 	LinearReleaseNoteAgenticWorkflowTriggerKindLinearCommentReaction          LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	LinearReleaseNoteAgenticWorkflowTriggerKindLinearInitiative               LinearReleaseNoteAgenticWorkflowTriggerKind = "linear.initiative"
@@ -5124,6 +8182,26 @@ func (e LinearReleaseNoteAgenticWorkflowTriggerKind) Valid() bool {
 	case LinearReleaseNoteAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case LinearReleaseNoteAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case LinearReleaseNoteAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case LinearReleaseNoteAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -5247,19 +8325,19 @@ func (e LinearReleaseTriggerVariableName) Valid() bool {
 
 // Defines values for LinearWebhookAction.
 const (
-	Create LinearWebhookAction = "create"
-	Remove LinearWebhookAction = "remove"
-	Update LinearWebhookAction = "update"
+	LinearWebhookActionCreate LinearWebhookAction = "create"
+	LinearWebhookActionRemove LinearWebhookAction = "remove"
+	LinearWebhookActionUpdate LinearWebhookAction = "update"
 )
 
 // Valid indicates whether the value is a known member of the LinearWebhookAction enum.
 func (e LinearWebhookAction) Valid() bool {
 	switch e {
-	case Create:
+	case LinearWebhookActionCreate:
 		return true
-	case Remove:
+	case LinearWebhookActionRemove:
 		return true
-	case Update:
+	case LinearWebhookActionUpdate:
 		return true
 	default:
 		return false
@@ -5309,6 +8387,16 @@ const (
 	ManualAgenticWorkflowTriggerKindGithubWorkflowRun              ManualAgenticWorkflowTriggerKind = "github.workflow_run"
 	ManualAgenticWorkflowTriggerKindGitlabMergeRequest             ManualAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	ManualAgenticWorkflowTriggerKindGitlabNote                     ManualAgenticWorkflowTriggerKind = "gitlab.note"
+	ManualAgenticWorkflowTriggerKindJiraAttachment                 ManualAgenticWorkflowTriggerKind = "jira.attachment"
+	ManualAgenticWorkflowTriggerKindJiraBoard                      ManualAgenticWorkflowTriggerKind = "jira.board"
+	ManualAgenticWorkflowTriggerKindJiraComment                    ManualAgenticWorkflowTriggerKind = "jira.comment"
+	ManualAgenticWorkflowTriggerKindJiraComponent                  ManualAgenticWorkflowTriggerKind = "jira.component"
+	ManualAgenticWorkflowTriggerKindJiraIssue                      ManualAgenticWorkflowTriggerKind = "jira.issue"
+	ManualAgenticWorkflowTriggerKindJiraIssueLink                  ManualAgenticWorkflowTriggerKind = "jira.issue_link"
+	ManualAgenticWorkflowTriggerKindJiraProject                    ManualAgenticWorkflowTriggerKind = "jira.project"
+	ManualAgenticWorkflowTriggerKindJiraSprint                     ManualAgenticWorkflowTriggerKind = "jira.sprint"
+	ManualAgenticWorkflowTriggerKindJiraVersion                    ManualAgenticWorkflowTriggerKind = "jira.version"
+	ManualAgenticWorkflowTriggerKindJiraWorklog                    ManualAgenticWorkflowTriggerKind = "jira.worklog"
 	ManualAgenticWorkflowTriggerKindLinearComment                  ManualAgenticWorkflowTriggerKind = "linear.comment"
 	ManualAgenticWorkflowTriggerKindLinearCommentReaction          ManualAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	ManualAgenticWorkflowTriggerKindLinearInitiative               ManualAgenticWorkflowTriggerKind = "linear.initiative"
@@ -5364,6 +8452,26 @@ func (e ManualAgenticWorkflowTriggerKind) Valid() bool {
 	case ManualAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case ManualAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case ManualAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case ManualAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -5725,6 +8833,51 @@ func (e OrderingDirection) Valid() bool {
 	}
 }
 
+// Defines values for PathRuleLevel.
+const (
+	PathRuleLevelAutoApprove PathRuleLevel = "auto_approve"
+	PathRuleLevelAutoMerge   PathRuleLevel = "auto_merge"
+	PathRuleLevelDryRun      PathRuleLevel = "dry_run"
+	PathRuleLevelProtected   PathRuleLevel = "protected"
+)
+
+// Valid indicates whether the value is a known member of the PathRuleLevel enum.
+func (e PathRuleLevel) Valid() bool {
+	switch e {
+	case PathRuleLevelAutoApprove:
+		return true
+	case PathRuleLevelAutoMerge:
+		return true
+	case PathRuleLevelDryRun:
+		return true
+	case PathRuleLevelProtected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PathRuleUnauthorizedFallback.
+const (
+	PathRuleUnauthorizedFallbackApplyGlobal PathRuleUnauthorizedFallback = "apply_global"
+	PathRuleUnauthorizedFallbackDryRun      PathRuleUnauthorizedFallback = "dry_run"
+	PathRuleUnauthorizedFallbackProtected   PathRuleUnauthorizedFallback = "protected"
+)
+
+// Valid indicates whether the value is a known member of the PathRuleUnauthorizedFallback enum.
+func (e PathRuleUnauthorizedFallback) Valid() bool {
+	switch e {
+	case PathRuleUnauthorizedFallbackApplyGlobal:
+		return true
+	case PathRuleUnauthorizedFallbackDryRun:
+		return true
+	case PathRuleUnauthorizedFallbackProtected:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PinnedRetentionClass.
 const (
 	PinnedRetentionClassN30d PinnedRetentionClass = "30d"
@@ -5947,6 +9100,111 @@ func (e PrometheusRuleKind) Valid() bool {
 	}
 }
 
+// Defines values for RepositoryDefinitionKind.
+const (
+	RepositoryDefinitionKindDarkplaneRepository RepositoryDefinitionKind = "DarkplaneRepository"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryDefinitionKind enum.
+func (e RepositoryDefinitionKind) Valid() bool {
+	switch e {
+	case RepositoryDefinitionKindDarkplaneRepository:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryProvider.
+const (
+	RepositoryProviderGithub RepositoryProvider = "github"
+	RepositoryProviderGitlab RepositoryProvider = "gitlab"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryProvider enum.
+func (e RepositoryProvider) Valid() bool {
+	switch e {
+	case RepositoryProviderGithub:
+		return true
+	case RepositoryProviderGitlab:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryReviewerSettingsAutomergeAcceptedVerdicts.
+const (
+	RepositoryReviewerSettingsAutomergeAcceptedVerdictsApprove        RepositoryReviewerSettingsAutomergeAcceptedVerdicts = "approve"
+	RepositoryReviewerSettingsAutomergeAcceptedVerdictsComment        RepositoryReviewerSettingsAutomergeAcceptedVerdicts = "comment"
+	RepositoryReviewerSettingsAutomergeAcceptedVerdictsRequestChanges RepositoryReviewerSettingsAutomergeAcceptedVerdicts = "request-changes"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryReviewerSettingsAutomergeAcceptedVerdicts enum.
+func (e RepositoryReviewerSettingsAutomergeAcceptedVerdicts) Valid() bool {
+	switch e {
+	case RepositoryReviewerSettingsAutomergeAcceptedVerdictsApprove:
+		return true
+	case RepositoryReviewerSettingsAutomergeAcceptedVerdictsComment:
+		return true
+	case RepositoryReviewerSettingsAutomergeAcceptedVerdictsRequestChanges:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryReviewerTriggerMode.
+const (
+	RepositoryReviewerTriggerModeManual RepositoryReviewerTriggerMode = "manual"
+	RepositoryReviewerTriggerModePush   RepositoryReviewerTriggerMode = "push"
+	RepositoryReviewerTriggerModeReady  RepositoryReviewerTriggerMode = "ready"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryReviewerTriggerMode enum.
+func (e RepositoryReviewerTriggerMode) Valid() bool {
+	switch e {
+	case RepositoryReviewerTriggerModeManual:
+		return true
+	case RepositoryReviewerTriggerModePush:
+		return true
+	case RepositoryReviewerTriggerModeReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsDefinitionKind.
+const (
+	RepositorySettingsDefinitionKindDarkplaneRepositorySettings RepositorySettingsDefinitionKind = "DarkplaneRepositorySettings"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsDefinitionKind enum.
+func (e RepositorySettingsDefinitionKind) Valid() bool {
+	switch e {
+	case RepositorySettingsDefinitionKindDarkplaneRepositorySettings:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsRequestKind.
+const (
+	RepositorySettingsRequestKindDarkplaneRepositorySettings RepositorySettingsRequestKind = "DarkplaneRepositorySettings"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsRequestKind enum.
+func (e RepositorySettingsRequestKind) Valid() bool {
+	switch e {
+	case RepositorySettingsRequestKindDarkplaneRepositorySettings:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ResourceOrchestration.
 const (
 	Kubernetes ResourceOrchestration = "kubernetes"
@@ -6137,6 +9395,16 @@ const (
 	ScheduledAgenticWorkflowTriggerKindGithubWorkflowRun              ScheduledAgenticWorkflowTriggerKind = "github.workflow_run"
 	ScheduledAgenticWorkflowTriggerKindGitlabMergeRequest             ScheduledAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	ScheduledAgenticWorkflowTriggerKindGitlabNote                     ScheduledAgenticWorkflowTriggerKind = "gitlab.note"
+	ScheduledAgenticWorkflowTriggerKindJiraAttachment                 ScheduledAgenticWorkflowTriggerKind = "jira.attachment"
+	ScheduledAgenticWorkflowTriggerKindJiraBoard                      ScheduledAgenticWorkflowTriggerKind = "jira.board"
+	ScheduledAgenticWorkflowTriggerKindJiraComment                    ScheduledAgenticWorkflowTriggerKind = "jira.comment"
+	ScheduledAgenticWorkflowTriggerKindJiraComponent                  ScheduledAgenticWorkflowTriggerKind = "jira.component"
+	ScheduledAgenticWorkflowTriggerKindJiraIssue                      ScheduledAgenticWorkflowTriggerKind = "jira.issue"
+	ScheduledAgenticWorkflowTriggerKindJiraIssueLink                  ScheduledAgenticWorkflowTriggerKind = "jira.issue_link"
+	ScheduledAgenticWorkflowTriggerKindJiraProject                    ScheduledAgenticWorkflowTriggerKind = "jira.project"
+	ScheduledAgenticWorkflowTriggerKindJiraSprint                     ScheduledAgenticWorkflowTriggerKind = "jira.sprint"
+	ScheduledAgenticWorkflowTriggerKindJiraVersion                    ScheduledAgenticWorkflowTriggerKind = "jira.version"
+	ScheduledAgenticWorkflowTriggerKindJiraWorklog                    ScheduledAgenticWorkflowTriggerKind = "jira.worklog"
 	ScheduledAgenticWorkflowTriggerKindLinearComment                  ScheduledAgenticWorkflowTriggerKind = "linear.comment"
 	ScheduledAgenticWorkflowTriggerKindLinearCommentReaction          ScheduledAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	ScheduledAgenticWorkflowTriggerKindLinearInitiative               ScheduledAgenticWorkflowTriggerKind = "linear.initiative"
@@ -6192,6 +9460,26 @@ func (e ScheduledAgenticWorkflowTriggerKind) Valid() bool {
 	case ScheduledAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case ScheduledAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case ScheduledAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -6500,6 +9788,16 @@ const (
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGithubWorkflowRun              SlackBotFailedCheckAgenticWorkflowTriggerKind = "github.workflow_run"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotFailedCheckAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabNote                     SlackBotFailedCheckAgenticWorkflowTriggerKind = "gitlab.note"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraAttachment                 SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.attachment"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraBoard                      SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.board"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraComment                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.comment"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraComponent                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.component"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraIssue                      SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.issue"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraIssueLink                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.issue_link"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraProject                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.project"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraSprint                     SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.sprint"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraVersion                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.version"
+	SlackBotFailedCheckAgenticWorkflowTriggerKindJiraWorklog                    SlackBotFailedCheckAgenticWorkflowTriggerKind = "jira.worklog"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearComment                  SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.comment"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearCommentReaction          SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	SlackBotFailedCheckAgenticWorkflowTriggerKindLinearInitiative               SlackBotFailedCheckAgenticWorkflowTriggerKind = "linear.initiative"
@@ -6555,6 +9853,26 @@ func (e SlackBotFailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case SlackBotFailedCheckAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case SlackBotFailedCheckAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -6614,6 +9932,16 @@ const (
 	SlackBotMessageAgenticWorkflowTriggerKindGithubWorkflowRun              SlackBotMessageAgenticWorkflowTriggerKind = "github.workflow_run"
 	SlackBotMessageAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotMessageAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	SlackBotMessageAgenticWorkflowTriggerKindGitlabNote                     SlackBotMessageAgenticWorkflowTriggerKind = "gitlab.note"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraAttachment                 SlackBotMessageAgenticWorkflowTriggerKind = "jira.attachment"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraBoard                      SlackBotMessageAgenticWorkflowTriggerKind = "jira.board"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraComment                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.comment"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraComponent                  SlackBotMessageAgenticWorkflowTriggerKind = "jira.component"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraIssue                      SlackBotMessageAgenticWorkflowTriggerKind = "jira.issue"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraIssueLink                  SlackBotMessageAgenticWorkflowTriggerKind = "jira.issue_link"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraProject                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.project"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraSprint                     SlackBotMessageAgenticWorkflowTriggerKind = "jira.sprint"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraVersion                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.version"
+	SlackBotMessageAgenticWorkflowTriggerKindJiraWorklog                    SlackBotMessageAgenticWorkflowTriggerKind = "jira.worklog"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearComment                  SlackBotMessageAgenticWorkflowTriggerKind = "linear.comment"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearCommentReaction          SlackBotMessageAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	SlackBotMessageAgenticWorkflowTriggerKindLinearInitiative               SlackBotMessageAgenticWorkflowTriggerKind = "linear.initiative"
@@ -6669,6 +9997,26 @@ func (e SlackBotMessageAgenticWorkflowTriggerKind) Valid() bool {
 	case SlackBotMessageAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case SlackBotMessageAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case SlackBotMessageAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -6728,6 +10076,16 @@ const (
 	SlackBotReactionAgenticWorkflowTriggerKindGithubWorkflowRun              SlackBotReactionAgenticWorkflowTriggerKind = "github.workflow_run"
 	SlackBotReactionAgenticWorkflowTriggerKindGitlabMergeRequest             SlackBotReactionAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	SlackBotReactionAgenticWorkflowTriggerKindGitlabNote                     SlackBotReactionAgenticWorkflowTriggerKind = "gitlab.note"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraAttachment                 SlackBotReactionAgenticWorkflowTriggerKind = "jira.attachment"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraBoard                      SlackBotReactionAgenticWorkflowTriggerKind = "jira.board"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraComment                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.comment"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraComponent                  SlackBotReactionAgenticWorkflowTriggerKind = "jira.component"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraIssue                      SlackBotReactionAgenticWorkflowTriggerKind = "jira.issue"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraIssueLink                  SlackBotReactionAgenticWorkflowTriggerKind = "jira.issue_link"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraProject                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.project"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraSprint                     SlackBotReactionAgenticWorkflowTriggerKind = "jira.sprint"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraVersion                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.version"
+	SlackBotReactionAgenticWorkflowTriggerKindJiraWorklog                    SlackBotReactionAgenticWorkflowTriggerKind = "jira.worklog"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearComment                  SlackBotReactionAgenticWorkflowTriggerKind = "linear.comment"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearCommentReaction          SlackBotReactionAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	SlackBotReactionAgenticWorkflowTriggerKindLinearInitiative               SlackBotReactionAgenticWorkflowTriggerKind = "linear.initiative"
@@ -6783,6 +10141,26 @@ func (e SlackBotReactionAgenticWorkflowTriggerKind) Valid() bool {
 	case SlackBotReactionAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case SlackBotReactionAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case SlackBotReactionAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -7338,13 +10716,13 @@ func (e SyntheticCheckRetriesLinearKind) Valid() bool {
 
 // Defines values for SyntheticCheckRetriesOffKind.
 const (
-	Off SyntheticCheckRetriesOffKind = "off"
+	SyntheticCheckRetriesOffKindOff SyntheticCheckRetriesOffKind = "off"
 )
 
 // Valid indicates whether the value is a known member of the SyntheticCheckRetriesOffKind enum.
 func (e SyntheticCheckRetriesOffKind) Valid() bool {
 	switch e {
-	case Off:
+	case SyntheticCheckRetriesOffKindOff:
 		return true
 	default:
 		return false
@@ -7486,6 +10864,81 @@ func (e TelemetryFilterContext) Valid() bool {
 	case TelemetryFilterContextSpan:
 		return true
 	case TelemetryFilterContextWebEvent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleContext.
+const (
+	TelemetryTransformationRuleContextDatapoint TelemetryTransformationRuleContext = "datapoint"
+	TelemetryTransformationRuleContextLog       TelemetryTransformationRuleContext = "log"
+	TelemetryTransformationRuleContextMetric    TelemetryTransformationRuleContext = "metric"
+	TelemetryTransformationRuleContextProfile   TelemetryTransformationRuleContext = "profile"
+	TelemetryTransformationRuleContextResource  TelemetryTransformationRuleContext = "resource"
+	TelemetryTransformationRuleContextScope     TelemetryTransformationRuleContext = "scope"
+	TelemetryTransformationRuleContextSpan      TelemetryTransformationRuleContext = "span"
+	TelemetryTransformationRuleContextSpanevent TelemetryTransformationRuleContext = "spanevent"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleContext enum.
+func (e TelemetryTransformationRuleContext) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleContextDatapoint:
+		return true
+	case TelemetryTransformationRuleContextLog:
+		return true
+	case TelemetryTransformationRuleContextMetric:
+		return true
+	case TelemetryTransformationRuleContextProfile:
+		return true
+	case TelemetryTransformationRuleContextResource:
+		return true
+	case TelemetryTransformationRuleContextScope:
+		return true
+	case TelemetryTransformationRuleContextSpan:
+		return true
+	case TelemetryTransformationRuleContextSpanevent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleDefinitionKind.
+const (
+	Dash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleDefinitionKind enum.
+func (e TelemetryTransformationRuleDefinitionKind) Valid() bool {
+	switch e {
+	case Dash0TelemetryTransformationRule:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TelemetryTransformationRuleSignalType.
+const (
+	TelemetryTransformationRuleSignalTypeLogs     TelemetryTransformationRuleSignalType = "logs"
+	TelemetryTransformationRuleSignalTypeMetrics  TelemetryTransformationRuleSignalType = "metrics"
+	TelemetryTransformationRuleSignalTypeProfiles TelemetryTransformationRuleSignalType = "profiles"
+	TelemetryTransformationRuleSignalTypeTraces   TelemetryTransformationRuleSignalType = "traces"
+)
+
+// Valid indicates whether the value is a known member of the TelemetryTransformationRuleSignalType enum.
+func (e TelemetryTransformationRuleSignalType) Valid() bool {
+	switch e {
+	case TelemetryTransformationRuleSignalTypeLogs:
+		return true
+	case TelemetryTransformationRuleSignalTypeMetrics:
+		return true
+	case TelemetryTransformationRuleSignalTypeProfiles:
+		return true
+	case TelemetryTransformationRuleSignalTypeTraces:
 		return true
 	default:
 		return false
@@ -7639,6 +11092,24 @@ func (e TopologyNodeKind) Valid() bool {
 	case TopologyNodeKindService:
 		return true
 	case TopologyNodeKindUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TriggerMode.
+const (
+	TriggerModeAuto   TriggerMode = "auto"
+	TriggerModeManual TriggerMode = "manual"
+)
+
+// Valid indicates whether the value is a known member of the TriggerMode enum.
+func (e TriggerMode) Valid() bool {
+	switch e {
+	case TriggerModeAuto:
+		return true
+	case TriggerModeManual:
 		return true
 	default:
 		return false
@@ -7970,6 +11441,16 @@ const (
 	WebhookAgenticWorkflowTriggerKindGithubWorkflowRun              WebhookAgenticWorkflowTriggerKind = "github.workflow_run"
 	WebhookAgenticWorkflowTriggerKindGitlabMergeRequest             WebhookAgenticWorkflowTriggerKind = "gitlab.merge_request"
 	WebhookAgenticWorkflowTriggerKindGitlabNote                     WebhookAgenticWorkflowTriggerKind = "gitlab.note"
+	WebhookAgenticWorkflowTriggerKindJiraAttachment                 WebhookAgenticWorkflowTriggerKind = "jira.attachment"
+	WebhookAgenticWorkflowTriggerKindJiraBoard                      WebhookAgenticWorkflowTriggerKind = "jira.board"
+	WebhookAgenticWorkflowTriggerKindJiraComment                    WebhookAgenticWorkflowTriggerKind = "jira.comment"
+	WebhookAgenticWorkflowTriggerKindJiraComponent                  WebhookAgenticWorkflowTriggerKind = "jira.component"
+	WebhookAgenticWorkflowTriggerKindJiraIssue                      WebhookAgenticWorkflowTriggerKind = "jira.issue"
+	WebhookAgenticWorkflowTriggerKindJiraIssueLink                  WebhookAgenticWorkflowTriggerKind = "jira.issue_link"
+	WebhookAgenticWorkflowTriggerKindJiraProject                    WebhookAgenticWorkflowTriggerKind = "jira.project"
+	WebhookAgenticWorkflowTriggerKindJiraSprint                     WebhookAgenticWorkflowTriggerKind = "jira.sprint"
+	WebhookAgenticWorkflowTriggerKindJiraVersion                    WebhookAgenticWorkflowTriggerKind = "jira.version"
+	WebhookAgenticWorkflowTriggerKindJiraWorklog                    WebhookAgenticWorkflowTriggerKind = "jira.worklog"
 	WebhookAgenticWorkflowTriggerKindLinearComment                  WebhookAgenticWorkflowTriggerKind = "linear.comment"
 	WebhookAgenticWorkflowTriggerKindLinearCommentReaction          WebhookAgenticWorkflowTriggerKind = "linear.comment_reaction"
 	WebhookAgenticWorkflowTriggerKindLinearInitiative               WebhookAgenticWorkflowTriggerKind = "linear.initiative"
@@ -8025,6 +11506,26 @@ func (e WebhookAgenticWorkflowTriggerKind) Valid() bool {
 	case WebhookAgenticWorkflowTriggerKindGitlabMergeRequest:
 		return true
 	case WebhookAgenticWorkflowTriggerKindGitlabNote:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraAttachment:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraBoard:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraComment:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraComponent:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraIssue:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraIssueLink:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraProject:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraSprint:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraVersion:
+		return true
+	case WebhookAgenticWorkflowTriggerKindJiraWorklog:
 		return true
 	case WebhookAgenticWorkflowTriggerKindLinearComment:
 		return true
@@ -8310,6 +11811,21 @@ type Agent0SandboxResources struct {
 // AgenticWorkflowAction defines model for AgenticWorkflowAction.
 type AgenticWorkflowAction string
 
+// AgenticWorkflowAgent Opt-in reusable-agent definition. When present, a person can call this automation from an
+// Agent0 chat as `@<name>`. Absent, the automation is not offered as an agent. Only an
+// organization's own automations may set it: a write that sets it on a platform-owned
+// automation is rejected with 400.
+type AgenticWorkflowAgent struct {
+	// Description When Agent0 should use this agent: the tasks it handles and the situations it fits.
+	Description string `json:"description"`
+
+	// Name The handle a person types after `@` in Agent0 to call this automation, in kebab case
+	// (lowercase letters and digits separated by single hyphens). Unique within a dataset.
+	// `thread` and `threads` are reserved for the composer's built-in `@thread`, and a request
+	// that sets either is refused with 400.
+	Name string `json:"name"`
+}
+
 // AgenticWorkflowAnnotations defines model for AgenticWorkflowAnnotations.
 type AgenticWorkflowAnnotations struct {
 	// Dash0ComcreatedAt The time at which this automation was originally created.
@@ -8330,6 +11846,15 @@ type AgenticWorkflowAnnotations struct {
 
 	// Dash0Comsharing Comma-separated list of principals to grant read access to. Supported formats: 'team:<team_id>' and 'user:<email>'. Example: 'team:team_01abc,user:alice@example.com'. Sharing is honored only on assets that declare a dash0.com/origin (for example those managed by Terraform, the operator, the CLI, or the API). Setting it on an asset that declares no dash0.com/origin is rejected with a 400 — manage that asset's access via the UI share dialog instead.
 	Dash0Comsharing *string `json:"dash0.com/sharing,omitempty"`
+
+	// Dash0ComsystemVersion The version of the Dash0 definition a system automation runs. Set by Dash0 on
+	// automations whose `dash0.com/origin` starts with `system_`; absent on every other
+	// automation.
+	Dash0ComsystemVersion *string `json:"dash0.com/system-version,omitempty"`
+
+	// Dash0ComsystemVisibility Who sees a Dash0 system automation. Set by Dash0 on automations whose `dash0.com/origin`
+	// starts with `system_`; absent on every other automation.
+	Dash0ComsystemVisibility *AgenticWorkflowSystemVisibility `json:"dash0.com/system-visibility,omitempty"`
 
 	// Dash0ComwebhookSecret The plaintext webhook secret, returned exactly once: immediately after the backend
 	// auto-provisions it on create or update (the first time a webhook trigger is added).
@@ -8504,6 +12029,11 @@ type AgenticWorkflowMetadata struct {
 // AgenticWorkflowNotifications Notification channels to notify when an automation run completes, grouped by outcome.
 // Both lists are optional; omit one to skip notifying on that outcome.
 type AgenticWorkflowNotifications struct {
+	// IncludeRunOutput When `true`, the notification for a successful run carries Agent0's final answer, and
+	// notification channels that support it show the answer with the notification. Absent or
+	// `false` keeps the notification as a status message with a link to the run.
+	IncludeRunOutput *bool `json:"includeRunOutput,omitempty"`
+
 	// OnBudgetWarningChannels Notification channels to notify when this workflow's rolling credit budget crosses its
 	// warning threshold (`guardrails.creditBudgetWindow.warningThreshold`). Each value is an opaque channel
 	// identifier: either the channel's UUID or its origin. An empty or absent list notifies no
@@ -8594,6 +12124,12 @@ type AgenticWorkflowSandbox struct {
 
 // AgenticWorkflowSpec defines model for AgenticWorkflowSpec.
 type AgenticWorkflowSpec struct {
+	// Agent Opt-in reusable-agent definition. When present, a person can call this automation from an
+	// Agent0 chat as `@<name>`. Absent, the automation is not offered as an agent. Only an
+	// organization's own automations may set it: a write that sets it on a platform-owned
+	// automation is rejected with 400.
+	Agent *AgenticWorkflowAgent `json:"agent,omitempty"`
+
 	// Constants Static key-value pairs the automation's author defines, available by name as
 	// {{theKeyName}} in the prompt and in tool parameter overrides. Surfaced in the UI as
 	// "Parameters". Always available regardless of trigger type. On a name conflict a
@@ -8651,6 +12187,14 @@ type AgenticWorkflowSpec struct {
 	Triggers []AgenticWorkflowTrigger `json:"triggers"`
 }
 
+// AgenticWorkflowSystemVisibility Who sees a Dash0 system automation. Neither kind is reachable through the generic
+// automation API.
+//   - `managed`: the customer sees the agent, its runs and threads through the agent's own
+//     API and UI, which also decide what the customer may change.
+//   - `background`: the customer sees only its results inside the owning feature. Its runs and
+//     threads are absent from run history, the thread list and the customer API.
+type AgenticWorkflowSystemVisibility string
+
 // AgenticWorkflowToolParameterOverride Key-value pairs merged into tool arguments at invocation time. Keys are parameter
 // names (use dot notation for nested parameters, e.g. "timeframe.from"), values are
 // the enforced parameter values. Values can contain {{variables}} resolved from
@@ -8707,6 +12251,16 @@ type AgenticWorkflowTriggerDelivery string
 // - `linear.initiative_update`: Triggered when a Linear initiative update (status post) is created, updated, or removed.
 // - `linear.release`: Triggered when a Linear release is created, updated, or removed.
 // - `linear.release_note`: Triggered when a Linear release note is created, updated, or removed.
+// - `jira.issue`: Triggered when a Jira issue is created, updated, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
+// - `jira.project`: Triggered when a Jira project is created, updated, moved to the trash, deleted, archived, unarchived, or restored. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
+// - `jira.issue_link`: Triggered when a link between two Jira issues is created or deleted and either issue is in the selected projects. Not accepted on write yet.
+// - `jira.board`: Triggered when a Jira Software board is created, updated, reconfigured, or deleted. A configuration change arrives as `updated`. Not accepted on write yet.
+// - `jira.version`: Triggered when a Jira version is created, updated, released, unreleased, archived, unarchived, merged, moved, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
+// - `jira.worklog`: Triggered when a worklog is created, updated, or deleted on a Jira issue in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
+// - `jira.attachment`: Triggered when an attachment is added to or deleted from a Jira Cloud issue in the selected projects. `actions` narrows which; `updated` never matches. Not accepted on write yet.
+// - `jira.comment`: Triggered when a comment on a Jira issue is created, updated, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
+// - `jira.component`: Triggered when a Jira component is created, updated, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Jira Cloud only. Not accepted on write yet.
+// - `jira.sprint`: Triggered when a Jira Software sprint is created, started, updated, closed, or deleted in the selected projects. `actions` narrows which; omitted, every action matches. Not accepted on write yet.
 // - `webhook`: Triggered via an external webhook call.
 // - `manual`: Triggered manually via the UI. Runtime-only — not valid in `spec.triggers[]`.
 type AgenticWorkflowTriggerKind string
@@ -9012,6 +12566,101 @@ type AuthTokenSpec struct {
 // AuthTokenUpdateRequest defines model for AuthTokenUpdateRequest.
 type AuthTokenUpdateRequest = AuthTokenDefinition
 
+// AwsLogGroupInstrumentationPolicy defines model for AwsLogGroupInstrumentationPolicy.
+type AwsLogGroupInstrumentationPolicy struct {
+	ApiVersion AwsLogGroupPolicyApiVersion `json:"apiVersion"`
+	Kind       AwsLogGroupPolicyKind       `json:"kind"`
+	Metadata   AwsLogGroupPolicyMetadata   `json:"metadata"`
+	Spec       AwsLogGroupPolicySpec       `json:"spec"`
+}
+
+// AwsLogGroupPolicyAnnotations Server-managed timestamps and deletion disposition. Ignored on write.
+type AwsLogGroupPolicyAnnotations struct {
+	Dash0ComcreatedAt           *time.Time                    `json:"dash0.com/created-at,omitempty"`
+	Dash0ComdeletedAt           *time.Time                    `json:"dash0.com/deleted-at,omitempty"`
+	Dash0ComdeletionDisposition *AwsLogGroupPolicyDisposition `json:"dash0.com/deletion-disposition,omitempty"`
+	Dash0ComupdatedAt           *time.Time                    `json:"dash0.com/updated-at,omitempty"`
+}
+
+// AwsLogGroupPolicyApiVersion defines model for AwsLogGroupPolicyApiVersion.
+type AwsLogGroupPolicyApiVersion string
+
+// AwsLogGroupPolicyCondition defines model for AwsLogGroupPolicyCondition.
+type AwsLogGroupPolicyCondition struct {
+	// Key AWS log-group tag expressed as dash0.cloud.tags.<tag name>, consistent with metric-scrape filters. Only the log group's own tags are matched.
+	Key string `json:"key"`
+
+	// Operator The positive, literal AttributeFilterOperator subset supported for AWS tags. Matching is case-sensitive; regex and exclusion operators are not supported.
+	Operator AwsLogGroupPolicyOperator `json:"operator"`
+
+	// Value Required for is, starts_with, ends_with and contains. Substring operands must be nonempty.
+	Value *string `json:"value,omitempty"`
+
+	// Values Required only for is_one_of. Other operators do not accept values. is_set takes neither value nor values.
+	Values *[]string `json:"values,omitempty"`
+}
+
+// AwsLogGroupPolicyDisposition defines model for AwsLogGroupPolicyDisposition.
+type AwsLogGroupPolicyDisposition string
+
+// AwsLogGroupPolicyKind defines model for AwsLogGroupPolicyKind.
+type AwsLogGroupPolicyKind string
+
+// AwsLogGroupPolicyLabels Server-managed id, dataset, source and version; origin is client-settable on creation.
+type AwsLogGroupPolicyLabels struct {
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+	Dash0Comid      *string `json:"dash0.com/id,omitempty"`
+	Dash0Comorigin  *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource  *CrdSource `json:"dash0.com/source,omitempty"`
+	Dash0Comversion *string    `json:"dash0.com/version,omitempty"`
+}
+
+// AwsLogGroupPolicyMetadata defines model for AwsLogGroupPolicyMetadata.
+type AwsLogGroupPolicyMetadata struct {
+	// Annotations Server-managed timestamps and deletion disposition. Ignored on write.
+	Annotations *AwsLogGroupPolicyAnnotations `json:"annotations,omitempty"`
+
+	// Labels Server-managed id, dataset, source and version; origin is client-settable on creation.
+	Labels *AwsLogGroupPolicyLabels `json:"labels,omitempty"`
+
+	// Name The integration identifier. Ignored on write.
+	Name *string `json:"name,omitempty"`
+}
+
+// AwsLogGroupPolicyOperator The positive, literal AttributeFilterOperator subset supported for AWS tags. Matching is case-sensitive; regex and exclusion operators are not supported.
+type AwsLogGroupPolicyOperator string
+
+// AwsLogGroupPolicyRule defines model for AwsLogGroupPolicyRule.
+type AwsLogGroupPolicyRule struct {
+	Conditions []AwsLogGroupPolicyCondition `json:"conditions"`
+}
+
+// AwsLogGroupPolicySpec defines model for AwsLogGroupPolicySpec.
+type AwsLogGroupPolicySpec struct {
+	// OnNoLongerMatching Defaults to keep.
+	OnNoLongerMatching *AwsLogGroupPolicyDisposition `json:"onNoLongerMatching,omitempty"`
+
+	// Rules Rules are ORed; each rule's conditions are ANDed. Matching is case-sensitive.
+	Rules []AwsLogGroupPolicyRule `json:"rules"`
+}
+
 // AwsMetricScrapeConfigAnnotations Server-managed and ignored on write. Absent for an integration whose config was never written
 // or has been cleared.
 type AwsMetricScrapeConfigAnnotations struct {
@@ -9107,6 +12756,14 @@ type AwsMetricScrapeConfigSpec struct {
 
 // AxisScale defines model for AxisScale.
 type AxisScale string
+
+// BotMode How much authority the auto-approval bot has on a repository, in
+// ascending order of autonomy.
+// - `off`: The bot does not evaluate pull requests.
+// - `dry_run`: The bot evaluates and records a decision but never writes back to the provider.
+// - `auto_approve`: The bot may post an approving review on a passing pull request, but never merges.
+// - `auto_merge`: The bot may approve and merge a passing pull request without a human.
+type BotMode string
 
 // CardholderDataRedactionSettings Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
 // telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
@@ -9354,6 +13011,14 @@ type DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec struct {
 	// Repositories Repository full names to match. When omitted or empty, all repositories match.
 	Repositories *[]string `json:"repositories,omitempty"`
 }
+
+// DarkplaneRepositoryConnection Whether the organization's integrations still reach a repository. A
+// repository that loses its connection keeps its record, settings and
+// history; this value only marks it.
+// - `connected`: A live GitHub integration in the organization lists the repository among the repositories its installation grants.
+// - `disconnected`: No live integration in the organization lists the repository, and no live GitHub integration's list may have been cut at a sync limit. Stored lists leave out archived repositories, so an archived repository the installation still covers also reads `disconnected`.
+// - `unknown`: The repository's reach cannot be decided: a live GitHub integration in the organization carries no repository list yet or one that may have been cut to a sync limit (a recorded total, or at least 1,000 entries without one), the organization's integrations could not be read, or the repository is on GitLab, whose reach is not checked.
+type DarkplaneRepositoryConnection string
 
 // DashboardAnnotations defines model for DashboardAnnotations.
 type DashboardAnnotations struct {
@@ -9862,6 +13527,32 @@ type ErrorResponse struct {
 	Error Error `json:"error"`
 }
 
+// EvalToolId A tool the evaluation agent may call to gather evidence when scoring a
+// pull request. The full inventory a criterion's `tools` selection draws
+// from.
+// - `read_file`: A file's contents at the head commit.
+// - `list_files`: Tracked files, optionally under a directory.
+// - `grep`: POSIX ERE search across tracked files.
+// - `git_log`: Commit history, optionally per path.
+// - `git_diff_base`: The diff against the merge base.
+// - `git_blame`: Line-by-line authorship for a file.
+// - `read_steering_files`: CLAUDE.md / AGENTS.md and their @-references from the base branch.
+// - `pr_metadata`: Title, body, author, draft state.
+// - `pr_files`: Changed files with status and line counts.
+// - `pr_checks`: CI check runs for the head commit.
+// - `pr_reviews_and_comments`: Reviews, inline comments, conversation comments.
+// - `commit_verification`: Per-commit signature-verification state, author, and signed-commit counts.
+// - `slo_status`: Lists the SLOs in the repository's datasets, then reads the state of the ones the criterion's prompt names: target, error budget remaining, fast and slow burn rate, and success ratio. Read now in a live evaluation and as of the original evaluation in a replay; values that are missing at that time are reported as unavailable.
+// - `check_rule_status`: Lists the check rules in the repository's datasets, then reads the state of the ones the criterion's prompt names: whether each is enabled and its failed checks still open, with status, summary and start time. Read now in a live evaluation and as of the original evaluation in a replay.
+// - `coding_session_harness`: AI coding harnesses used by the PR author on this branch.
+// - `coding_session_tools_and_skills`: Tool and skill usage and status counts from the PR author's coding sessions on this branch.
+// - `coding_session_engineering_activity`: Classified activities such as planning, reviewing, or debugging, not proof of completed tasks.
+// - `path_authorship`: Degree-of-authorship, first authorship, change counts.
+// - `author_delivery_record`: The author's merged, cleanly-merged, and later-reverted pull request counts in this repository.
+// - `review_agent_stats`: Tracked AI review agents' comment and resolution counts.
+// - `evaluation_history`: This repository's auto-approval run statistics.
+type EvalToolId string
+
 // ExecuteSqlRequest defines model for ExecuteSqlRequest.
 type ExecuteSqlRequest struct {
 	// Dataset The slug of a dataset, such as `default`. Where a request may omit it, "Selecting a dataset" in the API introduction describes how the dataset is chosen.
@@ -9955,6 +13646,7 @@ type FailedCheckAgenticWorkflowTriggerSpec_AvailableVariables_Item struct {
 //
 // - `issue.silenced`: `true` when a silence covered the failed check when it fired, `false` otherwise.
 // - `issue.status`: `degraded` or `critical`, the highest status the failed check reached by the time it fired. Absent when the dispatching producer predates the field.
+// - `issue.id`: The ID of the failed check that fired. Absent when the dispatching producer predates the field.
 type FailedCheckSilencedTriggerVariableName string
 
 // FailedCheckTriggerVariableName Variables provided by every failed-check trigger.
@@ -10140,7 +13832,7 @@ type GenerativeAiEvaluationJudgeOutputNumericKind string
 type GenerativeAiEvaluationJudgeOutputNumericSpec struct {
 	// Threshold A value between 0 and 1, inclusive. Absent when the eval declares no
 	// threshold.
-	Threshold *float32 `json:"threshold,omitempty"`
+	Threshold *float64 `json:"threshold,omitempty"`
 }
 
 // GenerativeAiEvaluationLabels defines model for GenerativeAiEvaluationLabels.
@@ -12544,6 +16236,1009 @@ type IpAddressesSettings struct {
 	EndUserIpAddressStorageStrategy IpAddressStorageStrategy `json:"endUserIpAddressStorageStrategy"`
 }
 
+// JiraAttachmentAgenticWorkflowTrigger defines model for JiraAttachmentAgenticWorkflowTrigger.
+type JiraAttachmentAgenticWorkflowTrigger struct {
+	Kind JiraAttachmentAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec Fires on Jira Cloud only, for attachments added to or deleted from an issue. Jira sends no
+	// update event for attachments, so `actions` takes `created` and `deleted`; `updated` never
+	// matches. The sender is whoever added or deleted the attachment; the author is the user
+	// who uploaded it. Projects are those of the attachment's issue. Every filter combines with
+	// every other filter as AND.
+	Spec JiraAttachmentAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraAttachmentAgenticWorkflowTriggerKind defines model for JiraAttachmentAgenticWorkflowTrigger.Kind.
+type JiraAttachmentAgenticWorkflowTriggerKind string
+
+// JiraAttachmentAgenticWorkflowTriggerSpec Fires on Jira Cloud only, for attachments added to or deleted from an issue. Jira sends no
+// update event for attachments, so `actions` takes `created` and `deleted`; `updated` never
+// matches. The sender is whoever added or deleted the attachment; the author is the user
+// who uploaded it. Projects are those of the attachment's issue. Every filter combines with
+// every other filter as AND.
+type JiraAttachmentAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraAttachmentTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraAttachmentTriggerVariableName Variables provided by the `jira.attachment` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created` or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project the attachment's issue belongs to.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.issue.id`: Numeric ID of the issue the attachment belongs to.
+// - `jira.issue.key`: Key of that issue (e.g., `ENG-123`).
+// - `jira.issue.summary`: Summary (title) of that issue.
+// - `jira.issue.url`: Browse URL of that issue.
+// - `jira.attachment.id`: ID of the attachment.
+// - `jira.attachment.file_name`: File name of the attachment (e.g., `trace.har`).
+// - `jira.attachment.mime_type`: MIME type of the attachment (e.g., `image/png`).
+// - `jira.attachment.size`: Size of the attachment in bytes.
+type JiraAttachmentTriggerVariableName string
+
+// JiraAuthorFilters defines model for JiraAuthorFilters.
+type JiraAuthorFilters struct {
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+}
+
+// JiraBoardAgenticWorkflowTrigger defines model for JiraBoardAgenticWorkflowTrigger.
+type JiraBoardAgenticWorkflowTrigger struct {
+	Kind JiraBoardAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created, updated, reconfigured, or deleted the board. A board belongs
+	// to no single project and has no author, so the trigger has no project scope and `authors`
+	// and `authorRegex` are rejected on write. Every filter combines with every other filter as
+	// AND.
+	Spec JiraBoardAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraBoardAgenticWorkflowTriggerKind defines model for JiraBoardAgenticWorkflowTrigger.Kind.
+type JiraBoardAgenticWorkflowTriggerKind string
+
+// JiraBoardAgenticWorkflowTriggerSpec The sender is whoever created, updated, reconfigured, or deleted the board. A board belongs
+// to no single project and has no author, so the trigger has no project scope and `authors`
+// and `authorRegex` are rejected on write. Every filter combines with every other filter as
+// AND.
+type JiraBoardAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraBoardTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraBoardTriggerVariableName Variables provided by the `jira.board` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `updated`, or `deleted`. A configuration change is `updated`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.board.id`: ID of the Jira board.
+// - `jira.board.name`: Name of the Jira board.
+// - `jira.board.type`: Type of the Jira board: `scrum`, `kanban`, or `simple`.
+type JiraBoardTriggerVariableName string
+
+// JiraCommentAgenticWorkflowTrigger defines model for JiraCommentAgenticWorkflowTrigger.
+type JiraCommentAgenticWorkflowTrigger struct {
+	Kind JiraCommentAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created, updated, or deleted the comment; the author is the comment's
+	// writer. Every filter combines with every other filter as AND.
+	Spec JiraCommentAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraCommentAgenticWorkflowTriggerKind defines model for JiraCommentAgenticWorkflowTrigger.Kind.
+type JiraCommentAgenticWorkflowTriggerKind string
+
+// JiraCommentAgenticWorkflowTriggerSpec The sender is whoever created, updated, or deleted the comment; the author is the comment's
+// writer. Every filter combines with every other filter as AND.
+type JiraCommentAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraCommentTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraCommentTriggerVariableName Variables provided by the `jira.comment` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: What happened to the comment: `created`, `updated`, or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project the issue belongs to.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.issue.id`: Numeric ID of the Jira issue the comment is on.
+// - `jira.issue.key`: Key of the Jira issue (e.g., `ENG-123`).
+// - `jira.issue.summary`: Summary (title) of the Jira issue.
+// - `jira.issue.url`: Browse URL of the Jira issue.
+// - `jira.comment.id`: Numeric ID of the comment.
+// - `jira.comment.body`: Plain-text body of the comment.
+// - `jira.comment.url`: Browse URL of the issue focused on the comment.
+type JiraCommentTriggerVariableName string
+
+// JiraComponentAgenticWorkflowTrigger defines model for JiraComponentAgenticWorkflowTrigger.
+type JiraComponentAgenticWorkflowTrigger struct {
+	Kind JiraComponentAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec Fires on Jira Cloud component events. The sender is whoever created, updated, or deleted
+	// the component; the author is the component's lead, and a component without a lead never
+	// matches `authors` or `authorRegex`. Every filter combines with every other filter as AND.
+	Spec JiraComponentAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraComponentAgenticWorkflowTriggerKind defines model for JiraComponentAgenticWorkflowTrigger.Kind.
+type JiraComponentAgenticWorkflowTriggerKind string
+
+// JiraComponentAgenticWorkflowTriggerSpec Fires on Jira Cloud component events. The sender is whoever created, updated, or deleted
+// the component; the author is the component's lead, and a component without a lead never
+// matches `authors` or `authorRegex`. Every filter combines with every other filter as AND.
+type JiraComponentAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraComponentTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraComponentTriggerVariableName Variables provided by the `jira.component` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `updated`, or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project the component belongs to.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.component.id`: ID of the Jira component.
+// - `jira.component.name`: Name of the Jira component (e.g., `Checkout`).
+// - `jira.component.description`: Description of the Jira component; empty when it has none.
+type JiraComponentTriggerVariableName string
+
+// JiraEventAction Every action a Jira event can report, in Jira's own words: `JiraWebhookAction` plus the
+// verbs of the Forge project events, such as `archived` in `avi:jira:archived:project`, and
+// of the version webhook events, such as `released` in `jira:version_released`.
+//
+// - `created`: The entity was created.
+// - `started`: The sprint was started.
+// - `updated`: The entity was updated.
+// - `closed`: The sprint was closed (completed).
+// - `deleted`: The entity was deleted. For a project, deleted permanently.
+// - `softdeleted`: The project was moved to the trash.
+// - `archived`: The project or version was archived.
+// - `unarchived`: The project or version was unarchived.
+// - `restored`: The project was restored from the trash.
+// - `released`: The version was released.
+// - `unreleased`: The version's release was undone.
+// - `merged`: The version was merged into another version.
+// - `moved`: The version's position in the project's version list changed.
+type JiraEventAction string
+
+// JiraEventAgenticWorkflowTriggerSpec Shared filters for Jira trigger kinds that fire on Jira webhook events. Kinds scoped to a
+// project add `JiraProjectScope`.
+type JiraEventAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraIssueAgenticWorkflowTrigger defines model for JiraIssueAgenticWorkflowTrigger.
+type JiraIssueAgenticWorkflowTrigger struct {
+	Kind JiraIssueAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created, updated, or deleted the issue; the author is the issue's
+	// reporter. Every filter combines with every other filter as AND.
+	Spec JiraIssueAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraIssueAgenticWorkflowTriggerKind defines model for JiraIssueAgenticWorkflowTrigger.Kind.
+type JiraIssueAgenticWorkflowTriggerKind string
+
+// JiraIssueAgenticWorkflowTriggerSpec The sender is whoever created, updated, or deleted the issue; the author is the issue's
+// reporter. Every filter combines with every other filter as AND.
+type JiraIssueAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraIssueTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraIssueLinkAgenticWorkflowTrigger defines model for JiraIssueLinkAgenticWorkflowTrigger.
+type JiraIssueLinkAgenticWorkflowTrigger struct {
+	Kind JiraIssueLinkAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created or deleted the link. Jira sends no author for a link, so
+	// `authors` and `authorRegex` never match, and Jira never updates a link, so `updated` in
+	// `actions` never matches. The project scope matches when the source or the destination
+	// issue is in a selected project. Every filter combines with every other filter as AND.
+	Spec JiraIssueLinkAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraIssueLinkAgenticWorkflowTriggerKind defines model for JiraIssueLinkAgenticWorkflowTrigger.Kind.
+type JiraIssueLinkAgenticWorkflowTriggerKind string
+
+// JiraIssueLinkAgenticWorkflowTriggerSpec The sender is whoever created or deleted the link. Jira sends no author for a link, so
+// `authors` and `authorRegex` never match, and Jira never updates a link, so `updated` in
+// `actions` never matches. The project scope matches when the source or the destination
+// issue is in a selected project. Every filter combines with every other filter as AND.
+type JiraIssueLinkAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraIssueLinkTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraIssueLinkTriggerVariableName Variables provided by the `jira.issue_link` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created` or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the project of the link's source issue.
+// - `jira.project.key`: Short key of that project (e.g., `ENG`).
+// - `jira.project.name`: Display name of that project.
+// - `jira.issue_link.id`: ID of the issue link.
+// - `jira.issue_link.type.id`: ID of the link type.
+// - `jira.issue_link.type.name`: Name of the link type (e.g., `Blocks`).
+// - `jira.issue_link.source_issue.id`: Numeric ID of the source issue.
+// - `jira.issue_link.destination_issue.id`: Numeric ID of the destination issue.
+// - `jira.issue_link.destination_project.id`: ID of the project of the destination issue.
+type JiraIssueLinkTriggerVariableName string
+
+// JiraIssueTriggerVariableName Variables provided by the `jira.issue` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `updated`, or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project the issue belongs to.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.issue.id`: Numeric ID of the Jira issue.
+// - `jira.issue.key`: Key of the Jira issue (e.g., `ENG-123`).
+// - `jira.issue.summary`: Summary (title) of the Jira issue.
+// - `jira.issue.url`: Browse URL of the Jira issue.
+// - `jira.issue.type`: Name of the issue type (e.g., `Bug`, `Task`).
+// - `jira.issue.status`: Name of the issue's status (e.g., `To Do`).
+type JiraIssueTriggerVariableName string
+
+// JiraProjectAgenticWorkflowTrigger defines model for JiraProjectAgenticWorkflowTrigger.
+type JiraProjectAgenticWorkflowTrigger struct {
+	Kind JiraProjectAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec Jira project events name no user, so this kind has no sender or author filters. A project
+	// created after the trigger was saved matches only `allProjects`. Every filter combines with
+	// every other filter as AND.
+	Spec JiraProjectAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraProjectAgenticWorkflowTriggerKind defines model for JiraProjectAgenticWorkflowTrigger.Kind.
+type JiraProjectAgenticWorkflowTriggerKind string
+
+// JiraProjectAgenticWorkflowTriggerSpec Jira project events name no user, so this kind has no sender or author filters. A project
+// created after the trigger was saved matches only `allProjects`. Every filter combines with
+// every other filter as AND.
+type JiraProjectAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraEventAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraProjectTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net`. Omit to match every Jira site the organization has
+	// connected.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraProjectScope defines model for JiraProjectScope.
+type JiraProjectScope struct {
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+}
+
+// JiraProjectTriggerVariableName Variables provided by the `jira.project` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The action: `created`, `updated`, `deleted`, `softdeleted`, `archived`, `unarchived`, or `restored`.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.project.url`: Browse URL of the Jira project.
+type JiraProjectTriggerVariableName string
+
+// JiraSenderFilters defines model for JiraSenderFilters.
+type JiraSenderFilters struct {
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+}
+
+// JiraSprintAgenticWorkflowTrigger defines model for JiraSprintAgenticWorkflowTrigger.
+type JiraSprintAgenticWorkflowTrigger struct {
+	Kind JiraSprintAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created, started, updated, closed, or deleted the sprint. A sprint
+	// has no author, so `authors` and `authorRegex` never match it. The sprint's project is the
+	// location project of the board the sprint was created on; sprints of a board without one
+	// never match. Every filter combines with every other filter as AND.
+	Spec JiraSprintAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraSprintAgenticWorkflowTriggerKind defines model for JiraSprintAgenticWorkflowTrigger.Kind.
+type JiraSprintAgenticWorkflowTriggerKind string
+
+// JiraSprintAgenticWorkflowTriggerSpec The sender is whoever created, started, updated, closed, or deleted the sprint. A sprint
+// has no author, so `authors` and `authorRegex` never match it. The sprint's project is the
+// location project of the board the sprint was created on; sprints of a board without one
+// never match. Every filter combines with every other filter as AND.
+type JiraSprintAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraSprintTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraSprintTriggerVariableName Variables provided by the `jira.sprint` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `started`, `updated`, `closed`, or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the location project of the sprint's board.
+// - `jira.project.key`: Short key of that project (e.g., `ENG`).
+// - `jira.project.name`: Display name of that project.
+// - `jira.board.id`: ID of the board the sprint was created on.
+// - `jira.sprint.id`: ID of the sprint.
+// - `jira.sprint.name`: Name of the sprint.
+// - `jira.sprint.state`: State of the sprint: `future`, `active`, or `closed`.
+// - `jira.sprint.goal`: Goal of the sprint.
+// - `jira.sprint.start_date`: Planned start date of the sprint (ISO 8601).
+// - `jira.sprint.end_date`: Planned end date of the sprint (ISO 8601).
+// - `jira.sprint.complete_date`: Date the sprint was closed (ISO 8601).
+type JiraSprintTriggerVariableName string
+
+// JiraVersionAgenticWorkflowTrigger defines model for JiraVersionAgenticWorkflowTrigger.
+type JiraVersionAgenticWorkflowTrigger struct {
+	Kind JiraVersionAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever changed the version; the author is the version's driver. A version
+	// without a driver never matches `authors` or `authorRegex`. Every filter combines with every
+	// other filter as AND.
+	Spec JiraVersionAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraVersionAgenticWorkflowTriggerKind defines model for JiraVersionAgenticWorkflowTrigger.Kind.
+type JiraVersionAgenticWorkflowTriggerKind string
+
+// JiraVersionAgenticWorkflowTriggerSpec The sender is whoever changed the version; the author is the version's driver. A version
+// without a driver never matches `authors` or `authorRegex`. Every filter combines with every
+// other filter as AND.
+type JiraVersionAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on: `created`, `updated`, `deleted`, `released`,
+	// `unreleased`, `archived`, `unarchived`, `merged`, or `moved`. When omitted or empty,
+	// every action matches.
+	Actions *[]JiraEventAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraVersionTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraVersionTriggerVariableName Variables provided by the `jira.version` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `updated`, `deleted`, `released`, `unreleased`, `archived`, `unarchived`, `merged`, or `moved`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project the version belongs to.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.version.id`: Numeric ID of the Jira version.
+// - `jira.version.name`: Name of the version (e.g., `2.4.0`).
+// - `jira.version.description`: Description of the version.
+// - `jira.version.url`: URL of the version's page in the Jira project.
+// - `jira.version.released`: `true` when the version is released, else `false`.
+// - `jira.version.archived`: `true` when the version is archived, else `false`.
+// - `jira.version.release_date`: Release date of the version (`YYYY-MM-DD`), when set.
+type JiraVersionTriggerVariableName string
+
+// JiraWebhookAction What happened to the Jira entity behind a webhook event, in Jira's own words: the verb of
+// the event name, such as `created` in `jira:issue_created` or `started` in
+// `avi:jira-software:started:sprint`. Each trigger kind accepts only the actions its events
+// carry.
+//
+// - `created`: The entity was created.
+// - `started`: The sprint was started. Sent for `jira.sprint` only.
+// - `updated`: The entity was updated.
+// - `closed`: The sprint was closed (completed). Sent for `jira.sprint` only.
+// - `deleted`: The entity was deleted.
+type JiraWebhookAction string
+
+// JiraWorklogAgenticWorkflowTrigger defines model for JiraWorklogAgenticWorkflowTrigger.
+type JiraWorklogAgenticWorkflowTrigger struct {
+	Kind JiraWorklogAgenticWorkflowTriggerKind `json:"kind"`
+
+	// Spec The sender is whoever created, updated, or deleted the worklog; the author is the worklog's
+	// author. The project scope matches the project of the issue the worklog is logged on. Every
+	// filter combines with every other filter as AND.
+	Spec JiraWorklogAgenticWorkflowTriggerSpec `json:"spec"`
+
+	// Task Optional per-trigger task/instruction prompt. When set, it is rendered with the same
+	// `{{variable.name}}` substitution as `spec.prompt.user` and used as the task turn for
+	// invocations from this trigger: the kickoff framing when the trigger spawns a new agent,
+	// or the event framing when it continues an existing one. When omitted, the
+	// automation-level `spec.prompt.user` (on spawn) or a connector-default event summary (on
+	// continue) is used instead. The automation-level standing prompt is injected only once,
+	// on spawn, and is not re-sent on continue.
+	Task *AgenticWorkflowTriggerTask `json:"task,omitempty"`
+}
+
+// JiraWorklogAgenticWorkflowTriggerKind defines model for JiraWorklogAgenticWorkflowTrigger.Kind.
+type JiraWorklogAgenticWorkflowTriggerKind string
+
+// JiraWorklogAgenticWorkflowTriggerSpec The sender is whoever created, updated, or deleted the worklog; the author is the worklog's
+// author. The project scope matches the project of the issue the worklog is logged on. Every
+// filter combines with every other filter as AND.
+type JiraWorklogAgenticWorkflowTriggerSpec struct {
+	// Actions Optional list of actions to filter on. When omitted or empty, every action
+	// matches.
+	Actions *[]JiraWebhookAction `json:"actions,omitempty"`
+
+	// AllProjects When true, the automation deliberately matches events in every project of the connected
+	// Jira site, now and in the future. Mutually exclusive with a non-empty `projectIds`
+	// list. This flag distinguishes an explicit "all projects" choice from an unconfigured
+	// trigger, mirroring `allTeams` on Linear triggers.
+	AllProjects *bool `json:"allProjects,omitempty"`
+
+	// AuthorRegex Optional RE2 regular expression that must match the author's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `authors`.
+	AuthorRegex *string `json:"authorRegex,omitempty"`
+
+	// Authors Optional list of Jira users who must have authored the entity, for example the
+	// comment's writer or the issue's reporter. An entry matches the author's Atlassian
+	// account ID on Jira Cloud, or the author's user key on Jira Data Center, exactly.
+	// Mutually exclusive with `authorRegex`.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// AvailableVariables The trigger-specific variables available as `{{variable.name}}` when this trigger fires.
+	// This is in addition to the built-in variables that are always available.
+	AvailableVariables *[]JiraWorklogTriggerVariableName `json:"availableVariables,omitempty"`
+
+	// ProjectIds List of Jira project IDs to scope the trigger to. When non-empty, the trigger fires
+	// only for events in a project whose ID is in this list. Mutually exclusive with
+	// `allProjects`; a request that sets both, or that leaves both `projectIds` and
+	// `allProjects` empty/unset, is rejected on write as an accidental match-everything
+	// catch-all. Project IDs are sequential per Jira site, so an organization with more than
+	// one Jira integration narrows them to one site with `siteUrls`.
+	ProjectIds *[]string `json:"projectIds,omitempty"`
+
+	// SenderRegex Optional RE2 regular expression that must match the actor's complete Atlassian account
+	// ID on Jira Cloud, or complete user key on Jira Data Center. Mutually exclusive with
+	// `senders`.
+	SenderRegex *string `json:"senderRegex,omitempty"`
+
+	// Senders Optional list of Jira users whose action fires the trigger. An entry matches the
+	// actor's Atlassian account ID on Jira Cloud, or the actor's user key on Jira Data
+	// Center, exactly. Mutually exclusive with `senderRegex`.
+	Senders *[]string `json:"senders,omitempty"`
+
+	// SiteUrls Optional list of Jira site base URLs to filter on, e.g.
+	// `https://example.atlassian.net` or `https://jira.example.com`. Omit to match every
+	// Jira site the organization has connected. Project IDs and Data Center user keys are
+	// unique only within one site, so an organization with more than one Jira integration
+	// sets this to tell them apart.
+	SiteUrls *[]string `json:"siteUrls,omitempty"`
+}
+
+// JiraWorklogTriggerVariableName Variables provided by the `jira.worklog` trigger. Fields Jira omits from the event are empty.
+//
+// - `jira.action`: The webhook action: `created`, `updated`, or `deleted`.
+// - `jira.actor.name`: Display name of the user who caused the event, when known.
+// - `jira.site_url`: Base URL of the Jira site the event came from.
+// - `jira.project.id`: ID of the Jira project of the issue the worklog is logged on.
+// - `jira.project.key`: Short key of the Jira project (e.g., `ENG`).
+// - `jira.project.name`: Display name of the Jira project.
+// - `jira.issue.id`: Numeric ID of the Jira issue the worklog is logged on.
+// - `jira.issue.key`: Key of the Jira issue (e.g., `ENG-123`).
+// - `jira.issue.summary`: Summary (title) of the Jira issue.
+// - `jira.issue.url`: Browse URL of the Jira issue.
+// - `jira.worklog.id`: ID of the worklog.
+// - `jira.worklog.time_spent`: Time logged, as Jira formats it (e.g., `3h 20m`).
+// - `jira.worklog.time_spent_seconds`: Time logged, in seconds.
+// - `jira.worklog.started`: When the logged work started, as Jira sends it (ISO 8601).
+// - `jira.worklog.comment`: Plain text of the worklog's comment; empty when there is none.
+type JiraWorklogTriggerVariableName string
+
 // KeyValue KeyValue is a key-value pair that is used to store Span attributes, Link attributes, etc.
 type KeyValue struct {
 	Key string `json:"key"`
@@ -13673,6 +18368,30 @@ type LinearTeamScope struct {
 // - `remove`: The entity was removed.
 type LinearWebhookAction string
 
+// ListRepositoriesResponse defines model for ListRepositoriesResponse.
+type ListRepositoriesResponse struct {
+	Cursors NextCursors            `json:"cursors"`
+	Items   []RepositoryDefinition `json:"items"`
+}
+
+// ListRepositorySettingsVersionsResponse Every stored version of a repository's auto-approval settings, newest
+// first. Each entry is the full settings document as it was saved, so a
+// reader can show what a version actually said and restore it without a
+// second request.
+//
+// Not paginated: the history is capped server-side at the 50 most recent
+// versions, and older ones are deleted as new ones arrive.
+//
+// A repository that has never been configured has no versions at all and
+// returns an empty list — distinct from the settings endpoint, which
+// answers the documented defaults rather than nothing.
+type ListRepositorySettingsVersionsResponse struct {
+	// Versions The stored versions, newest first. `metadata.labels."dash0.com/version"`
+	// carries the version number, and `metadata.annotations` when it was
+	// saved and by whom.
+	Versions []RepositorySettingsDefinition `json:"versions"`
+}
+
 // LogRecord defines model for LogRecord.
 type LogRecord struct {
 	Attributes []KeyValue `json:"attributes"`
@@ -14355,6 +19074,29 @@ type OAuthTokenType string
 //   - Within the context of telemetry filtering, a condition evaluating to true means that the data should be dropped.
 type OTTLCondition = string
 
+// OTTLConditions defines model for OTTLConditions.
+type OTTLConditions = []OTTLCondition
+
+// OTTLStatement The OpenTelemetry Transformation Language (OTTL) is a small, domain-specific programming language intended to
+// process data with OpenTelemetry-native concepts and constructs. An OTTL *Statement* is an expression that
+// performs an action on telemetry data, such as setting, deleting, or transforming attributes.
+//
+// OTTL statements are used by the OpenTelemetry Transform Processor to modify telemetry data as it passes
+// through the collector pipeline:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/transformprocessor/README.md
+//
+// Statements are only valid for specific evaluation contexts:
+// https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md#getting-started
+//
+// Examples:
+//   - `set(attributes["http.request.method"], "GET")` sets an attribute value.
+//   - `delete_key(attributes, "http.request.header.authorization")` removes a sensitive attribute.
+//   - `truncate_all(attributes, 100)` truncates all attribute values to 100 characters.
+type OTTLStatement = string
+
+// OTTLStatements defines model for OTTLStatements.
+type OTTLStatements = []OTTLStatement
+
 // OpsgenieConfig defines model for OpsgenieConfig.
 type OpsgenieConfig struct {
 	ApiKey   string                 `json:"apiKey"`
@@ -14386,6 +19128,29 @@ type PagerDutyConfig struct {
 	Key string `json:"key"`
 	Url string `json:"url"`
 }
+
+// PathRuleLevel How much authority the bot has over a pull request whose changed paths
+// resolve to this level, in ascending order of autonomy. Mirrors `BotMode`
+// with `off` replaced by `protected`: `off` means "never evaluate", which
+// is a repository-wide switch rather than something a path can express,
+// whereas `protected` is the existing hard gate — the least autonomous
+// outcome a path can produce.
+// - `protected`: Always held for human review, and not scored at all — no sandbox, no model call.
+// - `dry_run`: Scored and recorded, but never written back to the provider.
+// - `auto_approve`: May post an approving review on a passing pull request, but never merges.
+// - `auto_merge`: May approve and merge a passing pull request.
+type PathRuleLevel string
+
+// PathRuleUnauthorizedFallback What an author-scoped rule does about a pull request opened by someone it
+// does NOT name. Only meaningful alongside `authors`.
+// - `apply_global`: The rule does not apply at all, so its paths fall back to the repository's `botMode` exactly as if the rule did not exist.
+// - `dry_run`: The rule holds those paths at `dry_run` — scored and recorded, never written back.
+// - `protected`: The rule holds those paths for human review, without scoring them.
+//
+// None of these can RAISE authority: `dry_run` and `protected` both sit at or
+// below every `botMode`, so an unauthorized author can only ever come out at
+// or below what the repository already grants them.
+type PathRuleUnauthorizedFallback string
 
 // PinnedRetentionClass The retention of profiling data: always 30 days, not customer-selectable.
 type PinnedRetentionClass string
@@ -14714,6 +19479,11 @@ type PrometheusAlertRule struct {
 	//
 	// The "summary" and "description" annotations are expected and are used as the human-readable
 	// summary and description of the check rule.
+	//
+	// The "dash0.com/on-no-data" annotation sets the evaluation outcome when the expression returns no
+	// data. The values are `critical`, `degraded` and `ignored`. An absent key or an empty value
+	// means `ignored`. Any other value is rejected with a 400. Set it here, in the rule-level
+	// annotations; it is rejected in `metadata.annotations`.
 	Annotations *PrometheusAlertRule_Annotations `json:"annotations,omitempty"`
 
 	// Dataset The dataset the check rule belongs to. On create, update and import, the `dataset` query parameter, or the `Dash0-Dataset` header when the parameter is absent, wins over this field.
@@ -14809,6 +19579,11 @@ type PrometheusAlertRule struct {
 //
 // The "summary" and "description" annotations are expected and are used as the human-readable
 // summary and description of the check rule.
+//
+// The "dash0.com/on-no-data" annotation sets the evaluation outcome when the expression returns no
+// data. The values are `critical`, `degraded` and `ignored`. An absent key or an empty value
+// means `ignored`. Any other value is rejected with a 400. Set it here, in the rule-level
+// annotations; it is rejected in `metadata.annotations`.
 type PrometheusAlertRule_Annotations struct {
 	// Description Human-readable and templatable description for the check that allows you to customize the way the
 	// rationale of the check is textually described in the Dash0 UI, in notifications, etc. This will
@@ -15161,6 +19936,9 @@ type PrometheusRuleDefinition struct {
 	//   The annotation declares the routing in full: a channel it does not name is unlinked,
 	//   and a channel it names without the suffix notifies on every issue, including when the
 	//   only-on-critical trigger had been set in the UI.
+	// - `dash0.com/on-no-data`: The evaluation outcome when the expression returns no data. The
+	//   values are `critical`, `degraded` and `ignored`. An absent key or an empty value means
+	//   `ignored`. Any other value is rejected.
 	Annotations *map[string]string `json:"annotations,omitempty"`
 
 	// Expr PromQL expression to evaluate.
@@ -15434,6 +20212,435 @@ type QueryError struct {
 // - `y` - years
 type RelativeTime = string
 
+// RepositoryDefinition A repository Darkplane observes through provider webhooks, in the CRD
+// envelope.
+//
+// Shares the `DarkplaneRepository` kind with `DarkplaneRepositoryDefinition`
+// because it is the same entity seen one layer up: this adds the per-region
+// observations (open pull requests, cycle time) to the repository's
+// identity. The two are therefore not distinguishable by `kind` alone —
+// tell them apart by the endpoint that returned them, or by
+// `spec.openPullRequests`, which only this one carries.
+type RepositoryDefinition struct {
+	Kind RepositoryDefinitionKind `json:"kind"`
+
+	// Metadata Identity for a repository. `name` is the human-readable `account/name`
+	// slug (e.g. `acme/api`); the server-set id lives in
+	// `labels."dash0.com/id"`.
+	Metadata RepositoryMetadata `json:"metadata"`
+
+	// Spec The observable state of a repository Darkplane watches.
+	Spec RepositorySpec `json:"spec"`
+}
+
+// RepositoryDefinitionKind defines model for RepositoryDefinition.Kind.
+type RepositoryDefinitionKind string
+
+// RepositoryMetadata Identity for a repository. `name` is the human-readable `account/name`
+// slug (e.g. `acme/api`); the server-set id lives in
+// `labels."dash0.com/id"`.
+type RepositoryMetadata struct {
+	// Annotations Timestamp annotations shared by every Darkplane CRD resource.
+	Annotations ResourceAnnotations `json:"annotations"`
+
+	// Labels Identity labels shared by every Darkplane CRD resource.
+	Labels ResourceLabels `json:"labels"`
+
+	// Name The repository's human-readable `account/name` slug.
+	Name string `json:"name"`
+}
+
+// RepositoryPathRule Sets the bot's authority over the paths it matches, so one area of a
+// repository can run ahead of (or behind) the repository-wide `botMode` —
+// e.g. a proof-of-concept directory on `auto_merge` and an infrastructure
+// directory `protected`, while the rest of the repository stays `dry_run`.
+//
+// Approving and merging act on a whole pull request, so a rule cannot apply
+// to part of one. Instead, every changed path resolves to a level — the
+// least autonomous level among the rules matching that path, or the
+// repository's `botMode` when no rule matches it — and the pull request
+// runs at the least autonomous level across all of its changed paths. A
+// change that spans both a rule's paths and ungoverned ones is therefore
+// governed by whichever is more restrictive, never by the rule alone.
+//
+// Because `protected` is the bottom of that ordering, the protected-path
+// hard gate is not a separate mechanism: a pull request touching a
+// `protected` path resolves to `protected` and is held for review whatever
+// the other paths would have allowed.
+//
+// Rules never override the `off` bot mode: a repository with the bot off is
+// not evaluated at all, so there is no run for a rule to govern.
+//
+// A rule may additionally be scoped to named `authors`, so an area can run
+// ahead of the repository default for the people who own it without
+// raising it for everyone who opens a pull request there — and
+// `unauthorizedFallback` says what happens to everyone else, which is how
+// an area can also run BEHIND a permissive repository for all but the
+// people who own it.
+type RepositoryPathRule struct {
+	// Authors Restricts the rule to pull requests opened by these authors,
+	// identified by their id at the provider (the GitHub user id, the
+	// GitLab user id) — never the login, which its holder can change and
+	// which another account can then claim. Omit the field to apply the
+	// rule to everyone; that is the behaviour of every rule written before
+	// this field existed.
+	//
+	// What happens to an author the rule does NOT name is
+	// `unauthorizedFallback`'s answer, and it defaults to `apply_global`:
+	// the rule does not apply, and the paths it covers fall back to
+	// whatever else governs them — usually the repository's `botMode`. So
+	// by default an author-scoped rule RAISES authority for the people it
+	// names and changes nothing for anyone else, which is what lets the
+	// engineers who own an area run at `auto_approve` while the repository
+	// as a whole stays in `dry_run`.
+	//
+	// That default is the wrong one when the repository ALREADY grants the
+	// level the rule names. A repository on `auto_approve` with an
+	// `auto_approve` rule scoped to two people changes nothing for anybody:
+	// everyone else keeps being auto-approved through the repository
+	// default. Set `unauthorizedFallback` to `dry_run` (or `protected`) to
+	// hold the area back for everyone the rule does not name.
+	//
+	// The same reading applies to an author-scoped `protected` rule, which
+	// is easily misread: it holds THOSE authors' pull requests for review
+	// and, under the default fallback, leaves everybody else governed by
+	// the repository default. To protect a path from everyone — the usual
+	// intent — leave `authors` off.
+	//
+	// Scoping cannot manufacture authority the repository does not already
+	// grant somewhere: a rule can no more raise a repository whose bot is
+	// `off` than any other rule can.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// Level The authority the bot has over the paths this rule matches.
+	Level PathRuleLevel `json:"level"`
+
+	// Name A human label for the rule, shown wherever the rule set is listed or
+	// diffed. Purely descriptive: nothing resolves or matches on it, two
+	// rules may share one, and a rule written before this field existed
+	// simply has none — readers fall back to describing the rule by its
+	// paths.
+	Name *string `json:"name,omitempty"`
+
+	// Paths Glob patterns matched against the changed paths (`**` spans segments,
+	// `*` and `?` stay within one, anchored to the whole path,
+	// case-sensitive — the `.gitignore`/CODEOWNERS dialect). Bounded
+	// because each pattern is compiled and evaluated against every changed
+	// path.
+	Paths []string `json:"paths"`
+
+	// SoftRiskCriteria The criteria the paths this rule matches are scored against, in place
+	// of the repository's `softRiskCriteria`. Omit the field to score them
+	// against the repository's criteria, or against another matching rule's
+	// own criteria, as every rule written before this field existed does.
+	// Each criterion has the same shape as a repository criterion, and the
+	// repository's `softThreshold` is the bar for this set too. A save is
+	// rejected when a criterion here has a blank `name` or `prompt`, a
+	// `multiplier` of 0 or less, or a `threshold` outside 0 to 100.
+	//
+	// The rule follows the same author scoping as its `level`: its criteria
+	// apply to a pull request whenever the rule governs that pull
+	// request's author, and not otherwise.
+	//
+	// A pull request can touch paths governed by different criteria sets.
+	// Each set it touches is scored on its own against the threshold, and
+	// the pull request passes only when every set passes. A path no rule
+	// with criteria matches contributes the repository's criteria. So
+	// touching more areas can only make the bot stricter. A criterion that
+	// appears verbatim in two sets is scored once.
+	//
+	// Not yet honoured for every organization. Where it is not, the field
+	// is stored but ignored, and every path is scored against the
+	// repository's criteria.
+	SoftRiskCriteria *[]SoftRiskCriterion `json:"softRiskCriteria,omitempty"`
+
+	// SuppressComments When `true`, a pull request touching a path this rule matches has the
+	// bot's comments withheld from the provider — the run is recorded and
+	// visible in the Dash0 dashboard, but nothing is posted where a human
+	// reviewer would see it, so the bot's read cannot anchor theirs.
+	//
+	// Orthogonal to `level`: it changes what the bot SAYS, not what it may
+	// DO. The check run, and any approval or merge the level permits, are
+	// unaffected. Suppression is sticky across a pull request's paths — a
+	// change touching one suppressed path is silent even where its other
+	// paths would have commented. Defaults to `false`.
+	SuppressComments *bool `json:"suppressComments,omitempty"`
+
+	// UnauthorizedFallback What the rule does about authors it does not name. Defaults to
+	// `apply_global`, the behaviour of every rule written before this
+	// field existed. Rejected without `authors`, where it would describe
+	// a case that cannot arise.
+	UnauthorizedFallback *PathRuleUnauthorizedFallback `json:"unauthorizedFallback,omitempty"`
+}
+
+// RepositoryProvider The source-control provider a repository lives on.
+// - `github`: GitHub.
+// - `gitlab`: GitLab.
+type RepositoryProvider string
+
+// RepositoryReviewerSettings Repository-level controls for the Darkplane code reviewer. Independent of
+// `botMode`: enabling reviews does not grant permission to approve or merge.
+// An omitted configuration resolves to both controls disabled.
+type RepositoryReviewerSettings struct {
+	// AutomergeAcceptedVerdicts Validated reviewer decisions that permit AutoMerge, each listed once. Incomplete reviews never permit it.
+	AutomergeAcceptedVerdicts *[]RepositoryReviewerSettingsAutomergeAcceptedVerdicts `json:"automergeAcceptedVerdicts,omitempty"`
+
+	// CommentRequests Whether a `/review` comment from the pull request's author or a repository writer
+	// requests a review. When `false`, Darkplane ignores those comments; requests from the
+	// Dash0 UI and API still run.
+	CommentRequests *bool `json:"commentRequests,omitempty"`
+
+	// Enabled Whether Darkplane may schedule code reviews for this repository.
+	Enabled bool `json:"enabled"`
+
+	// RequireForAutomerge Whether AutoMerge waits for a completed, validated review of the
+	// exact revision it is evaluating. Requires `enabled` to be `true`.
+	RequireForAutomerge bool `json:"requireForAutomerge"`
+
+	// SettleDelaySeconds Delay automatic reviews to let commits settle. Explicit requests start immediately.
+	SettleDelaySeconds *int32 `json:"settleDelaySeconds,omitempty"`
+
+	// SkipAfterHumanReview Stop automatic reviews after a human takes over. Explicit requests still run.
+	SkipAfterHumanReview *bool `json:"skipAfterHumanReview,omitempty"`
+
+	// TriggerMode Review a PR when it first becomes ready, after new commits, or only on explicit request.
+	TriggerMode *RepositoryReviewerTriggerMode `json:"triggerMode,omitempty"`
+}
+
+// RepositoryReviewerSettingsAutomergeAcceptedVerdicts defines model for RepositoryReviewerSettings.AutomergeAcceptedVerdicts.
+type RepositoryReviewerSettingsAutomergeAcceptedVerdicts string
+
+// RepositoryReviewerTriggerMode Review a PR when it first becomes ready, after new commits, or only on explicit request.
+type RepositoryReviewerTriggerMode string
+
+// RepositorySettingsDefinition A repository's auto-approval bot configuration, in the CRD envelope.
+type RepositorySettingsDefinition struct {
+	Kind RepositorySettingsDefinitionKind `json:"kind"`
+
+	// Metadata Identity for a repository's settings. `name` is the `account/name` slug
+	// of the repository the settings belong to; `labels."dash0.com/id"` carries
+	// that repository's id.
+	Metadata RepositorySettingsMetadata `json:"metadata"`
+
+	// Spec The reviewer and auto-approval configuration for a repository. A repository that
+	// has never been configured uses the documented defaults (bot `off`, manual
+	// trigger, reviewer disabled, the starting scoring criteria).
+	Spec RepositorySettingsSpec `json:"spec"`
+
+	// UsesDefaultCriteria Whether the effective repository-level soft risk criteria match the
+	// current factory defaults. Criterion and tool ordering do not matter;
+	// weights are compared as normalized shares, allowing float32 rounding.
+	// Names, prompts, tool selections, per-criterion floors, and criterion
+	// count must match. Omitted tools mean all tools; an empty list means
+	// none. Other settings, including path-rule criteria, are not compared.
+	// Computed by the server on read, never persisted. Values supplied on
+	// write are ignored. May be absent.
+	UsesDefaultCriteria *bool `json:"usesDefaultCriteria,omitempty"`
+}
+
+// RepositorySettingsDefinitionKind defines model for RepositorySettingsDefinition.Kind.
+type RepositorySettingsDefinitionKind string
+
+// RepositorySettingsMetadata Identity for a repository's settings. `name` is the `account/name` slug
+// of the repository the settings belong to; `labels."dash0.com/id"` carries
+// that repository's id.
+type RepositorySettingsMetadata struct {
+	// Annotations Timestamp annotations shared by every Darkplane CRD resource.
+	Annotations ResourceAnnotations `json:"annotations"`
+
+	// Labels Identity labels shared by every Darkplane CRD resource.
+	Labels ResourceLabels `json:"labels"`
+
+	// Name The `account/name` slug of the repository the settings belong to.
+	Name string `json:"name"`
+}
+
+// RepositorySettingsRequest The write-path body for replacing a repository's auto-approval settings.
+// `metadata` is server-managed apart from `labels."dash0.com/version"`, the
+// version the write is based on; everything else a caller puts in it is
+// ignored.
+type RepositorySettingsRequest struct {
+	Kind RepositorySettingsRequestKind `json:"kind"`
+
+	// Metadata The one piece of metadata a write may carry: the optimistic concurrency
+	// token in `labels."dash0.com/version"`. Send the version you read (a
+	// positive integer) to reject the write if the settings changed since;
+	// omit it, or send `0`, to overwrite unconditionally.
+	Metadata *RepositorySettingsRequestMetadata `json:"metadata,omitempty"`
+
+	// Spec The reviewer and auto-approval configuration for a repository. A repository that
+	// has never been configured uses the documented defaults (bot `off`, manual
+	// trigger, reviewer disabled, the starting scoring criteria).
+	Spec RepositorySettingsSpec `json:"spec"`
+}
+
+// RepositorySettingsRequestKind defines model for RepositorySettingsRequest.Kind.
+type RepositorySettingsRequestKind string
+
+// RepositorySettingsRequestMetadata The one piece of metadata a write may carry: the optimistic concurrency
+// token in `labels."dash0.com/version"`. Send the version you read (a
+// positive integer) to reject the write if the settings changed since;
+// omit it, or send `0`, to overwrite unconditionally.
+type RepositorySettingsRequestMetadata struct {
+	// Labels Identity labels shared by every Darkplane CRD resource.
+	Labels *ResourceLabels `json:"labels,omitempty"`
+}
+
+// RepositorySettingsSpec The reviewer and auto-approval configuration for a repository. A repository that
+// has never been configured uses the documented defaults (bot `off`, manual
+// trigger, reviewer disabled, the starting scoring criteria).
+type RepositorySettingsSpec struct {
+	// AdditionalApprovalMessage Free-text Markdown appended to the bot's approval comment. Empty by default.
+	AdditionalApprovalMessage *string `json:"additionalApprovalMessage,omitempty"`
+
+	// BotMode Defaults to `off` until a human enables the bot.
+	BotMode BotMode `json:"botMode"`
+
+	// FastTrackReverts When `true`, a pull request that exactly reverts a pull request the
+	// bot approved is approved by a deterministic revert check instead of
+	// LLM scoring. Anything that is not a verified exact revert is evaluated
+	// normally. When `false` or omitted, revert markers are ignored.
+	// Defaults to `false`.
+	FastTrackReverts *bool `json:"fastTrackReverts,omitempty"`
+
+	// IgnoredChecks Check suites automatic triggering does not wait for before it starts
+	// an evaluation, by `RepositoryCheckSuite.key`: a pending or failed
+	// check run in a suite named here, or a commit status named here,
+	// neither holds nor skips the evaluation, and a required check that
+	// reported in one is not awaited. A suite not named here is waited
+	// for, so a newly added workflow or app is waited for by default.
+	// Entries that are not a suite key, such as the check-run names this
+	// field held before, match nothing.
+	//
+	// Only consulted while `waitForChecks` is `true`, and only on GitHub.
+	// It does not lower what an approval or merge requires: before acting,
+	// the bot still re-reads every check on the evaluated commit, so an
+	// ignored check that is still running holds the approval until it
+	// passes. Empty by default.
+	IgnoredChecks *[]string `json:"ignoredChecks,omitempty"`
+
+	// PathRules Per-path authority levels — the single place to express both the
+	// protected hard gate and a raised or lowered bot mode. Empty by
+	// default, so `botMode` alone governs the repository.
+	//
+	// A pull request runs at the LEAST autonomous level across every path it
+	// changes: each changed path takes the most restrictive rule matching it,
+	// or `botMode` when none does, and the run takes the minimum of those. So
+	// a change that also touches a path no rule covers falls back to the
+	// repository default — a rule cannot lend its authority to files outside
+	// it. Ordering is `protected < dry_run < auto_approve < auto_merge`.
+	//
+	// The API validates and stores rules but does not normalize them. A
+	// client is responsible for sending patterns it means: an empty or
+	// whitespace-only pattern is rejected (it would match nothing while
+	// looking configured), a rule needs at least one pattern, and the
+	// deprecated `protectedPaths` should be kept in step with the `protected`
+	// rules rather than emptied.
+	PathRules *[]RepositoryPathRule `json:"pathRules,omitempty"`
+
+	// ProtectedPaths Glob patterns whose changes are a hard gate — a matching change is
+	// always rejected.
+	//
+	// SUPERSEDED by a `pathRules` entry at level `protected`, which says the
+	// same thing. This field is folded into the rule set on resolution, so
+	// existing configuration keeps working untouched, and it is removed once
+	// every reader prefers `pathRules`.
+	//
+	// Keep it in step with the `protected` rules rather than emptying it.
+	// Nothing re-derives one field from the other on write.
+	ProtectedPaths []string `json:"protectedPaths"`
+
+	// RepositoryKnowledge Operator-authored, trusted Markdown describing the repository for the
+	// scoring and classification agents. Empty by default.
+	RepositoryKnowledge *string `json:"repositoryKnowledge,omitempty"`
+
+	// Reviewer Repository-level controls for the Darkplane code reviewer. Independent of
+	// `botMode`: enabling reviews does not grant permission to approve or merge.
+	// An omitted configuration resolves to both controls disabled.
+	Reviewer *RepositoryReviewerSettings `json:"reviewer,omitempty"`
+
+	// SoftRiskCriteria The weighted scoring dimensions. At least one is required.
+	SoftRiskCriteria []SoftRiskCriterion `json:"softRiskCriteria"`
+
+	// SoftThreshold The score a pull request must reach for the bot to act.
+	SoftThreshold float32 `json:"softThreshold"`
+
+	// SuppressComments The repository-wide default for withholding the bot's comments from
+	// the provider. When `true`, the bot evaluates and records decisions
+	// but posts no comments — runs are visible only in the Dash0 dashboard,
+	// so a human reviewer's judgement is not anchored by the bot's read.
+	//
+	// Orthogonal to `botMode`: it changes what the bot SAYS, not what it
+	// may DO. The check run, and any approval or merge the mode permits, are
+	// unaffected. A `pathRules` entry can withhold comments for the paths it
+	// matches even when this default is `false`; this default cannot be
+	// overridden back to commenting per path. Defaults to `false`.
+	SuppressComments *bool `json:"suppressComments,omitempty"`
+
+	// TriggerMode Defaults to `manual`.
+	TriggerMode TriggerMode `json:"triggerMode"`
+
+	// WaitForChecks Whether automatic triggering waits for the head commit's CI checks to
+	// settle before evaluating. Only consulted in `auto` trigger mode.
+	// Defaults to `true`.
+	WaitForChecks bool `json:"waitForChecks"`
+}
+
+// RepositorySpec The observable state of a repository Darkplane watches.
+type RepositorySpec struct {
+	// Account The owning account (GitHub org/user or GitLab namespace).
+	Account string `json:"account"`
+
+	// AutoApprovalRate Share of the bot's own decisions over the trailing 30 days that were
+	// approvals, as a percentage — `approved / (approved + rejected)`.
+	//
+	// Counts what the bot DECIDED, not what it wrote back, so a `dry_run`
+	// repository reports a rate too; that is the number that says whether
+	// enabling the bot would be uneventful. `null` when the bot reached no
+	// decision in the window, which is every repository whose bot is
+	// `off`.
+	AutoApprovalRate *float32 `json:"autoApprovalRate"`
+
+	// BotMode The repository's effective auto-approval bot mode (defaults to `off` when never configured).
+	BotMode BotMode `json:"botMode"`
+
+	// Connection Whether a live integration still reaches the repository; `unknown`
+	// when that cannot be decided. May be absent.
+	Connection *DarkplaneRepositoryConnection `json:"connection,omitempty"`
+
+	// Enabled Whether the repository is live for this organization. A disabled
+	// repository keeps its configured `botMode` but receives no deliveries,
+	// so the bot acts on none of its pull requests. May be absent.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// InstanceUrl Base URL of the provider instance the repository lives on,
+	// `https://<host>`, so a link to the repository addresses the
+	// integration's own host rather than the public one. Absent while the
+	// GitHub or GitLab integration does not report it.
+	InstanceUrl *string `json:"instanceUrl,omitempty"`
+
+	// Name The repository name within the account.
+	Name string `json:"name"`
+
+	// OpenPullRequests Number of currently open pull requests observed for the repository.
+	OpenPullRequests int `json:"openPullRequests"`
+
+	// Provider The source-control provider a repository lives on.
+	// - `github`: GitHub.
+	// - `gitlab`: GitLab.
+	Provider RepositoryProvider `json:"provider"`
+
+	// Synthetic True for a demo repository. It exists on no provider and its settings
+	// cannot be saved. Absent means false.
+	Synthetic *bool `json:"synthetic,omitempty"`
+
+	// TimeToMergeP50Seconds Median cycle time from branch inception (the first commit's
+	// authored time, falling back to `openedAt`) to merge over the
+	// trailing 30 days, in seconds; `null` when nothing merged in the
+	// window.
+	TimeToMergeP50Seconds *int `json:"timeToMergeP50Seconds"`
+}
+
 // Resource defines model for Resource.
 type Resource struct {
 	Attributes []KeyValue `json:"attributes"`
@@ -15461,6 +20668,22 @@ type Resource struct {
 	Orchestrations *ResourceOrchestrations `json:"orchestrations,omitempty"`
 }
 
+// ResourceAnnotations Timestamp annotations shared by every Darkplane CRD resource.
+type ResourceAnnotations struct {
+	// Dash0ComcreatedAt When the resource was first recorded (server-set, read-only).
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComcreatedBy The member id of the user who saved this resource (server-set,
+	// read-only). Empty for a version written by a machine token, by
+	// desired-state configuration, or before this field was recorded —
+	// readers must render those as an unattributed change rather than as
+	// a user they cannot resolve.
+	Dash0ComcreatedBy *string `json:"dash0.com/created-by,omitempty"`
+
+	// Dash0ComupdatedAt When the resource was last updated (server-set, read-only).
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
 // ResourceCloud Resource cloud identified based on the `cloud.provider` resource attribute. Some sample values:
 // - alibaba_cloud
 // - aws
@@ -15479,6 +20702,25 @@ type ResourceDeploymentEnvironment = string
 
 // ResourceDeploymentEnvironments defines model for ResourceDeploymentEnvironments.
 type ResourceDeploymentEnvironments = []ResourceDeploymentEnvironment
+
+// ResourceLabels Identity labels shared by every Darkplane CRD resource.
+type ResourceLabels struct {
+	// Dash0Comid The id of the resource (server-set, read-only).
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin The external identifier the resource originated from, when one exists.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comversion Optimistic concurrency token, populated only for versioned Darkplane
+	// resources — currently repository settings alone; the other resource
+	// types sharing this schema never set it. Server-set on read, and the
+	// version a write is based on: a write carrying a positive version
+	// that is no longer the latest is rejected as superseded.
+	// Omit it, or send `0`, to skip the precondition; a value that is
+	// present but is not a non-negative integer is rejected as a bad
+	// request.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
 
 // ResourceLanguage Resource language identified based on the `telemetry.sdk.language` resource attribute. Some sample values:
 // - cpp
@@ -16205,9 +21447,15 @@ type SignalToMetricsSpec struct {
 	// `original` or absent.
 	AlternativeDatasetId *string                `json:"alternativeDatasetId,omitempty"`
 	Display              SignalToMetricsDisplay `json:"display"`
-	Enabled              bool                   `json:"enabled"`
-	Match                SignalToMetricsMatch   `json:"match"`
-	Output               SignalToMetricsOutput  `json:"output"`
+
+	// DropMatched When true, the logs this rule matches are dropped once the metric is derived from them. The drop runs
+	// after signal-to-metrics conversion, so the dropped logs still count toward the metrics of every rule that matches them.
+	// Only supported for `logs` rules with at least one filter other than `is_any`. SignalControl Edge collectors
+	// do not apply it. Defaults to false when absent.
+	DropMatched *bool                 `json:"dropMatched,omitempty"`
+	Enabled     bool                  `json:"enabled"`
+	Match       SignalToMetricsMatch  `json:"match"`
+	Output      SignalToMetricsOutput `json:"output"`
 
 	// TargetDatasetMode Controls where the generated metric is written.
 	// Defaults to `original` when absent. Old-format rules omit this field entirely.
@@ -16732,22 +21980,30 @@ type SloComparisonOperator string
 // `openslo/v1`) is required so the same document is installable as a Kubernetes
 // CustomResourceDefinition, whose API group must contain a dot.
 //
-// Currently supported: a single objective with an inline `ratioMetric` indicator,
-// `Occurrences` budgeting, and a rolling `4w` (28d) time window.
+// Currently supported: a single objective and a rolling `4w` (28d) time window, with either
+//   - an inline `ratioMetric` indicator and `Occurrences` budgeting, or
+//   - an inline `thresholdMetric` indicator and `Timeslices` budgeting, where the objective sets
+//     `op` and `value`. Every minute is one time slice: it is good when the indicator's value
+//     meets `op value`, bad when it does not, and not counted when the query returns no value.
 //
-// Not currently supported — requests using any of these are rejected with a 400 (the one
-// exception is `alertPolicies`, see below): `thresholdMetric` SLIs; `indicatorRef`;
+// Threshold SLOs (the second option) are enabled per organization. In an organization where
+// they are not enabled, a create or update that uses a `thresholdMetric` indicator or
+// `Timeslices` budgeting is rejected with a 400.
+//
+// The following are not currently supported, and requests that use any of them are rejected
+// with a 400 (the one exception is `alertPolicies`, see below): `indicatorRef`;
 // `metricSource.metricSourceRef`; multiple or composite objectives (`compositeWeight`,
-// per-objective `indicator`/`indicatorRef`); threshold objective fields (`op`/`value`);
-// time-slice objective fields (`timeSliceTarget`/`timeSliceWindow`); `Timeslices` and
+// per-objective `indicator`/`indicatorRef`); `op`/`value` and time-slice fields on an
+// `Occurrences` SLO; a `thresholdMetric` with `Occurrences` or a `ratioMetric` with
+// `Timeslices`; time slices other than `1m`; `timeSliceTarget` other than 1;
 // `RatioTimeslices` budgeting; and calendar-aligned time windows.
 //
 // Alerting on SLOs (spec.alertPolicies) is not supported. Unlike the other unsupported
-// fields, `alertPolicies` is accepted for OpenSLO compatibility but silently ignored — it
+// fields, `alertPolicies` is accepted for OpenSLO compatibility but silently ignored. It
 // is not stored, evaluated, or returned on read; see spec.alertPolicies for details.
 //
-// SLOs evaluate with a fixed 5-minute settling delay applied automatically: at any
-// moment, the SLI reflects telemetry that arrived at least 5 minutes ago. This
+// SLOs evaluate with a fixed 2-minute settling delay applied automatically: at any
+// moment, the SLI reflects telemetry that arrived at least 2 minutes ago. This
 // ensures late-arriving signals are included in the SLI computation, at the cost of a
 // small, fixed lag between live behavior and SLO state.
 type SloDefinition struct {
@@ -16768,7 +22024,7 @@ type SloIndicator struct {
 	// Metadata Metadata for the inline SLI.
 	Metadata *SloIndicatorMetadata `json:"metadata,omitempty"`
 
-	// Spec SLI specification. A ratioMetric must be provided; thresholdMetric is not currently supported.
+	// Spec SLI specification. Exactly one of ratioMetric (with Occurrences budgeting) or thresholdMetric (with Timeslices budgeting) must be provided.
 	Spec SloIndicatorSpec `json:"spec"`
 }
 
@@ -16781,7 +22037,7 @@ type SloIndicatorMetadata struct {
 	Name *string `json:"name,omitempty"`
 }
 
-// SloIndicatorSpec SLI specification. A ratioMetric must be provided; thresholdMetric is not currently supported.
+// SloIndicatorSpec SLI specification. Exactly one of ratioMetric (with Occurrences budgeting) or thresholdMetric (with Timeslices budgeting) must be provided.
 type SloIndicatorSpec struct {
 	// Description Optional description of the SLI, up to 1050 characters.
 	Description *string `json:"description,omitempty"`
@@ -16789,7 +22045,7 @@ type SloIndicatorSpec struct {
 	// RatioMetric Ratio-based SLI metric. Provide either good+total, bad+total, or raw with rawType.
 	RatioMetric *SloRatioMetric `json:"ratioMetric,omitempty"`
 
-	// ThresholdMetric Not currently supported — use a ratioMetric instead. Requests with a thresholdMetric SLI are rejected with a 400.
+	// ThresholdMetric Threshold SLI, scored once per 1m time slice against the objective's op and value. Requires Timeslices budgeting and an organization that has threshold SLOs enabled; otherwise a create or update is rejected with a 400.
 	ThresholdMetric *SloThresholdMetric `json:"thresholdMetric,omitempty"`
 }
 
@@ -16885,7 +22141,7 @@ type SloObjective struct {
 	// IndicatorRef Reference to an external SLI for composite SLOs. Composite SLOs are not currently supported — requests that set it are rejected with a 400.
 	IndicatorRef *string `json:"indicatorRef,omitempty"`
 
-	// Op Comparison operator used to compare the SLI against the value (for thresholdMetric SLIs). Not currently supported — requests that set it are rejected with a 400.
+	// Op Comparison operator a time slice's value must satisfy against `value` to be good. Required for thresholdMetric SLIs; rejected with a 400 on Occurrences SLOs.
 	Op *SloComparisonOperator `json:"op,omitempty"`
 
 	// Target Budget target for this objective as a fraction [0.0, 1.0). Mutually exclusive with targetPercent; one of the two must be provided.
@@ -16894,13 +22150,13 @@ type SloObjective struct {
 	// TargetPercent Budget target for this objective as a percentage [0.0, 100). Mutually exclusive with target; one of the two must be provided.
 	TargetPercent *float32 `json:"targetPercent,omitempty"`
 
-	// TimeSliceTarget Target for the ratio of good time slices to total time slices (0.0, 1.0] (for Timeslices budgeting). Not currently supported — requests that set it are rejected with a 400.
+	// TimeSliceTarget Fraction of a time slice that must be good for the slice to count as good (for Timeslices budgeting). Optional; only 1, the default, is currently supported. Other values, and any value on an Occurrences SLO, are rejected with a 400.
 	TimeSliceTarget *float32 `json:"timeSliceTarget,omitempty"`
 
-	// TimeSliceWindow Size of a time slice for evaluation (for Timeslices/RatioTimeslices budgeting). Not currently supported — requests that set it are rejected with a 400.
+	// TimeSliceWindow Size of a time slice for evaluation (for Timeslices budgeting). Optional; only `1m`, the default, is currently supported. Other sizes, and any value on an Occurrences SLO, are rejected with a 400.
 	TimeSliceWindow *Duration `json:"timeSliceWindow,omitempty"`
 
-	// Value Threshold value to compare against (for thresholdMetric SLIs). Not currently supported — requests that set it are rejected with a 400.
+	// Value Threshold a time slice's value is compared against, in the unit of the query result. Required for thresholdMetric SLIs; rejected with a 400 on Occurrences SLOs.
 	Value *float32 `json:"value,omitempty"`
 }
 
@@ -16938,7 +22194,7 @@ type SloSpec struct {
 	// Not supported by Dash0. This field is accepted for OpenSLO compatibility, but any alert policies are ignored: they are not stored, not evaluated, and not returned when reading the SLO back.
 	AlertPolicies *[]SloAlertPolicy `json:"alertPolicies,omitempty"`
 
-	// BudgetingMethod Only `Occurrences` is currently supported. `Timeslices` and `RatioTimeslices` are not currently supported and requests using them are rejected with a 400.
+	// BudgetingMethod `Occurrences` for a `ratioMetric` indicator, `Timeslices` for a `thresholdMetric` indicator. `RatioTimeslices` is not currently supported and requests using it are rejected with a 400.
 	BudgetingMethod SloBudgetingMethod `json:"budgetingMethod"`
 
 	// Description Optional description of the SLO, up to 1050 characters.
@@ -16960,7 +22216,42 @@ type SloSpec struct {
 	TimeWindow *[]SloTimeWindow `json:"timeWindow,omitempty"`
 }
 
-// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against objective thresholds (op and value on the objective, not here). Not currently supported — use a ratioMetric instead.
+// SloThresholdMetric Threshold-based SLI metric. Raw data from the metric source is compared against
+// objective thresholds (op and value on the objective, not here), once per 1m time slice.
+//
+// The query must evaluate to an instant vector, for example
+// `histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[1m])))`.
+// Each range must be longer than 0s and at most 1m. A range inside a subquery is added to the
+// range of every subquery around it, and the sum must also be at most 1m. A subquery step must
+// not be longer than the subquery range, and a subquery without a step uses a step of 1m. A
+// duration expression such as `[30s + 30s]` is checked after it is resolved, and every
+// duration must be a whole number of milliseconds. The query must not use `step()` or
+// `range()`, which are always 0 in an SLO. It must not use the `@` modifier, the `smoothed`
+// modifier or a negative offset, because these read samples from outside the time slice. A
+// positive offset reads earlier minutes and does not count toward the 1m limit, so a query
+// that combines several offsets lets one minute affect more than one slice.
+//
+// Dash0 adds the `anchored` modifier to the range selectors of `rate`, `increase`, `delta`,
+// `changes` and `resets`, so a 1m range counts the change from the last sample before the
+// minute to the last sample in it. A query can also set `anchored` itself, but only on these
+// functions. When exports are late or missing, a minute can have no value, or can include the
+// change of a missed minute. With an export interval that does not divide 1m, such as 40s, a
+// minute counts the change of one or two exports, so a steady rate alternates between
+// minutes. A range shorter than the export interval can make a rate too high or leave minutes
+// without a value, so use `[1m]`. `irate`, `idelta`, `deriv`, `predict_linear` and
+// `double_exponential_smoothing` need at least two samples inside the minute. A selector
+// without a range returns its latest sample from the last 5 minutes, so a metric that stops
+// reporting is still scored on its last value for up to 5 minutes.
+//
+// When the query returns several series, the slice is scored on the worst one: the highest
+// value for `lt`/`lte`, the lowest for `gt`/`gte`. A slice whose query returns no value, or
+// only NaN, is not counted. A query that returns histogram samples is never scored; wrap it
+// in `histogram_quantile`, `histogram_avg`, `histogram_count` or `histogram_sum`. A comparison
+// without `bool`, such as `max(x) > 2`, removes the series that fail it, so a minute in which
+// every series fails is not counted; set the limit with `op` and `value` on the objective
+// instead. A histogram quantile never exceeds the highest finite bucket bound, so set the
+// limit below that bound. Otherwise, a minute in which all observations fall above the bound
+// can still count as good.
 type SloThresholdMetric struct {
 	// MetricSource Connection and query details for a metric data source. Only the Prometheus data source is currently supported: provide the query under `spec.query`. With counter true or omitted, a good, bad or total query must be a bare PromQL vector selector (e.g. `http_requests_total{status="500"}`), because Dash0 wraps it in `sum(increase(...[5m]))`. With counter false, these queries accept any PromQL expression that evaluates to an instant vector, including histogram_count(increase(...[5m])). Raw queries also accept instant-vector expressions. Dash0 wraps counter-false and raw queries only in `sum(...)`.
 	MetricSource SloMetricSource `json:"metricSource"`
@@ -16976,6 +22267,32 @@ type SloTimeWindow struct {
 
 	// IsRolling Whether this is a rolling time window. Must be true — only rolling windows are currently supported.
 	IsRolling *bool `json:"isRolling,omitempty"`
+}
+
+// SoftRiskCriterion A single weighted dimension of the soft risk score. Each criterion is
+// scored on a fixed 0-100 scale; the pull request's score is the
+// multiplier-weighted sum of each criterion's value, compared against the
+// repository's soft threshold to decide whether the bot may act.
+type SoftRiskCriterion struct {
+	// Multiplier The criterion's weight in the overall score.
+	Multiplier float32 `json:"multiplier"`
+
+	// Name The criterion's display name.
+	Name string `json:"name"`
+
+	// Prompt The guidance handed to the scorer agent for this criterion.
+	Prompt string `json:"prompt"`
+
+	// Threshold An optional per-criterion floor on the fixed 0-100 scale. A criterion
+	// scoring strictly below its floor rejects the evaluation on its own,
+	// regardless of the multiplier-weighted total — a non-compensatory gate,
+	// so strong scores elsewhere cannot offset it. Omit for no gate.
+	Threshold *float32 `json:"threshold,omitempty"`
+
+	// Tools The tool ids the criterion's scorer agent may call. Defaults to every
+	// tool when omitted; an empty array is a deliberate "judge from metadata
+	// only" choice, distinct from omission.
+	Tools *[]EvalToolId `json:"tools,omitempty"`
 }
 
 // SourceMapIntegration defines model for SourceMapIntegration.
@@ -17393,8 +22710,8 @@ type SyntheticBrowserCheckPluginKind string
 // SyntheticBrowserCheckPluginSpec A browser check runs a Playwright test script. A browser check runs only on private locations.
 type SyntheticBrowserCheckPluginSpec struct {
 	// Env Environment variables the script reads. Each name is unique within the check. The runner
-	// sets `PATH`, `HOME`, `TMPDIR`, `PLAYWRIGHT_BROWSERS_PATH`, `TRACEPARENT`, `CI` and
-	// `NODE_OPTIONS` itself, so a check cannot set them.
+	// sets `PATH`, `HOME`, `TMPDIR`, `PLAYWRIGHT_BROWSERS_PATH`, `TRACEPARENT`, `CI`,
+	// `NODE_OPTIONS`, `DASH0_RELAY_URL` and `DASH0_RELAY_TOKEN` itself, so a check cannot set them.
 	Env *[]SyntheticCheckEnvVar `json:"env,omitempty"`
 
 	// Script The Playwright test script, at most 65536 characters.
@@ -17632,7 +22949,8 @@ type SyntheticCheckEnvVar struct {
 // a new property here, so a client written against this version keeps working.
 type SyntheticCheckEnvVarSource struct {
 	// PlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
-	// `synthetics` in its `usableIn`.
+	// `synthetics` in its `usableIn`. The name resolves to a variable of the check's dataset
+	// first, then to an organization variable, and never to a personal one.
 	PlatformVariableRef *SyntheticCheckPlatformVariableRef `json:"platformVariableRef,omitempty"`
 }
 
@@ -17723,7 +23041,8 @@ type SyntheticCheckPermission struct {
 }
 
 // SyntheticCheckPlatformVariableRef A platform variable, resolved when the check is dispatched. The variable must list
-// `synthetics` in its `usableIn`.
+// `synthetics` in its `usableIn`. The name resolves to a variable of the check's dataset
+// first, then to an organization variable, and never to a personal one.
 type SyntheticCheckPlatformVariableRef struct {
 	// Name Name of the platform variable, not the environment variable name the script reads.
 	Name string `json:"name"`
@@ -18112,6 +23431,238 @@ type TelemetryFilter struct {
 // TelemetryFilterContext The telemetry unit a filter rule is evaluated against, and that a matching rule drops.
 // `profile_sample` evaluates each sample of a profile and drops matching samples individually.
 type TelemetryFilterContext string
+
+// TelemetryTransformationRuleAnnotations defines model for TelemetryTransformationRuleAnnotations.
+type TelemetryTransformationRuleAnnotations struct {
+	// Dash0ComcreatedAt Timestamp when the rule was created. Set by the server; read-only.
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComdeletedAt Timestamp of the deletion. Set by the server; read-only.
+	Dash0ComdeletedAt *time.Time `json:"dash0.com/deleted-at,omitempty"`
+
+	// Dash0ComupdatedAt Timestamp of the last update, set by the server. It is the concurrency token: send the value you read
+	// back on PUT. A stale value returns 400 with the error type `superseded_version`. UI sessions must send it.
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
+// TelemetryTransformationRuleContext The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+// Not all contexts are valid for all signal types:
+//
+// For `traces`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `span`: Transform individual span properties and attributes.
+// - `spanevent`: Transform individual span event properties and attributes.
+//
+// For `metrics`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `metric`: Transform metric-level properties (name, description, type).
+// - `datapoint`: Transform individual metric data point attributes.
+//
+// For `logs`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `log`: Transform individual log record properties (body, severity, attributes).
+//
+// For `profiles`:
+// - `resource`: Transform resource-level attributes.
+// - `scope`: Transform instrumentation scope-level attributes.
+// - `profile`: Transform individual profile properties and attributes.
+//
+// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+// resource, but a `metric` context cannot access individual data points.
+type TelemetryTransformationRuleContext string
+
+// TelemetryTransformationRuleDefinition defines model for TelemetryTransformationRuleDefinition.
+type TelemetryTransformationRuleDefinition struct {
+	Kind     TelemetryTransformationRuleDefinitionKind `json:"kind"`
+	Metadata TelemetryTransformationRuleMetadata       `json:"metadata"`
+	Spec     TelemetryTransformationRuleSpec           `json:"spec"`
+}
+
+// TelemetryTransformationRuleDefinitionKind defines model for TelemetryTransformationRuleDefinition.Kind.
+type TelemetryTransformationRuleDefinitionKind string
+
+// TelemetryTransformationRuleDisplay defines model for TelemetryTransformationRuleDisplay.
+type TelemetryTransformationRuleDisplay struct {
+	// Description Optional note on what the rule is for, shown with the rule's name. Collectors ignore it.
+	Description *string `json:"description,omitempty"`
+
+	// Name Name of the rule, shown in the rule list.
+	Name string `json:"name"`
+}
+
+// TelemetryTransformationRuleError defines model for TelemetryTransformationRuleError.
+type TelemetryTransformationRuleError struct {
+	// Code HTTP status code.
+	Code int `json:"code"`
+
+	// Message Human-readable description of the error. Safe to display.
+	Message string `json:"message"`
+
+	// TraceId Trace ID for the request that produced the error.
+	TraceId *string `json:"traceId,omitempty"`
+
+	// Type Stable `snake_case` identifier for the kind of error. `invalid_rule` when `violations` is set.
+	Type *string `json:"type,omitempty"`
+
+	// Violations Why the rule was rejected. Set only when `type` is `invalid_rule`.
+	Violations *[]TelemetryTransformationRuleViolation `json:"violations,omitempty"`
+}
+
+// TelemetryTransformationRuleErrorResponse defines model for TelemetryTransformationRuleErrorResponse.
+type TelemetryTransformationRuleErrorResponse struct {
+	Error TelemetryTransformationRuleError `json:"error"`
+}
+
+// TelemetryTransformationRuleExample defines model for TelemetryTransformationRuleExample.
+type TelemetryTransformationRuleExample struct {
+	// Name Label of the example, shown in the UI.
+	Name string `json:"name"`
+
+	// Otlp One OTLP/JSON export request for `spec.signal`, for example `{"resourceLogs": [...]}` for a `logs` rule.
+	// It keeps resource and scope, so resource and scope conditions can match. It must hold at least one log
+	// record, span, data point or profile, and at most 64 KiB of compact JSON. The server returns it with
+	// its keys and whitespace normalized.
+	Otlp map[string]interface{} `json:"otlp"`
+}
+
+// TelemetryTransformationRuleLabels defines model for TelemetryTransformationRuleLabels.
+type TelemetryTransformationRuleLabels struct {
+	// Dash0Comdataset Dataset this rule belongs to. Defaults to the default dataset when absent.
+	Dash0Comdataset *string `json:"dash0.com/dataset,omitempty"`
+
+	// Dash0Comid Unique internal ID of the telemetry transformation rule. Set by the server on creation; do not set manually.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin External identifier for API-managed rules, e.g. the CRD name from an operator or a Terraform resource ID. Set by the client on create; immutable afterwards. Empty for rules created in the UI. Rules created with a machine token that has no user get an `api-<uuid>` origin.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comsource Origin of a Dash0 resource, derived from `dash0.com/origin` on read.
+	// - `ui`: created interactively in the Dash0 UI.
+	// - `terraform`: managed via the Dash0 Terraform provider.
+	// - `operator`: managed via the Dash0 Kubernetes operator.
+	// - `dash0-cli`: managed via the Dash0 CLI.
+	// - `platform`: owned by Dash0 rather than by anyone in your organization. Covers both
+	//   resources Dash0 generates from another resource you own (the recording rules an SLO
+	//   produces) and resources Dash0 ships with the product (the built-in views).
+	// - `identity-provider`: a team whose membership Dash0 keeps in sync with a directory
+	//   group from the organization's identity provider. Membership edits made by hand
+	//   revert on the next reconcile.
+	// - `api`: created directly through the API, and the fallback for any origin whose
+	//   prefix is not recognized.
+	//
+	// New values may be added over time. Treat an unrecognized value as `api`
+	// rather than rejecting the response.
+	Dash0Comsource *CrdSource `json:"dash0.com/source,omitempty"`
+}
+
+// TelemetryTransformationRuleListResponse defines model for TelemetryTransformationRuleListResponse.
+type TelemetryTransformationRuleListResponse struct {
+	// TelemetryTransformationRules The rules without `spec.examples`. Get a single rule to read its examples.
+	TelemetryTransformationRules []TelemetryTransformationRuleResponse `json:"telemetryTransformationRules"`
+}
+
+// TelemetryTransformationRuleMetadata defines model for TelemetryTransformationRuleMetadata.
+type TelemetryTransformationRuleMetadata struct {
+	Annotations *TelemetryTransformationRuleAnnotations `json:"annotations,omitempty"`
+	Labels      *TelemetryTransformationRuleLabels      `json:"labels,omitempty"`
+	Name        string                                  `json:"name"`
+}
+
+// TelemetryTransformationRuleResponse defines model for TelemetryTransformationRuleResponse.
+type TelemetryTransformationRuleResponse = TelemetryTransformationRuleDefinition
+
+// TelemetryTransformationRuleSignalType The signal type that this transformation rule applies to.
+// - `traces`: Apply transformations to trace data (spans and span events).
+// - `metrics`: Apply transformations to metric data (metrics and data points).
+// - `logs`: Apply transformations to log data (log records).
+// - `profiles`: Apply transformations to profile data.
+type TelemetryTransformationRuleSignalType string
+
+// TelemetryTransformationRuleSpec defines model for TelemetryTransformationRuleSpec.
+type TelemetryTransformationRuleSpec struct {
+	// Conditions A list of OTTL conditions that act as a gate for all transformations of this rule. The conditions
+	// are ORed together, so only one condition needs to evaluate to true for the transformations to run.
+	Conditions *OTTLConditions `json:"conditions,omitempty"`
+
+	// Context The OTTL evaluation context that determines which telemetry fields are accessible to the statements.
+	// Not all contexts are valid for all signal types:
+	//
+	// For `traces`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `span`: Transform individual span properties and attributes.
+	// - `spanevent`: Transform individual span event properties and attributes.
+	//
+	// For `metrics`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `metric`: Transform metric-level properties (name, description, type).
+	// - `datapoint`: Transform individual metric data point attributes.
+	//
+	// For `logs`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `log`: Transform individual log record properties (body, severity, attributes).
+	//
+	// For `profiles`:
+	// - `resource`: Transform resource-level attributes.
+	// - `scope`: Transform instrumentation scope-level attributes.
+	// - `profile`: Transform individual profile properties and attributes.
+	//
+	// Contexts never supply access to items lower in the protobuf hierarchy, but always supply access to
+	// items higher in the hierarchy. For example, a `datapoint` context can access its metric, scope, and
+	// resource, but a `metric` context cannot access individual data points.
+	Context TelemetryTransformationRuleContext  `json:"context"`
+	Display *TelemetryTransformationRuleDisplay `json:"display,omitempty"`
+	Enabled bool                                `json:"enabled"`
+
+	// Examples Example signals to test the rule against in the UI. Collectors never receive them, and changing them
+	// does not change the ruleset version collectors poll for. At most 10 examples.
+	//
+	// PUT replaces the whole rule, so a PUT without `examples` removes the stored examples. On rules with a
+	// `dash0.com/origin`, the owning tool manages examples like the rest of the rule; the UI cannot edit them.
+	//
+	// Examples are stored as rule configuration. Telemetry retention does not apply to them, so do not put
+	// sensitive data in them. Deleting the rule deletes its examples.
+	Examples *[]TelemetryTransformationRuleExample `json:"examples,omitempty"`
+
+	// Priority Order in which rules for the same signal run: 0, 100, 200, 300 or 400. Rules with a lower value run
+	// first. Defaults to 200, the middle value, so a rule can be ranked above and below the default. Rules
+	// with the same priority run in order of `metadata.name`, then `dash0.com/created-at`, then
+	// `dash0.com/id`.
+	Priority *int `json:"priority,omitempty"`
+
+	// Signal The signal type that this transformation rule applies to.
+	// - `traces`: Apply transformations to trace data (spans and span events).
+	// - `metrics`: Apply transformations to metric data (metrics and data points).
+	// - `logs`: Apply transformations to log data (log records).
+	// - `profiles`: Apply transformations to profile data.
+	Signal          TelemetryTransformationRuleSignalType       `json:"signal"`
+	Transformations []TelemetryTransformationRuleTransformation `json:"transformations"`
+}
+
+// TelemetryTransformationRuleTransformation defines model for TelemetryTransformationRuleTransformation.
+type TelemetryTransformationRuleTransformation struct {
+	// Name Short name for the transformation, shown in the rule's list of transformations.
+	Name       string         `json:"name"`
+	Statements OTTLStatements `json:"statements"`
+}
+
+// TelemetryTransformationRuleViolation One reason a rule was rejected.
+type TelemetryTransformationRuleViolation struct {
+	// Attribute The attribute or field the rule may not use. For `compile`, the expression that did not compile.
+	Attribute string `json:"attribute"`
+
+	// Kind `secret`, `protected`, `read_only` or `compile`. Treat an unknown value like `compile`.
+	Kind string `json:"kind"`
+
+	// Message Human-readable description of the violation. Safe to display.
+	Message string `json:"message"`
+}
 
 // TestSyntheticCheckRequest defines model for TestSyntheticCheckRequest.
 type TestSyntheticCheckRequest struct {
@@ -18594,6 +24145,13 @@ type TracingSettings struct {
 	AddTracingHeaders bool `json:"addTracingHeaders"`
 }
 
+// TriggerMode When the bot evaluates a pull request. Orthogonal to the bot mode: the
+// trigger decides *when* an evaluation runs, the bot mode decides *what*
+// the bot may do with the result.
+// - `manual`: Evaluates only when a human triggers it.
+// - `auto`: Evaluates automatically once the pull request's CI checks have settled.
+type TriggerMode string
+
 // UpdateMemberRoleRequest defines model for UpdateMemberRoleRequest.
 type UpdateMemberRoleRequest struct {
 	// Role The member's role in the organization
@@ -18925,6 +24483,15 @@ type WebhookConfig struct {
 	Url             string             `json:"url"`
 }
 
+// Limit defines model for Limit.
+type Limit = int
+
+// Provider defines model for Provider.
+type Provider = []RepositoryProvider
+
+// RepositoryId defines model for RepositoryId.
+type RepositoryId = string
+
 // GetApiAgent0CustomSkillsParams defines parameters for GetApiAgent0CustomSkills.
 type GetApiAgent0CustomSkillsParams struct {
 	// OriginPrefix Filter by origin prefix.
@@ -19004,6 +24571,43 @@ type GetApiAlertingCheckRulesOriginOrIdParams struct {
 // PutApiAlertingCheckRulesOriginOrIdParams defines parameters for PutApiAlertingCheckRulesOriginOrId.
 type PutApiAlertingCheckRulesOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams defines parameters for DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId.
+type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams struct {
+	Disposition      AwsLogGroupPolicyDisposition `form:"disposition" json:"disposition"`
+	ExpectedRevision *int64                       `form:"expectedRevision,omitempty" json:"expectedRevision,omitempty"`
+}
+
+// GetApiDarkplaneRepositoriesParams defines parameters for GetApiDarkplaneRepositories.
+type GetApiDarkplaneRepositoriesParams struct {
+	// Provider Display filter applied before paging or counting. Comma-separated provider
+	// names; repeated parameters are also accepted. Omitted means all providers.
+	// Unknown values return 400. This does not restrict access to repositories.
+	Provider *Provider `form:"provider,omitempty" json:"provider,omitempty"`
+
+	// Cursor Opaque cursor for the page to return, taken from a previous response's
+	// `cursors.after` (next page) or `cursors.before` (previous page). Omit to
+	// return the first page.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Maximum number of items to return in the page.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Search Case-insensitive substring match against the repository's
+	// `account/name` slug. Omitted or empty means no filter. Applied
+	// before paging, so a page holds only matching repositories.
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// BotMode Restricts the list to repositories whose effective auto-approval bot
+	// mode is this one. Omitted or empty means no filter. Applied before
+	// paging.
+	BotMode *BotMode `form:"botMode,omitempty" json:"botMode,omitempty"`
+
+	// Connection Restricts the list to repositories whose `connection` is this one. A
+	// repository with no reported connection counts as `unknown`. Omitted
+	// or empty means no filter. Applied before paging.
+	Connection *DarkplaneRepositoryConnection `form:"connection,omitempty" json:"connection,omitempty"`
 }
 
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
@@ -19430,6 +25034,37 @@ type PutApiSyntheticChecksOriginOrIdParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
 }
 
+// GetApiTelemetryTransformationRulesParams defines parameters for GetApiTelemetryTransformationRules.
+type GetApiTelemetryTransformationRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// OriginPrefix Filter by origin prefix.
+	OriginPrefix *string `form:"originPrefix,omitempty" json:"originPrefix,omitempty"`
+}
+
+// PostApiTelemetryTransformationRulesParams defines parameters for PostApiTelemetryTransformationRules.
+type PostApiTelemetryTransformationRulesParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrIdParams defines parameters for DeleteApiTelemetryTransformationRulesOriginOrId.
+type DeleteApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+
+	// UpdatedAt The rule's `dash0.com/updated-at` as last read. When given, the delete fails with error type `superseded_version` if the rule changed since. Omit it to delete unconditionally.
+	UpdatedAt *time.Time `form:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+}
+
+// GetApiTelemetryTransformationRulesOriginOrIdParams defines parameters for GetApiTelemetryTransformationRulesOriginOrId.
+type GetApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdParams defines parameters for PutApiTelemetryTransformationRulesOriginOrId.
+type PutApiTelemetryTransformationRulesOriginOrIdParams struct {
+	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
+}
+
 // GetApiTimeSeriesAggregationsParams defines parameters for GetApiTimeSeriesAggregations.
 type GetApiTimeSeriesAggregationsParams struct {
 	Dataset *Dataset `form:"dataset,omitempty" json:"dataset,omitempty"`
@@ -19534,8 +25169,14 @@ type PostApiAuthTokensJSONRequestBody = AuthTokenCreateRequest
 // PutApiAuthTokensOriginOrIdJSONRequestBody defines body for PutApiAuthTokensOriginOrId for application/json ContentType.
 type PutApiAuthTokensOriginOrIdJSONRequestBody = AuthTokenUpdateRequest
 
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody defines body for PutApiAwsLogGroupInstrumentationPoliciesIntegrationId for application/json ContentType.
+type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody = AwsLogGroupInstrumentationPolicy
+
 // PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody defines body for PutApiAwsMetricScrapeConfigsIntegrationId for application/json ContentType.
 type PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody = AwsMetricScrapeConfigDefinition
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody defines body for PutApiDarkplaneRepositoriesRepositoryIdSettings for application/json ContentType.
+type PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody = RepositorySettingsRequest
 
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
@@ -19695,6 +25336,12 @@ type PutApiTeamsOriginOrIdDisplayJSONRequestBody = TeamDisplay
 
 // PostApiTeamsOriginOrIdMembersJSONRequestBody defines body for PostApiTeamsOriginOrIdMembers for application/json ContentType.
 type PostApiTeamsOriginOrIdMembersJSONRequestBody = AddTeamMembersRequest
+
+// PostApiTelemetryTransformationRulesJSONRequestBody defines body for PostApiTelemetryTransformationRules for application/json ContentType.
+type PostApiTelemetryTransformationRulesJSONRequestBody = TelemetryTransformationRuleDefinition
+
+// PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody defines body for PutApiTelemetryTransformationRulesOriginOrId for application/json ContentType.
+type PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody = TelemetryTransformationRuleDefinition
 
 // PostApiTimeSeriesAggregationsJSONRequestBody defines body for PostApiTimeSeriesAggregations for application/json ContentType.
 type PostApiTimeSeriesAggregationsJSONRequestBody = TimeSeriesAggregationDefinition
@@ -21116,6 +26763,266 @@ func (t *AgenticWorkflowTrigger) FromLinearReleaseNoteAgenticWorkflowTrigger(v L
 
 // MergeLinearReleaseNoteAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided LinearReleaseNoteAgenticWorkflowTrigger
 func (t *AgenticWorkflowTrigger) MergeLinearReleaseNoteAgenticWorkflowTrigger(v LinearReleaseNoteAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraIssueAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraIssueAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraIssueAgenticWorkflowTrigger() (JiraIssueAgenticWorkflowTrigger, error) {
+	var body JiraIssueAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraIssueAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraIssueAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraIssueAgenticWorkflowTrigger(v JiraIssueAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraIssueAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraIssueAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraIssueAgenticWorkflowTrigger(v JiraIssueAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraProjectAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraProjectAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraProjectAgenticWorkflowTrigger() (JiraProjectAgenticWorkflowTrigger, error) {
+	var body JiraProjectAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraProjectAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraProjectAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraProjectAgenticWorkflowTrigger(v JiraProjectAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraProjectAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraProjectAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraProjectAgenticWorkflowTrigger(v JiraProjectAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraIssueLinkAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraIssueLinkAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraIssueLinkAgenticWorkflowTrigger() (JiraIssueLinkAgenticWorkflowTrigger, error) {
+	var body JiraIssueLinkAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraIssueLinkAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraIssueLinkAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraIssueLinkAgenticWorkflowTrigger(v JiraIssueLinkAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraIssueLinkAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraIssueLinkAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraIssueLinkAgenticWorkflowTrigger(v JiraIssueLinkAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraBoardAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraBoardAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraBoardAgenticWorkflowTrigger() (JiraBoardAgenticWorkflowTrigger, error) {
+	var body JiraBoardAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraBoardAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraBoardAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraBoardAgenticWorkflowTrigger(v JiraBoardAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraBoardAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraBoardAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraBoardAgenticWorkflowTrigger(v JiraBoardAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraVersionAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraVersionAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraVersionAgenticWorkflowTrigger() (JiraVersionAgenticWorkflowTrigger, error) {
+	var body JiraVersionAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraVersionAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraVersionAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraVersionAgenticWorkflowTrigger(v JiraVersionAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraVersionAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraVersionAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraVersionAgenticWorkflowTrigger(v JiraVersionAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraWorklogAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraWorklogAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraWorklogAgenticWorkflowTrigger() (JiraWorklogAgenticWorkflowTrigger, error) {
+	var body JiraWorklogAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraWorklogAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraWorklogAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraWorklogAgenticWorkflowTrigger(v JiraWorklogAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraWorklogAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraWorklogAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraWorklogAgenticWorkflowTrigger(v JiraWorklogAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraAttachmentAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraAttachmentAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraAttachmentAgenticWorkflowTrigger() (JiraAttachmentAgenticWorkflowTrigger, error) {
+	var body JiraAttachmentAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraAttachmentAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraAttachmentAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraAttachmentAgenticWorkflowTrigger(v JiraAttachmentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraAttachmentAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraAttachmentAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraAttachmentAgenticWorkflowTrigger(v JiraAttachmentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraCommentAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraCommentAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraCommentAgenticWorkflowTrigger() (JiraCommentAgenticWorkflowTrigger, error) {
+	var body JiraCommentAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraCommentAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraCommentAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraCommentAgenticWorkflowTrigger(v JiraCommentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraCommentAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraCommentAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraCommentAgenticWorkflowTrigger(v JiraCommentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraComponentAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraComponentAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraComponentAgenticWorkflowTrigger() (JiraComponentAgenticWorkflowTrigger, error) {
+	var body JiraComponentAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraComponentAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraComponentAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraComponentAgenticWorkflowTrigger(v JiraComponentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraComponentAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraComponentAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraComponentAgenticWorkflowTrigger(v JiraComponentAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsJiraSprintAgenticWorkflowTrigger returns the union data inside the AgenticWorkflowTrigger as a JiraSprintAgenticWorkflowTrigger
+func (t AgenticWorkflowTrigger) AsJiraSprintAgenticWorkflowTrigger() (JiraSprintAgenticWorkflowTrigger, error) {
+	var body JiraSprintAgenticWorkflowTrigger
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromJiraSprintAgenticWorkflowTrigger overwrites any union data inside the AgenticWorkflowTrigger as the provided JiraSprintAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) FromJiraSprintAgenticWorkflowTrigger(v JiraSprintAgenticWorkflowTrigger) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeJiraSprintAgenticWorkflowTrigger performs a merge with any union data inside the AgenticWorkflowTrigger, using the provided JiraSprintAgenticWorkflowTrigger
+func (t *AgenticWorkflowTrigger) MergeJiraSprintAgenticWorkflowTrigger(v JiraSprintAgenticWorkflowTrigger) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -23312,6 +29219,58 @@ type ClientInterface interface {
 	// Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 	PutApiAuthTokensOriginOrId(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId Delete an AWS log-group instrumentation policy
+	//
+	// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+	// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+	// including regions no longer selected by the integration. A 503 with error type
+	// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+	// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+	// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+	// changed, review the current policy before deleting again. Both choices dispatch unfinished
+	// work. Keep may restore forwarding
+	// when it cancels a pending policy removal. No workflow starts when no work remains.
+	//
+	// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiAwsLogGroupInstrumentationPoliciesIntegrationId Get an AWS log-group instrumentation policy
+	//
+	// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationId Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteApiAwsMetricScrapeConfigsIntegrationId Clear the CloudWatch metric scrape config of an AWS integration
 	//
 	// Removes every namespace and the integration filter, which stops all scraping for the
@@ -23402,6 +29361,52 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/aws-metric-scrape-configs/{integrationId} (the `PutApiAwsMetricScrapeConfigsIntegrationId` operationId).
 	PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDarkplaneRepositories List the repositories Darkplane observes for the caller's organization
+	//
+	// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+	GetApiDarkplaneRepositories(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettings Get a repository's auto-approval bot settings
+	//
+	// The effective auto-approval configuration for a repository. A repository
+	// that has never been configured returns the documented defaults (bot
+	// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettings Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions List the stored versions of a repository's auto-approval settings
+	//
+	// The repository's settings history, newest first, each entry carrying the
+	// spec as it was saved.
+	//
+	// Read-only: restoring an older version is a normal write through the
+	// settings endpoint, so a rollback appends a new version rather than
+	// rewriting the history.
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiDashboards Receive a list of dashboards
 	//
@@ -24830,6 +30835,49 @@ type ClientInterface interface {
 	// Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 	DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiTelemetryTransformationRules Retrieve a list of telemetry transformation rules
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+	GetApiTelemetryTransformationRules(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTelemetryTransformationRulesWithBody Create a new telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithBody(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiTelemetryTransformationRules Create a new telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRules(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiTelemetryTransformationRulesOriginOrId Delete a specific telemetry transformation rule
+	//
+	// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+	DeleteApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiTelemetryTransformationRulesOriginOrId Retrieve the latest version of a specific telemetry transformation rule
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+	GetApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithBody Update a specific telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrId Update a specific telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiTimeSeriesAggregations List all time series aggregations for the organization
 	//
 	// Returns all time series aggregation rules configured for your organization.
@@ -25795,6 +31843,98 @@ func (c *generatedClient) PutApiAuthTokensOriginOrId(ctx context.Context, origin
 	return c.Client.Do(req)
 }
 
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId Delete an AWS log-group instrumentation policy
+//
+// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+// including regions no longer selected by the integration. A 503 with error type
+// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+// changed, review the current policy before deleting again. Both choices dispatch unfinished
+// work. Keep may restore forwarding
+// when it cancels a pending policy removal. No workflow starts when no work remains.
+//
+// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiAwsLogGroupInstrumentationPoliciesIntegrationId Get an AWS log-group instrumentation policy
+//
+// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(c.Server, integrationId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationId Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *generatedClient) PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(c.Server, integrationId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // DeleteApiAwsMetricScrapeConfigsIntegrationId Clear the CloudWatch metric scrape config of an AWS integration
 //
 // Removes every namespace and the integration filter, which stops all scraping for the
@@ -25916,6 +32056,102 @@ func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationIdWithBody(ctx 
 // Corresponds with PUT /api/aws-metric-scrape-configs/{integrationId} (the `PutApiAwsMetricScrapeConfigsIntegrationId` operationId).
 func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiAwsMetricScrapeConfigsIntegrationIdRequest(c.Server, integrationId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositories List the repositories Darkplane observes for the caller's organization
+//
+// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositories(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositoriesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettings Get a repository's auto-approval bot settings
+//
+// The effective auto-approval configuration for a repository. A repository
+// that has never been configured returns the documented defaults (bot
+// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest(c.Server, repositoryId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody(c.Server, repositoryId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettings Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequest(c.Server, repositoryId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions List the stored versions of a repository's auto-approval settings
+//
+// The repository's settings history, newest first, each entry carrying the
+// spec as it was saved.
+//
+// Read-only: restoring an older version is a normal write through the
+// settings endpoint, so a rollback appends a new version rather than
+// rewriting the history.
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest(c.Server, repositoryId)
 	if err != nil {
 		return nil, err
 	}
@@ -28843,6 +35079,119 @@ func (c *generatedClient) DeleteApiTeamsOriginOrIdMembersMemberID(ctx context.Co
 	return c.Client.Do(req)
 }
 
+// GetApiTelemetryTransformationRules Retrieve a list of telemetry transformation rules
+//
+// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) GetApiTelemetryTransformationRules(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTelemetryTransformationRulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiTelemetryTransformationRulesWithBody Create a new telemetry transformation rule
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) PostApiTelemetryTransformationRulesWithBody(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTelemetryTransformationRulesRequestWithBody(c.Server, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiTelemetryTransformationRules Create a new telemetry transformation rule
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *generatedClient) PostApiTelemetryTransformationRules(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiTelemetryTransformationRulesRequest(c.Server, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrId Delete a specific telemetry transformation rule
+//
+// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) DeleteApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiTelemetryTransformationRulesOriginOrId Retrieve the latest version of a specific telemetry transformation rule
+//
+// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) GetApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithBody Update a specific telemetry transformation rule
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(c.Server, originOrId, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrId Update a specific telemetry transformation rule
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *generatedClient) PutApiTelemetryTransformationRulesOriginOrId(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiTelemetryTransformationRulesOriginOrIdRequest(c.Server, originOrId, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetApiTimeSeriesAggregations List all time series aggregations for the organization
 //
 // Returns all time series aggregation rules configured for your organization.
@@ -30672,6 +37021,156 @@ func NewPutApiAuthTokensOriginOrIdRequestWithBody(server string, originOrId stri
 	return req, nil
 }
 
+// NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest constructs an http.Request for the DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId method
+func NewDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "disposition", params.Disposition, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+			return nil, err
+		} else {
+			for _, qp := range strings.Split(queryFrag, "&") {
+				rawQueryFragments = append(rawQueryFragments, qp)
+			}
+		}
+
+		if params.ExpectedRevision != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "expectedRevision", *params.ExpectedRevision, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest constructs an http.Request for the GetApiAwsLogGroupInstrumentationPoliciesIntegrationId method
+func NewGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest calls the generic PutApiAwsLogGroupInstrumentationPoliciesIntegrationId builder with application/json body
+func NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequest(server string, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(server, integrationId, "application/json", bodyReader)
+}
+
+// NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody constructs an http.Request for the PutApiAwsLogGroupInstrumentationPoliciesIntegrationId method, with any body, and a specified content type
+func NewPutApiAwsLogGroupInstrumentationPoliciesIntegrationIdRequestWithBody(server string, integrationId openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "integrationId", integrationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/aws-log-group-instrumentation-policies/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewDeleteApiAwsMetricScrapeConfigsIntegrationIdRequest constructs an http.Request for the DeleteApiAwsMetricScrapeConfigsIntegrationId method
 func NewDeleteApiAwsMetricScrapeConfigsIntegrationIdRequest(server string, integrationId openapi_types.UUID) (*http.Request, error) {
 	var err error
@@ -30783,6 +37282,235 @@ func NewPutApiAwsMetricScrapeConfigsIntegrationIdRequestWithBody(server string, 
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositoriesRequest constructs an http.Request for the GetApiDarkplaneRepositories method
+func NewGetApiDarkplaneRepositoriesRequest(server string, params *GetApiDarkplaneRepositoriesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Provider != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", false, "provider", *params.Provider, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Cursor != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "search", *params.Search, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.BotMode != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "botMode", *params.BotMode, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Connection != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "connection", *params.Connection, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest constructs an http.Request for the GetApiDarkplaneRepositoriesRepositoryIdSettings method
+func NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest(server string, repositoryId RepositoryId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "repositoryId", repositoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories/%s/settings", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequest calls the generic PutApiDarkplaneRepositoriesRepositoryIdSettings builder with application/json body
+func NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequest(server string, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody(server, repositoryId, "application/json", bodyReader)
+}
+
+// NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody constructs an http.Request for the PutApiDarkplaneRepositoriesRepositoryIdSettings method, with any body, and a specified content type
+func NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody(server string, repositoryId RepositoryId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "repositoryId", repositoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories/%s/settings", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest constructs an http.Request for the GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions method
+func NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest(server string, repositoryId RepositoryId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "repositoryId", repositoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories/%s/settings/versions", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -36267,6 +42995,347 @@ func NewDeleteApiTeamsOriginOrIdMembersMemberIDRequest(server string, originOrId
 	return req, nil
 }
 
+// NewGetApiTelemetryTransformationRulesRequest constructs an http.Request for the GetApiTelemetryTransformationRules method
+func NewGetApiTelemetryTransformationRulesRequest(server string, params *GetApiTelemetryTransformationRulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.OriginPrefix != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "originPrefix", *params.OriginPrefix, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiTelemetryTransformationRulesRequest calls the generic PostApiTelemetryTransformationRules builder with application/json body
+func NewPostApiTelemetryTransformationRulesRequest(server string, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiTelemetryTransformationRulesRequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewPostApiTelemetryTransformationRulesRequestWithBody constructs an http.Request for the PostApiTelemetryTransformationRules method, with any body, and a specified content type
+func NewPostApiTelemetryTransformationRulesRequestWithBody(server string, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest constructs an http.Request for the DeleteApiTelemetryTransformationRulesOriginOrId method
+func NewDeleteApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.UpdatedAt != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "updatedAt", *params.UpdatedAt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "date-time"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiTelemetryTransformationRulesOriginOrIdRequest constructs an http.Request for the GetApiTelemetryTransformationRulesOriginOrId method
+func NewGetApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiTelemetryTransformationRulesOriginOrIdRequest calls the generic PutApiTelemetryTransformationRulesOriginOrId builder with application/json body
+func NewPutApiTelemetryTransformationRulesOriginOrIdRequest(server string, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(server, originOrId, params, "application/json", bodyReader)
+}
+
+// NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody constructs an http.Request for the PutApiTelemetryTransformationRulesOriginOrId method, with any body, and a specified content type
+func NewPutApiTelemetryTransformationRulesOriginOrIdRequestWithBody(server string, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/telemetry-transformation-rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Dataset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dataset", *params.Dataset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetApiTimeSeriesAggregationsRequest constructs an http.Request for the GetApiTimeSeriesAggregations method
 func NewGetApiTimeSeriesAggregationsRequest(server string, params *GetApiTimeSeriesAggregationsParams) (*http.Request, error) {
 	var err error
@@ -37678,6 +44747,62 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/auth-tokens/{originOrId} (the `PutApiAuthTokensOriginOrId` operationId).
 	PutApiAuthTokensOriginOrIdWithResponse(ctx context.Context, originOrId string, body PutApiAuthTokensOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAuthTokensOriginOrIdResponse, error)
 
+	// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Delete an AWS log-group instrumentation policy
+	//
+	// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+	// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+	// including regions no longer selected by the integration. A 503 with error type
+	// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+	// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+	// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+	// changed, review the current policy before deleting again. Both choices dispatch unfinished
+	// work. Keep may restore forwarding
+	// when it cancels a pending policy removal. No workflow starts when no work remains.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Get an AWS log-group instrumentation policy
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
+	// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Replace an AWS log-group instrumentation policy
+	//
+	// Restricted to organization administrators and full-permission API tokens.
+	// The integration determines the dataset. Changes apply on the next discovery.
+	// UI writes require dash0.com/version: zero confirms first creation, while a positive
+	// revision updates an active policy. UI writes cannot restore deleted policies.
+	// API tokens may omit the revision.
+	// The dash0.com/origin label is stored by the first write that sets it. While the policy
+	// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+	// the next write may set a new origin.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+	PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error)
+
 	// DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse Clear the CloudWatch metric scrape config of an AWS integration
 	//
 	// Removes every namespace and the integration filter, which stops all scraping for the
@@ -37772,6 +44897,58 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /api/aws-metric-scrape-configs/{integrationId} (the `PutApiAwsMetricScrapeConfigsIntegrationId` operationId).
 	PutApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error)
+
+	// GetApiDarkplaneRepositoriesWithResponse List the repositories Darkplane observes for the caller's organization
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+	GetApiDarkplaneRepositoriesWithResponse(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesResponse, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Get a repository's auto-approval bot settings
+	//
+	// The effective auto-approval configuration for a repository. A repository
+	// that has never been configured returns the documented defaults (bot
+	// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse List the stored versions of a repository's auto-approval settings
+	//
+	// The repository's settings history, newest first, each entry carrying the
+	// spec as it was saved.
+	//
+	// Read-only: restoring an older version is a normal write through the
+	// settings endpoint, so a rollback appends a new version rather than
+	// rewriting the history.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error)
 
 	// GetApiDashboardsWithResponse Receive a list of dashboards
 	//
@@ -39300,6 +46477,55 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with DELETE /api/teams/{originOrId}/members/{memberID} (the `DeleteApiTeamsOriginOrIdMembersMemberID` operationId).
 	DeleteApiTeamsOriginOrIdMembersMemberIDWithResponse(ctx context.Context, originOrId string, memberID string, reqEditors ...RequestEditorFn) (*DeleteApiTeamsOriginOrIdMembersMemberIDResponse, error)
 
+	// GetApiTelemetryTransformationRulesWithResponse Retrieve a list of telemetry transformation rules
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+	GetApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesResponse, error)
+
+	// PostApiTelemetryTransformationRulesWithBodyWithResponse Create a new telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithBodyWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error)
+
+	// PostApiTelemetryTransformationRulesWithResponse Create a new telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+	PostApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error)
+
+	// DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse Delete a specific telemetry transformation rule
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+	DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// GetApiTelemetryTransformationRulesOriginOrIdWithResponse Retrieve the latest version of a specific telemetry transformation rule
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+	GetApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse Update a specific telemetry transformation rule
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
+	// PutApiTelemetryTransformationRulesOriginOrIdWithResponse Update a specific telemetry transformation rule
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+	PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error)
+
 	// GetApiTimeSeriesAggregationsWithResponse List all time series aggregations for the organization
 	//
 	// Returns all time series aggregation rules configured for your organization.
@@ -40798,6 +48024,150 @@ func (r PutApiAuthTokensOriginOrIdResponse) ContentType() string {
 	return ""
 }
 
+type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AwsLogGroupInstrumentationPolicy
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSON200() *AwsLogGroupInstrumentationPolicy {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -40929,6 +48299,198 @@ func (r PutApiAwsMetricScrapeConfigsIntegrationIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PutApiAwsMetricScrapeConfigsIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositoriesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ListRepositoriesResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositoriesResponse) GetJSON200() *ListRepositoriesResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositoriesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositoriesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositoriesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositoriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositoriesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RepositorySettingsDefinition
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON200() *RepositorySettingsDefinition {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RepositorySettingsDefinition
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON200() *RepositorySettingsDefinition {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ListRepositorySettingsVersionsResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) GetJSON200() *ListRepositorySettingsVersionsResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -45580,6 +53142,323 @@ func (r DeleteApiTeamsOriginOrIdMembersMemberIDResponse) ContentType() string {
 	return ""
 }
 
+type GetApiTelemetryTransformationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleListResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSON200() *TelemetryTransformationRuleListResponse {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiTelemetryTransformationRulesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiTelemetryTransformationRulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTelemetryTransformationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTelemetryTransformationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiTelemetryTransformationRulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PostApiTelemetryTransformationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *TelemetryTransformationRuleErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON400() *TelemetryTransformationRuleErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PostApiTelemetryTransformationRulesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PostApiTelemetryTransformationRulesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiTelemetryTransformationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiTelemetryTransformationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostApiTelemetryTransformationRulesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type DeleteApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *ErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON400() *ErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiTelemetryTransformationRulesOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *TelemetryTransformationRuleDefinition
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *TelemetryTransformationRuleErrorResponse
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *ErrorResponse
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON200() *TelemetryTransformationRuleDefinition {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON400() *TelemetryTransformationRuleErrorResponse {
+	return r.JSON400
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON404() *ErrorResponse {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSON409() *ErrorResponse {
+	return r.JSON409
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiTelemetryTransformationRulesOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetApiTimeSeriesAggregationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -46993,6 +54872,86 @@ func (c *ClientWithResponses) PutApiAuthTokensOriginOrIdWithResponse(ctx context
 	return ParsePutApiAuthTokensOriginOrIdResponse(rsp)
 }
 
+// DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Delete an AWS log-group instrumentation policy
+//
+// Explicitly choose whether to keep or remove policy-owned forwarding. Manual selections
+// remain enabled. Remove saves the deletion consent and starts cleanup across all regions,
+// including regions no longer selected by the integration. A 503 with error type
+// reconciliation_dispatch_failed means consent was saved. GET the policy before retrying.
+// If it remains deleted with the same disposition, repeat DELETE with that disposition and
+// its returned dash0.com/version as expectedRevision. If it was recreated or its disposition
+// changed, review the current policy before deleting again. Both choices dispatch unfinished
+// work. Keep may restore forwarding
+// when it cancels a pending policy removal. No workflow starts when no work remains.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/aws-log-group-instrumentation-policies/{integrationId} (the `DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, params *DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams, reqEditors ...RequestEditorFn) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Get an AWS log-group instrumentation policy
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/aws-log-group-instrumentation-policies/{integrationId} (the `GetApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, reqEditors ...RequestEditorFn) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.GetApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBodyWithResponse(ctx context.Context, integrationId openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithBody(ctx, integrationId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
+// PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse Replace an AWS log-group instrumentation policy
+//
+// Restricted to organization administrators and full-permission API tokens.
+// The integration determines the dataset. Changes apply on the next discovery.
+// UI writes require dash0.com/version: zero confirms first creation, while a positive
+// revision updates an active policy. UI writes cannot restore deleted policies.
+// API tokens may omit the revision.
+// The dash0.com/origin label is stored by the first write that sets it. While the policy
+// exists, a different origin returns 409 with error type origin_conflict. After deletion,
+// the next write may set a new origin.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/aws-log-group-instrumentation-policies/{integrationId} (the `PutApiAwsLogGroupInstrumentationPoliciesIntegrationId` operationId).
+func (c *ClientWithResponses) PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	rsp, err := c.PutApiAwsLogGroupInstrumentationPoliciesIntegrationId(ctx, integrationId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp)
+}
+
 // DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse Clear the CloudWatch metric scrape config of an AWS integration
 //
 // Removes every namespace and the integration filter, which stops all scraping for the
@@ -47110,6 +55069,88 @@ func (c *ClientWithResponses) PutApiAwsMetricScrapeConfigsIntegrationIdWithRespo
 		return nil, err
 	}
 	return ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp)
+}
+
+// GetApiDarkplaneRepositoriesWithResponse List the repositories Darkplane observes for the caller's organization
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositoriesWithResponse(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositories(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositoriesResponse(rsp)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Get a repository's auto-approval bot settings
+//
+// The effective auto-approval configuration for a repository. A repository
+// that has never been configured returns the documented defaults (bot
+// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx, repositoryId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *ClientWithResponses) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	rsp, err := c.PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody(ctx, repositoryId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *ClientWithResponses) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	rsp, err := c.PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx, repositoryId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse List the stored versions of a repository's auto-approval settings
+//
+// The repository's settings history, newest first, each entry carrying the
+// spec as it was saved.
+//
+// Read-only: restoring an older version is a normal write through the
+// settings endpoint, so a rollback appends a new version rather than
+// rewriting the history.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx, repositoryId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse(rsp)
 }
 
 // GetApiDashboardsWithResponse Receive a list of dashboards
@@ -49533,6 +57574,97 @@ func (c *ClientWithResponses) DeleteApiTeamsOriginOrIdMembersMemberIDWithRespons
 	return ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp)
 }
 
+// GetApiTelemetryTransformationRulesWithResponse Retrieve a list of telemetry transformation rules
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/telemetry-transformation-rules (the `GetApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) GetApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *GetApiTelemetryTransformationRulesParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.GetApiTelemetryTransformationRules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// PostApiTelemetryTransformationRulesWithBodyWithResponse Create a new telemetry transformation rule
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) PostApiTelemetryTransformationRulesWithBodyWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.PostApiTelemetryTransformationRulesWithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// PostApiTelemetryTransformationRulesWithResponse Create a new telemetry transformation rule
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/telemetry-transformation-rules (the `PostApiTelemetryTransformationRules` operationId).
+func (c *ClientWithResponses) PostApiTelemetryTransformationRulesWithResponse(ctx context.Context, params *PostApiTelemetryTransformationRulesParams, body PostApiTelemetryTransformationRulesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiTelemetryTransformationRulesResponse, error) {
+	rsp, err := c.PostApiTelemetryTransformationRules(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiTelemetryTransformationRulesResponse(rsp)
+}
+
+// DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse Delete a specific telemetry transformation rule
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/telemetry-transformation-rules/{originOrId} (the `DeleteApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *DeleteApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.DeleteApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// GetApiTelemetryTransformationRulesOriginOrIdWithResponse Retrieve the latest version of a specific telemetry transformation rule
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/telemetry-transformation-rules/{originOrId} (the `GetApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) GetApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *GetApiTelemetryTransformationRulesOriginOrIdParams, reqEditors ...RequestEditorFn) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.GetApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse Update a specific telemetry transformation rule
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiTelemetryTransformationRulesOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiTelemetryTransformationRulesOriginOrIdWithBody(ctx, originOrId, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
+// PutApiTelemetryTransformationRulesOriginOrIdWithResponse Update a specific telemetry transformation rule
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/telemetry-transformation-rules/{originOrId} (the `PutApiTelemetryTransformationRulesOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiTelemetryTransformationRulesOriginOrIdWithResponse(ctx context.Context, originOrId string, params *PutApiTelemetryTransformationRulesOriginOrIdParams, body PutApiTelemetryTransformationRulesOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	rsp, err := c.PutApiTelemetryTransformationRulesOriginOrId(ctx, originOrId, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp)
+}
+
 // GetApiTimeSeriesAggregationsWithResponse List all time series aggregations for the organization
 //
 // Returns all time series aggregation rules configured for your organization.
@@ -50871,6 +59003,105 @@ func ParsePutApiAuthTokensOriginOrIdResponse(rsp *http.Response) (*PutApiAuthTok
 	return response, nil
 }
 
+// ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParseDeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParseGetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse parses an HTTP response from a PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdWithResponse call
+func ParsePutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse(rsp *http.Response) (*PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AwsLogGroupInstrumentationPolicy
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteApiAwsMetricScrapeConfigsIntegrationIdResponse parses an HTTP response from a DeleteApiAwsMetricScrapeConfigsIntegrationIdWithResponse call
 func ParseDeleteApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp *http.Response) (*DeleteApiAwsMetricScrapeConfigsIntegrationIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -50949,6 +59180,138 @@ func ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp *http.Response) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest AwsMetricScrapeConfigDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositoriesResponse parses an HTTP response from a GetApiDarkplaneRepositoriesWithResponse call
+func ParseGetApiDarkplaneRepositoriesResponse(rsp *http.Response) (*GetApiDarkplaneRepositoriesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositoriesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListRepositoriesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsResponse parses an HTTP response from a GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse call
+func ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp *http.Response) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RepositorySettingsDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse parses an HTTP response from a PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse call
+func ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp *http.Response) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RepositorySettingsDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse parses an HTTP response from a GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse call
+func ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse(rsp *http.Response) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListRepositorySettingsVersionsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -54248,6 +62611,251 @@ func ParseDeleteApiTeamsOriginOrIdMembersMemberIDResponse(rsp *http.Response) (*
 	switch {
 	case rsp.StatusCode == 204:
 		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTelemetryTransformationRulesResponse parses an HTTP response from a GetApiTelemetryTransformationRulesWithResponse call
+func ParseGetApiTelemetryTransformationRulesResponse(rsp *http.Response) (*GetApiTelemetryTransformationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTelemetryTransformationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiTelemetryTransformationRulesResponse parses an HTTP response from a PostApiTelemetryTransformationRulesWithResponse call
+func ParsePostApiTelemetryTransformationRulesResponse(rsp *http.Response) (*PostApiTelemetryTransformationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiTelemetryTransformationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TelemetryTransformationRuleErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a DeleteApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParseDeleteApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*DeleteApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 200:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a GetApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParseGetApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*GetApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiTelemetryTransformationRulesOriginOrIdResponse parses an HTTP response from a PutApiTelemetryTransformationRulesOriginOrIdWithResponse call
+func ParsePutApiTelemetryTransformationRulesOriginOrIdResponse(rsp *http.Response) (*PutApiTelemetryTransformationRulesOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiTelemetryTransformationRulesOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest TelemetryTransformationRuleDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest TelemetryTransformationRuleErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

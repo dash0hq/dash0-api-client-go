@@ -61,6 +61,11 @@ var constRenames = map[string]string{
 	"DarkplaneAutoApprovalDecision": "DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision",
 	"DarkplaneAutoApprovalMode":     "DarkplaneEvaluationTriggerVariableNameAutoApprovalMode",
 	"DarkplaneProvider":             "DarkplaneEvaluationTriggerVariableNameProvider",
+	// Since the spec gained the BotMode enums, oapi-codegen prefixes these with the
+	// full value; keep the names they were released under.
+	"DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalDecision": "DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision",
+	"DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalMode":     "DarkplaneEvaluationTriggerVariableNameAutoApprovalMode",
+	"DarkplaneEvaluationTriggerVariableNameDarkplaneProvider":             "DarkplaneEvaluationTriggerVariableNameProvider",
 	// oapi-codegen v2.5.1 misses the TimingType/SyntheticHttpErrorType "dns"
 	// collision once SyntheticPrivateLocationHealthStatus prefixes the latter first.
 	"Connection": "TimingTypeConnection",
@@ -131,6 +136,28 @@ var constRenames = map[string]string{
 	"Browser":            "SyntheticBrowserCheckPluginKindBrowser",
 	// Pinned before release so a future enum sharing this value cannot rename it.
 	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
+	// Pinned before release so a future enum sharing these values cannot rename them.
+	"AuthorDeliveryRecord":             "EvalToolIdAuthorDeliveryRecord",
+	"CheckRuleStatus":                  "EvalToolIdCheckRuleStatus",
+	"CodingSessionEngineeringActivity": "EvalToolIdCodingSessionEngineeringActivity",
+	"CodingSessionHarness":             "EvalToolIdCodingSessionHarness",
+	"CodingSessionToolsAndSkills":      "EvalToolIdCodingSessionToolsAndSkills",
+	"CommitVerification":               "EvalToolIdCommitVerification",
+	"EvaluationHistory":                "EvalToolIdEvaluationHistory",
+	"GitBlame":                         "EvalToolIdGitBlame",
+	"GitDiffBase":                      "EvalToolIdGitDiffBase",
+	"GitLog":                           "EvalToolIdGitLog",
+	"Grep":                             "EvalToolIdGrep",
+	"ListFiles":                        "EvalToolIdListFiles",
+	"PathAuthorship":                   "EvalToolIdPathAuthorship",
+	"PrChecks":                         "EvalToolIdPrChecks",
+	"PrFiles":                          "EvalToolIdPrFiles",
+	"PrMetadata":                       "EvalToolIdPrMetadata",
+	"PrReviewsAndComments":             "EvalToolIdPrReviewsAndComments",
+	"ReadFile":                         "EvalToolIdReadFile",
+	"ReadSteeringFiles":                "EvalToolIdReadSteeringFiles",
+	"ReviewAgentStats":                 "EvalToolIdReviewAgentStats",
+	"SloStatus":                        "EvalToolIdSloStatus",
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry
