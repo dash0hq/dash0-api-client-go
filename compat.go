@@ -237,6 +237,7 @@ package dash0
 // The origin is set by the caller on create, so it is not a server field.
 // Code that relied on these functions to remove the origin must now delete the label itself.
 // [StripCheckRuleServerFields] still removes dash0.com/origin, because a check rule's labels are Prometheus alert labels, not its origin.
+// [PrometheusAlertRule] GetOrigin now returns the id and no longer reads the dash0.com/origin label, because the API stores a check rule's origin as its id.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //

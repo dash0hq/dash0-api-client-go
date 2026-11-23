@@ -4,6 +4,7 @@ package dash0
 // Each method is nil-safe and returns "" or false on a nil receiver.
 type AssetMetadata interface {
 	// GetOrigin returns the dash0.com/origin label, or "" when the type has none or it is unset.
+	// A check rule returns its id, because the API stores a check rule's origin as its id.
 	// It does not say whether origin is an upsert key, UpsertKeys does.
 	GetOrigin() string
 	// GetID returns the asset ID.
