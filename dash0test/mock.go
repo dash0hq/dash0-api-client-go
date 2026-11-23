@@ -80,6 +80,12 @@ type MockClient struct {
 	UpdateAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string, cfg *dash0.AwsMetricScrapeConfigDefinition) (*dash0.AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string) error
 
+	ListDarkplaneRepositoriesFunc               func(ctx context.Context, search string) ([]dash0.RepositoryDefinition, error)
+	FindDarkplaneRepositoryFunc                 func(ctx context.Context, slug string) (*dash0.RepositoryDefinition, error)
+	GetDarkplaneRepositorySettingsFunc          func(ctx context.Context, repositoryID string) (*dash0.RepositorySettingsDefinition, error)
+	UpdateDarkplaneRepositorySettingsFunc       func(ctx context.Context, repositoryID string, settings *dash0.RepositorySettingsDefinition) (*dash0.RepositorySettingsDefinition, error)
+	ListDarkplaneRepositorySettingsVersionsFunc func(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error)
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -446,6 +452,43 @@ func (m *MockClient) DeleteAwsMetricScrapeConfig(ctx context.Context, integratio
 		return m.DeleteAwsMetricScrapeConfigFunc(ctx, integrationID)
 	}
 	return nil
+}
+
+// Darkplane repositories and their AutoMerge settings
+
+func (m *MockClient) ListDarkplaneRepositories(ctx context.Context, search string) ([]dash0.RepositoryDefinition, error) {
+	if m.ListDarkplaneRepositoriesFunc != nil {
+		return m.ListDarkplaneRepositoriesFunc(ctx, search)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) FindDarkplaneRepository(ctx context.Context, slug string) (*dash0.RepositoryDefinition, error) {
+	if m.FindDarkplaneRepositoryFunc != nil {
+		return m.FindDarkplaneRepositoryFunc(ctx, slug)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetDarkplaneRepositorySettings(ctx context.Context, repositoryID string) (*dash0.RepositorySettingsDefinition, error) {
+	if m.GetDarkplaneRepositorySettingsFunc != nil {
+		return m.GetDarkplaneRepositorySettingsFunc(ctx, repositoryID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateDarkplaneRepositorySettings(ctx context.Context, repositoryID string, settings *dash0.RepositorySettingsDefinition) (*dash0.RepositorySettingsDefinition, error) {
+	if m.UpdateDarkplaneRepositorySettingsFunc != nil {
+		return m.UpdateDarkplaneRepositorySettingsFunc(ctx, repositoryID, settings)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) ListDarkplaneRepositorySettingsVersions(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error) {
+	if m.ListDarkplaneRepositorySettingsVersionsFunc != nil {
+		return m.ListDarkplaneRepositorySettingsVersionsFunc(ctx, repositoryID)
+	}
+	return nil, nil
 }
 
 // Auth tokens
