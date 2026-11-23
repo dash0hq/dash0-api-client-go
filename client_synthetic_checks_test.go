@@ -43,8 +43,8 @@ func TestStripSyntheticCheckServerFields(t *testing.T) {
 	if c.Metadata.Labels.Dash0Comdataset != nil {
 		t.Error("Dash0Comdataset should be nil")
 	}
-	if c.Metadata.Labels.Dash0Comorigin != nil {
-		t.Error("Dash0Comorigin should be nil")
+	if c.Metadata.Labels.Dash0Comorigin == nil {
+		t.Error("Dash0Comorigin should be preserved")
 	}
 	if c.Metadata.Labels.Dash0Comid == nil || *c.Metadata.Labels.Dash0Comid != "keep-this" {
 		t.Error("Dash0Comid should be preserved")

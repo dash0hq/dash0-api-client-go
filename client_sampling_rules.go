@@ -137,7 +137,6 @@ func StripSamplingRuleServerFields(rule *SamplingDefinition) {
 		rule.Metadata.Labels.Dash0Comversion = nil
 		rule.Metadata.Labels.Dash0Comsource = nil
 		rule.Metadata.Labels.Dash0Comdataset = nil
-		rule.Metadata.Labels.Dash0Comorigin = nil
 	}
 }
 

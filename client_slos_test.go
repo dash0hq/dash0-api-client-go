@@ -80,8 +80,8 @@ func TestStripSLOServerFields(t *testing.T) {
 	if slo.Metadata.Labels.Dash0Comdataset != nil {
 		t.Error("Dash0Comdataset should be nil")
 	}
-	if slo.Metadata.Labels.Dash0Comorigin != nil {
-		t.Error("Dash0Comorigin should be nil")
+	if slo.Metadata.Labels.Dash0Comorigin == nil {
+		t.Error("Dash0Comorigin should be preserved")
 	}
 	if slo.Metadata.Labels.Dash0Comsource != nil {
 		t.Error("Dash0Comsource should be nil")

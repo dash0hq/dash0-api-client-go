@@ -230,6 +230,13 @@ package dash0
 //
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
 // [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
+//
+// # Migration guide (v1.35.x to <NEXT_RELEASE>)
+//
+// [StripRecordingRuleServerFields], [StripSamplingRuleServerFields], [StripSignalToMetricsServerFields], [StripSLOServerFields], [StripSyntheticCheckServerFields], [StripTimeSeriesAggregationServerFields], and [StripViewServerFields] now keep the dash0.com/origin label.
+// The origin is set by the caller on create, so it is not a server field.
+// Code that relied on these functions to remove the origin must now delete the label itself.
+// [StripCheckRuleServerFields] still removes dash0.com/origin, because a check rule's labels are Prometheus alert labels, not its origin.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //

@@ -131,6 +131,8 @@ func StripCheckRuleServerFields(rule *PrometheusAlertRule) {
 		return
 	}
 	rule.Dataset = nil
+	// These are Prometheus alert labels, copied onto every alert the rule emits, so a
+	// dash0.com/origin here is not the rule's origin and must not reach the alerts.
 	if rule.Labels != nil {
 		delete(*rule.Labels, LabelOrigin)
 	}

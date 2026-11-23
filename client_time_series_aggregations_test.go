@@ -596,8 +596,8 @@ func TestStripTimeSeriesAggregationServerFields(t *testing.T) {
 	if aggregation.Metadata.Labels.Dash0Comdataset != nil {
 		t.Error("Dash0Comdataset should be nil")
 	}
-	if aggregation.Metadata.Labels.Dash0Comorigin != nil {
-		t.Error("Dash0Comorigin should be nil")
+	if aggregation.Metadata.Labels.Dash0Comorigin == nil {
+		t.Error("Dash0Comorigin should be preserved")
 	}
 
 	// The ID survives, so a Get -> Strip -> Update round-trip keeps addressing the
