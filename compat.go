@@ -241,6 +241,10 @@ package dash0
 // Update float32 variables or casts to float64.
 // There is no alias, because a struct field type cannot be aliased.
 //
+// [Client] gained [Client.GetAwsLogGroupInstrumentationPolicy], [Client.UpdateAwsLogGroupInstrumentationPolicy], and [Client.DeleteAwsLogGroupInstrumentationPolicy].
+// Custom [Client] implementations and wrappers must add them.
+// dash0test.MockClient implements them through new GetAwsLogGroupInstrumentationPolicyFunc, UpdateAwsLogGroupInstrumentationPolicyFunc, and DeleteAwsLogGroupInstrumentationPolicyFunc fields.
+//
 // [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
 // Custom [Client] implementations and wrappers must add all 6 methods.
 // dash0test.MockClient implements them through new ListTelemetryTransformationRulesFunc, GetTelemetryTransformationRuleFunc, CreateTelemetryTransformationRuleFunc, UpdateTelemetryTransformationRuleFunc, DeleteTelemetryTransformationRuleFunc, and ListTelemetryTransformationRulesIterFunc fields.

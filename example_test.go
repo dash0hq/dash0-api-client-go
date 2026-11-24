@@ -1669,6 +1669,32 @@ func ExampleStripGenerativeAiEvaluationServerFields() {
 	// tf_answer-relevance /checkout
 }
 
+// AWS log-group instrumentation policy helpers
+
+func ExampleSetAwsLogGroupInstrumentationPolicyRevision() {
+	stored := &dash0.AwsLogGroupInstrumentationPolicy{
+		Metadata: dash0.AwsLogGroupPolicyMetadata{
+			Labels: &dash0.AwsLogGroupPolicyLabels{Dash0Comversion: dash0.Ptr("7"), Dash0Comorigin: dash0.Ptr("tf_prod")},
+		},
+	}
+	desired := &dash0.AwsLogGroupInstrumentationPolicy{
+		ApiVersion: dash0.AwsLogGroupPolicyApiVersionDash0Comv1alpha1,
+		Kind:       dash0.AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy,
+		Spec: dash0.AwsLogGroupPolicySpec{
+			Rules: []dash0.AwsLogGroupPolicyRule{{Conditions: []dash0.AwsLogGroupPolicyCondition{
+				{Key: "dash0.cloud.tags.team", Operator: dash0.AwsLogGroupPolicyOperatorIs, Value: dash0.Ptr("platform")},
+			}}},
+		},
+	}
+	// Fence the update on the revision that was read, so a concurrent edit fails with IsSupersededVersion instead of being overwritten.
+	if revision, ok := dash0.GetAwsLogGroupInstrumentationPolicyRevision(stored); ok {
+		dash0.SetAwsLogGroupInstrumentationPolicyRevision(desired, revision)
+	}
+	dash0.SetAwsLogGroupInstrumentationPolicyOrigin(desired, dash0.GetAwsLogGroupInstrumentationPolicyOrigin(stored))
+	fmt.Println(*desired.Metadata.Labels.Dash0Comversion, dash0.GetAwsLogGroupInstrumentationPolicyOrigin(desired))
+	// Output: 7 tf_prod
+}
+
 // AWS metric scrape config helpers
 
 func ExampleStripAwsMetricScrapeConfigServerFields() {
