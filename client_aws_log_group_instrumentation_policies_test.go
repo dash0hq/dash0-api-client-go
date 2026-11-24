@@ -119,7 +119,7 @@ func TestUpdateAwsLogGroupInstrumentationPolicy(t *testing.T) {
 
 	policy := &AwsLogGroupInstrumentationPolicy{
 		ApiVersion: AwsLogGroupPolicyApiVersionDash0Comv1alpha1,
-		Kind:       Dash0AwsLogGroupInstrumentationPolicy,
+		Kind:       AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy,
 		Spec:       AwsLogGroupPolicySpec{Rules: []AwsLogGroupPolicyRule{{}}},
 	}
 	SetAwsLogGroupInstrumentationPolicyOrigin(policy, "tf_policy")

@@ -1498,3 +1498,37 @@ func TestGetSignalToMetricsOrigin(t *testing.T) {
 	assertEqual(t, "origin without labels", GetSignalToMetricsOrigin(&SignalToMetricsDefinition{}), "")
 	assertEqual(t, "origin of nil", GetSignalToMetricsOrigin(nil), "")
 }
+
+func TestUpdateSignalToMetrics_SendsDropMatched(t *testing.T) {
+	rule := newTestSignalToMetrics()
+	rule.Spec.Match.Signal = SignalToMetricsSignalTypeLogs
+	rule.Spec.DropMatched = Ptr(true)
+
+	var gotSpec map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body struct {
+			Spec map[string]any `json:"spec"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Errorf("decode request body: %v", err)
+			return
+		}
+		gotSpec = body.Spec
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(rule)
+	}))
+	defer server.Close()
+
+	got, err := newTestClient(t, server.URL).UpdateSignalToMetrics(context.Background(), "s2m-123", &rule, Ptr("default"))
+	if err != nil {
+		t.Fatalf("UpdateSignalToMetrics failed: %v", err)
+	}
+
+	if gotSpec["dropMatched"] != true {
+		t.Errorf("request spec.dropMatched = %v, want true", gotSpec["dropMatched"])
+	}
+	if got.Spec.DropMatched == nil || !*got.Spec.DropMatched {
+		t.Errorf("response Spec.DropMatched = %v, want true", got.Spec.DropMatched)
+	}
+}

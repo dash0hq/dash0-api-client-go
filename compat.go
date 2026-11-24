@@ -220,19 +220,6 @@ package dash0
 // [LinearReleaseAgenticWorkflowTriggerSpec] and [LinearReleaseNoteAgenticWorkflowTriggerSpec] lost PipelineIds.
 // Use PipelineNames or PipelineRegex instead, which match the release pipeline name rather than its UUID.
 //
-// # Migration guide (v1.35.x to <NEXT_RELEASE>)
-//
-// [Client] gained [Client.GetAwsLogGroupInstrumentationPolicy], [Client.UpdateAwsLogGroupInstrumentationPolicy], and [Client.DeleteAwsLogGroupInstrumentationPolicy].
-// Custom [Client] implementations and wrappers must add them.
-// dash0test.MockClient implements them through new *Func fields.
-//
-// The [LinearWebhookAction] constants are now [LinearWebhookActionCreate], [LinearWebhookActionRemove], and [LinearWebhookActionUpdate], because [AwsLogGroupPolicyDisposition] shares the "remove" value.
-// The bare names Create, Remove, and Update stay as deprecated aliases.
-//
-// [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64, because the spec now declares it as a double.
-// Update float32 variables and casts to float64.
-// There is no alias, because a struct field type cannot be aliased.
-//
 // # Migration guide (v1.33.x to v1.34.0)
 //
 // [DatasetMetricsSettings].Retention and [DatasetRetention].Metrics changed from [PinnedRetentionClass] to the new [MetricsRetentionClass].
@@ -243,6 +230,28 @@ package dash0
 //
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
 // [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
+//
+// # Migration guide (<NEXT_RELEASE>)
+//
+// The spec added [AwsLogGroupPolicyDisposition], whose "remove" value collides with [LinearWebhookAction].
+// Create, Remove, and Update are now [LinearWebhookActionCreate], [LinearWebhookActionRemove], and [LinearWebhookActionUpdate].
+// The bare names stay as deprecated aliases.
+//
+// [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64.
+// Update float32 variables or casts to float64.
+// There is no alias, because a struct field type cannot be aliased.
+//
+// [Client] gained [Client.GetAwsLogGroupInstrumentationPolicy], [Client.UpdateAwsLogGroupInstrumentationPolicy], and [Client.DeleteAwsLogGroupInstrumentationPolicy].
+// Custom [Client] implementations and wrappers must add them.
+// dash0test.MockClient implements them through new GetAwsLogGroupInstrumentationPolicyFunc, UpdateAwsLogGroupInstrumentationPolicyFunc, and DeleteAwsLogGroupInstrumentationPolicyFunc fields.
+//
+// [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
+// Custom [Client] implementations and wrappers must add all 6 methods.
+// dash0test.MockClient implements them through new ListTelemetryTransformationRulesFunc, GetTelemetryTransformationRuleFunc, CreateTelemetryTransformationRuleFunc, UpdateTelemetryTransformationRuleFunc, DeleteTelemetryTransformationRuleFunc, and ListTelemetryTransformationRulesIterFunc fields.
+//
+// List responses omit spec.examples, so fetch the full rule with [Client.GetTelemetryTransformationRule] before updating it.
+// PUT replaces the whole rule, and omitting spec.examples removes the stored examples.
+// Preserve dash0.com/updated-at from GET as the concurrency token for PUT; [StripTelemetryTransformationRuleServerFields] keeps it and spec.examples intact.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
