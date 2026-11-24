@@ -364,20 +364,19 @@ func TestConvertPersesDashboardToDashboard_Labels(t *testing.T) {
 		name        string
 		labels      map[string]string
 		wantOrigin  string
-		wantID      string
+		wantExtID   string
 		wantDataset string
 	}{
 		{
-			name:        "origin present is kept",
+			name:        "origin present is kept and id moves to the id label",
 			labels:      map[string]string{LabelOrigin: "my-origin", LabelID: "my-id", LabelDataset: "my-dataset"},
 			wantOrigin:  "my-origin",
-			wantID:      "my-id",
 			wantDataset: "my-dataset",
 		},
 		{
 			name:        "origin absent leaves no origin label",
 			labels:      map[string]string{LabelID: "my-id", LabelDataset: "my-dataset"},
-			wantID:      "my-id",
+			wantExtID:   "my-id",
 			wantDataset: "my-dataset",
 		},
 	}
@@ -398,8 +397,18 @@ func TestConvertPersesDashboardToDashboard_Labels(t *testing.T) {
 				t.Errorf("origin = %q, want %q", origin, tt.wantOrigin)
 			}
 			ext := d.Metadata.Dash0Extensions
-			if ext == nil || ext.Id == nil || *ext.Id != tt.wantID {
-				t.Errorf("dash0Extensions.id = %v, want %q", ext, tt.wantID)
+			var extID string
+			if ext != nil && ext.Id != nil {
+				extID = *ext.Id
+			}
+			if extID != tt.wantExtID {
+				t.Errorf("dash0Extensions.id = %q, want %q", extID, tt.wantExtID)
+			}
+			if origin != "" && extID != "" && origin != extID {
+				t.Errorf("origin %q and dash0Extensions.id %q differ, which the API rejects", origin, extID)
+			}
+			if got := GetDashboardID(d); got != "my-id" {
+				t.Errorf("GetDashboardID = %q, want %q", got, "my-id")
 			}
 			if ext == nil || ext.Dataset == nil || string(*ext.Dataset) != tt.wantDataset {
 				t.Errorf("dash0Extensions.dataset = %v, want %q", ext, tt.wantDataset)

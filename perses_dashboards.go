@@ -59,9 +59,17 @@ func ConvertPersesDashboardToDashboard(perses *PersesDashboard) *DashboardDefini
 	}
 
 	// Copy dash0.com/id and dash0.com/dataset from labels into dash0Extensions.
+	// dash0Extensions.id is the dashboard's origin, and the API rejects a create
+	// whose origin label and dash0Extensions.id differ. So when the CRD carries
+	// an origin, dash0.com/id stays the dashboard's id label instead.
 	if perses.Metadata.Labels != nil {
 		id := perses.Metadata.Labels[LabelID]
 		ds := perses.Metadata.Labels[LabelDataset]
+		if id != "" && dashboard.Metadata.Labels != nil && dashboard.Metadata.Labels.Dash0Comorigin != nil {
+			idLabel := id
+			dashboard.Metadata.Labels.Dash0Comid = &idLabel
+			id = ""
+		}
 		if id != "" || ds != "" {
 			ext := &DashboardMetadataExtensions{}
 			if id != "" {

@@ -141,7 +141,9 @@ func (c *client) ListSLOsIter(ctx context.Context, dataset *string, opts ...List
 // ids.
 //
 // dash0.com/origin is kept, as [StripTeamServerFields] keeps a team's origin,
-// so a stripped SLO still carries the origin a caller upserts it by.
+// so a stripped SLO still carries the origin a caller upserts it by. The API
+// ignores dash0.com/* labels in an SLO request body, so the caller passes the
+// origin in the PUT /api/slos/{originOrId} path, see [Client.UpdateSLO].
 //
 // User-defined (non-dash0.com/*) labels and annotations are preserved.
 //
