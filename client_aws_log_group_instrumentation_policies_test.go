@@ -202,6 +202,34 @@ func TestDeleteAwsLogGroupInstrumentationPolicy(t *testing.T) {
 	}
 }
 
+func TestAwsLogGroupInstrumentationPolicy_ErrorStatuses(t *testing.T) {
+	tests := []struct {
+		status    int
+		predicate func(error) bool
+	}{
+		{http.StatusBadRequest, IsBadRequest},
+		{http.StatusForbidden, IsForbidden},
+		{http.StatusNotFound, IsNotFound},
+	}
+	policy := &AwsLogGroupInstrumentationPolicy{Spec: AwsLogGroupPolicySpec{Rules: []AwsLogGroupPolicyRule{}}}
+	for _, tt := range tests {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			writeAPIError(w, tt.status, "rejected")
+		}))
+		c := newTestClient(t, server.URL)
+		ctx := context.Background()
+		_, getErr := c.GetAwsLogGroupInstrumentationPolicy(ctx, testIntegrationID)
+		_, updateErr := c.UpdateAwsLogGroupInstrumentationPolicy(ctx, testIntegrationID, policy)
+		_, deleteErr := c.DeleteAwsLogGroupInstrumentationPolicy(ctx, testIntegrationID, AwsLogGroupPolicyDispositionKeep, nil)
+		server.Close()
+		for name, err := range map[string]error{"get": getErr, "update": updateErr, "delete": deleteErr} {
+			if !tt.predicate(err) {
+				t.Errorf("%s with status %d: unexpected error %v", name, tt.status, err)
+			}
+		}
+	}
+}
+
 func TestDeleteAwsLogGroupInstrumentationPolicy_RequiresDisposition(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t.Errorf("unexpected request %s %s", r.Method, r.URL)
@@ -256,8 +284,12 @@ func TestAwsLogGroupInstrumentationPolicyHelpers_NilAndMalformed(t *testing.T) {
 	StripAwsLogGroupInstrumentationPolicyServerFields(nil)
 	SetAwsLogGroupInstrumentationPolicyOrigin(nil, "x")
 	SetAwsLogGroupInstrumentationPolicyRevision(nil, 1)
-	if IsAwsLogGroupInstrumentationPolicyDeleted(nil) || GetAwsLogGroupInstrumentationPolicyID(nil) != "" {
+	if IsAwsLogGroupInstrumentationPolicyDeleted(nil) || GetAwsLogGroupInstrumentationPolicyID(nil) != "" ||
+		GetAwsLogGroupInstrumentationPolicyName(nil) != "" || GetAwsLogGroupInstrumentationPolicyOrigin(nil) != "" {
 		t.Error("nil policy reported state")
+	}
+	if _, ok := GetAwsLogGroupInstrumentationPolicyRevision(nil); ok {
+		t.Error("nil policy reported a revision")
 	}
 	bad := "abc"
 	policy := &AwsLogGroupInstrumentationPolicy{Metadata: AwsLogGroupPolicyMetadata{Labels: &AwsLogGroupPolicyLabels{Dash0Comversion: &bad}}}
