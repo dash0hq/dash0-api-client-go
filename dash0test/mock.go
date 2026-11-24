@@ -2,6 +2,7 @@ package dash0test
 
 import (
 	"context"
+	"time"
 
 	"github.com/dash0hq/dash0-api-client-go"
 	"go.opentelemetry.io/collector/pdata/plog"
@@ -80,6 +81,11 @@ type MockClient struct {
 	UpdateAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string, cfg *dash0.AwsMetricScrapeConfigDefinition) (*dash0.AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string) error
 
+	// AWS log-group instrumentation policies
+	GetAwsLogGroupInstrumentationPolicyFunc    func(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+	UpdateAwsLogGroupInstrumentationPolicyFunc func(ctx context.Context, integrationID string, policy *dash0.AwsLogGroupInstrumentationPolicy) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+	DeleteAwsLogGroupInstrumentationPolicyFunc func(ctx context.Context, integrationID string, disposition dash0.AwsLogGroupPolicyDisposition, expectedRevision *int64) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -95,6 +101,14 @@ type MockClient struct {
 	UpdateSamplingRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.SamplingDefinition, dataset *string) (*dash0.SamplingDefinition, error)
 	DeleteSamplingRuleFunc    func(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIterFunc func(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition]
+
+	// Telemetry Transformation Rules
+	ListTelemetryTransformationRulesFunc     func(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.TelemetryTransformationRuleDefinition, error)
+	GetTelemetryTransformationRuleFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
+	CreateTelemetryTransformationRuleFunc    func(ctx context.Context, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
+	UpdateTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error)
+	DeleteTelemetryTransformationRuleFunc    func(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error
+	ListTelemetryTransformationRulesIterFunc func(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition]
 
 	// Time Series Aggregations
 	ListTimeSeriesAggregationsFunc     func(ctx context.Context, dataset *string) ([]*dash0.TimeSeriesAggregationDefinition, error)
@@ -448,6 +462,29 @@ func (m *MockClient) DeleteAwsMetricScrapeConfig(ctx context.Context, integratio
 	return nil
 }
 
+// AWS log-group instrumentation policies
+
+func (m *MockClient) GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.GetAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.GetAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *dash0.AwsLogGroupInstrumentationPolicy) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.UpdateAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.UpdateAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID, policy)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, disposition dash0.AwsLogGroupPolicyDisposition, expectedRevision *int64) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.DeleteAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.DeleteAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID, disposition, expectedRevision)
+	}
+	return nil, nil
+}
+
 // Auth tokens
 
 func (m *MockClient) ListAuthTokens(ctx context.Context) ([]*dash0.AuthTokenResponseDefinition, error) {
@@ -576,6 +613,50 @@ func (m *MockClient) DeleteSamplingRule(ctx context.Context, originOrID string, 
 func (m *MockClient) ListSamplingRulesIter(ctx context.Context, dataset *string) *dash0.Iter[dash0.SamplingDefinition] {
 	if m.ListSamplingRulesIterFunc != nil {
 		return m.ListSamplingRulesIterFunc(ctx, dataset)
+	}
+	return nil
+}
+
+// Telemetry Transformation Rules
+
+func (m *MockClient) ListTelemetryTransformationRules(ctx context.Context, dataset *string, opts ...dash0.ListOption) ([]*dash0.TelemetryTransformationRuleDefinition, error) {
+	if m.ListTelemetryTransformationRulesFunc != nil {
+		return m.ListTelemetryTransformationRulesFunc(ctx, dataset, opts...)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error) {
+	if m.GetTelemetryTransformationRuleFunc != nil {
+		return m.GetTelemetryTransformationRuleFunc(ctx, originOrID, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) CreateTelemetryTransformationRule(ctx context.Context, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error) {
+	if m.CreateTelemetryTransformationRuleFunc != nil {
+		return m.CreateTelemetryTransformationRuleFunc(ctx, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateTelemetryTransformationRule(ctx context.Context, originOrID string, rule *dash0.TelemetryTransformationRuleDefinition, dataset *string) (*dash0.TelemetryTransformationRuleDefinition, error) {
+	if m.UpdateTelemetryTransformationRuleFunc != nil {
+		return m.UpdateTelemetryTransformationRuleFunc(ctx, originOrID, rule, dataset)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error {
+	if m.DeleteTelemetryTransformationRuleFunc != nil {
+		return m.DeleteTelemetryTransformationRuleFunc(ctx, originOrID, updatedAt, dataset)
+	}
+	return nil
+}
+
+func (m *MockClient) ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string, opts ...dash0.ListOption) *dash0.Iter[dash0.TelemetryTransformationRuleDefinition] {
+	if m.ListTelemetryTransformationRulesIterFunc != nil {
+		return m.ListTelemetryTransformationRulesIterFunc(ctx, dataset, opts...)
 	}
 	return nil
 }

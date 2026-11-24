@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/pdata/pmetric"
@@ -72,6 +73,11 @@ type Client interface {
 	UpdateAwsMetricScrapeConfig(ctx context.Context, integrationID string, cfg *AwsMetricScrapeConfigDefinition) (*AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfig(ctx context.Context, integrationID string) error
 
+	// AWS log-group instrumentation policies
+	GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*AwsLogGroupInstrumentationPolicy, error)
+	UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *AwsLogGroupInstrumentationPolicy) (*AwsLogGroupInstrumentationPolicy, error)
+	DeleteAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, disposition AwsLogGroupPolicyDisposition, expectedRevision *int64) (*AwsLogGroupInstrumentationPolicy, error)
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)
@@ -87,6 +93,14 @@ type Client interface {
 	UpdateSamplingRule(ctx context.Context, originOrID string, rule *SamplingDefinition, dataset *string) (*SamplingDefinition, error)
 	DeleteSamplingRule(ctx context.Context, originOrID string, dataset *string) error
 	ListSamplingRulesIter(ctx context.Context, dataset *string) *Iter[SamplingDefinition]
+
+	// Telemetry transformation rules
+	ListTelemetryTransformationRules(ctx context.Context, dataset *string, opts ...ListOption) ([]*TelemetryTransformationRuleDefinition, error)
+	GetTelemetryTransformationRule(ctx context.Context, originOrID string, dataset *string) (*TelemetryTransformationRuleDefinition, error)
+	CreateTelemetryTransformationRule(ctx context.Context, rule *TelemetryTransformationRuleDefinition, dataset *string) (*TelemetryTransformationRuleDefinition, error)
+	UpdateTelemetryTransformationRule(ctx context.Context, originOrID string, rule *TelemetryTransformationRuleDefinition, dataset *string) (*TelemetryTransformationRuleDefinition, error)
+	DeleteTelemetryTransformationRule(ctx context.Context, originOrID string, updatedAt *time.Time, dataset *string) error
+	ListTelemetryTransformationRulesIter(ctx context.Context, dataset *string, opts ...ListOption) *Iter[TelemetryTransformationRuleDefinition]
 
 	// Time Series Aggregations
 	ListTimeSeriesAggregations(ctx context.Context, dataset *string) ([]*TimeSeriesAggregationDefinition, error)

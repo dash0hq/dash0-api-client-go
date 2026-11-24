@@ -181,6 +181,12 @@ Follow them even when `make` passes.
 - A page that is empty but reports more data returns an error, never a short list.
 - YAML marshal and unmarshal must round-trip every annotation the backend lifts into typed fields, with a test.
 
+### Commits
+
+- Never add a `Co-authored-by: Amp <amp@ampcode.com>` trailer to a commit.
+  GitHub maps that email to the `ampagent` account, which has not signed the CLA, and every commit author must have signed it.
+  If a tool adds the trailer, rewrite the commit without it before pushing, for example with `git commit-tree`.
+
 ### Tests
 
 - Each new test must fail when the change is reverted.
