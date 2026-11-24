@@ -3059,3 +3059,145 @@ func ExampleAssetMetadata() {
 	// origin: checkout-latency
 	// id: high-error-rate
 }
+
+// Darkplane repository settings
+
+const darkplaneRepositoryExampleBody = `{"kind":"DarkplaneRepository","metadata":{"name":"acme/api","labels":{"dash0.com/id":"repo-123"},"annotations":{}},"spec":{"provider":"github","account":"acme","name":"api","botMode":"auto_approve","openPullRequests":3,"timeToMergeP50Seconds":5400,"autoApprovalRate":0.4}}`
+
+const darkplaneRepositorySettingsExampleBody = `{"kind":"DarkplaneRepositorySettings","metadata":{"name":"acme/api","labels":{"dash0.com/id":"repo-123","dash0.com/version":"2"},"annotations":{}},"spec":{"botMode":"auto_approve","triggerMode":"auto","waitForChecks":true,"softThreshold":75,"softRiskCriteria":[],"protectedPaths":["deploy/**"],"fastTrackReverts":false,"pathRules":[],"reviewer":{"automergeAcceptedVerdicts":["approve"],"commentRequests":true,"enabled":false,"requireForAutomerge":false,"settleDelaySeconds":120,"skipAfterHumanReview":true,"triggerMode":"ready"}},"usesDefaultCriteria":true}`
+
+func newDarkplaneExampleClient(handler http.HandlerFunc) (dash0.Client, func()) {
+	server := httptest.NewServer(handler)
+	client, err := dash0.NewClient(dash0.WithApiUrl(server.URL), dash0.WithAuthToken("auth_yourtoken"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client, func() {
+		_ = client.Close(context.Background())
+		server.Close()
+	}
+}
+
+func serveDarkplaneRepositories(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write([]byte(`{"items":[` + darkplaneRepositoryExampleBody + `],"cursors":{}}`))
+}
+
+func serveDarkplaneRepositorySettings(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write([]byte(darkplaneRepositorySettingsExampleBody))
+}
+
+func ExampleClient_ListDarkplaneRepositories() {
+	client, done := newDarkplaneExampleClient(serveDarkplaneRepositories)
+	defer done()
+
+	repositories, err := client.ListDarkplaneRepositories(context.Background(), "acme/")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := range repositories {
+		fmt.Println(dash0.GetDarkplaneRepositorySlug(&repositories[i]), repositories[i].Spec.BotMode)
+	}
+	// Output: acme/api auto_approve
+}
+
+func ExampleClient_FindDarkplaneRepository() {
+	client, done := newDarkplaneExampleClient(serveDarkplaneRepositories)
+	defer done()
+
+	repository, err := client.FindDarkplaneRepository(context.Background(), "acme/api")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(dash0.GetDarkplaneRepositoryID(repository))
+
+	_, err = client.FindDarkplaneRepository(context.Background(), "acme/web")
+	fmt.Println(dash0.IsNotFound(err))
+	// Output:
+	// repo-123
+	// true
+}
+
+func ExampleClient_GetDarkplaneRepositorySettings() {
+	client, done := newDarkplaneExampleClient(serveDarkplaneRepositorySettings)
+	defer done()
+
+	settings, err := client.GetDarkplaneRepositorySettings(context.Background(), "repo-123")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(settings.Spec.BotMode, settings.Spec.SoftThreshold, settings.Spec.ProtectedPaths)
+	// Output: auto_approve 75 [deploy/**]
+}
+
+func ExampleClient_UpdateDarkplaneRepositorySettings() {
+	client, done := newDarkplaneExampleClient(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPut {
+			var request dash0.RepositorySettingsRequest
+			_ = json.NewDecoder(r.Body).Decode(&request)
+			fmt.Println("sent version", *request.Metadata.Labels.Dash0Comversion)
+		}
+		serveDarkplaneRepositorySettings(w, r)
+	})
+	defer done()
+
+	settings, err := client.GetDarkplaneRepositorySettings(context.Background(), "repo-123")
+	if err != nil {
+		log.Fatal(err)
+	}
+	settings.Spec.SoftThreshold = 80
+	// The version label from the GET makes the server reject the write if someone saved in between.
+	if _, err := client.UpdateDarkplaneRepositorySettings(context.Background(), "repo-123", settings); err != nil {
+		if dash0.IsForbidden(err) {
+			log.Fatal("the token cannot change repository settings")
+		}
+		log.Fatal(err)
+	}
+	// Output: sent version 2
+}
+
+func ExampleClient_ListDarkplaneRepositorySettingsVersions() {
+	client, done := newDarkplaneExampleClient(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"versions":[` + darkplaneRepositorySettingsExampleBody + `]}`))
+	})
+	defer done()
+
+	versions, err := client.ListDarkplaneRepositorySettingsVersions(context.Background(), "repo-123")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := range versions {
+		fmt.Println(dash0.GetDarkplaneRepositorySettingsVersion(&versions[i]))
+	}
+	// Output: 2
+}
+
+func ExampleGetDarkplaneRepositorySlug() {
+	var repository dash0.RepositoryDefinition
+	_ = json.Unmarshal([]byte(darkplaneRepositoryExampleBody), &repository)
+	fmt.Println(dash0.GetDarkplaneRepositorySlug(&repository))
+	// Output: acme/api
+}
+
+func ExampleGetDarkplaneRepositoryID() {
+	var repository dash0.RepositoryDefinition
+	_ = json.Unmarshal([]byte(darkplaneRepositoryExampleBody), &repository)
+	fmt.Println(dash0.GetDarkplaneRepositoryID(&repository))
+	// Output: repo-123
+}
+
+func ExampleGetDarkplaneRepositorySettingsID() {
+	var settings dash0.RepositorySettingsDefinition
+	_ = json.Unmarshal([]byte(darkplaneRepositorySettingsExampleBody), &settings)
+	fmt.Println(dash0.GetDarkplaneRepositorySettingsID(&settings))
+	// Output: repo-123
+}
+
+func ExampleGetDarkplaneRepositorySettingsVersion() {
+	var settings dash0.RepositorySettingsDefinition
+	_ = json.Unmarshal([]byte(darkplaneRepositorySettingsExampleBody), &settings)
+	fmt.Println(dash0.GetDarkplaneRepositorySettingsVersion(&settings))
+	// Output: 2
+}

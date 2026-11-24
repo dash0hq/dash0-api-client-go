@@ -33,10 +33,17 @@ func (c *client) ListDarkplaneRepositories(ctx context.Context, search string) (
 		if resp.JSON200 == nil {
 			return nil, fmt.Errorf("dash0: unexpected nil response")
 		}
-		repositories = append(repositories, resp.JSON200.Items...)
+		page := resp.JSON200.Items
+		repositories = append(repositories, page...)
 		next := resp.JSON200.Cursors.After
 		if next == nil || *next == "" {
 			return repositories, nil
+		}
+		if len(page) == 0 {
+			return nil, fmt.Errorf("dash0: list Darkplane repositories failed: server returned a cursor with an empty page after %d repositories", len(repositories))
+		}
+		if params.Cursor != nil && *params.Cursor == *next {
+			return nil, fmt.Errorf("dash0: list Darkplane repositories failed: server returned the same cursor twice after %d repositories", len(repositories))
 		}
 		params.Cursor = next
 	}

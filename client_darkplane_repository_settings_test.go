@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 const testRepositoryID = "0b7f1c2e-4a5d-4e8f-9c61-2d3a4b5c6d7e"
@@ -123,7 +125,8 @@ func TestUpdateDarkplaneRepositorySettings(t *testing.T) {
 				}
 				assertEqual(t, "path", r.URL.Path, "/api/darkplane/repositories/"+testRepositoryID+"/settings")
 				if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-					t.Fatalf("decode request: %v", err)
+					t.Errorf("decode request: %v", err)
+					return
 				}
 				w.Header().Set("Content-Type", "application/json")
 				_, _ = io.WriteString(w, repositorySettingsJSON)
@@ -201,4 +204,101 @@ func TestDarkplaneRepositorySettings_RequireRepositoryID(t *testing.T) {
 	if _, err := c.UpdateDarkplaneRepositorySettings(context.Background(), "", &RepositorySettingsDefinition{}); err == nil {
 		t.Error("UpdateDarkplaneRepositorySettings accepted an empty repository ID")
 	}
+}
+
+func TestListDarkplaneRepositories_RejectsCursorsThatDoNotAdvance(t *testing.T) {
+	tests := []struct {
+		name string
+		page func(cursor string) string
+	}{
+		{
+			name: "an empty page with a cursor",
+			page: func(string) string { return `{"items":[],"cursors":{"after":"page-2"}}` },
+		},
+		{
+			name: "the same cursor twice",
+			page: func(string) string {
+				return `{"items":[` + repositoryJSON("id-1", "acme", "api") + `],"cursors":{"after":"page-2"}}`
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var calls int
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls++
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = io.WriteString(w, tt.page(r.URL.Query().Get("cursor")))
+			}))
+			t.Cleanup(server.Close)
+
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if _, err := newTestClient(t, server.URL).ListDarkplaneRepositories(ctx, ""); err == nil {
+				t.Fatal("ListDarkplaneRepositories succeeded, want an error")
+			}
+			if calls > 2 {
+				t.Errorf("calls = %d, want at most 2", calls)
+			}
+		})
+	}
+}
+
+func TestDarkplaneRepositorySettings_ReturnAPIErrors(t *testing.T) {
+	var settings RepositorySettingsDefinition
+	if err := json.Unmarshal([]byte(repositorySettingsJSON), &settings); err != nil {
+		t.Fatalf("unmarshal fixture: %v", err)
+	}
+	calls := map[string]func(Client) error{
+		"list repositories": func(c Client) error {
+			_, err := c.ListDarkplaneRepositories(context.Background(), "")
+			return err
+		},
+		"get settings": func(c Client) error {
+			_, err := c.GetDarkplaneRepositorySettings(context.Background(), testRepositoryID)
+			return err
+		},
+		"update settings": func(c Client) error {
+			_, err := c.UpdateDarkplaneRepositorySettings(context.Background(), testRepositoryID, &settings)
+			return err
+		},
+		"list settings versions": func(c Client) error {
+			_, err := c.ListDarkplaneRepositorySettingsVersions(context.Background(), testRepositoryID)
+			return err
+		},
+	}
+	statuses := []struct {
+		status int
+		is     func(error) bool
+	}{
+		{http.StatusBadRequest, IsBadRequest},
+		{http.StatusForbidden, IsForbidden},
+		{http.StatusNotFound, IsNotFound},
+	}
+	for name, call := range calls {
+		for _, st := range statuses {
+			t.Run(fmt.Sprintf("%s %d", name, st.status), func(t *testing.T) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					writeAPIError(w, st.status, "denied")
+				}))
+				t.Cleanup(server.Close)
+
+				err := call(newTestClient(t, server.URL))
+				var apiErr *APIError
+				if !errors.As(err, &apiErr) || apiErr.StatusCode != st.status || !st.is(err) {
+					t.Fatalf("err = %v, want a %d APIError", err, st.status)
+				}
+				assertEqual(t, "message", apiErr.Message, "denied")
+			})
+		}
+	}
+}
+
+func TestDarkplaneRepositoryAccessors_AcceptNil(t *testing.T) {
+	assertEqual(t, "slug", GetDarkplaneRepositorySlug(nil), "")
+	assertEqual(t, "repository id", GetDarkplaneRepositoryID(nil), "")
+	assertEqual(t, "settings id", GetDarkplaneRepositorySettingsID(nil), "")
+	assertEqual(t, "settings version", GetDarkplaneRepositorySettingsVersion(nil), "")
+	assertEqual(t, "zero repository id", GetDarkplaneRepositoryID(&RepositoryDefinition{}), "")
+	assertEqual(t, "zero settings version", GetDarkplaneRepositorySettingsVersion(&RepositorySettingsDefinition{}), "")
 }
