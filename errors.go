@@ -24,6 +24,9 @@ type APIError struct {
 
 	// TraceID is the trace ID from the x-trace-id header if available.
 	TraceID string
+
+	// Type is the machine-readable error type from the response, such as "superseded_version", or "" when the API sent none.
+	Type string
 }
 
 // Error implements the error interface.
@@ -74,6 +77,7 @@ func newAPIErrorWithBody(resp *http.Response, body []byte) *APIError {
 			Error struct {
 				Message string `json:"message"`
 				TraceID string `json:"traceId"`
+				Type    string `json:"type"`
 			} `json:"error"`
 		}
 		if json.Unmarshal(body, &nested) == nil {
@@ -83,6 +87,7 @@ func newAPIErrorWithBody(resp *http.Response, body []byte) *APIError {
 			if apiErr.TraceID == "" {
 				apiErr.TraceID = nested.Error.TraceID
 			}
+			apiErr.Type = nested.Error.Type
 			if nested.Error.Message != "" {
 				apiErr.Message = nested.Error.Message
 				return apiErr
@@ -155,6 +160,13 @@ func IsServerError(err error) bool {
 func IsBadRequest(err error) bool {
 	code, ok := statusCodeOf(err)
 	return ok && code == http.StatusBadRequest
+}
+
+// IsSupersededVersion returns true if the API rejected a write because the asset changed since the dash0.com/version the caller sent.
+// Read the asset again before retrying.
+func IsSupersededVersion(err error) bool {
+	var apiErr *APIError
+	return errors.As(err, &apiErr) && apiErr.Type == "superseded_version"
 }
 
 // IsConflict returns true if the error is a 409 Conflict.

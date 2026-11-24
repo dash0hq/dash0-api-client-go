@@ -87,6 +87,11 @@ type MockClient struct {
 	UpdateDarkplaneRepositorySettingsFunc       func(ctx context.Context, repositoryID string, settings *dash0.RepositorySettingsDefinition) (*dash0.RepositorySettingsDefinition, error)
 	ListDarkplaneRepositorySettingsVersionsFunc func(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error)
 
+	// AWS log-group instrumentation policies
+	GetAwsLogGroupInstrumentationPolicyFunc    func(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+	UpdateAwsLogGroupInstrumentationPolicyFunc func(ctx context.Context, integrationID string, policy *dash0.AwsLogGroupInstrumentationPolicy) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+	DeleteAwsLogGroupInstrumentationPolicyFunc func(ctx context.Context, integrationID string, disposition dash0.AwsLogGroupPolicyDisposition, expectedRevision *int64) (*dash0.AwsLogGroupInstrumentationPolicy, error)
+
 	// Views
 	ListViewsFunc     func(ctx context.Context, dataset *string) ([]*dash0.ViewApiListItem, error)
 	GetViewFunc       func(ctx context.Context, originOrID string, dataset *string) (*dash0.ViewDefinition, error)
@@ -496,6 +501,29 @@ func (m *MockClient) UpdateDarkplaneRepositorySettings(ctx context.Context, repo
 func (m *MockClient) ListDarkplaneRepositorySettingsVersions(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error) {
 	if m.ListDarkplaneRepositorySettingsVersionsFunc != nil {
 		return m.ListDarkplaneRepositorySettingsVersionsFunc(ctx, repositoryID)
+	}
+	return nil, nil
+}
+
+// AWS log-group instrumentation policies
+
+func (m *MockClient) GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.GetAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.GetAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *dash0.AwsLogGroupInstrumentationPolicy) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.UpdateAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.UpdateAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID, policy)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) DeleteAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, disposition dash0.AwsLogGroupPolicyDisposition, expectedRevision *int64) (*dash0.AwsLogGroupInstrumentationPolicy, error) {
+	if m.DeleteAwsLogGroupInstrumentationPolicyFunc != nil {
+		return m.DeleteAwsLogGroupInstrumentationPolicyFunc(ctx, integrationID, disposition, expectedRevision)
 	}
 	return nil, nil
 }

@@ -80,6 +80,11 @@ type Client interface {
 	UpdateDarkplaneRepositorySettings(ctx context.Context, repositoryID string, settings *RepositorySettingsDefinition) (*RepositorySettingsDefinition, error)
 	ListDarkplaneRepositorySettingsVersions(ctx context.Context, repositoryID string) ([]RepositorySettingsDefinition, error)
 
+	// AWS log-group instrumentation policies
+	GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*AwsLogGroupInstrumentationPolicy, error)
+	UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *AwsLogGroupInstrumentationPolicy) (*AwsLogGroupInstrumentationPolicy, error)
+	DeleteAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, disposition AwsLogGroupPolicyDisposition, expectedRevision *int64) (*AwsLogGroupInstrumentationPolicy, error)
+
 	// Views
 	ListViews(ctx context.Context, dataset *string) ([]*ViewApiListItem, error)
 	GetView(ctx context.Context, originOrID string, dataset *string) (*ViewDefinition, error)
