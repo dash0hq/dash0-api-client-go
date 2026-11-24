@@ -46,6 +46,7 @@ func TestAssetMetadata(t *testing.T) {
 		{&ViewDefinition{}, "test-origin", false, true},
 		{&DatasetDefinition{}, "test-origin", false, true},
 		{&AwsMetricScrapeConfigDefinition{}, "test-origin", false, true},
+		{&TelemetryTransformationRuleDefinition{}, "test-origin", true, true},
 	}
 	for _, nilAsset := range []AssetMetadata{
 		(*DashboardDefinition)(nil),
@@ -55,6 +56,7 @@ func TestAssetMetadata(t *testing.T) {
 		(*RecordingRule)(nil),
 		(*PrometheusRules)(nil),
 		(*PersesDashboard)(nil),
+		(*TelemetryTransformationRuleDefinition)(nil),
 	} {
 		assertEqual(t, fmt.Sprintf("%T origin", nilAsset), nilAsset.GetOrigin(), "")
 	}

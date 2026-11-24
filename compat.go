@@ -231,21 +231,28 @@ package dash0
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
 // [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
 //
-// # Migration guide (v1.35.x to v1.36.0)
+// # Migration guide (<NEXT_RELEASE>)
 //
-// The spec gained the AutoMerge repository settings types, whose enums share values with existing ones, so oapi-codegen prefixed these constants:
+// The spec gained the AutoMerge repository settings types and [AwsLogGroupPolicyDisposition], whose enums share values with existing ones, so oapi-codegen prefixed these constants:
 // [DarkplaneAutoApprovalDecision] (Approve, Hold), [DarkplaneAutoApprovalMode] (AutoApprove, AutoMerge, DryRun),
 // the bare [DarkplaneEvaluationTriggerVariableName] constants (DarkplaneCommitSha, DarkplaneRepository, and so on),
 // [Agent0ModelSpecReasoningSummary] (Auto), [LinearWebhookAction] (Create, Remove, Update), and [SyntheticCheckRetriesOffKind] (Off).
 // The bare names stay as deprecated aliases.
 //
 // [GenerativeAiEvaluationJudgeOutputNumericSpec].Threshold changed from *float32 to *float64.
+// Update float32 variables or casts to float64.
 // There is no alias, because a struct field type cannot be aliased.
 //
-// [Client] gained [Client.ListDarkplaneRepositories], [Client.FindDarkplaneRepository], [Client.GetDarkplaneRepositorySettings],
+// [Client] gained [Client.ListTelemetryTransformationRules], [Client.GetTelemetryTransformationRule], [Client.CreateTelemetryTransformationRule], [Client.UpdateTelemetryTransformationRule], [Client.DeleteTelemetryTransformationRule], and [Client.ListTelemetryTransformationRulesIter].
+// It also gained [Client.ListDarkplaneRepositories], [Client.FindDarkplaneRepository], [Client.GetDarkplaneRepositorySettings],
 // [Client.UpdateDarkplaneRepositorySettings], and [Client.ListDarkplaneRepositorySettingsVersions].
-// Custom [Client] implementations and wrappers must add them.
-// dash0test.MockClient implements them through new *Func fields.
+// Custom [Client] implementations and wrappers must add all 11 methods.
+// dash0test.MockClient implements them through new ListTelemetryTransformationRulesFunc, GetTelemetryTransformationRuleFunc, CreateTelemetryTransformationRuleFunc, UpdateTelemetryTransformationRuleFunc, DeleteTelemetryTransformationRuleFunc, and ListTelemetryTransformationRulesIterFunc fields,
+// and through matching *Func fields for the repository settings methods.
+//
+// List responses omit spec.examples, so fetch the full rule with [Client.GetTelemetryTransformationRule] before updating it.
+// PUT replaces the whole rule, and omitting spec.examples removes the stored examples.
+// Preserve dash0.com/updated-at from GET as the concurrency token for PUT; [StripTelemetryTransformationRuleServerFields] keeps it and spec.examples intact.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //
@@ -754,95 +761,95 @@ const Yaml = WebEventExportFormatYaml
 
 // Approve is a deprecated alias for [DarkplaneAutoApprovalDecisionApprove].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneAutoApprovalDecisionApprove] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneAutoApprovalDecisionApprove] instead.
 const Approve = DarkplaneAutoApprovalDecisionApprove
 
 // Auto is a deprecated alias for [Agent0ModelSpecReasoningSummaryAuto].
 //
-// Deprecated: since v1.36.0. Use [Agent0ModelSpecReasoningSummaryAuto] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [Agent0ModelSpecReasoningSummaryAuto] instead.
 const Auto = Agent0ModelSpecReasoningSummaryAuto
 
 // AutoApprove is a deprecated alias for [DarkplaneAutoApprovalModeAutoApprove].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneAutoApprovalModeAutoApprove] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneAutoApprovalModeAutoApprove] instead.
 const AutoApprove = DarkplaneAutoApprovalModeAutoApprove
 
 // AutoMerge is a deprecated alias for [DarkplaneAutoApprovalModeAutoMerge].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneAutoApprovalModeAutoMerge] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneAutoApprovalModeAutoMerge] instead.
 const AutoMerge = DarkplaneAutoApprovalModeAutoMerge
 
 // Create is a deprecated alias for [LinearWebhookActionCreate].
 //
-// Deprecated: since v1.36.0. Use [LinearWebhookActionCreate] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionCreate] instead.
 const Create = LinearWebhookActionCreate
 
 // DarkplaneAutoApprovalEvaluationId is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId] instead.
 const DarkplaneAutoApprovalEvaluationId = DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId
 
 // DarkplaneAutoApprovalReasoning is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning] instead.
 const DarkplaneAutoApprovalReasoning = DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning
 
 // DarkplaneAutoApprovalScore is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore] instead.
 const DarkplaneAutoApprovalScore = DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore
 
 // DarkplaneCommitSha is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha] instead.
 const DarkplaneCommitSha = DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha
 
 // DarkplanePullRequestId is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId] instead.
 const DarkplanePullRequestId = DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId
 
 // DarkplanePullRequestNumber is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber] instead.
 const DarkplanePullRequestNumber = DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber
 
 // DarkplanePullRequestUrl is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl] instead.
 const DarkplanePullRequestUrl = DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl
 
 // DarkplaneRepository is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplaneRepository].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneRepository] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneRepository] instead.
 const DarkplaneRepository = DarkplaneEvaluationTriggerVariableNameDarkplaneRepository
 
 // DarkplaneRepositoryId is a deprecated alias for [DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId] instead.
 const DarkplaneRepositoryId = DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId
 
 // DryRun is a deprecated alias for [DarkplaneAutoApprovalModeDryRun].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneAutoApprovalModeDryRun] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneAutoApprovalModeDryRun] instead.
 const DryRun = DarkplaneAutoApprovalModeDryRun
 
 // Hold is a deprecated alias for [DarkplaneAutoApprovalDecisionHold].
 //
-// Deprecated: since v1.36.0. Use [DarkplaneAutoApprovalDecisionHold] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [DarkplaneAutoApprovalDecisionHold] instead.
 const Hold = DarkplaneAutoApprovalDecisionHold
 
 // Off is a deprecated alias for [SyntheticCheckRetriesOffKindOff].
 //
-// Deprecated: since v1.36.0. Use [SyntheticCheckRetriesOffKindOff] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [SyntheticCheckRetriesOffKindOff] instead.
 const Off = SyntheticCheckRetriesOffKindOff
 
 // Remove is a deprecated alias for [LinearWebhookActionRemove].
 //
-// Deprecated: since v1.36.0. Use [LinearWebhookActionRemove] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionRemove] instead.
 const Remove = LinearWebhookActionRemove
 
 // Update is a deprecated alias for [LinearWebhookActionUpdate].
 //
-// Deprecated: since v1.36.0. Use [LinearWebhookActionUpdate] instead.
+// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionUpdate] instead.
 const Update = LinearWebhookActionUpdate

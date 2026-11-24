@@ -137,27 +137,51 @@ var constRenames = map[string]string{
 	// Pinned before release so a future enum sharing this value cannot rename it.
 	"IssueStatus": "FailedCheckSilencedTriggerVariableNameIssueStatus",
 	// Pinned before release so a future enum sharing these values cannot rename them.
-	"AuthorDeliveryRecord":             "EvalToolIdAuthorDeliveryRecord",
-	"CheckRuleStatus":                  "EvalToolIdCheckRuleStatus",
-	"CodingSessionEngineeringActivity": "EvalToolIdCodingSessionEngineeringActivity",
-	"CodingSessionHarness":             "EvalToolIdCodingSessionHarness",
-	"CodingSessionToolsAndSkills":      "EvalToolIdCodingSessionToolsAndSkills",
-	"CommitVerification":               "EvalToolIdCommitVerification",
-	"EvaluationHistory":                "EvalToolIdEvaluationHistory",
-	"GitBlame":                         "EvalToolIdGitBlame",
-	"GitDiffBase":                      "EvalToolIdGitDiffBase",
-	"GitLog":                           "EvalToolIdGitLog",
-	"Grep":                             "EvalToolIdGrep",
-	"ListFiles":                        "EvalToolIdListFiles",
-	"PathAuthorship":                   "EvalToolIdPathAuthorship",
-	"PrChecks":                         "EvalToolIdPrChecks",
-	"PrFiles":                          "EvalToolIdPrFiles",
-	"PrMetadata":                       "EvalToolIdPrMetadata",
-	"PrReviewsAndComments":             "EvalToolIdPrReviewsAndComments",
-	"ReadFile":                         "EvalToolIdReadFile",
-	"ReadSteeringFiles":                "EvalToolIdReadSteeringFiles",
-	"ReviewAgentStats":                 "EvalToolIdReviewAgentStats",
-	"SloStatus":                        "EvalToolIdSloStatus",
+	"AuthorDeliveryRecord":                  "EvalToolIdAuthorDeliveryRecord",
+	"CheckRuleStatus":                       "EvalToolIdCheckRuleStatus",
+	"CodingSessionEngineeringActivity":      "EvalToolIdCodingSessionEngineeringActivity",
+	"CodingSessionHarness":                  "EvalToolIdCodingSessionHarness",
+	"CodingSessionToolsAndSkills":           "EvalToolIdCodingSessionToolsAndSkills",
+	"CommitVerification":                    "EvalToolIdCommitVerification",
+	"EvaluationHistory":                     "EvalToolIdEvaluationHistory",
+	"GitBlame":                              "EvalToolIdGitBlame",
+	"GitDiffBase":                           "EvalToolIdGitDiffBase",
+	"GitLog":                                "EvalToolIdGitLog",
+	"Grep":                                  "EvalToolIdGrep",
+	"ListFiles":                             "EvalToolIdListFiles",
+	"PathAuthorship":                        "EvalToolIdPathAuthorship",
+	"PrChecks":                              "EvalToolIdPrChecks",
+	"PrFiles":                               "EvalToolIdPrFiles",
+	"PrMetadata":                            "EvalToolIdPrMetadata",
+	"PrReviewsAndComments":                  "EvalToolIdPrReviewsAndComments",
+	"ReadFile":                              "EvalToolIdReadFile",
+	"ReadSteeringFiles":                     "EvalToolIdReadSteeringFiles",
+	"ReviewAgentStats":                      "EvalToolIdReviewAgentStats",
+	"SloStatus":                             "EvalToolIdSloStatus",
+	"IssueId":                               "FailedCheckSilencedTriggerVariableNameIssueId",
+	"Background":                            "AgenticWorkflowSystemVisibilityBackground",
+	"Managed":                               "AgenticWorkflowSystemVisibilityManaged",
+	"Dash0AwsLogGroupInstrumentationPolicy": "AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy",
+	"Dash0TelemetryTransformationRule":      "TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule",
+}
+
+// typedConstRenames maps an enum type to the renames of its constants. Unlike
+// constRenames, a rename here applies only to constants declared with that
+// type and to the case labels of that type's methods, so two enums can share
+// a bare constant name.
+var typedConstRenames = map[string]map[string]string{
+	// LinearWebhookAction and AwsLogGroupPolicyDisposition share "remove", which
+	// gave both enums prefixed names. Pinned so the names stay if the collision
+	// goes away; compat.go keeps the bare LinearWebhookAction names.
+	"LinearWebhookAction": {
+		"Create": "LinearWebhookActionCreate",
+		"Remove": "LinearWebhookActionRemove",
+		"Update": "LinearWebhookActionUpdate",
+	},
+	"AwsLogGroupPolicyDisposition": {
+		"Keep":   "AwsLogGroupPolicyDispositionKeep",
+		"Remove": "AwsLogGroupPolicyDispositionRemove",
+	},
 }
 
 // deprecatedFields lists fields to remove from specific structs. Each entry
@@ -188,6 +212,7 @@ func main() {
 	}
 
 	renameSymbols(file)
+	renameTypedConsts(file)
 	renameConsts(file)
 	removeDeprecatedFields(file, fset)
 	stripYAMLHandling(file)
@@ -238,6 +263,69 @@ func (r symbolRenamer) Visit(n ast.Node) ast.Visitor {
 		return nil
 	}
 	return r
+}
+
+// renameTypedConsts renames the constants listed in typedConstRenames, both
+// where they are declared and where their type's methods use them as case
+// labels.
+func renameTypedConsts(file *ast.File) {
+	for _, decl := range file.Decls {
+		switch d := decl.(type) {
+		case *ast.GenDecl:
+			if d.Tok != token.CONST {
+				continue
+			}
+			for _, spec := range d.Specs {
+				vs, ok := spec.(*ast.ValueSpec)
+				if !ok {
+					continue
+				}
+				typeIdent, ok := vs.Type.(*ast.Ident)
+				if !ok {
+					continue
+				}
+				for _, name := range vs.Names {
+					if replacement, found := typedConstRenames[typeIdent.Name][name.Name]; found {
+						name.Name = replacement
+					}
+				}
+			}
+		case *ast.FuncDecl:
+			renames := typedConstRenames[receiverTypeName(d)]
+			if renames == nil || d.Body == nil {
+				continue
+			}
+			ast.Inspect(d.Body, func(n ast.Node) bool {
+				cc, ok := n.(*ast.CaseClause)
+				if !ok {
+					return true
+				}
+				for _, expr := range cc.List {
+					if ident, ok := expr.(*ast.Ident); ok {
+						if replacement, found := renames[ident.Name]; found {
+							ident.Name = replacement
+						}
+					}
+				}
+				return true
+			})
+		}
+	}
+}
+
+// receiverTypeName returns the receiver's type name, or "" for a function.
+func receiverTypeName(fn *ast.FuncDecl) string {
+	if fn.Recv == nil || len(fn.Recv.List) == 0 {
+		return ""
+	}
+	expr := fn.Recv.List[0].Type
+	if star, ok := expr.(*ast.StarExpr); ok {
+		expr = star.X
+	}
+	if ident, ok := expr.(*ast.Ident); ok {
+		return ident.Name
+	}
+	return ""
 }
 
 // renameConsts renames const identifiers listed in constRenames. Only names

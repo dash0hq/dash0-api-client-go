@@ -243,16 +243,16 @@ func (e AgenticWorkflowDefinitionKind) Valid() bool {
 
 // Defines values for AgenticWorkflowSystemVisibility.
 const (
-	Background AgenticWorkflowSystemVisibility = "background"
-	Managed    AgenticWorkflowSystemVisibility = "managed"
+	AgenticWorkflowSystemVisibilityBackground AgenticWorkflowSystemVisibility = "background"
+	AgenticWorkflowSystemVisibilityManaged    AgenticWorkflowSystemVisibility = "managed"
 )
 
 // Valid indicates whether the value is a known member of the AgenticWorkflowSystemVisibility enum.
 func (e AgenticWorkflowSystemVisibility) Valid() bool {
 	switch e {
-	case Background:
+	case AgenticWorkflowSystemVisibilityBackground:
 		return true
-	case Managed:
+	case AgenticWorkflowSystemVisibilityManaged:
 		return true
 	default:
 		return false
@@ -615,13 +615,13 @@ func (e AwsLogGroupPolicyDisposition) Valid() bool {
 
 // Defines values for AwsLogGroupPolicyKind.
 const (
-	Dash0AwsLogGroupInstrumentationPolicy AwsLogGroupPolicyKind = "Dash0AwsLogGroupInstrumentationPolicy"
+	AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy AwsLogGroupPolicyKind = "Dash0AwsLogGroupInstrumentationPolicy"
 )
 
 // Valid indicates whether the value is a known member of the AwsLogGroupPolicyKind enum.
 func (e AwsLogGroupPolicyKind) Valid() bool {
 	switch e {
-	case Dash0AwsLogGroupInstrumentationPolicy:
+	case AwsLogGroupPolicyKindDash0AwsLogGroupInstrumentationPolicy:
 		return true
 	default:
 		return false
@@ -1419,7 +1419,7 @@ func (e FailedCheckAgenticWorkflowTriggerKind) Valid() bool {
 
 // Defines values for FailedCheckSilencedTriggerVariableName.
 const (
-	IssueId                                           FailedCheckSilencedTriggerVariableName = "issue.id"
+	FailedCheckSilencedTriggerVariableNameIssueId     FailedCheckSilencedTriggerVariableName = "issue.id"
 	IssueSilenced                                     FailedCheckSilencedTriggerVariableName = "issue.silenced"
 	FailedCheckSilencedTriggerVariableNameIssueStatus FailedCheckSilencedTriggerVariableName = "issue.status"
 )
@@ -1427,7 +1427,7 @@ const (
 // Valid indicates whether the value is a known member of the FailedCheckSilencedTriggerVariableName enum.
 func (e FailedCheckSilencedTriggerVariableName) Valid() bool {
 	switch e {
-	case IssueId:
+	case FailedCheckSilencedTriggerVariableNameIssueId:
 		return true
 	case IssueSilenced:
 		return true
@@ -10908,13 +10908,13 @@ func (e TelemetryTransformationRuleContext) Valid() bool {
 
 // Defines values for TelemetryTransformationRuleDefinitionKind.
 const (
-	Dash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
+	TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule TelemetryTransformationRuleDefinitionKind = "Dash0TelemetryTransformationRule"
 )
 
 // Valid indicates whether the value is a known member of the TelemetryTransformationRuleDefinitionKind enum.
 func (e TelemetryTransformationRuleDefinitionKind) Valid() bool {
 	switch e {
-	case Dash0TelemetryTransformationRule:
+	case TelemetryTransformationRuleDefinitionKindDash0TelemetryTransformationRule:
 		return true
 	default:
 		return false
