@@ -231,7 +231,7 @@ package dash0
 // [DashboardDefinition] GetOrigin now returns the dash0.com/origin label, and UpsertKeys returns (true, true).
 // [GetDashboardID] prefers the dash0.com/id label over metadata.dash0Extensions.id, and [SetDashboardID], [SetDashboardIDIfAbsent], and [ClearDashboardID] honor it too.
 //
-// # Migration guide (<NEXT_RELEASE>)
+// # Migration guide (v1.36.0)
 //
 // The spec added [AwsLogGroupPolicyDisposition], whose "remove" value collides with [LinearWebhookAction].
 // Create, Remove, and Update are now [LinearWebhookActionCreate], [LinearWebhookActionRemove], and [LinearWebhookActionUpdate].
@@ -760,15 +760,15 @@ const Yaml = WebEventExportFormatYaml
 
 // Create is a deprecated alias for [LinearWebhookActionCreate].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionCreate] instead.
+// Deprecated: since v1.36.0. Use [LinearWebhookActionCreate] instead.
 const Create = LinearWebhookActionCreate
 
 // Remove is a deprecated alias for [LinearWebhookActionRemove].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionRemove] instead.
+// Deprecated: since v1.36.0. Use [LinearWebhookActionRemove] instead.
 const Remove = LinearWebhookActionRemove
 
 // Update is a deprecated alias for [LinearWebhookActionUpdate].
 //
-// Deprecated: since <NEXT_RELEASE>. Use [LinearWebhookActionUpdate] instead.
+// Deprecated: since v1.36.0. Use [LinearWebhookActionUpdate] instead.
 const Update = LinearWebhookActionUpdate
