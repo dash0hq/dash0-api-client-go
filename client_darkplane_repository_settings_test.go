@@ -14,7 +14,7 @@ import (
 
 const testRepositoryID = "0b7f1c2e-4a5d-4e8f-9c61-2d3a4b5c6d7e"
 
-const repositorySettingsJSON = `{"kind":"DarkplaneRepositorySettings","metadata":{"annotations":{"dash0.com/created-at":"2026-01-05T09:00:00Z","dash0.com/updated-at":"2026-01-12T10:30:00Z"},"labels":{"dash0.com/id":"0b7f1c2e-4a5d-4e8f-9c61-2d3a4b5c6d7e","dash0.com/version":"2"},"name":"acme/api"},"spec":{"botMode":"auto_approve","triggerMode":"auto","waitForChecks":true,"softThreshold":75,"softRiskCriteria":[{"multiplier":0.34,"name":"Blast radius","prompt":"Score how contained the change is","tools":["read_file","list_files","grep","git_diff_base","git_log","pr_files"]},{"multiplier":0.33,"name":"Evidence quality","prompt":"Score the evidence that it works","tools":["pr_reviews_and_comments","pr_checks","pr_metadata","git_log"]},{"multiplier":0.33,"name":"Change footprint","prompt":"Score how routine the change is","tools":["pr_files","git_diff_base"]}],"protectedPaths":[],"fastTrackReverts":false,"pathRules":[],"reviewer":{"automergeAcceptedVerdicts":["approve"],"commentRequests":true,"enabled":false,"requireForAutomerge":false,"settleDelaySeconds":120,"skipAfterHumanReview":true,"triggerMode":"ready"}},"usesDefaultCriteria":true}`
+const repositorySettingsJSON = `{"apiVersion":"dash0.com/v1alpha1","kind":"DarkplaneRepositorySettings","metadata":{"annotations":{"dash0.com/created-at":"2026-01-05T09:00:00Z","dash0.com/updated-at":"2026-01-12T10:30:00Z"},"labels":{"dash0.com/id":"0b7f1c2e-4a5d-4e8f-9c61-2d3a4b5c6d7e","dash0.com/version":"2"},"name":"acme/api"},"spec":{"botMode":"auto_approve","triggerMode":"auto","waitForChecks":true,"softThreshold":75,"softRiskCriteria":[{"multiplier":0.34,"name":"Blast radius","prompt":"Score how contained the change is","tools":["read_file","list_files","grep","git_diff_base","git_log","pr_files"]},{"multiplier":0.33,"name":"Evidence quality","prompt":"Score the evidence that it works","tools":["pr_reviews_and_comments","pr_checks","pr_metadata","git_log"]},{"multiplier":0.33,"name":"Change footprint","prompt":"Score how routine the change is","tools":["pr_files","git_diff_base"]}],"protectedPaths":[],"fastTrackReverts":false,"pathRules":[],"reviewer":{"automergeAcceptedVerdicts":["approve"],"commentRequests":true,"enabled":false,"requireForAutomerge":false,"settleDelaySeconds":120,"skipAfterHumanReview":true,"triggerMode":"ready"}},"usesDefaultCriteria":true}`
 
 func repositoryJSON(id, account, name string) string {
 	return `{"kind":"DarkplaneRepository","metadata":{"name":"` + account + `/` + name + `","labels":{"dash0.com/id":"` + id + `"},"annotations":{}},"spec":{"provider":"github","account":"` + account + `","name":"` + name + `","botMode":"auto_approve","openPullRequests":0,"timeToMergeP50Seconds":null,"autoApprovalRate":null}}`
@@ -90,6 +90,7 @@ func TestGetDarkplaneRepositorySettings(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetDarkplaneRepositorySettings failed: %v", err)
 	}
+	assertEqual(t, "apiVersion", string(got.ApiVersion), string(RepositorySettingsApiVersionDash0Comv1alpha1))
 	assertEqual(t, "id", GetDarkplaneRepositorySettingsID(got), testRepositoryID)
 	assertEqual(t, "version", GetDarkplaneRepositorySettingsVersion(got), "2")
 	assertEqual(t, "botMode", string(got.Spec.BotMode), "auto_approve")
@@ -105,15 +106,28 @@ func TestUpdateDarkplaneRepositorySettings(t *testing.T) {
 	}
 
 	tests := []struct {
-		name        string
-		edit        func(*RepositorySettingsDefinition)
-		wantVersion string
+		name           string
+		edit           func(*RepositorySettingsDefinition)
+		wantVersion    string
+		wantAPIVersion string
 	}{
-		{name: "sends the version it read", edit: func(*RepositorySettingsDefinition) {}, wantVersion: "2"},
 		{
-			name:        "sends no version when the document has none",
-			edit:        func(s *RepositorySettingsDefinition) { s.Metadata.Labels.Dash0Comversion = nil },
-			wantVersion: "",
+			name:           "sends the version and apiVersion it read",
+			edit:           func(*RepositorySettingsDefinition) {},
+			wantVersion:    "2",
+			wantAPIVersion: "dash0.com/v1alpha1",
+		},
+		{
+			name:           "sends no version when the document has none",
+			edit:           func(s *RepositorySettingsDefinition) { s.Metadata.Labels.Dash0Comversion = nil },
+			wantVersion:    "",
+			wantAPIVersion: "dash0.com/v1alpha1",
+		},
+		{
+			name:           "sends no apiVersion when the document has none",
+			edit:           func(s *RepositorySettingsDefinition) { s.ApiVersion = "" },
+			wantVersion:    "2",
+			wantAPIVersion: "",
 		},
 	}
 	for _, tt := range tests {
@@ -157,6 +171,11 @@ func TestUpdateDarkplaneRepositorySettings(t *testing.T) {
 				gotVersion = *request.Metadata.Labels.Dash0Comversion
 			}
 			assertEqual(t, "version", gotVersion, tt.wantVersion)
+			gotAPIVersion := ""
+			if request.ApiVersion != nil {
+				gotAPIVersion = string(*request.ApiVersion)
+			}
+			assertEqual(t, "apiVersion", gotAPIVersion, tt.wantAPIVersion)
 		})
 	}
 }

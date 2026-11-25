@@ -9175,6 +9175,21 @@ func (e RepositoryReviewerTriggerMode) Valid() bool {
 	}
 }
 
+// Defines values for RepositorySettingsApiVersion.
+const (
+	RepositorySettingsApiVersionDash0Comv1alpha1 RepositorySettingsApiVersion = "dash0.com/v1alpha1"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsApiVersion enum.
+func (e RepositorySettingsApiVersion) Valid() bool {
+	switch e {
+	case RepositorySettingsApiVersionDash0Comv1alpha1:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RepositorySettingsDefinitionKind.
 const (
 	RepositorySettingsDefinitionKindDarkplaneRepositorySettings RepositorySettingsDefinitionKind = "DarkplaneRepositorySettings"
@@ -20413,9 +20428,18 @@ type RepositoryReviewerSettingsAutomergeAcceptedVerdicts string
 // RepositoryReviewerTriggerMode Review a PR when it first becomes ready, after new commits, or only on explicit request.
 type RepositoryReviewerTriggerMode string
 
+// RepositorySettingsApiVersion The version of the settings document's shape. `dash0.com/v1alpha1` is the
+// only version, and every read returns it. A later version will change the
+// shape; a client written against this one can tell it apart by this field.
+type RepositorySettingsApiVersion string
+
 // RepositorySettingsDefinition A repository's auto-approval bot configuration, in the CRD envelope.
 type RepositorySettingsDefinition struct {
-	Kind RepositorySettingsDefinitionKind `json:"kind"`
+	// ApiVersion The version of the settings document's shape. `dash0.com/v1alpha1` is the
+	// only version, and every read returns it. A later version will change the
+	// shape; a client written against this one can tell it apart by this field.
+	ApiVersion RepositorySettingsApiVersion     `json:"apiVersion"`
+	Kind       RepositorySettingsDefinitionKind `json:"kind"`
 
 	// Metadata Identity for a repository's settings. `name` is the `account/name` slug
 	// of the repository the settings belong to; `labels."dash0.com/id"` carries
@@ -20460,7 +20484,10 @@ type RepositorySettingsMetadata struct {
 // version the write is based on; everything else a caller puts in it is
 // ignored.
 type RepositorySettingsRequest struct {
-	Kind RepositorySettingsRequestKind `json:"kind"`
+	// ApiVersion Optional. When omitted, the body is read as `dash0.com/v1alpha1`. Any
+	// other value is rejected with 400.
+	ApiVersion *RepositorySettingsApiVersion `json:"apiVersion,omitempty"`
+	Kind       RepositorySettingsRequestKind `json:"kind"`
 
 	// Metadata The one piece of metadata a write may carry: the optimistic concurrency
 	// token in `labels."dash0.com/version"`. Send the version you read (a

@@ -133,7 +133,9 @@ func (c *client) ListDarkplaneRepositorySettingsVersions(ctx context.Context, re
 	return resp.JSON200.Versions, nil
 }
 
-// toRepositorySettingsRequest keeps only what the PUT reads: the spec and the dash0.com/version label.
+// toRepositorySettingsRequest keeps only what the PUT reads: the apiVersion, the spec and the
+// dash0.com/version label. The apiVersion is forwarded so the server rejects a document written for
+// a version it does not accept, rather than reading it as the default.
 // The spec types protectedPaths and softRiskCriteria as non-nullable arrays, so nil is sent as [].
 func toRepositorySettingsRequest(settings *RepositorySettingsDefinition) RepositorySettingsRequest {
 	spec := settings.Spec
@@ -144,6 +146,10 @@ func toRepositorySettingsRequest(settings *RepositorySettingsDefinition) Reposit
 		spec.SoftRiskCriteria = []SoftRiskCriterion{}
 	}
 	request := RepositorySettingsRequest{Kind: RepositorySettingsRequestKindDarkplaneRepositorySettings, Spec: spec}
+	if settings.ApiVersion != "" {
+		apiVersion := settings.ApiVersion
+		request.ApiVersion = &apiVersion
+	}
 	if version := GetDarkplaneRepositorySettingsVersion(settings); version != "" {
 		request.Metadata = &RepositorySettingsRequestMetadata{Labels: &ResourceLabels{Dash0Comversion: &version}}
 	}
