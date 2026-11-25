@@ -9220,6 +9220,264 @@ func (e RepositorySettingsRequestKind) Valid() bool {
 	}
 }
 
+// Defines values for RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria.
+const (
+	RepositorySettingsV1beta1UsesDefaultCriteriaFalse RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria = "false"
+	RepositorySettingsV1beta1UsesDefaultCriteriaTrue  RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria = "true"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria enum.
+func (e RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1UsesDefaultCriteriaFalse:
+		return true
+	case RepositorySettingsV1beta1UsesDefaultCriteriaTrue:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1ApiVersion.
+const (
+	RepositorySettingsV1beta1ApiVersionDash0ComV1beta1 RepositorySettingsV1beta1ApiVersion = "dash0.com/v1beta1"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1ApiVersion enum.
+func (e RepositorySettingsV1beta1ApiVersion) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1ApiVersionDash0ComV1beta1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1AuthorMode.
+const (
+	RepositorySettingsV1beta1AuthorModeEveryone RepositorySettingsV1beta1AuthorMode = "everyone"
+	RepositorySettingsV1beta1AuthorModeOnly     RepositorySettingsV1beta1AuthorMode = "only"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1AuthorMode enum.
+func (e RepositorySettingsV1beta1AuthorMode) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1AuthorModeEveryone:
+		return true
+	case RepositorySettingsV1beta1AuthorModeOnly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1AutomergeReview.
+const (
+	RepositorySettingsV1beta1AutomergeReviewOptional RepositorySettingsV1beta1AutomergeReview = "optional"
+	RepositorySettingsV1beta1AutomergeReviewRequired RepositorySettingsV1beta1AutomergeReview = "required"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1AutomergeReview enum.
+func (e RepositorySettingsV1beta1AutomergeReview) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1AutomergeReviewOptional:
+		return true
+	case RepositorySettingsV1beta1AutomergeReviewRequired:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1Checks.
+const (
+	RepositorySettingsV1beta1ChecksIgnore RepositorySettingsV1beta1Checks = "ignore"
+	RepositorySettingsV1beta1ChecksWait   RepositorySettingsV1beta1Checks = "wait"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1Checks enum.
+func (e RepositorySettingsV1beta1Checks) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1ChecksIgnore:
+		return true
+	case RepositorySettingsV1beta1ChecksWait:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1CommentMode.
+const (
+	RepositorySettingsV1beta1CommentModePost     RepositorySettingsV1beta1CommentMode = "post"
+	RepositorySettingsV1beta1CommentModeSuppress RepositorySettingsV1beta1CommentMode = "suppress"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1CommentMode enum.
+func (e RepositorySettingsV1beta1CommentMode) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1CommentModePost:
+		return true
+	case RepositorySettingsV1beta1CommentModeSuppress:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1CommentRequests.
+const (
+	RepositorySettingsV1beta1CommentRequestsAuthorAndWriters RepositorySettingsV1beta1CommentRequests = "author_and_writers"
+	RepositorySettingsV1beta1CommentRequestsNone             RepositorySettingsV1beta1CommentRequests = "none"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1CommentRequests enum.
+func (e RepositorySettingsV1beta1CommentRequests) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1CommentRequestsAuthorAndWriters:
+		return true
+	case RepositorySettingsV1beta1CommentRequestsNone:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1DefinitionKind.
+const (
+	RepositorySettingsV1beta1DefinitionKindDarkplaneRepositorySettings RepositorySettingsV1beta1DefinitionKind = "DarkplaneRepositorySettings"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1DefinitionKind enum.
+func (e RepositorySettingsV1beta1DefinitionKind) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1DefinitionKindDarkplaneRepositorySettings:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1PathCommentMode.
+const (
+	RepositorySettingsV1beta1PathCommentModeInherit  RepositorySettingsV1beta1PathCommentMode = "inherit"
+	RepositorySettingsV1beta1PathCommentModePost     RepositorySettingsV1beta1PathCommentMode = "post"
+	RepositorySettingsV1beta1PathCommentModeSuppress RepositorySettingsV1beta1PathCommentMode = "suppress"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1PathCommentMode enum.
+func (e RepositorySettingsV1beta1PathCommentMode) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1PathCommentModeInherit:
+		return true
+	case RepositorySettingsV1beta1PathCommentModePost:
+		return true
+	case RepositorySettingsV1beta1PathCommentModeSuppress:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1RequestKind.
+const (
+	RepositorySettingsV1beta1RequestKindDarkplaneRepositorySettings RepositorySettingsV1beta1RequestKind = "DarkplaneRepositorySettings"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1RequestKind enum.
+func (e RepositorySettingsV1beta1RequestKind) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1RequestKindDarkplaneRepositorySettings:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1Reverts.
+const (
+	RepositorySettingsV1beta1RevertsEvaluate       RepositorySettingsV1beta1Reverts = "evaluate"
+	RepositorySettingsV1beta1RevertsFastTrackExact RepositorySettingsV1beta1Reverts = "fast_track_exact"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1Reverts enum.
+func (e RepositorySettingsV1beta1Reverts) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1RevertsEvaluate:
+		return true
+	case RepositorySettingsV1beta1RevertsFastTrackExact:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts.
+const (
+	RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdictsApprove        RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts = "approve"
+	RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdictsComment        RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts = "comment"
+	RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdictsRequestChanges RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts = "request-changes"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts enum.
+func (e RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdictsApprove:
+		return true
+	case RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdictsComment:
+		return true
+	case RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdictsRequestChanges:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1ReviewerTrigger.
+const (
+	RepositorySettingsV1beta1ReviewerTriggerManual RepositorySettingsV1beta1ReviewerTrigger = "manual"
+	RepositorySettingsV1beta1ReviewerTriggerOff    RepositorySettingsV1beta1ReviewerTrigger = "off"
+	RepositorySettingsV1beta1ReviewerTriggerPush   RepositorySettingsV1beta1ReviewerTrigger = "push"
+	RepositorySettingsV1beta1ReviewerTriggerReady  RepositorySettingsV1beta1ReviewerTrigger = "ready"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1ReviewerTrigger enum.
+func (e RepositorySettingsV1beta1ReviewerTrigger) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1ReviewerTriggerManual:
+		return true
+	case RepositorySettingsV1beta1ReviewerTriggerOff:
+		return true
+	case RepositorySettingsV1beta1ReviewerTriggerPush:
+		return true
+	case RepositorySettingsV1beta1ReviewerTriggerReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsV1beta1ToolMode.
+const (
+	RepositorySettingsV1beta1ToolModeAll  RepositorySettingsV1beta1ToolMode = "all"
+	RepositorySettingsV1beta1ToolModeNone RepositorySettingsV1beta1ToolMode = "none"
+	RepositorySettingsV1beta1ToolModeOnly RepositorySettingsV1beta1ToolMode = "only"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsV1beta1ToolMode enum.
+func (e RepositorySettingsV1beta1ToolMode) Valid() bool {
+	switch e {
+	case RepositorySettingsV1beta1ToolModeAll:
+		return true
+	case RepositorySettingsV1beta1ToolModeNone:
+		return true
+	case RepositorySettingsV1beta1ToolModeOnly:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ResourceOrchestration.
 const (
 	Kubernetes ResourceOrchestration = "kubernetes"
@@ -20489,10 +20747,13 @@ type RepositorySettingsRequest struct {
 	ApiVersion *RepositorySettingsApiVersion `json:"apiVersion,omitempty"`
 	Kind       RepositorySettingsRequestKind `json:"kind"`
 
-	// Metadata The one piece of metadata a write may carry: the optimistic concurrency
-	// token in `labels."dash0.com/version"`. Send the version you read (a
-	// positive integer) to reject the write if the settings changed since.
-	// An API token may omit it, or send `0`, to overwrite unconditionally.
+	// Metadata The metadata a write may carry. `labels."dash0.com/version"` is the
+	// optimistic concurrency token: send the version you read (a positive
+	// integer) to reject the write if the settings changed since. An API token
+	// may omit it, or send `0`, to overwrite unconditionally.
+	// `labels."dash0.com/origin"` claims an origin for settings that have none
+	// and must equal the stored one otherwise; omit it to leave the origin as
+	// it is. An origin cannot be a UUID.
 	Metadata *RepositorySettingsRequestMetadata `json:"metadata,omitempty"`
 
 	// Spec The reviewer and auto-approval configuration for a repository. A repository that
@@ -20504,10 +20765,13 @@ type RepositorySettingsRequest struct {
 // RepositorySettingsRequestKind defines model for RepositorySettingsRequest.Kind.
 type RepositorySettingsRequestKind string
 
-// RepositorySettingsRequestMetadata The one piece of metadata a write may carry: the optimistic concurrency
-// token in `labels."dash0.com/version"`. Send the version you read (a
-// positive integer) to reject the write if the settings changed since.
-// An API token may omit it, or send `0`, to overwrite unconditionally.
+// RepositorySettingsRequestMetadata The metadata a write may carry. `labels."dash0.com/version"` is the
+// optimistic concurrency token: send the version you read (a positive
+// integer) to reject the write if the settings changed since. An API token
+// may omit it, or send `0`, to overwrite unconditionally.
+// `labels."dash0.com/origin"` claims an origin for settings that have none
+// and must equal the stored one otherwise; omit it to leave the origin as
+// it is. An origin cannot be a UUID.
 type RepositorySettingsRequestMetadata struct {
 	// Labels Identity labels shared by every Darkplane CRD resource.
 	Labels *ResourceLabels `json:"labels,omitempty"`
@@ -20612,6 +20876,319 @@ type RepositorySettingsSpec struct {
 	// Defaults to `true`.
 	WaitForChecks bool `json:"waitForChecks"`
 }
+
+// RepositorySettingsV1beta1Annotations defines model for RepositorySettingsV1beta1Annotations.
+type RepositorySettingsV1beta1Annotations struct {
+	// Dash0ComcreatedAt When the repository was first recorded (server-set, read-only).
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComupdatedAt When the settings were last saved (server-set, read-only).
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+
+	// Dash0ComusesDefaultCriteria Whether the repository-level scoring criteria match the current
+	// defaults. Computed on read, ignored on write.
+	Dash0ComusesDefaultCriteria *RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria `json:"dash0.com/uses-default-criteria,omitempty"`
+}
+
+// RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria Whether the repository-level scoring criteria match the current
+// defaults. Computed on read, ignored on write.
+type RepositorySettingsV1beta1AnnotationsDash0ComusesDefaultCriteria string
+
+// RepositorySettingsV1beta1ApiVersion The `dash0.com/v1beta1` shape of the repository settings document.
+type RepositorySettingsV1beta1ApiVersion string
+
+// RepositorySettingsV1beta1AuthorMode - `everyone`: Every author.
+// - `only`: Only the authors in `ids`.
+type RepositorySettingsV1beta1AuthorMode string
+
+// RepositorySettingsV1beta1AutomergeReview - `optional`: AutoMerge does not wait for a review.
+// - `required`: AutoMerge waits for a completed review of the revision it evaluates. Rejected while `reviewer.trigger` is `off`.
+type RepositorySettingsV1beta1AutomergeReview string
+
+// RepositorySettingsV1beta1Bot defines model for RepositorySettingsV1beta1Bot.
+type RepositorySettingsV1beta1Bot struct {
+	// Checks Defaults to `wait`.
+	Checks *RepositorySettingsV1beta1Checks `json:"checks,omitempty"`
+
+	// IgnoredChecks Check suites, by `RepositoryCheckSuite.key`, that automatic
+	// triggering does not wait for. Only used while `checks` is `wait`, and
+	// only on GitHub. Empty by default.
+	IgnoredChecks *[]string `json:"ignoredChecks,omitempty"`
+
+	// Mode Defaults to `off`.
+	Mode *BotMode `json:"mode,omitempty"`
+
+	// Reverts Defaults to `evaluate`.
+	Reverts *RepositorySettingsV1beta1Reverts `json:"reverts,omitempty"`
+
+	// Trigger Defaults to `manual`.
+	Trigger *TriggerMode `json:"trigger,omitempty"`
+}
+
+// RepositorySettingsV1beta1Checks - `wait`: Automatic triggering waits for the head commit's checks to settle.
+// - `ignore`: Automatic triggering does not wait for checks.
+type RepositorySettingsV1beta1Checks string
+
+// RepositorySettingsV1beta1CommentMode - `post`: The bot posts its comments on the pull request.
+// - `suppress`: The bot records its decision in Dash0 but posts no comments.
+type RepositorySettingsV1beta1CommentMode string
+
+// RepositorySettingsV1beta1CommentRequests - `none`: `/review` comments are ignored.
+// - `author_and_writers`: A `/review` comment from the author or a repository writer requests a review.
+type RepositorySettingsV1beta1CommentRequests string
+
+// RepositorySettingsV1beta1Comments defines model for RepositorySettingsV1beta1Comments.
+type RepositorySettingsV1beta1Comments struct {
+	// ApprovalMessage Markdown appended to the bot's approval comment. Empty by default.
+	ApprovalMessage *string `json:"approvalMessage,omitempty"`
+
+	// Mode Defaults to `post`.
+	Mode *RepositorySettingsV1beta1CommentMode `json:"mode,omitempty"`
+}
+
+// RepositorySettingsV1beta1Criterion defines model for RepositorySettingsV1beta1Criterion.
+type RepositorySettingsV1beta1Criterion struct {
+	// Floor A score below this rejects the pull request on its own, whatever the
+	// other criteria score. Omit for no floor.
+	Floor *float32 `json:"floor,omitempty"`
+	Name  string   `json:"name"`
+
+	// Prompt The guidance handed to the scorer agent for this criterion.
+	Prompt string `json:"prompt"`
+
+	// Tools The tools the criterion's scorer agent may call. Omit for every tool.
+	Tools *RepositorySettingsV1beta1CriterionTools `json:"tools,omitempty"`
+
+	// Weight The criterion's weight in the overall score. Greater than 0.
+	Weight float32 `json:"weight"`
+}
+
+// RepositorySettingsV1beta1CriterionTools The tools the criterion's scorer agent may call. Omit for every tool.
+type RepositorySettingsV1beta1CriterionTools struct {
+	// Ids The tools allowed when `mode` is `only`. Rejected with any other mode.
+	Ids *[]EvalToolId `json:"ids,omitempty"`
+
+	// Mode - `all`: Every tool.
+	// - `none`: No tools; the criterion is judged from the pull request's metadata.
+	// - `only`: The tools in `ids`.
+	Mode RepositorySettingsV1beta1ToolMode `json:"mode"`
+}
+
+// RepositorySettingsV1beta1Definition A repository's AutoMerge and reviewer settings in the `dash0.com/v1beta1`
+// shape. The settings have an id of their own, separate from the
+// repository's, and an origin a client can claim. They are stored in the
+// `dash0.com/v1alpha1` shape and converted on every read and write, so both
+// versions describe the same settings.
+type RepositorySettingsV1beta1Definition struct {
+	// ApiVersion The `dash0.com/v1beta1` shape of the repository settings document.
+	ApiVersion RepositorySettingsV1beta1ApiVersion     `json:"apiVersion"`
+	Kind       RepositorySettingsV1beta1DefinitionKind `json:"kind"`
+	Metadata   RepositorySettingsV1beta1Metadata       `json:"metadata"`
+	Spec       RepositorySettingsV1beta1Spec           `json:"spec"`
+}
+
+// RepositorySettingsV1beta1DefinitionKind defines model for RepositorySettingsV1beta1Definition.Kind.
+type RepositorySettingsV1beta1DefinitionKind string
+
+// RepositorySettingsV1beta1Labels defines model for RepositorySettingsV1beta1Labels.
+type RepositorySettingsV1beta1Labels struct {
+	// Dash0Comid The id of the settings (server-set, read-only). Not the repository's id.
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin The external identifier of the settings, such as a Terraform resource
+	// id. Set by the first write that names one, and immutable after.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comversion Optimistic concurrency token. Server-set on read.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
+
+// RepositorySettingsV1beta1Metadata defines model for RepositorySettingsV1beta1Metadata.
+type RepositorySettingsV1beta1Metadata struct {
+	Annotations RepositorySettingsV1beta1Annotations `json:"annotations"`
+	Labels      RepositorySettingsV1beta1Labels      `json:"labels"`
+
+	// Name The `account/name` slug of the repository the settings belong to.
+	Name string `json:"name"`
+}
+
+// RepositorySettingsV1beta1PathCommentMode - `inherit`: The repository's `comments.mode` decides.
+// - `suppress`: No comments on a pull request touching these paths.
+// - `post`: Recorded as an explicit choice to comment. A repository whose `comments.mode` is `suppress` still posts nothing.
+type RepositorySettingsV1beta1PathCommentMode string
+
+// RepositorySettingsV1beta1PathRule defines model for RepositorySettingsV1beta1PathRule.
+type RepositorySettingsV1beta1PathRule struct {
+	// Authors Who the rule applies to. Omit for everyone.
+	Authors  *RepositorySettingsV1beta1PathRuleAuthors  `json:"authors,omitempty"`
+	Comments *RepositorySettingsV1beta1PathRuleComments `json:"comments,omitempty"`
+
+	// Level How much authority the bot has over a pull request whose changed paths
+	// resolve to this level, in ascending order of autonomy. Mirrors `BotMode`
+	// with `off` replaced by `protected`: `off` means "never evaluate", which
+	// is a repository-wide switch rather than something a path can express,
+	// whereas `protected` is the existing hard gate — the least autonomous
+	// outcome a path can produce.
+	// - `protected`: Always held for human review, and not scored at all — no sandbox, no model call.
+	// - `dry_run`: Scored and recorded, but never written back to the provider.
+	// - `auto_approve`: May post an approving review on a passing pull request, but never merges.
+	// - `auto_merge`: May approve and merge a passing pull request.
+	Level PathRuleLevel `json:"level"`
+
+	// Match Glob patterns matched against the changed paths, in the `.gitignore` dialect.
+	Match   []string                                  `json:"match"`
+	Name    *string                                   `json:"name,omitempty"`
+	Scoring *RepositorySettingsV1beta1PathRuleScoring `json:"scoring,omitempty"`
+}
+
+// RepositorySettingsV1beta1PathRuleAuthors Who the rule applies to. Omit for everyone.
+type RepositorySettingsV1beta1PathRuleAuthors struct {
+	// Ids Provider user ids, never logins. Required when `mode` is `only`, rejected otherwise.
+	Ids *[]string `json:"ids,omitempty"`
+
+	// Mode - `everyone`: Every author.
+	// - `only`: Only the authors in `ids`.
+	Mode RepositorySettingsV1beta1AuthorMode `json:"mode"`
+
+	// Otherwise What the rule does for authors not in `ids`. Defaults to `apply_global`. Only with `mode` `only`.
+	Otherwise *PathRuleUnauthorizedFallback `json:"otherwise,omitempty"`
+}
+
+// RepositorySettingsV1beta1PathRuleComments defines model for RepositorySettingsV1beta1PathRuleComments.
+type RepositorySettingsV1beta1PathRuleComments struct {
+	// Mode Defaults to `inherit`.
+	Mode *RepositorySettingsV1beta1PathCommentMode `json:"mode,omitempty"`
+}
+
+// RepositorySettingsV1beta1PathRuleScoring defines model for RepositorySettingsV1beta1PathRuleScoring.
+type RepositorySettingsV1beta1PathRuleScoring struct {
+	// Criteria Criteria these paths are scored against instead of the repository's. Omit to use the repository's.
+	Criteria *[]RepositorySettingsV1beta1Criterion `json:"criteria,omitempty"`
+}
+
+// RepositorySettingsV1beta1Paths defines model for RepositorySettingsV1beta1Paths.
+type RepositorySettingsV1beta1Paths struct {
+	// Rules Per-path authority. A pull request runs at the least autonomous level
+	// across every path it changes; a path no rule matches takes
+	// `bot.mode`. Empty by default.
+	Rules *[]RepositorySettingsV1beta1PathRule `json:"rules,omitempty"`
+}
+
+// RepositorySettingsV1beta1Request The body that replaces a repository's settings. Every field the spec
+// leaves out takes its documented default, so a write describes the whole
+// configuration.
+type RepositorySettingsV1beta1Request struct {
+	// ApiVersion The `dash0.com/v1beta1` shape of the repository settings document.
+	ApiVersion RepositorySettingsV1beta1ApiVersion  `json:"apiVersion"`
+	Kind       RepositorySettingsV1beta1RequestKind `json:"kind"`
+
+	// Metadata `labels."dash0.com/version"` is the version the write is based on. Send
+	// the version you read to reject the write if the settings changed since;
+	// an API token may omit it to overwrite unconditionally.
+	// `labels."dash0.com/origin"`, when present, must equal the origin in the
+	// path. Every other metadata field is server-managed and ignored.
+	Metadata *RepositorySettingsV1beta1RequestMetadata `json:"metadata,omitempty"`
+	Spec     RepositorySettingsV1beta1Spec             `json:"spec"`
+}
+
+// RepositorySettingsV1beta1RequestKind defines model for RepositorySettingsV1beta1Request.Kind.
+type RepositorySettingsV1beta1RequestKind string
+
+// RepositorySettingsV1beta1RequestMetadata `labels."dash0.com/version"` is the version the write is based on. Send
+// the version you read to reject the write if the settings changed since;
+// an API token may omit it to overwrite unconditionally.
+// `labels."dash0.com/origin"`, when present, must equal the origin in the
+// path. Every other metadata field is server-managed and ignored.
+type RepositorySettingsV1beta1RequestMetadata struct {
+	Labels *RepositorySettingsV1beta1Labels `json:"labels,omitempty"`
+}
+
+// RepositorySettingsV1beta1Reverts - `evaluate`: A revert is scored like any other pull request.
+// - `fast_track_exact`: An exact revert of a pull request the bot approved is approved without scoring.
+type RepositorySettingsV1beta1Reverts string
+
+// RepositorySettingsV1beta1Reviewer defines model for RepositorySettingsV1beta1Reviewer.
+type RepositorySettingsV1beta1Reviewer struct {
+	// Authors Whose pull requests the reviewer reviews, to keep its cost down. It applies to every
+	// review, however it starts. An author Darkplane cannot identify counts as not listed.
+	// Omit for everyone.
+	Authors   *RepositorySettingsV1beta1ReviewerAuthors   `json:"authors,omitempty"`
+	Automerge *RepositorySettingsV1beta1ReviewerAutomerge `json:"automerge,omitempty"`
+
+	// CommentRequests Defaults to `author_and_writers`.
+	CommentRequests *RepositorySettingsV1beta1CommentRequests `json:"commentRequests,omitempty"`
+
+	// SettleDelaySeconds Delay before an automatic review, to let commits settle. Defaults to 120.
+	SettleDelaySeconds *int32 `json:"settleDelaySeconds,omitempty"`
+
+	// SkipAfterHumanReview Stop automatic reviews after a human reviews. Defaults to `true`.
+	SkipAfterHumanReview *bool `json:"skipAfterHumanReview,omitempty"`
+
+	// Trigger Defaults to `off`.
+	Trigger *RepositorySettingsV1beta1ReviewerTrigger `json:"trigger,omitempty"`
+}
+
+// RepositorySettingsV1beta1ReviewerAuthors Whose pull requests the reviewer reviews, to keep its cost down. It applies to every
+// review, however it starts. An author Darkplane cannot identify counts as not listed.
+// Omit for everyone.
+type RepositorySettingsV1beta1ReviewerAuthors struct {
+	// Ids Provider user ids, never logins. Required when `mode` is `only`, rejected otherwise.
+	Ids *[]string `json:"ids,omitempty"`
+
+	// Mode - `everyone`: Every author.
+	// - `only`: Only the authors in `ids`.
+	Mode RepositorySettingsV1beta1AuthorMode `json:"mode"`
+}
+
+// RepositorySettingsV1beta1ReviewerAutomerge defines model for RepositorySettingsV1beta1ReviewerAutomerge.
+type RepositorySettingsV1beta1ReviewerAutomerge struct {
+	// AcceptedVerdicts Reviewer verdicts that permit AutoMerge. Defaults to `[approve]`.
+	AcceptedVerdicts *[]RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts `json:"acceptedVerdicts,omitempty"`
+
+	// Review Defaults to `optional`.
+	Review *RepositorySettingsV1beta1AutomergeReview `json:"review,omitempty"`
+}
+
+// RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts defines model for RepositorySettingsV1beta1ReviewerAutomerge.AcceptedVerdicts.
+type RepositorySettingsV1beta1ReviewerAutomergeAcceptedVerdicts string
+
+// RepositorySettingsV1beta1ReviewerTrigger - `off`: The reviewer does not run.
+// - `manual`: Only on an explicit request.
+// - `push`: After new commits.
+// - `ready`: When the pull request first becomes ready.
+type RepositorySettingsV1beta1ReviewerTrigger string
+
+// RepositorySettingsV1beta1Scoring defines model for RepositorySettingsV1beta1Scoring.
+type RepositorySettingsV1beta1Scoring struct {
+	// Criteria The weighted scoring criteria. Defaults to the starting criteria.
+	Criteria *[]RepositorySettingsV1beta1Criterion `json:"criteria,omitempty"`
+
+	// Threshold The score a pull request must reach for the bot to act. Defaults to the documented default.
+	Threshold *float32 `json:"threshold,omitempty"`
+}
+
+// RepositorySettingsV1beta1Spec defines model for RepositorySettingsV1beta1Spec.
+type RepositorySettingsV1beta1Spec struct {
+	Bot      *RepositorySettingsV1beta1Bot      `json:"bot,omitempty"`
+	Comments *RepositorySettingsV1beta1Comments `json:"comments,omitempty"`
+
+	// Knowledge Operator-authored Markdown describing the repository for the scoring
+	// and classification agents. Empty by default.
+	Knowledge *string                         `json:"knowledge,omitempty"`
+	Paths     *RepositorySettingsV1beta1Paths `json:"paths,omitempty"`
+
+	// Repository The `account/name` slug of the repository the settings belong to.
+	// Required, and it cannot change: a write that names a different
+	// repository than the settings belong to is rejected.
+	Repository string                             `json:"repository"`
+	Reviewer   *RepositorySettingsV1beta1Reviewer `json:"reviewer,omitempty"`
+	Scoring    *RepositorySettingsV1beta1Scoring  `json:"scoring,omitempty"`
+}
+
+// RepositorySettingsV1beta1ToolMode - `all`: Every tool.
+// - `none`: No tools; the criterion is judged from the pull request's metadata.
+// - `only`: The tools in `ids`.
+type RepositorySettingsV1beta1ToolMode string
 
 // RepositorySpec The observable state of a repository Darkplane watches.
 type RepositorySpec struct {
@@ -24519,6 +25096,9 @@ type Provider = []RepositoryProvider
 // RepositoryId defines model for RepositoryId.
 type RepositoryId = string
 
+// SettingsOriginOrId defines model for SettingsOriginOrId.
+type SettingsOriginOrId = string
+
 // GetApiAgent0CustomSkillsParams defines parameters for GetApiAgent0CustomSkills.
 type GetApiAgent0CustomSkillsParams struct {
 	// OriginPrefix Filter by origin prefix.
@@ -25204,6 +25784,9 @@ type PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody = AwsMetricScrapeC
 
 // PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody defines body for PutApiDarkplaneRepositoriesRepositoryIdSettings for application/json ContentType.
 type PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody = RepositorySettingsRequest
+
+// PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody defines body for PutApiDarkplaneRepositorySettingsOriginOrId for application/json ContentType.
+type PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody = RepositorySettingsV1beta1Request
 
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
@@ -29449,6 +30032,57 @@ type ClientInterface interface {
 	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
 	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiDarkplaneRepositorySettingsOriginOrId Get a repository's settings in the dash0.com/v1beta1 shape
+	//
+	// The repository settings the settings id or `dash0.com/origin` names, in
+	// the `dash0.com/v1beta1` shape. The settings id is `dash0.com/id` on a
+	// `v1beta1` read, not the repository id. Anything else is a `404`.
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Corresponds with GET /api/darkplane/repository-settings/{originOrId} (the `GetApiDarkplaneRepositorySettingsOriginOrId` operationId).
+	GetApiDarkplaneRepositorySettingsOriginOrId(ctx context.Context, originOrId SettingsOriginOrId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDarkplaneRepositorySettingsOriginOrIdWithBody Replace a repository's settings in the dash0.com/v1beta1 shape
+	//
+	// Replaces the settings wholesale and returns the stored result. Fields the
+	// spec leaves out take their documented defaults.
+	//
+	// The path names the settings by id or by origin. An origin no settings
+	// hold yet is claimed for the repository `spec.repository` names, provided
+	// that repository's settings have no origin. An id that names no settings
+	// is a `404`. `spec.repository` must name the repository the settings
+	// belong to; a different one is a `400`.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+	PutApiDarkplaneRepositorySettingsOriginOrIdWithBody(ctx context.Context, originOrId SettingsOriginOrId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDarkplaneRepositorySettingsOriginOrId Replace a repository's settings in the dash0.com/v1beta1 shape
+	//
+	// Replaces the settings wholesale and returns the stored result. Fields the
+	// spec leaves out take their documented defaults.
+	//
+	// The path names the settings by id or by origin. An origin no settings
+	// hold yet is claimed for the repository `spec.repository` names, provided
+	// that repository's settings have no origin. An id that names no settings
+	// is a `404`. `spec.repository` must name the repository the settings
+	// belong to; a different one is a `400`.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+	PutApiDarkplaneRepositorySettingsOriginOrId(ctx context.Context, originOrId SettingsOriginOrId, body PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiDashboards Receive a list of dashboards
 	//
 	// Receive a list of your organization dashboards.
@@ -32207,6 +32841,87 @@ func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx co
 // Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
 func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest(c.Server, repositoryId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositorySettingsOriginOrId Get a repository's settings in the dash0.com/v1beta1 shape
+//
+// The repository settings the settings id or `dash0.com/origin` names, in
+// the `dash0.com/v1beta1` shape. The settings id is `dash0.com/id` on a
+// `v1beta1` read, not the repository id. Anything else is a `404`.
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Corresponds with GET /api/darkplane/repository-settings/{originOrId} (the `GetApiDarkplaneRepositorySettingsOriginOrId` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositorySettingsOriginOrId(ctx context.Context, originOrId SettingsOriginOrId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositorySettingsOriginOrIdRequest(c.Server, originOrId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiDarkplaneRepositorySettingsOriginOrIdWithBody Replace a repository's settings in the dash0.com/v1beta1 shape
+//
+// Replaces the settings wholesale and returns the stored result. Fields the
+// spec leaves out take their documented defaults.
+//
+// The path names the settings by id or by origin. An origin no settings
+// hold yet is claimed for the repository `spec.repository` names, provided
+// that repository's settings have no origin. An id that names no settings
+// is a `404`. `spec.repository` must name the repository the settings
+// belong to; a different one is a `400`.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+func (c *generatedClient) PutApiDarkplaneRepositorySettingsOriginOrIdWithBody(ctx context.Context, originOrId SettingsOriginOrId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDarkplaneRepositorySettingsOriginOrIdRequestWithBody(c.Server, originOrId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiDarkplaneRepositorySettingsOriginOrId Replace a repository's settings in the dash0.com/v1beta1 shape
+//
+// Replaces the settings wholesale and returns the stored result. Fields the
+// spec leaves out take their documented defaults.
+//
+// The path names the settings by id or by origin. An origin no settings
+// hold yet is claimed for the repository `spec.repository` names, provided
+// that repository's settings have no origin. An id that names no settings
+// is a `404`. `spec.repository` must name the repository the settings
+// belong to; a different one is a `400`.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+func (c *generatedClient) PutApiDarkplaneRepositorySettingsOriginOrId(ctx context.Context, originOrId SettingsOriginOrId, body PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDarkplaneRepositorySettingsOriginOrIdRequest(c.Server, originOrId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -37566,6 +38281,87 @@ func NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest(server st
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositorySettingsOriginOrIdRequest constructs an http.Request for the GetApiDarkplaneRepositorySettingsOriginOrId method
+func NewGetApiDarkplaneRepositorySettingsOriginOrIdRequest(server string, originOrId SettingsOriginOrId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repository-settings/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiDarkplaneRepositorySettingsOriginOrIdRequest calls the generic PutApiDarkplaneRepositorySettingsOriginOrId builder with application/json body
+func NewPutApiDarkplaneRepositorySettingsOriginOrIdRequest(server string, originOrId SettingsOriginOrId, body PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiDarkplaneRepositorySettingsOriginOrIdRequestWithBody(server, originOrId, "application/json", bodyReader)
+}
+
+// NewPutApiDarkplaneRepositorySettingsOriginOrIdRequestWithBody constructs an http.Request for the PutApiDarkplaneRepositorySettingsOriginOrId method, with any body, and a specified content type
+func NewPutApiDarkplaneRepositorySettingsOriginOrIdRequestWithBody(server string, originOrId SettingsOriginOrId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "originOrId", originOrId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repository-settings/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -45019,6 +45815,59 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
 	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error)
 
+	// GetApiDarkplaneRepositorySettingsOriginOrIdWithResponse Get a repository's settings in the dash0.com/v1beta1 shape
+	//
+	// The repository settings the settings id or `dash0.com/origin` names, in
+	// the `dash0.com/v1beta1` shape. The settings id is `dash0.com/id` on a
+	// `v1beta1` read, not the repository id. Anything else is a `404`.
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repository-settings/{originOrId} (the `GetApiDarkplaneRepositorySettingsOriginOrId` operationId).
+	GetApiDarkplaneRepositorySettingsOriginOrIdWithResponse(ctx context.Context, originOrId SettingsOriginOrId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositorySettingsOriginOrIdResponse, error)
+
+	// PutApiDarkplaneRepositorySettingsOriginOrIdWithBodyWithResponse Replace a repository's settings in the dash0.com/v1beta1 shape
+	//
+	// Replaces the settings wholesale and returns the stored result. Fields the
+	// spec leaves out take their documented defaults.
+	//
+	// The path names the settings by id or by origin. An origin no settings
+	// hold yet is claimed for the repository `spec.repository` names, provided
+	// that repository's settings have no origin. An id that names no settings
+	// is a `404`. `spec.repository` must name the repository the settings
+	// belong to; a different one is a `400`.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+	PutApiDarkplaneRepositorySettingsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId SettingsOriginOrId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositorySettingsOriginOrIdResponse, error)
+
+	// PutApiDarkplaneRepositorySettingsOriginOrIdWithResponse Replace a repository's settings in the dash0.com/v1beta1 shape
+	//
+	// Replaces the settings wholesale and returns the stored result. Fields the
+	// spec leaves out take their documented defaults.
+	//
+	// The path names the settings by id or by origin. An origin no settings
+	// hold yet is claimed for the repository `spec.repository` names, provided
+	// that repository's settings have no origin. An id that names no settings
+	// is a `404`. `spec.repository` must name the repository the settings
+	// belong to; a different one is a `400`.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+	PutApiDarkplaneRepositorySettingsOriginOrIdWithResponse(ctx context.Context, originOrId SettingsOriginOrId, body PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositorySettingsOriginOrIdResponse, error)
+
 	// GetApiDashboardsWithResponse Receive a list of dashboards
 	//
 	// Receive a list of your organization dashboards.
@@ -48567,6 +49416,109 @@ func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) StatusC
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositorySettingsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RepositorySettingsV1beta1Definition
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositorySettingsOriginOrIdResponse) GetJSON200() *RepositorySettingsV1beta1Definition {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositorySettingsOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositorySettingsOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositorySettingsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositorySettingsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositorySettingsOriginOrIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiDarkplaneRepositorySettingsOriginOrIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RepositorySettingsV1beta1Definition
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) GetJSON200() *RepositorySettingsV1beta1Definition {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiDarkplaneRepositorySettingsOriginOrIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -55243,6 +56195,77 @@ func (c *ClientWithResponses) GetApiDarkplaneRepositoriesRepositoryIdSettingsVer
 	return ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse(rsp)
 }
 
+// GetApiDarkplaneRepositorySettingsOriginOrIdWithResponse Get a repository's settings in the dash0.com/v1beta1 shape
+//
+// The repository settings the settings id or `dash0.com/origin` names, in
+// the `dash0.com/v1beta1` shape. The settings id is `dash0.com/id` on a
+// `v1beta1` read, not the repository id. Anything else is a `404`.
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repository-settings/{originOrId} (the `GetApiDarkplaneRepositorySettingsOriginOrId` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositorySettingsOriginOrIdWithResponse(ctx context.Context, originOrId SettingsOriginOrId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositorySettingsOriginOrIdResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositorySettingsOriginOrId(ctx, originOrId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositorySettingsOriginOrIdResponse(rsp)
+}
+
+// PutApiDarkplaneRepositorySettingsOriginOrIdWithBodyWithResponse Replace a repository's settings in the dash0.com/v1beta1 shape
+//
+// Replaces the settings wholesale and returns the stored result. Fields the
+// spec leaves out take their documented defaults.
+//
+// The path names the settings by id or by origin. An origin no settings
+// hold yet is claimed for the repository `spec.repository` names, provided
+// that repository's settings have no origin. An id that names no settings
+// is a `404`. `spec.repository` must name the repository the settings
+// belong to; a different one is a `400`.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiDarkplaneRepositorySettingsOriginOrIdWithBodyWithResponse(ctx context.Context, originOrId SettingsOriginOrId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositorySettingsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiDarkplaneRepositorySettingsOriginOrIdWithBody(ctx, originOrId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDarkplaneRepositorySettingsOriginOrIdResponse(rsp)
+}
+
+// PutApiDarkplaneRepositorySettingsOriginOrIdWithResponse Replace a repository's settings in the dash0.com/v1beta1 shape
+//
+// Replaces the settings wholesale and returns the stored result. Fields the
+// spec leaves out take their documented defaults.
+//
+// The path names the settings by id or by origin. An origin no settings
+// hold yet is claimed for the repository `spec.repository` names, provided
+// that repository's settings have no origin. An id that names no settings
+// is a `404`. `spec.repository` must name the repository the settings
+// belong to; a different one is a `400`.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/darkplane/repository-settings/{originOrId} (the `PutApiDarkplaneRepositorySettingsOriginOrId` operationId).
+func (c *ClientWithResponses) PutApiDarkplaneRepositorySettingsOriginOrIdWithResponse(ctx context.Context, originOrId SettingsOriginOrId, body PutApiDarkplaneRepositorySettingsOriginOrIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositorySettingsOriginOrIdResponse, error) {
+	rsp, err := c.PutApiDarkplaneRepositorySettingsOriginOrId(ctx, originOrId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDarkplaneRepositorySettingsOriginOrIdResponse(rsp)
+}
+
 // GetApiDashboardsWithResponse Receive a list of dashboards
 //
 // Receive a list of your organization dashboards.
@@ -59413,6 +60436,79 @@ func ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse(rsp *h
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositorySettingsOriginOrIdResponse parses an HTTP response from a GetApiDarkplaneRepositorySettingsOriginOrIdWithResponse call
+func ParseGetApiDarkplaneRepositorySettingsOriginOrIdResponse(rsp *http.Response) (*GetApiDarkplaneRepositorySettingsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositorySettingsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RepositorySettingsV1beta1Definition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiDarkplaneRepositorySettingsOriginOrIdResponse parses an HTTP response from a PutApiDarkplaneRepositorySettingsOriginOrIdWithResponse call
+func ParsePutApiDarkplaneRepositorySettingsOriginOrIdResponse(rsp *http.Response) (*PutApiDarkplaneRepositorySettingsOriginOrIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiDarkplaneRepositorySettingsOriginOrIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RepositorySettingsV1beta1Definition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
 		var dest ErrorResponse

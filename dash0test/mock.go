@@ -81,11 +81,13 @@ type MockClient struct {
 	UpdateAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string, cfg *dash0.AwsMetricScrapeConfigDefinition) (*dash0.AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfigFunc func(ctx context.Context, integrationID string) error
 
-	ListDarkplaneRepositoriesFunc               func(ctx context.Context, search string) ([]dash0.RepositoryDefinition, error)
-	FindDarkplaneRepositoryFunc                 func(ctx context.Context, slug string) (*dash0.RepositoryDefinition, error)
-	GetDarkplaneRepositorySettingsFunc          func(ctx context.Context, repositoryID string) (*dash0.RepositorySettingsDefinition, error)
-	UpdateDarkplaneRepositorySettingsFunc       func(ctx context.Context, repositoryID string, settings *dash0.RepositorySettingsDefinition) (*dash0.RepositorySettingsDefinition, error)
-	ListDarkplaneRepositorySettingsVersionsFunc func(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error)
+	ListDarkplaneRepositoriesFunc                func(ctx context.Context, search string) ([]dash0.RepositoryDefinition, error)
+	FindDarkplaneRepositoryFunc                  func(ctx context.Context, slug string) (*dash0.RepositoryDefinition, error)
+	GetDarkplaneRepositorySettingsFunc           func(ctx context.Context, repositoryID string) (*dash0.RepositorySettingsDefinition, error)
+	UpdateDarkplaneRepositorySettingsFunc        func(ctx context.Context, repositoryID string, settings *dash0.RepositorySettingsDefinition) (*dash0.RepositorySettingsDefinition, error)
+	ListDarkplaneRepositorySettingsVersionsFunc  func(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error)
+	GetDarkplaneRepositorySettingsV1Beta1Func    func(ctx context.Context, originOrID string) (*dash0.RepositorySettingsV1beta1Definition, error)
+	UpdateDarkplaneRepositorySettingsV1Beta1Func func(ctx context.Context, originOrID string, settings *dash0.RepositorySettingsV1beta1Definition) (*dash0.RepositorySettingsV1beta1Definition, error)
 
 	// AWS log-group instrumentation policies
 	GetAwsLogGroupInstrumentationPolicyFunc    func(ctx context.Context, integrationID string) (*dash0.AwsLogGroupInstrumentationPolicy, error)
@@ -501,6 +503,20 @@ func (m *MockClient) UpdateDarkplaneRepositorySettings(ctx context.Context, repo
 func (m *MockClient) ListDarkplaneRepositorySettingsVersions(ctx context.Context, repositoryID string) ([]dash0.RepositorySettingsDefinition, error) {
 	if m.ListDarkplaneRepositorySettingsVersionsFunc != nil {
 		return m.ListDarkplaneRepositorySettingsVersionsFunc(ctx, repositoryID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) GetDarkplaneRepositorySettingsV1Beta1(ctx context.Context, originOrID string) (*dash0.RepositorySettingsV1beta1Definition, error) {
+	if m.GetDarkplaneRepositorySettingsV1Beta1Func != nil {
+		return m.GetDarkplaneRepositorySettingsV1Beta1Func(ctx, originOrID)
+	}
+	return nil, nil
+}
+
+func (m *MockClient) UpdateDarkplaneRepositorySettingsV1Beta1(ctx context.Context, originOrID string, settings *dash0.RepositorySettingsV1beta1Definition) (*dash0.RepositorySettingsV1beta1Definition, error) {
+	if m.UpdateDarkplaneRepositorySettingsV1Beta1Func != nil {
+		return m.UpdateDarkplaneRepositorySettingsV1Beta1Func(ctx, originOrID, settings)
 	}
 	return nil, nil
 }

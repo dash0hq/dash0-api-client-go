@@ -79,6 +79,8 @@ type Client interface {
 	GetDarkplaneRepositorySettings(ctx context.Context, repositoryID string) (*RepositorySettingsDefinition, error)
 	UpdateDarkplaneRepositorySettings(ctx context.Context, repositoryID string, settings *RepositorySettingsDefinition) (*RepositorySettingsDefinition, error)
 	ListDarkplaneRepositorySettingsVersions(ctx context.Context, repositoryID string) ([]RepositorySettingsDefinition, error)
+	GetDarkplaneRepositorySettingsV1Beta1(ctx context.Context, originOrID string) (*RepositorySettingsV1beta1Definition, error)
+	UpdateDarkplaneRepositorySettingsV1Beta1(ctx context.Context, originOrID string, settings *RepositorySettingsV1beta1Definition) (*RepositorySettingsV1beta1Definition, error)
 
 	// AWS log-group instrumentation policies
 	GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*AwsLogGroupInstrumentationPolicy, error)
