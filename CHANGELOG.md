@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.36.0
+
+
+### Features
+- wrap the AWS log-group instrumentation policy endpoints (#92)
+- regenerate from the latest spec and support telemetry transformation rules (#97)
+
 ## v1.35.0
 
 
