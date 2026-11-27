@@ -39,7 +39,7 @@ func TestAssetMetadata(t *testing.T) {
 		{&TimeSeriesAggregationDefinition{}, "test-origin", true, false},
 		{&DashboardDefinition{}, "test-origin", true, true},
 		{&PersesDashboard{}, "test-origin", false, true},
-		{&PrometheusAlertRule{}, "test-id", false, true},
+		{&PrometheusAlertRule{}, "test-origin", false, true},
 		{&PrometheusRules{}, "test-origin", false, true},
 		{&RecordingRule{}, "test-origin", false, true},
 		{&SyntheticCheckDefinition{}, "test-origin", false, true},

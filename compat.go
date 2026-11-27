@@ -262,7 +262,6 @@ package dash0
 // When the origin is set and dash0.com/id differs from it, metadata.dash0Extensions.id stays nil, because the API rejects a create whose origin and dash0Extensions.id differ.
 // Code that relied on these functions to remove the origin must now delete the label itself.
 // [StripCheckRuleServerFields] still removes dash0.com/origin, because a check rule's labels are Prometheus alert labels, not its origin.
-// [PrometheusAlertRule] GetOrigin now returns the id and no longer reads the dash0.com/origin label, because the API stores a check rule's origin as its id.
 
 // DashboardDefinitionKind is a deprecated alias for [DashboardKind].
 //

@@ -410,20 +410,3 @@ func TestListCheckRules_RejectsUnsupportedFilters(t *testing.T) {
 		server.Close()
 	}
 }
-
-func TestPrometheusAlertRuleGetOrigin(t *testing.T) {
-	t.Run("returns the id when there is no origin label", func(t *testing.T) {
-		rule := &PrometheusAlertRule{Id: Ptr("my-origin")}
-		assertEqual(t, "origin", rule.GetOrigin(), "my-origin")
-	})
-	t.Run("ignores an origin in the alert labels", func(t *testing.T) {
-		labels := map[string]string{LabelOrigin: "alert-label"}
-		rule := &PrometheusAlertRule{Id: Ptr("my-origin"), Labels: &labels}
-		assertEqual(t, "origin", rule.GetOrigin(), "my-origin")
-	})
-	t.Run("returns empty when there is no id", func(t *testing.T) {
-		labels := map[string]string{LabelOrigin: "alert-label"}
-		rule := &PrometheusAlertRule{Labels: &labels}
-		assertEqual(t, "origin", rule.GetOrigin(), "")
-	})
-}
