@@ -38,8 +38,8 @@ func TestStripRecordingRuleServerFields(t *testing.T) {
 	if _, ok := (*rule.Metadata.Labels)["dash0.com/id"]; ok {
 		t.Error("dash0.com/id label should be removed")
 	}
-	if _, ok := (*rule.Metadata.Labels)["dash0.com/origin"]; ok {
-		t.Error("dash0.com/origin label should be removed")
+	if (*rule.Metadata.Labels)["dash0.com/origin"] != "terraform" {
+		t.Error("dash0.com/origin label should be preserved")
 	}
 	if _, ok := (*rule.Metadata.Labels)["dash0.com/dataset"]; ok {
 		t.Error("dash0.com/dataset label should be removed")

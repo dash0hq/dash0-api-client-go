@@ -51,6 +51,35 @@ spec:
 	}
 }
 
+func TestParseAsDashboard_PersesDashboardOrigin(t *testing.T) {
+	data := []byte(`apiVersion: perses.dev/v1alpha1
+kind: PersesDashboard
+metadata:
+  name: my-perses-dashboard
+  labels:
+    dash0.com/origin: my-origin
+    dash0.com/id: perses-123
+spec:
+  display:
+    name: My Perses Dashboard
+  panels: {}
+`)
+	dashboard, err := ParseAsDashboard(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	labels := dashboard.Metadata.Labels
+	if labels == nil || labels.Dash0Comorigin == nil || *labels.Dash0Comorigin != "my-origin" {
+		t.Errorf("Labels = %+v, want dash0.com/origin = my-origin", labels)
+	}
+	if labels != nil && labels.Dash0Comid != nil {
+		t.Errorf("dash0.com/id label = %q, want unset because the API rejects it on create", *labels.Dash0Comid)
+	}
+	if ext := dashboard.Metadata.Dash0Extensions; ext != nil && ext.Id != nil {
+		t.Errorf("dash0Extensions.id = %q, want unset because it differs from the origin", *ext.Id)
+	}
+}
+
 func TestParseAsDashboard_NativeFolderPath(t *testing.T) {
 	data := []byte(`kind: Dashboard
 metadata:

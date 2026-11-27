@@ -129,7 +129,6 @@ func StripSyntheticCheckServerFields(check *SyntheticCheckDefinition) {
 		check.Metadata.Labels.Dash0Comversion = nil
 		check.Metadata.Labels.Custom = nil
 		check.Metadata.Labels.Dash0Comdataset = nil
-		check.Metadata.Labels.Dash0Comorigin = nil
 	}
 }
 

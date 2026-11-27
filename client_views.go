@@ -129,7 +129,6 @@ func StripViewServerFields(view *ViewDefinition) {
 		view.Metadata.Labels.Dash0Comversion = nil
 		view.Metadata.Labels.Dash0Comsource = nil
 		view.Metadata.Labels.Dash0Comdataset = nil
-		view.Metadata.Labels.Dash0Comorigin = nil
 	}
 }
 

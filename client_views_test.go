@@ -43,8 +43,8 @@ func TestStripViewServerFields(t *testing.T) {
 	if v.Metadata.Labels.Dash0Comdataset != nil {
 		t.Error("Dash0Comdataset should be nil")
 	}
-	if v.Metadata.Labels.Dash0Comorigin != nil {
-		t.Error("Dash0Comorigin should be nil")
+	if v.Metadata.Labels.Dash0Comorigin == nil {
+		t.Error("Dash0Comorigin should be preserved")
 	}
 	if v.Metadata.Labels.Dash0Comid == nil || *v.Metadata.Labels.Dash0Comid != "keep-this" {
 		t.Error("Dash0Comid should be preserved")

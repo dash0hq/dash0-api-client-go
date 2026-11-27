@@ -141,7 +141,6 @@ func StripTimeSeriesAggregationServerFields(aggregation *TimeSeriesAggregationDe
 		aggregation.Metadata.Labels.Dash0Comversion = nil
 		aggregation.Metadata.Labels.Dash0Comsource = nil
 		aggregation.Metadata.Labels.Dash0Comdataset = nil
-		aggregation.Metadata.Labels.Dash0Comorigin = nil
 	}
 }
 

@@ -141,7 +141,6 @@ func StripRecordingRuleServerFields(rule *RecordingRule) {
 	}
 	if rule.Metadata.Labels != nil {
 		delete(*rule.Metadata.Labels, LabelID)
-		delete(*rule.Metadata.Labels, LabelOrigin)
 		delete(*rule.Metadata.Labels, LabelDataset)
 		delete(*rule.Metadata.Labels, LabelVersion)
 		delete(*rule.Metadata.Labels, LabelSource)
