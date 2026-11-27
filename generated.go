@@ -105,13 +105,13 @@ func (e Agent0ModelMaker) Valid() bool {
 
 // Defines values for Agent0ModelSpecReasoningSummary.
 const (
-	Auto Agent0ModelSpecReasoningSummary = "auto"
+	Agent0ModelSpecReasoningSummaryAuto Agent0ModelSpecReasoningSummary = "auto"
 )
 
 // Valid indicates whether the value is a known member of the Agent0ModelSpecReasoningSummary enum.
 func (e Agent0ModelSpecReasoningSummary) Valid() bool {
 	switch e {
-	case Auto:
+	case Agent0ModelSpecReasoningSummaryAuto:
 		return true
 	default:
 		return false
@@ -706,6 +706,30 @@ func (e AxisScale) Valid() bool {
 	}
 }
 
+// Defines values for BotMode.
+const (
+	BotModeAutoApprove BotMode = "auto_approve"
+	BotModeAutoMerge   BotMode = "auto_merge"
+	BotModeDryRun      BotMode = "dry_run"
+	BotModeOff         BotMode = "off"
+)
+
+// Valid indicates whether the value is a known member of the BotMode enum.
+func (e BotMode) Valid() bool {
+	switch e {
+	case BotModeAutoApprove:
+		return true
+	case BotModeAutoMerge:
+		return true
+	case BotModeDryRun:
+		return true
+	case BotModeOff:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ChangeGateComparison.
 const (
 	AbsoluteDelta  ChangeGateComparison = "absolute_delta"
@@ -780,16 +804,16 @@ func (e CustomSkillAction) Valid() bool {
 
 // Defines values for DarkplaneAutoApprovalDecision.
 const (
-	Approve DarkplaneAutoApprovalDecision = "approve"
-	Hold    DarkplaneAutoApprovalDecision = "hold"
+	DarkplaneAutoApprovalDecisionApprove DarkplaneAutoApprovalDecision = "approve"
+	DarkplaneAutoApprovalDecisionHold    DarkplaneAutoApprovalDecision = "hold"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneAutoApprovalDecision enum.
 func (e DarkplaneAutoApprovalDecision) Valid() bool {
 	switch e {
-	case Approve:
+	case DarkplaneAutoApprovalDecisionApprove:
 		return true
-	case Hold:
+	case DarkplaneAutoApprovalDecisionHold:
 		return true
 	default:
 		return false
@@ -798,19 +822,19 @@ func (e DarkplaneAutoApprovalDecision) Valid() bool {
 
 // Defines values for DarkplaneAutoApprovalMode.
 const (
-	AutoApprove DarkplaneAutoApprovalMode = "auto_approve"
-	AutoMerge   DarkplaneAutoApprovalMode = "auto_merge"
-	DryRun      DarkplaneAutoApprovalMode = "dry_run"
+	DarkplaneAutoApprovalModeAutoApprove DarkplaneAutoApprovalMode = "auto_approve"
+	DarkplaneAutoApprovalModeAutoMerge   DarkplaneAutoApprovalMode = "auto_merge"
+	DarkplaneAutoApprovalModeDryRun      DarkplaneAutoApprovalMode = "dry_run"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneAutoApprovalMode enum.
 func (e DarkplaneAutoApprovalMode) Valid() bool {
 	switch e {
-	case AutoApprove:
+	case DarkplaneAutoApprovalModeAutoApprove:
 		return true
-	case AutoMerge:
+	case DarkplaneAutoApprovalModeAutoMerge:
 		return true
-	case DryRun:
+	case DarkplaneAutoApprovalModeDryRun:
 		return true
 	default:
 		return false
@@ -834,18 +858,18 @@ func (e DarkplaneEvaluationTriggerDelivery) Valid() bool {
 
 // Defines values for DarkplaneEvaluationTriggerVariableName.
 const (
-	DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.decision"
-	DarkplaneAutoApprovalEvaluationId                          DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.evaluation_id"
-	DarkplaneEvaluationTriggerVariableNameAutoApprovalMode     DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.mode"
-	DarkplaneAutoApprovalReasoning                             DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.reasoning"
-	DarkplaneAutoApprovalScore                                 DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.score"
-	DarkplaneCommitSha                                         DarkplaneEvaluationTriggerVariableName = "darkplane.commit_sha"
-	DarkplaneEvaluationTriggerVariableNameProvider             DarkplaneEvaluationTriggerVariableName = "darkplane.provider"
-	DarkplanePullRequestId                                     DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_id"
-	DarkplanePullRequestNumber                                 DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_number"
-	DarkplanePullRequestUrl                                    DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_url"
-	DarkplaneRepository                                        DarkplaneEvaluationTriggerVariableName = "darkplane.repository"
-	DarkplaneRepositoryId                                      DarkplaneEvaluationTriggerVariableName = "darkplane.repository_id"
+	DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision              DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.decision"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.evaluation_id"
+	DarkplaneEvaluationTriggerVariableNameAutoApprovalMode                  DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.mode"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning    DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.reasoning"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore        DarkplaneEvaluationTriggerVariableName = "darkplane.auto_approval.score"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha                DarkplaneEvaluationTriggerVariableName = "darkplane.commit_sha"
+	DarkplaneEvaluationTriggerVariableNameProvider                          DarkplaneEvaluationTriggerVariableName = "darkplane.provider"
+	DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId            DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_id"
+	DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber        DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_number"
+	DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl           DarkplaneEvaluationTriggerVariableName = "darkplane.pull_request_url"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneRepository               DarkplaneEvaluationTriggerVariableName = "darkplane.repository"
+	DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId             DarkplaneEvaluationTriggerVariableName = "darkplane.repository_id"
 )
 
 // Valid indicates whether the value is a known member of the DarkplaneEvaluationTriggerVariableName enum.
@@ -853,27 +877,27 @@ func (e DarkplaneEvaluationTriggerVariableName) Valid() bool {
 	switch e {
 	case DarkplaneEvaluationTriggerVariableNameAutoApprovalDecision:
 		return true
-	case DarkplaneAutoApprovalEvaluationId:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalEvaluationId:
 		return true
 	case DarkplaneEvaluationTriggerVariableNameAutoApprovalMode:
 		return true
-	case DarkplaneAutoApprovalReasoning:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalReasoning:
 		return true
-	case DarkplaneAutoApprovalScore:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneAutoApprovalScore:
 		return true
-	case DarkplaneCommitSha:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneCommitSha:
 		return true
 	case DarkplaneEvaluationTriggerVariableNameProvider:
 		return true
-	case DarkplanePullRequestId:
+	case DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestId:
 		return true
-	case DarkplanePullRequestNumber:
+	case DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestNumber:
 		return true
-	case DarkplanePullRequestUrl:
+	case DarkplaneEvaluationTriggerVariableNameDarkplanePullRequestUrl:
 		return true
-	case DarkplaneRepository:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneRepository:
 		return true
-	case DarkplaneRepositoryId:
+	case DarkplaneEvaluationTriggerVariableNameDarkplaneRepositoryId:
 		return true
 	default:
 		return false
@@ -1045,6 +1069,27 @@ func (e DarkplanePullRequestEvaluationAgenticWorkflowTriggerKind) Valid() bool {
 	}
 }
 
+// Defines values for DarkplaneRepositoryConnection.
+const (
+	DarkplaneRepositoryConnectionConnected    DarkplaneRepositoryConnection = "connected"
+	DarkplaneRepositoryConnectionDisconnected DarkplaneRepositoryConnection = "disconnected"
+	DarkplaneRepositoryConnectionUnknown      DarkplaneRepositoryConnection = "unknown"
+)
+
+// Valid indicates whether the value is a known member of the DarkplaneRepositoryConnection enum.
+func (e DarkplaneRepositoryConnection) Valid() bool {
+	switch e {
+	case DarkplaneRepositoryConnectionConnected:
+		return true
+	case DarkplaneRepositoryConnectionDisconnected:
+		return true
+	case DarkplaneRepositoryConnectionUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DashboardKind.
 const (
 	Dashboard                       DashboardKind = "Dashboard"
@@ -1147,6 +1192,81 @@ const (
 func (e ErrorAssertionKind) Valid() bool {
 	switch e {
 	case ErrorAssertionKindError:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EvalToolId.
+const (
+	EvalToolIdAuthorDeliveryRecord             EvalToolId = "author_delivery_record"
+	EvalToolIdCheckRuleStatus                  EvalToolId = "check_rule_status"
+	EvalToolIdCodingSessionEngineeringActivity EvalToolId = "coding_session_engineering_activity"
+	EvalToolIdCodingSessionHarness             EvalToolId = "coding_session_harness"
+	EvalToolIdCodingSessionToolsAndSkills      EvalToolId = "coding_session_tools_and_skills"
+	EvalToolIdCommitVerification               EvalToolId = "commit_verification"
+	EvalToolIdEvaluationHistory                EvalToolId = "evaluation_history"
+	EvalToolIdGitBlame                         EvalToolId = "git_blame"
+	EvalToolIdGitDiffBase                      EvalToolId = "git_diff_base"
+	EvalToolIdGitLog                           EvalToolId = "git_log"
+	EvalToolIdGrep                             EvalToolId = "grep"
+	EvalToolIdListFiles                        EvalToolId = "list_files"
+	EvalToolIdPathAuthorship                   EvalToolId = "path_authorship"
+	EvalToolIdPrChecks                         EvalToolId = "pr_checks"
+	EvalToolIdPrFiles                          EvalToolId = "pr_files"
+	EvalToolIdPrMetadata                       EvalToolId = "pr_metadata"
+	EvalToolIdPrReviewsAndComments             EvalToolId = "pr_reviews_and_comments"
+	EvalToolIdReadFile                         EvalToolId = "read_file"
+	EvalToolIdReadSteeringFiles                EvalToolId = "read_steering_files"
+	EvalToolIdReviewAgentStats                 EvalToolId = "review_agent_stats"
+	EvalToolIdSloStatus                        EvalToolId = "slo_status"
+)
+
+// Valid indicates whether the value is a known member of the EvalToolId enum.
+func (e EvalToolId) Valid() bool {
+	switch e {
+	case EvalToolIdAuthorDeliveryRecord:
+		return true
+	case EvalToolIdCheckRuleStatus:
+		return true
+	case EvalToolIdCodingSessionEngineeringActivity:
+		return true
+	case EvalToolIdCodingSessionHarness:
+		return true
+	case EvalToolIdCodingSessionToolsAndSkills:
+		return true
+	case EvalToolIdCommitVerification:
+		return true
+	case EvalToolIdEvaluationHistory:
+		return true
+	case EvalToolIdGitBlame:
+		return true
+	case EvalToolIdGitDiffBase:
+		return true
+	case EvalToolIdGitLog:
+		return true
+	case EvalToolIdGrep:
+		return true
+	case EvalToolIdListFiles:
+		return true
+	case EvalToolIdPathAuthorship:
+		return true
+	case EvalToolIdPrChecks:
+		return true
+	case EvalToolIdPrFiles:
+		return true
+	case EvalToolIdPrMetadata:
+		return true
+	case EvalToolIdPrReviewsAndComments:
+		return true
+	case EvalToolIdReadFile:
+		return true
+	case EvalToolIdReadSteeringFiles:
+		return true
+	case EvalToolIdReviewAgentStats:
+		return true
+	case EvalToolIdSloStatus:
 		return true
 	default:
 		return false
@@ -8713,6 +8833,51 @@ func (e OrderingDirection) Valid() bool {
 	}
 }
 
+// Defines values for PathRuleLevel.
+const (
+	PathRuleLevelAutoApprove PathRuleLevel = "auto_approve"
+	PathRuleLevelAutoMerge   PathRuleLevel = "auto_merge"
+	PathRuleLevelDryRun      PathRuleLevel = "dry_run"
+	PathRuleLevelProtected   PathRuleLevel = "protected"
+)
+
+// Valid indicates whether the value is a known member of the PathRuleLevel enum.
+func (e PathRuleLevel) Valid() bool {
+	switch e {
+	case PathRuleLevelAutoApprove:
+		return true
+	case PathRuleLevelAutoMerge:
+		return true
+	case PathRuleLevelDryRun:
+		return true
+	case PathRuleLevelProtected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PathRuleUnauthorizedFallback.
+const (
+	PathRuleUnauthorizedFallbackApplyGlobal PathRuleUnauthorizedFallback = "apply_global"
+	PathRuleUnauthorizedFallbackDryRun      PathRuleUnauthorizedFallback = "dry_run"
+	PathRuleUnauthorizedFallbackProtected   PathRuleUnauthorizedFallback = "protected"
+)
+
+// Valid indicates whether the value is a known member of the PathRuleUnauthorizedFallback enum.
+func (e PathRuleUnauthorizedFallback) Valid() bool {
+	switch e {
+	case PathRuleUnauthorizedFallbackApplyGlobal:
+		return true
+	case PathRuleUnauthorizedFallbackDryRun:
+		return true
+	case PathRuleUnauthorizedFallbackProtected:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for PinnedRetentionClass.
 const (
 	PinnedRetentionClassN30d PinnedRetentionClass = "30d"
@@ -8929,6 +9094,126 @@ const (
 func (e PrometheusRuleKind) Valid() bool {
 	switch e {
 	case PrometheusRuleKindPrometheusRule:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryDefinitionKind.
+const (
+	RepositoryDefinitionKindDarkplaneRepository RepositoryDefinitionKind = "DarkplaneRepository"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryDefinitionKind enum.
+func (e RepositoryDefinitionKind) Valid() bool {
+	switch e {
+	case RepositoryDefinitionKindDarkplaneRepository:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryProvider.
+const (
+	RepositoryProviderGithub RepositoryProvider = "github"
+	RepositoryProviderGitlab RepositoryProvider = "gitlab"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryProvider enum.
+func (e RepositoryProvider) Valid() bool {
+	switch e {
+	case RepositoryProviderGithub:
+		return true
+	case RepositoryProviderGitlab:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryReviewerSettingsAutomergeAcceptedVerdicts.
+const (
+	RepositoryReviewerSettingsAutomergeAcceptedVerdictsApprove        RepositoryReviewerSettingsAutomergeAcceptedVerdicts = "approve"
+	RepositoryReviewerSettingsAutomergeAcceptedVerdictsComment        RepositoryReviewerSettingsAutomergeAcceptedVerdicts = "comment"
+	RepositoryReviewerSettingsAutomergeAcceptedVerdictsRequestChanges RepositoryReviewerSettingsAutomergeAcceptedVerdicts = "request-changes"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryReviewerSettingsAutomergeAcceptedVerdicts enum.
+func (e RepositoryReviewerSettingsAutomergeAcceptedVerdicts) Valid() bool {
+	switch e {
+	case RepositoryReviewerSettingsAutomergeAcceptedVerdictsApprove:
+		return true
+	case RepositoryReviewerSettingsAutomergeAcceptedVerdictsComment:
+		return true
+	case RepositoryReviewerSettingsAutomergeAcceptedVerdictsRequestChanges:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositoryReviewerTriggerMode.
+const (
+	RepositoryReviewerTriggerModeManual RepositoryReviewerTriggerMode = "manual"
+	RepositoryReviewerTriggerModePush   RepositoryReviewerTriggerMode = "push"
+	RepositoryReviewerTriggerModeReady  RepositoryReviewerTriggerMode = "ready"
+)
+
+// Valid indicates whether the value is a known member of the RepositoryReviewerTriggerMode enum.
+func (e RepositoryReviewerTriggerMode) Valid() bool {
+	switch e {
+	case RepositoryReviewerTriggerModeManual:
+		return true
+	case RepositoryReviewerTriggerModePush:
+		return true
+	case RepositoryReviewerTriggerModeReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsApiVersion.
+const (
+	RepositorySettingsApiVersionDash0Comv1alpha1 RepositorySettingsApiVersion = "dash0.com/v1alpha1"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsApiVersion enum.
+func (e RepositorySettingsApiVersion) Valid() bool {
+	switch e {
+	case RepositorySettingsApiVersionDash0Comv1alpha1:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsDefinitionKind.
+const (
+	RepositorySettingsDefinitionKindDarkplaneRepositorySettings RepositorySettingsDefinitionKind = "DarkplaneRepositorySettings"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsDefinitionKind enum.
+func (e RepositorySettingsDefinitionKind) Valid() bool {
+	switch e {
+	case RepositorySettingsDefinitionKindDarkplaneRepositorySettings:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RepositorySettingsRequestKind.
+const (
+	RepositorySettingsRequestKindDarkplaneRepositorySettings RepositorySettingsRequestKind = "DarkplaneRepositorySettings"
+)
+
+// Valid indicates whether the value is a known member of the RepositorySettingsRequestKind enum.
+func (e RepositorySettingsRequestKind) Valid() bool {
+	switch e {
+	case RepositorySettingsRequestKindDarkplaneRepositorySettings:
 		return true
 	default:
 		return false
@@ -10446,13 +10731,13 @@ func (e SyntheticCheckRetriesLinearKind) Valid() bool {
 
 // Defines values for SyntheticCheckRetriesOffKind.
 const (
-	Off SyntheticCheckRetriesOffKind = "off"
+	SyntheticCheckRetriesOffKindOff SyntheticCheckRetriesOffKind = "off"
 )
 
 // Valid indicates whether the value is a known member of the SyntheticCheckRetriesOffKind enum.
 func (e SyntheticCheckRetriesOffKind) Valid() bool {
 	switch e {
-	case Off:
+	case SyntheticCheckRetriesOffKindOff:
 		return true
 	default:
 		return false
@@ -10822,6 +11107,24 @@ func (e TopologyNodeKind) Valid() bool {
 	case TopologyNodeKindService:
 		return true
 	case TopologyNodeKindUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TriggerMode.
+const (
+	TriggerModeAuto   TriggerMode = "auto"
+	TriggerModeManual TriggerMode = "manual"
+)
+
+// Valid indicates whether the value is a known member of the TriggerMode enum.
+func (e TriggerMode) Valid() bool {
+	switch e {
+	case TriggerModeAuto:
+		return true
+	case TriggerModeManual:
 		return true
 	default:
 		return false
@@ -12469,6 +12772,14 @@ type AwsMetricScrapeConfigSpec struct {
 // AxisScale defines model for AxisScale.
 type AxisScale string
 
+// BotMode How much authority the auto-approval bot has on a repository, in
+// ascending order of autonomy.
+// - `off`: The bot does not evaluate pull requests.
+// - `dry_run`: The bot evaluates and records a decision but never writes back to the provider.
+// - `auto_approve`: The bot may post an approving review on a passing pull request, but never merges.
+// - `auto_merge`: The bot may approve and merge a passing pull request without a human.
+type BotMode string
+
 // CardholderDataRedactionSettings Opt-in detection and redaction of payment card numbers and related sensitive data in ingested
 // telemetry, applied before Dash0 persists the signal. Matching values are masked or replaced in
 // place; signals are never dropped. Detection is pattern-based and cannot catch encoded, encrypted,
@@ -12715,6 +13026,14 @@ type DarkplanePullRequestEvaluationAgenticWorkflowTriggerSpec struct {
 	// Repositories Repository full names to match. When omitted or empty, all repositories match.
 	Repositories *[]string `json:"repositories,omitempty"`
 }
+
+// DarkplaneRepositoryConnection Whether the organization's integrations still reach a repository. A
+// repository that loses its connection keeps its record, settings and
+// history; this value only marks it.
+// - `connected`: A live GitHub integration in the organization lists the repository among the repositories its installation grants.
+// - `disconnected`: No live integration in the organization lists the repository, and no live GitHub integration's list may have been cut at a sync limit. Stored lists leave out archived repositories, so an archived repository the installation still covers also reads `disconnected`.
+// - `unknown`: The repository's reach cannot be decided: a live GitHub integration in the organization carries no repository list yet or one that may have been cut to a sync limit (a recorded total, or at least 1,000 entries without one), the organization's integrations could not be read, or the repository is on GitLab, whose reach is not checked.
+type DarkplaneRepositoryConnection string
 
 // DashboardAnnotations defines model for DashboardAnnotations.
 type DashboardAnnotations struct {
@@ -13222,6 +13541,32 @@ type ErrorAssertionSpec struct {
 type ErrorResponse struct {
 	Error Error `json:"error"`
 }
+
+// EvalToolId A tool the evaluation agent may call to gather evidence when scoring a
+// pull request. The full inventory a criterion's `tools` selection draws
+// from.
+// - `read_file`: A file's contents at the head commit.
+// - `list_files`: Tracked files, optionally under a directory.
+// - `grep`: POSIX ERE search across tracked files.
+// - `git_log`: Commit history, optionally per path.
+// - `git_diff_base`: The diff against the merge base.
+// - `git_blame`: Line-by-line authorship for a file.
+// - `read_steering_files`: CLAUDE.md / AGENTS.md and their @-references from the base branch.
+// - `pr_metadata`: Title, body, author, draft state.
+// - `pr_files`: Changed files with status and line counts.
+// - `pr_checks`: CI check runs for the head commit.
+// - `pr_reviews_and_comments`: Reviews, inline comments, conversation comments.
+// - `commit_verification`: Per-commit signature-verification state, author, and signed-commit counts.
+// - `slo_status`: Lists the SLOs in the repository's datasets, then reads the state of the ones the criterion's prompt names: target, error budget remaining, fast and slow burn rate, and success ratio. Read now in a live evaluation and as of the original evaluation in a replay; values that are missing at that time are reported as unavailable.
+// - `check_rule_status`: Lists the check rules in the repository's datasets, then reads the state of the ones the criterion's prompt names: whether each is enabled and its failed checks still open, with status, summary and start time. Read now in a live evaluation and as of the original evaluation in a replay.
+// - `coding_session_harness`: AI coding harnesses used by the PR author on this branch.
+// - `coding_session_tools_and_skills`: Tool and skill usage and status counts from the PR author's coding sessions on this branch.
+// - `coding_session_engineering_activity`: Classified activities such as planning, reviewing, or debugging, not proof of completed tasks.
+// - `path_authorship`: Degree-of-authorship, first authorship, change counts.
+// - `author_delivery_record`: The author's merged, cleanly-merged, and later-reverted pull request counts in this repository.
+// - `review_agent_stats`: Tracked AI review agents' comment and resolution counts.
+// - `evaluation_history`: This repository's auto-approval run statistics.
+type EvalToolId string
 
 // ExecuteSqlRequest defines model for ExecuteSqlRequest.
 type ExecuteSqlRequest struct {
@@ -18038,6 +18383,30 @@ type LinearTeamScope struct {
 // - `remove`: The entity was removed.
 type LinearWebhookAction string
 
+// ListRepositoriesResponse defines model for ListRepositoriesResponse.
+type ListRepositoriesResponse struct {
+	Cursors NextCursors            `json:"cursors"`
+	Items   []RepositoryDefinition `json:"items"`
+}
+
+// ListRepositorySettingsVersionsResponse Every stored version of a repository's auto-approval settings, newest
+// first. Each entry is the full settings document as it was saved, so a
+// reader can show what a version actually said and restore it without a
+// second request.
+//
+// Not paginated: the history is capped server-side at the 50 most recent
+// versions, and older ones are deleted as new ones arrive.
+//
+// A repository that has never been configured has no versions at all and
+// returns an empty list — distinct from the settings endpoint, which
+// answers the documented defaults rather than nothing.
+type ListRepositorySettingsVersionsResponse struct {
+	// Versions The stored versions, newest first. `metadata.labels."dash0.com/version"`
+	// carries the version number, and `metadata.annotations` when it was
+	// saved and by whom.
+	Versions []RepositorySettingsDefinition `json:"versions"`
+}
+
 // LogRecord defines model for LogRecord.
 type LogRecord struct {
 	Attributes []KeyValue `json:"attributes"`
@@ -18774,6 +19143,29 @@ type PagerDutyConfig struct {
 	Key string `json:"key"`
 	Url string `json:"url"`
 }
+
+// PathRuleLevel How much authority the bot has over a pull request whose changed paths
+// resolve to this level, in ascending order of autonomy. Mirrors `BotMode`
+// with `off` replaced by `protected`: `off` means "never evaluate", which
+// is a repository-wide switch rather than something a path can express,
+// whereas `protected` is the existing hard gate — the least autonomous
+// outcome a path can produce.
+// - `protected`: Always held for human review, and not scored at all — no sandbox, no model call.
+// - `dry_run`: Scored and recorded, but never written back to the provider.
+// - `auto_approve`: May post an approving review on a passing pull request, but never merges.
+// - `auto_merge`: May approve and merge a passing pull request.
+type PathRuleLevel string
+
+// PathRuleUnauthorizedFallback What an author-scoped rule does about a pull request opened by someone it
+// does NOT name. Only meaningful alongside `authors`.
+// - `apply_global`: The rule does not apply at all, so its paths fall back to the repository's `botMode` exactly as if the rule did not exist.
+// - `dry_run`: The rule holds those paths at `dry_run` — scored and recorded, never written back.
+// - `protected`: The rule holds those paths for human review, without scoring them.
+//
+// None of these can RAISE authority: `dry_run` and `protected` both sit at or
+// below every `botMode`, so an unauthorized author can only ever come out at
+// or below what the repository already grants them.
+type PathRuleUnauthorizedFallback string
 
 // PinnedRetentionClass The retention of profiling data: always 30 days, not customer-selectable.
 type PinnedRetentionClass string
@@ -19835,6 +20227,447 @@ type QueryError struct {
 // - `y` - years
 type RelativeTime = string
 
+// RepositoryDefinition A repository Darkplane observes through provider webhooks, in the CRD
+// envelope.
+//
+// Shares the `DarkplaneRepository` kind with `DarkplaneRepositoryDefinition`
+// because it is the same entity seen one layer up: this adds the per-region
+// observations (open pull requests, cycle time) to the repository's
+// identity. The two are therefore not distinguishable by `kind` alone —
+// tell them apart by the endpoint that returned them, or by
+// `spec.openPullRequests`, which only this one carries.
+type RepositoryDefinition struct {
+	Kind RepositoryDefinitionKind `json:"kind"`
+
+	// Metadata Identity for a repository. `name` is the human-readable `account/name`
+	// slug (e.g. `acme/api`); the server-set id lives in
+	// `labels."dash0.com/id"`.
+	Metadata RepositoryMetadata `json:"metadata"`
+
+	// Spec The observable state of a repository Darkplane watches.
+	Spec RepositorySpec `json:"spec"`
+}
+
+// RepositoryDefinitionKind defines model for RepositoryDefinition.Kind.
+type RepositoryDefinitionKind string
+
+// RepositoryMetadata Identity for a repository. `name` is the human-readable `account/name`
+// slug (e.g. `acme/api`); the server-set id lives in
+// `labels."dash0.com/id"`.
+type RepositoryMetadata struct {
+	// Annotations Timestamp annotations shared by every Darkplane CRD resource.
+	Annotations ResourceAnnotations `json:"annotations"`
+
+	// Labels Identity labels shared by every Darkplane CRD resource.
+	Labels ResourceLabels `json:"labels"`
+
+	// Name The repository's human-readable `account/name` slug.
+	Name string `json:"name"`
+}
+
+// RepositoryPathRule Sets the bot's authority over the paths it matches, so one area of a
+// repository can run ahead of (or behind) the repository-wide `botMode` —
+// e.g. a proof-of-concept directory on `auto_merge` and an infrastructure
+// directory `protected`, while the rest of the repository stays `dry_run`.
+//
+// Approving and merging act on a whole pull request, so a rule cannot apply
+// to part of one. Instead, every changed path resolves to a level — the
+// least autonomous level among the rules matching that path, or the
+// repository's `botMode` when no rule matches it — and the pull request
+// runs at the least autonomous level across all of its changed paths. A
+// change that spans both a rule's paths and ungoverned ones is therefore
+// governed by whichever is more restrictive, never by the rule alone.
+//
+// Because `protected` is the bottom of that ordering, the protected-path
+// hard gate is not a separate mechanism: a pull request touching a
+// `protected` path resolves to `protected` and is held for review whatever
+// the other paths would have allowed.
+//
+// Rules never override the `off` bot mode: a repository with the bot off is
+// not evaluated at all, so there is no run for a rule to govern.
+//
+// A rule may additionally be scoped to named `authors`, so an area can run
+// ahead of the repository default for the people who own it without
+// raising it for everyone who opens a pull request there — and
+// `unauthorizedFallback` says what happens to everyone else, which is how
+// an area can also run BEHIND a permissive repository for all but the
+// people who own it.
+type RepositoryPathRule struct {
+	// Authors Restricts the rule to pull requests opened by these authors,
+	// identified by their id at the provider (the GitHub user id, the
+	// GitLab user id) — never the login, which its holder can change and
+	// which another account can then claim. Omit the field to apply the
+	// rule to everyone; that is the behaviour of every rule written before
+	// this field existed.
+	//
+	// What happens to an author the rule does NOT name is
+	// `unauthorizedFallback`'s answer, and it defaults to `apply_global`:
+	// the rule does not apply, and the paths it covers fall back to
+	// whatever else governs them — usually the repository's `botMode`. So
+	// by default an author-scoped rule RAISES authority for the people it
+	// names and changes nothing for anyone else, which is what lets the
+	// engineers who own an area run at `auto_approve` while the repository
+	// as a whole stays in `dry_run`.
+	//
+	// That default is the wrong one when the repository ALREADY grants the
+	// level the rule names. A repository on `auto_approve` with an
+	// `auto_approve` rule scoped to two people changes nothing for anybody:
+	// everyone else keeps being auto-approved through the repository
+	// default. Set `unauthorizedFallback` to `dry_run` (or `protected`) to
+	// hold the area back for everyone the rule does not name.
+	//
+	// The same reading applies to an author-scoped `protected` rule, which
+	// is easily misread: it holds THOSE authors' pull requests for review
+	// and, under the default fallback, leaves everybody else governed by
+	// the repository default. To protect a path from everyone — the usual
+	// intent — leave `authors` off.
+	//
+	// Scoping cannot manufacture authority the repository does not already
+	// grant somewhere: a rule can no more raise a repository whose bot is
+	// `off` than any other rule can.
+	Authors *[]string `json:"authors,omitempty"`
+
+	// Level The authority the bot has over the paths this rule matches.
+	Level PathRuleLevel `json:"level"`
+
+	// Name A human label for the rule, shown wherever the rule set is listed or
+	// diffed. Purely descriptive: nothing resolves or matches on it, two
+	// rules may share one, and a rule written before this field existed
+	// simply has none — readers fall back to describing the rule by its
+	// paths.
+	Name *string `json:"name,omitempty"`
+
+	// Paths Glob patterns matched against the changed paths (`**` spans segments,
+	// `*` and `?` stay within one, anchored to the whole path,
+	// case-sensitive — the `.gitignore`/CODEOWNERS dialect). Bounded
+	// because each pattern is compiled and evaluated against every changed
+	// path.
+	Paths []string `json:"paths"`
+
+	// SoftRiskCriteria The criteria the paths this rule matches are scored against, in place
+	// of the repository's `softRiskCriteria`. Omit the field to score them
+	// against the repository's criteria, or against another matching rule's
+	// own criteria, as every rule written before this field existed does.
+	// Each criterion has the same shape as a repository criterion, and the
+	// repository's `softThreshold` is the bar for this set too. A save is
+	// rejected when a criterion here has a blank `name` or `prompt`, a
+	// `multiplier` of 0 or less, or a `threshold` outside 0 to 100.
+	//
+	// The rule follows the same author scoping as its `level`: its criteria
+	// apply to a pull request whenever the rule governs that pull
+	// request's author, and not otherwise.
+	//
+	// A pull request can touch paths governed by different criteria sets.
+	// Each set it touches is scored on its own against the threshold, and
+	// the pull request passes only when every set passes. A path no rule
+	// with criteria matches contributes the repository's criteria. So
+	// touching more areas can only make the bot stricter. A criterion that
+	// appears verbatim in two sets is scored once.
+	//
+	// Not yet honoured for every organization. Where it is not, the field
+	// is stored but ignored, and every path is scored against the
+	// repository's criteria.
+	SoftRiskCriteria *[]SoftRiskCriterion `json:"softRiskCriteria,omitempty"`
+
+	// SuppressComments When `true`, a pull request touching a path this rule matches has the
+	// bot's comments withheld from the provider — the run is recorded and
+	// visible in the Dash0 dashboard, but nothing is posted where a human
+	// reviewer would see it, so the bot's read cannot anchor theirs.
+	//
+	// Orthogonal to `level`: it changes what the bot SAYS, not what it may
+	// DO. The check run, and any approval or merge the level permits, are
+	// unaffected. Suppression is sticky across a pull request's paths — a
+	// change touching one suppressed path is silent even where its other
+	// paths would have commented. Defaults to `false`.
+	SuppressComments *bool `json:"suppressComments,omitempty"`
+
+	// UnauthorizedFallback What the rule does about authors it does not name. Defaults to
+	// `apply_global`, the behaviour of every rule written before this
+	// field existed. Rejected without `authors`, where it would describe
+	// a case that cannot arise.
+	UnauthorizedFallback *PathRuleUnauthorizedFallback `json:"unauthorizedFallback,omitempty"`
+}
+
+// RepositoryProvider The source-control provider a repository lives on.
+// - `github`: GitHub.
+// - `gitlab`: GitLab.
+type RepositoryProvider string
+
+// RepositoryReviewerSettings Repository-level controls for the Darkplane code reviewer. Independent of
+// `botMode`: enabling reviews does not grant permission to approve or merge.
+// An omitted configuration resolves to both controls disabled.
+type RepositoryReviewerSettings struct {
+	// AutomergeAcceptedVerdicts Validated reviewer decisions that permit AutoMerge, each listed once. Incomplete reviews never permit it.
+	AutomergeAcceptedVerdicts *[]RepositoryReviewerSettingsAutomergeAcceptedVerdicts `json:"automergeAcceptedVerdicts,omitempty"`
+
+	// CommentRequests Whether a `/review` comment from the pull request's author or a repository writer
+	// requests a review. When `false`, Darkplane ignores those comments; requests from the
+	// Dash0 UI and API still run.
+	CommentRequests *bool `json:"commentRequests,omitempty"`
+
+	// Enabled Whether Darkplane may schedule code reviews for this repository.
+	Enabled bool `json:"enabled"`
+
+	// RequireForAutomerge Whether AutoMerge waits for a completed, validated review of the
+	// exact revision it is evaluating. Requires `enabled` to be `true`.
+	RequireForAutomerge bool `json:"requireForAutomerge"`
+
+	// SettleDelaySeconds Delay automatic reviews to let commits settle. Explicit requests start immediately.
+	SettleDelaySeconds *int32 `json:"settleDelaySeconds,omitempty"`
+
+	// SkipAfterHumanReview Stop automatic reviews after a human takes over. Explicit requests still run.
+	SkipAfterHumanReview *bool `json:"skipAfterHumanReview,omitempty"`
+
+	// TriggerMode Review a PR when it first becomes ready, after new commits, or only on explicit request.
+	TriggerMode *RepositoryReviewerTriggerMode `json:"triggerMode,omitempty"`
+}
+
+// RepositoryReviewerSettingsAutomergeAcceptedVerdicts defines model for RepositoryReviewerSettings.AutomergeAcceptedVerdicts.
+type RepositoryReviewerSettingsAutomergeAcceptedVerdicts string
+
+// RepositoryReviewerTriggerMode Review a PR when it first becomes ready, after new commits, or only on explicit request.
+type RepositoryReviewerTriggerMode string
+
+// RepositorySettingsApiVersion The version of the settings document's shape. `dash0.com/v1alpha1` is the
+// only version, and every read returns it. A later version will change the
+// shape; a client written against this one can tell it apart by this field.
+type RepositorySettingsApiVersion string
+
+// RepositorySettingsDefinition A repository's auto-approval bot configuration, in the CRD envelope.
+type RepositorySettingsDefinition struct {
+	// ApiVersion The version of the settings document's shape. `dash0.com/v1alpha1` is the
+	// only version, and every read returns it. A later version will change the
+	// shape; a client written against this one can tell it apart by this field.
+	ApiVersion RepositorySettingsApiVersion     `json:"apiVersion"`
+	Kind       RepositorySettingsDefinitionKind `json:"kind"`
+
+	// Metadata Identity for a repository's settings. `name` is the `account/name` slug
+	// of the repository the settings belong to; `labels."dash0.com/id"` carries
+	// that repository's id.
+	Metadata RepositorySettingsMetadata `json:"metadata"`
+
+	// Spec The reviewer and auto-approval configuration for a repository. A repository that
+	// has never been configured uses the documented defaults (bot `off`, manual
+	// trigger, reviewer disabled, the starting scoring criteria).
+	Spec RepositorySettingsSpec `json:"spec"`
+
+	// UsesDefaultCriteria Whether the effective repository-level soft risk criteria match the
+	// current factory defaults. Criterion and tool ordering do not matter;
+	// weights are compared as normalized shares, allowing float32 rounding.
+	// Names, prompts, tool selections, per-criterion floors, and criterion
+	// count must match. Omitted tools mean all tools; an empty list means
+	// none. Other settings, including path-rule criteria, are not compared.
+	// Computed by the server on read, never persisted. Values supplied on
+	// write are ignored. May be absent.
+	UsesDefaultCriteria *bool `json:"usesDefaultCriteria,omitempty"`
+}
+
+// RepositorySettingsDefinitionKind defines model for RepositorySettingsDefinition.Kind.
+type RepositorySettingsDefinitionKind string
+
+// RepositorySettingsMetadata Identity for a repository's settings. `name` is the `account/name` slug
+// of the repository the settings belong to; `labels."dash0.com/id"` carries
+// that repository's id.
+type RepositorySettingsMetadata struct {
+	// Annotations Timestamp annotations shared by every Darkplane CRD resource.
+	Annotations ResourceAnnotations `json:"annotations"`
+
+	// Labels Identity labels shared by every Darkplane CRD resource.
+	Labels ResourceLabels `json:"labels"`
+
+	// Name The `account/name` slug of the repository the settings belong to.
+	Name string `json:"name"`
+}
+
+// RepositorySettingsRequest The write-path body for replacing a repository's auto-approval settings.
+// `metadata` is server-managed apart from `labels."dash0.com/version"`, the
+// version the write is based on; everything else a caller puts in it is
+// ignored.
+type RepositorySettingsRequest struct {
+	// ApiVersion Optional. When omitted, the body is read as `dash0.com/v1alpha1`. Any
+	// other value is rejected with 400.
+	ApiVersion *RepositorySettingsApiVersion `json:"apiVersion,omitempty"`
+	Kind       RepositorySettingsRequestKind `json:"kind"`
+
+	// Metadata The one piece of metadata a write may carry: the optimistic concurrency
+	// token in `labels."dash0.com/version"`. Send the version you read (a
+	// positive integer) to reject the write if the settings changed since.
+	// An API token may omit it, or send `0`, to overwrite unconditionally.
+	Metadata *RepositorySettingsRequestMetadata `json:"metadata,omitempty"`
+
+	// Spec The reviewer and auto-approval configuration for a repository. A repository that
+	// has never been configured uses the documented defaults (bot `off`, manual
+	// trigger, reviewer disabled, the starting scoring criteria).
+	Spec RepositorySettingsSpec `json:"spec"`
+}
+
+// RepositorySettingsRequestKind defines model for RepositorySettingsRequest.Kind.
+type RepositorySettingsRequestKind string
+
+// RepositorySettingsRequestMetadata The one piece of metadata a write may carry: the optimistic concurrency
+// token in `labels."dash0.com/version"`. Send the version you read (a
+// positive integer) to reject the write if the settings changed since.
+// An API token may omit it, or send `0`, to overwrite unconditionally.
+type RepositorySettingsRequestMetadata struct {
+	// Labels Identity labels shared by every Darkplane CRD resource.
+	Labels *ResourceLabels `json:"labels,omitempty"`
+}
+
+// RepositorySettingsSpec The reviewer and auto-approval configuration for a repository. A repository that
+// has never been configured uses the documented defaults (bot `off`, manual
+// trigger, reviewer disabled, the starting scoring criteria).
+type RepositorySettingsSpec struct {
+	// AdditionalApprovalMessage Free-text Markdown appended to the bot's approval comment. Empty by default.
+	AdditionalApprovalMessage *string `json:"additionalApprovalMessage,omitempty"`
+
+	// BotMode Defaults to `off` until a human enables the bot.
+	BotMode BotMode `json:"botMode"`
+
+	// FastTrackReverts When `true`, a pull request that exactly reverts a pull request the
+	// bot approved is approved by a deterministic revert check instead of
+	// LLM scoring. Anything that is not a verified exact revert is evaluated
+	// normally. When `false` or omitted, revert markers are ignored.
+	// Defaults to `false`.
+	FastTrackReverts *bool `json:"fastTrackReverts,omitempty"`
+
+	// IgnoredChecks Check suites automatic triggering does not wait for before it starts
+	// an evaluation, by `RepositoryCheckSuite.key`: a pending or failed
+	// check run in a suite named here, or a commit status named here,
+	// neither holds nor skips the evaluation, and a required check that
+	// reported in one is not awaited. A suite not named here is waited
+	// for, so a newly added workflow or app is waited for by default.
+	// Entries that are not a suite key, such as the check-run names this
+	// field held before, match nothing.
+	//
+	// Only consulted while `waitForChecks` is `true`, and only on GitHub.
+	// It does not lower what an approval or merge requires: before acting,
+	// the bot still re-reads every check on the evaluated commit, so an
+	// ignored check that is still running holds the approval until it
+	// passes. Empty by default.
+	IgnoredChecks *[]string `json:"ignoredChecks,omitempty"`
+
+	// PathRules Per-path authority levels — the single place to express both the
+	// protected hard gate and a raised or lowered bot mode. Empty by
+	// default, so `botMode` alone governs the repository.
+	//
+	// A pull request runs at the LEAST autonomous level across every path it
+	// changes: each changed path takes the most restrictive rule matching it,
+	// or `botMode` when none does, and the run takes the minimum of those. So
+	// a change that also touches a path no rule covers falls back to the
+	// repository default — a rule cannot lend its authority to files outside
+	// it. Ordering is `protected < dry_run < auto_approve < auto_merge`.
+	//
+	// The API validates and stores rules but does not normalize them. A
+	// client is responsible for sending patterns it means: an empty or
+	// whitespace-only pattern is rejected (it would match nothing while
+	// looking configured), a rule needs at least one pattern, and the
+	// deprecated `protectedPaths` should be kept in step with the `protected`
+	// rules rather than emptied.
+	PathRules *[]RepositoryPathRule `json:"pathRules,omitempty"`
+
+	// ProtectedPaths Glob patterns whose changes are a hard gate — a matching change is
+	// always rejected.
+	//
+	// SUPERSEDED by a `pathRules` entry at level `protected`, which says the
+	// same thing. This field is folded into the rule set on resolution, so
+	// existing configuration keeps working untouched, and it is removed once
+	// every reader prefers `pathRules`.
+	//
+	// Keep it in step with the `protected` rules rather than emptying it.
+	// Nothing re-derives one field from the other on write.
+	ProtectedPaths []string `json:"protectedPaths"`
+
+	// RepositoryKnowledge Operator-authored, trusted Markdown describing the repository for the
+	// scoring and classification agents. Empty by default.
+	RepositoryKnowledge *string `json:"repositoryKnowledge,omitempty"`
+
+	// Reviewer Repository-level controls for the Darkplane code reviewer. Independent of
+	// `botMode`: enabling reviews does not grant permission to approve or merge.
+	// An omitted configuration resolves to both controls disabled.
+	Reviewer *RepositoryReviewerSettings `json:"reviewer,omitempty"`
+
+	// SoftRiskCriteria The weighted scoring dimensions. At least one is required.
+	SoftRiskCriteria []SoftRiskCriterion `json:"softRiskCriteria"`
+
+	// SoftThreshold The score a pull request must reach for the bot to act.
+	SoftThreshold float32 `json:"softThreshold"`
+
+	// SuppressComments The repository-wide default for withholding the bot's comments from
+	// the provider. When `true`, the bot evaluates and records decisions
+	// but posts no comments — runs are visible only in the Dash0 dashboard,
+	// so a human reviewer's judgement is not anchored by the bot's read.
+	//
+	// Orthogonal to `botMode`: it changes what the bot SAYS, not what it
+	// may DO. The check run, and any approval or merge the mode permits, are
+	// unaffected. A `pathRules` entry can withhold comments for the paths it
+	// matches even when this default is `false`; this default cannot be
+	// overridden back to commenting per path. Defaults to `false`.
+	SuppressComments *bool `json:"suppressComments,omitempty"`
+
+	// TriggerMode Defaults to `manual`.
+	TriggerMode TriggerMode `json:"triggerMode"`
+
+	// WaitForChecks Whether automatic triggering waits for the head commit's CI checks to
+	// settle before evaluating. Only consulted in `auto` trigger mode.
+	// Defaults to `true`.
+	WaitForChecks bool `json:"waitForChecks"`
+}
+
+// RepositorySpec The observable state of a repository Darkplane watches.
+type RepositorySpec struct {
+	// Account The owning account (GitHub org/user or GitLab namespace).
+	Account string `json:"account"`
+
+	// AutoApprovalRate Share of the bot's own decisions over the trailing 30 days that were
+	// approvals, as a percentage — `approved / (approved + rejected)`.
+	//
+	// Counts what the bot DECIDED, not what it wrote back, so a `dry_run`
+	// repository reports a rate too; that is the number that says whether
+	// enabling the bot would be uneventful. `null` when the bot reached no
+	// decision in the window, which is every repository whose bot is
+	// `off`.
+	AutoApprovalRate *float32 `json:"autoApprovalRate"`
+
+	// BotMode The repository's effective auto-approval bot mode (defaults to `off` when never configured).
+	BotMode BotMode `json:"botMode"`
+
+	// Connection Whether a live integration still reaches the repository; `unknown`
+	// when that cannot be decided. May be absent.
+	Connection *DarkplaneRepositoryConnection `json:"connection,omitempty"`
+
+	// Enabled Whether the repository is live for this organization. A disabled
+	// repository keeps its configured `botMode` but receives no deliveries,
+	// so the bot acts on none of its pull requests. May be absent.
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// InstanceUrl Base URL of the provider instance the repository lives on,
+	// `https://<host>`, so a link to the repository addresses the
+	// integration's own host rather than the public one. Absent while the
+	// GitHub or GitLab integration does not report it.
+	InstanceUrl *string `json:"instanceUrl,omitempty"`
+
+	// Name The repository name within the account.
+	Name string `json:"name"`
+
+	// OpenPullRequests Number of currently open pull requests observed for the repository.
+	OpenPullRequests int `json:"openPullRequests"`
+
+	// Provider The source-control provider a repository lives on.
+	// - `github`: GitHub.
+	// - `gitlab`: GitLab.
+	Provider RepositoryProvider `json:"provider"`
+
+	// Synthetic True for a demo repository. It exists on no provider and its settings
+	// cannot be saved. Absent means false.
+	Synthetic *bool `json:"synthetic,omitempty"`
+
+	// TimeToMergeP50Seconds Median cycle time from branch inception (the first commit's
+	// authored time, falling back to `openedAt`) to merge over the
+	// trailing 30 days, in seconds; `null` when nothing merged in the
+	// window.
+	TimeToMergeP50Seconds *int `json:"timeToMergeP50Seconds"`
+}
+
 // Resource defines model for Resource.
 type Resource struct {
 	Attributes []KeyValue `json:"attributes"`
@@ -19862,6 +20695,22 @@ type Resource struct {
 	Orchestrations *ResourceOrchestrations `json:"orchestrations,omitempty"`
 }
 
+// ResourceAnnotations Timestamp annotations shared by every Darkplane CRD resource.
+type ResourceAnnotations struct {
+	// Dash0ComcreatedAt When the resource was first recorded (server-set, read-only).
+	Dash0ComcreatedAt *time.Time `json:"dash0.com/created-at,omitempty"`
+
+	// Dash0ComcreatedBy The member id of the user who saved this resource (server-set,
+	// read-only). Empty for a version written by a machine token, by
+	// desired-state configuration, or before this field was recorded —
+	// readers must render those as an unattributed change rather than as
+	// a user they cannot resolve.
+	Dash0ComcreatedBy *string `json:"dash0.com/created-by,omitempty"`
+
+	// Dash0ComupdatedAt When the resource was last updated (server-set, read-only).
+	Dash0ComupdatedAt *time.Time `json:"dash0.com/updated-at,omitempty"`
+}
+
 // ResourceCloud Resource cloud identified based on the `cloud.provider` resource attribute. Some sample values:
 // - alibaba_cloud
 // - aws
@@ -19880,6 +20729,25 @@ type ResourceDeploymentEnvironment = string
 
 // ResourceDeploymentEnvironments defines model for ResourceDeploymentEnvironments.
 type ResourceDeploymentEnvironments = []ResourceDeploymentEnvironment
+
+// ResourceLabels Identity labels shared by every Darkplane CRD resource.
+type ResourceLabels struct {
+	// Dash0Comid The id of the resource (server-set, read-only).
+	Dash0Comid *string `json:"dash0.com/id,omitempty"`
+
+	// Dash0Comorigin The external identifier the resource originated from, when one exists.
+	Dash0Comorigin *string `json:"dash0.com/origin,omitempty"`
+
+	// Dash0Comversion Optimistic concurrency token, populated only for versioned Darkplane
+	// resources — currently repository settings alone; the other resource
+	// types sharing this schema never set it. Server-set on read, and the
+	// version a write is based on: a write carrying a positive version
+	// that is no longer the latest is rejected as superseded.
+	// An API token may omit it, or send `0`, to skip the precondition; a
+	// Dash0 UI session always has it checked. A value that is present but
+	// is not a non-negative integer is rejected as a bad request.
+	Dash0Comversion *string `json:"dash0.com/version,omitempty"`
+}
 
 // ResourceLanguage Resource language identified based on the `telemetry.sdk.language` resource attribute. Some sample values:
 // - cpp
@@ -21426,6 +22294,32 @@ type SloTimeWindow struct {
 
 	// IsRolling Whether this is a rolling time window. Must be true — only rolling windows are currently supported.
 	IsRolling *bool `json:"isRolling,omitempty"`
+}
+
+// SoftRiskCriterion A single weighted dimension of the soft risk score. Each criterion is
+// scored on a fixed 0-100 scale; the pull request's score is the
+// multiplier-weighted sum of each criterion's value, compared against the
+// repository's soft threshold to decide whether the bot may act.
+type SoftRiskCriterion struct {
+	// Multiplier The criterion's weight in the overall score.
+	Multiplier float32 `json:"multiplier"`
+
+	// Name The criterion's display name.
+	Name string `json:"name"`
+
+	// Prompt The guidance handed to the scorer agent for this criterion.
+	Prompt string `json:"prompt"`
+
+	// Threshold An optional per-criterion floor on the fixed 0-100 scale. A criterion
+	// scoring strictly below its floor rejects the evaluation on its own,
+	// regardless of the multiplier-weighted total — a non-compensatory gate,
+	// so strong scores elsewhere cannot offset it. Omit for no gate.
+	Threshold *float32 `json:"threshold,omitempty"`
+
+	// Tools The tool ids the criterion's scorer agent may call. Defaults to every
+	// tool when omitted; an empty array is a deliberate "judge from metadata
+	// only" choice, distinct from omission.
+	Tools *[]EvalToolId `json:"tools,omitempty"`
 }
 
 // SourceMapIntegration defines model for SourceMapIntegration.
@@ -23278,6 +24172,13 @@ type TracingSettings struct {
 	AddTracingHeaders bool `json:"addTracingHeaders"`
 }
 
+// TriggerMode When the bot evaluates a pull request. Orthogonal to the bot mode: the
+// trigger decides *when* an evaluation runs, the bot mode decides *what*
+// the bot may do with the result.
+// - `manual`: Evaluates only when a human triggers it.
+// - `auto`: Evaluates automatically once the pull request's CI checks have settled.
+type TriggerMode string
+
 // UpdateMemberRoleRequest defines model for UpdateMemberRoleRequest.
 type UpdateMemberRoleRequest struct {
 	// Role The member's role in the organization
@@ -23609,6 +24510,15 @@ type WebhookConfig struct {
 	Url             string             `json:"url"`
 }
 
+// Limit defines model for Limit.
+type Limit = int
+
+// Provider defines model for Provider.
+type Provider = []RepositoryProvider
+
+// RepositoryId defines model for RepositoryId.
+type RepositoryId = string
+
 // GetApiAgent0CustomSkillsParams defines parameters for GetApiAgent0CustomSkills.
 type GetApiAgent0CustomSkillsParams struct {
 	// OriginPrefix Filter by origin prefix.
@@ -23694,6 +24604,37 @@ type PutApiAlertingCheckRulesOriginOrIdParams struct {
 type DeleteApiAwsLogGroupInstrumentationPoliciesIntegrationIdParams struct {
 	Disposition      AwsLogGroupPolicyDisposition `form:"disposition" json:"disposition"`
 	ExpectedRevision *int64                       `form:"expectedRevision,omitempty" json:"expectedRevision,omitempty"`
+}
+
+// GetApiDarkplaneRepositoriesParams defines parameters for GetApiDarkplaneRepositories.
+type GetApiDarkplaneRepositoriesParams struct {
+	// Provider Display filter applied before paging or counting. Comma-separated provider
+	// names; repeated parameters are also accepted. Omitted means all providers.
+	// Unknown values return 400. This does not restrict access to repositories.
+	Provider *Provider `form:"provider,omitempty" json:"provider,omitempty"`
+
+	// Cursor Opaque cursor for the page to return, taken from a previous response's
+	// `cursors.after` (next page) or `cursors.before` (previous page). Omit to
+	// return the first page.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Maximum number of items to return in the page.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Search Case-insensitive substring match against the repository's
+	// `account/name` slug. Omitted or empty means no filter. Applied
+	// before paging, so a page holds only matching repositories.
+	Search *string `form:"search,omitempty" json:"search,omitempty"`
+
+	// BotMode Restricts the list to repositories whose effective auto-approval bot
+	// mode is this one. Omitted or empty means no filter. Applied before
+	// paging.
+	BotMode *BotMode `form:"botMode,omitempty" json:"botMode,omitempty"`
+
+	// Connection Restricts the list to repositories whose `connection` is this one. A
+	// repository with no reported connection counts as `unknown`. Omitted
+	// or empty means no filter. Applied before paging.
+	Connection *DarkplaneRepositoryConnection `form:"connection,omitempty" json:"connection,omitempty"`
 }
 
 // GetApiDashboardsParams defines parameters for GetApiDashboards.
@@ -24260,6 +25201,9 @@ type PutApiAwsLogGroupInstrumentationPoliciesIntegrationIdJSONRequestBody = AwsL
 
 // PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody defines body for PutApiAwsMetricScrapeConfigsIntegrationId for application/json ContentType.
 type PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody = AwsMetricScrapeConfigDefinition
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody defines body for PutApiDarkplaneRepositoriesRepositoryIdSettings for application/json ContentType.
+type PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody = RepositorySettingsRequest
 
 // PostApiDashboardsJSONRequestBody defines body for PostApiDashboards for application/json ContentType.
 type PostApiDashboardsJSONRequestBody = DashboardDefinition
@@ -28445,6 +29389,66 @@ type ClientInterface interface {
 	// Corresponds with PUT /api/aws-metric-scrape-configs/{integrationId} (the `PutApiAwsMetricScrapeConfigsIntegrationId` operationId).
 	PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetApiDarkplaneRepositories List the repositories Darkplane observes for the caller's organization
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+	GetApiDarkplaneRepositories(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettings Get a repository's auto-approval bot settings
+	//
+	// The effective auto-approval configuration for a repository. A repository
+	// that has never been configured returns the documented defaults (bot
+	// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettings Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions List the stored versions of a repository's auto-approval settings
+	//
+	// The repository's settings history, newest first, each entry carrying the
+	// spec as it was saved.
+	//
+	// Read-only: restoring an older version is a normal write through the
+	// settings endpoint, so a rollback appends a new version rather than
+	// rewriting the history.
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiDashboards Receive a list of dashboards
 	//
 	// Receive a list of your organization dashboards.
@@ -31093,6 +32097,116 @@ func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationIdWithBody(ctx 
 // Corresponds with PUT /api/aws-metric-scrape-configs/{integrationId} (the `PutApiAwsMetricScrapeConfigsIntegrationId` operationId).
 func (c *generatedClient) PutApiAwsMetricScrapeConfigsIntegrationId(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiAwsMetricScrapeConfigsIntegrationIdRequest(c.Server, integrationId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositories List the repositories Darkplane observes for the caller's organization
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositories(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositoriesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettings Get a repository's auto-approval bot settings
+//
+// The effective auto-approval configuration for a repository. A repository
+// that has never been configured returns the documented defaults (bot
+// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest(c.Server, repositoryId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody(c.Server, repositoryId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettings Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *generatedClient) PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequest(c.Server, repositoryId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions List the stored versions of a repository's auto-approval settings
+//
+// The repository's settings history, newest first, each entry carrying the
+// spec as it was saved.
+//
+// Read-only: restoring an older version is a normal write through the
+// settings endpoint, so a rollback appends a new version rather than
+// rewriting the history.
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+func (c *generatedClient) GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest(c.Server, repositoryId)
 	if err != nil {
 		return nil, err
 	}
@@ -36223,6 +37337,235 @@ func NewPutApiAwsMetricScrapeConfigsIntegrationIdRequestWithBody(server string, 
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositoriesRequest constructs an http.Request for the GetApiDarkplaneRepositories method
+func NewGetApiDarkplaneRepositoriesRequest(server string, params *GetApiDarkplaneRepositoriesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Provider != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", false, "provider", *params.Provider, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Cursor != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Search != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "search", *params.Search, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.BotMode != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "botMode", *params.BotMode, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Connection != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "connection", *params.Connection, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest constructs an http.Request for the GetApiDarkplaneRepositoriesRepositoryIdSettings method
+func NewGetApiDarkplaneRepositoriesRepositoryIdSettingsRequest(server string, repositoryId RepositoryId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "repositoryId", repositoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories/%s/settings", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequest calls the generic PutApiDarkplaneRepositoriesRepositoryIdSettings builder with application/json body
+func NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequest(server string, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody(server, repositoryId, "application/json", bodyReader)
+}
+
+// NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody constructs an http.Request for the PutApiDarkplaneRepositoriesRepositoryIdSettings method, with any body, and a specified content type
+func NewPutApiDarkplaneRepositoriesRepositoryIdSettingsRequestWithBody(server string, repositoryId RepositoryId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "repositoryId", repositoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories/%s/settings", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest constructs an http.Request for the GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions method
+func NewGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsRequest(server string, repositoryId RepositoryId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "repositoryId", repositoryId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/darkplane/repositories/%s/settings/versions", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -43610,6 +44953,72 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/aws-metric-scrape-configs/{integrationId} (the `PutApiAwsMetricScrapeConfigsIntegrationId` operationId).
 	PutApiAwsMetricScrapeConfigsIntegrationIdWithResponse(ctx context.Context, integrationId openapi_types.UUID, body PutApiAwsMetricScrapeConfigsIntegrationIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiAwsMetricScrapeConfigsIntegrationIdResponse, error)
 
+	// GetApiDarkplaneRepositoriesWithResponse List the repositories Darkplane observes for the caller's organization
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+	GetApiDarkplaneRepositoriesWithResponse(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesResponse, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Get a repository's auto-approval bot settings
+	//
+	// The effective auto-approval configuration for a repository. A repository
+	// that has never been configured returns the documented defaults (bot
+	// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error)
+
+	// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Replace a repository's auto-approval bot settings
+	//
+	// Replaces the repository's auto-approval configuration wholesale and
+	// returns the stored result.
+	//
+	// Needs a token with the `*` permission. When the token belongs to a
+	// user, that user must also be an admin of the organization. Any other
+	// caller gets a `403`.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+	PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error)
+
+	// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse List the stored versions of a repository's auto-approval settings
+	//
+	// The repository's settings history, newest first, each entry carrying the
+	// spec as it was saved.
+	//
+	// Read-only: restoring an older version is a normal write through the
+	// settings endpoint, so a rollback appends a new version rather than
+	// rewriting the history.
+	//
+	// Needs a token with the `*` or `*:read` permission.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+	GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error)
+
 	// GetApiDashboardsWithResponse Receive a list of dashboards
 	//
 	// Receive a list of your organization dashboards.
@@ -46959,6 +48368,205 @@ func (r PutApiAwsMetricScrapeConfigsIntegrationIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PutApiAwsMetricScrapeConfigsIntegrationIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositoriesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ListRepositoriesResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositoriesResponse) GetJSON200() *ListRepositoriesResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositoriesResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositoriesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositoriesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositoriesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositoriesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RepositorySettingsDefinition
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON200() *RepositorySettingsDefinition {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *RepositorySettingsDefinition
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *ErrorResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON200() *RepositorySettingsDefinition {
+	return r.JSON200
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSON403() *ErrorResponse {
+	return r.JSON403
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ListRepositorySettingsVersionsResponse
+	// JSONDefault the response for an HTTP default `application/json` response
+	JSONDefault *ErrorResponse
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) GetJSON200() *ListRepositorySettingsVersionsResponse {
+	return r.JSON200
+}
+
+// GetJSONDefault returns the response for an HTTP default `application/json` response
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) GetJSONDefault() *ErrorResponse {
+	return r.JSONDefault
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -53539,6 +55147,102 @@ func (c *ClientWithResponses) PutApiAwsMetricScrapeConfigsIntegrationIdWithRespo
 	return ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp)
 }
 
+// GetApiDarkplaneRepositoriesWithResponse List the repositories Darkplane observes for the caller's organization
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repositories (the `GetApiDarkplaneRepositories` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositoriesWithResponse(ctx context.Context, params *GetApiDarkplaneRepositoriesParams, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositories(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositoriesResponse(rsp)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Get a repository's auto-approval bot settings
+//
+// The effective auto-approval configuration for a repository. A repository
+// that has never been configured returns the documented defaults (bot
+// `off`, manual trigger, the starting scoring criteria) rather than `null`.
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings (the `GetApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositoriesRepositoryIdSettings(ctx, repositoryId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *ClientWithResponses) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBodyWithResponse(ctx context.Context, repositoryId RepositoryId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	rsp, err := c.PutApiDarkplaneRepositoriesRepositoryIdSettingsWithBody(ctx, repositoryId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp)
+}
+
+// PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse Replace a repository's auto-approval bot settings
+//
+// Replaces the repository's auto-approval configuration wholesale and
+// returns the stored result.
+//
+// Needs a token with the `*` permission. When the token belongs to a
+// user, that user must also be an admin of the organization. Any other
+// caller gets a `403`.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/darkplane/repositories/{repositoryId}/settings (the `PutApiDarkplaneRepositoriesRepositoryIdSettings` operationId).
+func (c *ClientWithResponses) PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse(ctx context.Context, repositoryId RepositoryId, body PutApiDarkplaneRepositoriesRepositoryIdSettingsJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	rsp, err := c.PutApiDarkplaneRepositoriesRepositoryIdSettings(ctx, repositoryId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp)
+}
+
+// GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse List the stored versions of a repository's auto-approval settings
+//
+// The repository's settings history, newest first, each entry carrying the
+// spec as it was saved.
+//
+// Read-only: restoring an older version is a normal write through the
+// settings endpoint, so a rollback appends a new version rather than
+// rewriting the history.
+//
+// Needs a token with the `*` or `*:read` permission.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/darkplane/repositories/{repositoryId}/settings/versions (the `GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions` operationId).
+func (c *ClientWithResponses) GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse(ctx context.Context, repositoryId RepositoryId, reqEditors ...RequestEditorFn) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error) {
+	rsp, err := c.GetApiDarkplaneRepositoriesRepositoryIdSettingsVersions(ctx, repositoryId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse(rsp)
+}
+
 // GetApiDashboardsWithResponse Receive a list of dashboards
 //
 // Receive a list of your organization dashboards.
@@ -57566,6 +59270,145 @@ func ParsePutApiAwsMetricScrapeConfigsIntegrationIdResponse(rsp *http.Response) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest AwsMetricScrapeConfigDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositoriesResponse parses an HTTP response from a GetApiDarkplaneRepositoriesWithResponse call
+func ParseGetApiDarkplaneRepositoriesResponse(rsp *http.Response) (*GetApiDarkplaneRepositoriesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositoriesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListRepositoriesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsResponse parses an HTTP response from a GetApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse call
+func ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp *http.Response) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositoriesRepositoryIdSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RepositorySettingsDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse parses an HTTP response from a PutApiDarkplaneRepositoriesRepositoryIdSettingsWithResponse call
+func ParsePutApiDarkplaneRepositoriesRepositoryIdSettingsResponse(rsp *http.Response) (*PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiDarkplaneRepositoriesRepositoryIdSettingsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest RepositorySettingsDefinition
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSONDefault = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse parses an HTTP response from a GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsWithResponse call
+func ParseGetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse(rsp *http.Response) (*GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiDarkplaneRepositoriesRepositoryIdSettingsVersionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ListRepositorySettingsVersionsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

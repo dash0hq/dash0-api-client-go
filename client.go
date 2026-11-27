@@ -73,6 +73,13 @@ type Client interface {
 	UpdateAwsMetricScrapeConfig(ctx context.Context, integrationID string, cfg *AwsMetricScrapeConfigDefinition) (*AwsMetricScrapeConfigDefinition, error)
 	DeleteAwsMetricScrapeConfig(ctx context.Context, integrationID string) error
 
+	// Darkplane repositories and their AutoMerge settings
+	ListDarkplaneRepositories(ctx context.Context, search string) ([]RepositoryDefinition, error)
+	FindDarkplaneRepository(ctx context.Context, slug string) (*RepositoryDefinition, error)
+	GetDarkplaneRepositorySettings(ctx context.Context, repositoryID string) (*RepositorySettingsDefinition, error)
+	UpdateDarkplaneRepositorySettings(ctx context.Context, repositoryID string, settings *RepositorySettingsDefinition) (*RepositorySettingsDefinition, error)
+	ListDarkplaneRepositorySettingsVersions(ctx context.Context, repositoryID string) ([]RepositorySettingsDefinition, error)
+
 	// AWS log-group instrumentation policies
 	GetAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string) (*AwsLogGroupInstrumentationPolicy, error)
 	UpdateAwsLogGroupInstrumentationPolicy(ctx context.Context, integrationID string, policy *AwsLogGroupInstrumentationPolicy) (*AwsLogGroupInstrumentationPolicy, error)
