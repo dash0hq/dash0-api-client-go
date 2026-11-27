@@ -253,10 +253,13 @@ package dash0
 // PUT replaces the whole rule, and omitting spec.examples removes the stored examples.
 // Preserve dash0.com/updated-at from GET as the concurrency token for PUT; [StripTelemetryTransformationRuleServerFields] keeps it and spec.examples intact.
 //
+// The helpers below changed how they treat the dash0.com/origin label.
+//
 // [StripRecordingRuleServerFields], [StripSamplingRuleServerFields], [StripSignalToMetricsServerFields], [StripSLOServerFields], [StripSyntheticCheckServerFields], [StripTimeSeriesAggregationServerFields], and [StripViewServerFields] now keep the dash0.com/origin label.
 // The origin is set by the caller on create, so it is not a server field.
 // An SLO is the exception: the API ignores dash0.com/* labels in the request body and takes the origin from the PUT /api/slos/{originOrId} path, so a stripped SLO keeps the origin for the caller to read.
-// [ConvertPersesDashboardToDashboard] now keeps the dash0.com/origin label, and when it is set, dash0.com/id goes to the dash0.com/id label instead of metadata.dash0Extensions.id, because the API rejects a create whose origin and dash0Extensions.id differ.
+// [ConvertPersesDashboardToDashboard] now keeps the dash0.com/origin label.
+// When the origin is set and dash0.com/id differs from it, metadata.dash0Extensions.id stays nil, because the API rejects a create whose origin and dash0Extensions.id differ.
 // Code that relied on these functions to remove the origin must now delete the label itself.
 // [StripCheckRuleServerFields] still removes dash0.com/origin, because a check rule's labels are Prometheus alert labels, not its origin.
 // [PrometheusAlertRule] GetOrigin now returns the id and no longer reads the dash0.com/origin label, because the API stores a check rule's origin as its id.

@@ -363,18 +363,43 @@ func TestConvertPersesDashboardToDashboard_Labels(t *testing.T) {
 	tests := []struct {
 		name        string
 		labels      map[string]string
+		annotations map[string]string
 		wantOrigin  string
+		wantSource  string
 		wantExtID   string
 		wantDataset string
 	}{
 		{
-			name:        "origin present is kept and id moves to the id label",
+			name:        "origin with a different id drops the id",
 			labels:      map[string]string{LabelOrigin: "my-origin", LabelID: "my-id", LabelDataset: "my-dataset"},
 			wantOrigin:  "my-origin",
 			wantDataset: "my-dataset",
 		},
 		{
-			name:        "origin absent leaves no origin label",
+			name:       "origin with an equal id keeps the id in dash0Extensions",
+			labels:     map[string]string{LabelOrigin: "my-origin", LabelID: "my-origin"},
+			wantOrigin: "my-origin",
+			wantExtID:  "my-origin",
+		},
+		{
+			name:       "origin with no id leaves dash0Extensions nil",
+			labels:     map[string]string{LabelOrigin: "my-origin"},
+			wantOrigin: "my-origin",
+		},
+		{
+			name:        "origin with the source annotation keeps both",
+			labels:      map[string]string{LabelOrigin: "my-origin"},
+			annotations: map[string]string{AnnotationSource: "terraform"},
+			wantOrigin:  "my-origin",
+			wantSource:  "terraform",
+		},
+		{
+			name:      "empty origin keeps the id in dash0Extensions",
+			labels:    map[string]string{LabelOrigin: "", LabelID: "my-id"},
+			wantExtID: "my-id",
+		},
+		{
+			name:        "origin absent keeps the id in dash0Extensions",
 			labels:      map[string]string{LabelID: "my-id", LabelDataset: "my-dataset"},
 			wantExtID:   "my-id",
 			wantDataset: "my-dataset",
@@ -383,35 +408,50 @@ func TestConvertPersesDashboardToDashboard_Labels(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			perses := &PersesDashboard{
-				Metadata: PersesDashboardMetadata{Name: "test", Labels: tt.labels},
+				Metadata: PersesDashboardMetadata{Name: "test", Labels: tt.labels, Annotations: tt.annotations},
 				Spec:     map[string]interface{}{},
 			}
 			d := ConvertPersesDashboardToDashboard(perses)
-			var origin string
-			if d.Metadata.Labels != nil && d.Metadata.Labels.Dash0Comorigin != nil {
-				origin = *d.Metadata.Labels.Dash0Comorigin
-			} else if tt.wantOrigin == "" && d.Metadata.Labels != nil {
-				t.Errorf("Labels = %+v, want nil when there is no origin or source", d.Metadata.Labels)
+			var origin, source string
+			if labels := d.Metadata.Labels; labels != nil {
+				if labels.Dash0Comid != nil {
+					t.Errorf("dash0.com/id label = %q, want unset because the API rejects it on create", *labels.Dash0Comid)
+				}
+				if labels.Dash0Comorigin != nil {
+					origin = *labels.Dash0Comorigin
+				}
+				if labels.Dash0Comsource != nil {
+					source = string(*labels.Dash0Comsource)
+				}
 			}
 			if origin != tt.wantOrigin {
 				t.Errorf("origin = %q, want %q", origin, tt.wantOrigin)
 			}
+			if source != tt.wantSource {
+				t.Errorf("source = %q, want %q", source, tt.wantSource)
+			}
 			ext := d.Metadata.Dash0Extensions
-			var extID string
-			if ext != nil && ext.Id != nil {
+			if tt.wantExtID == "" && tt.wantDataset == "" {
+				if ext != nil {
+					t.Errorf("dash0Extensions = %+v, want nil", ext)
+				}
+				return
+			}
+			if ext == nil {
+				t.Fatal("dash0Extensions = nil, want set")
+			}
+			var extID, dataset string
+			if ext.Id != nil {
 				extID = *ext.Id
+			}
+			if ext.Dataset != nil {
+				dataset = string(*ext.Dataset)
 			}
 			if extID != tt.wantExtID {
 				t.Errorf("dash0Extensions.id = %q, want %q", extID, tt.wantExtID)
 			}
-			if origin != "" && extID != "" && origin != extID {
-				t.Errorf("origin %q and dash0Extensions.id %q differ, which the API rejects", origin, extID)
-			}
-			if got := GetDashboardID(d); got != "my-id" {
-				t.Errorf("GetDashboardID = %q, want %q", got, "my-id")
-			}
-			if ext == nil || ext.Dataset == nil || string(*ext.Dataset) != tt.wantDataset {
-				t.Errorf("dash0Extensions.dataset = %v, want %q", ext, tt.wantDataset)
+			if dataset != tt.wantDataset {
+				t.Errorf("dash0Extensions.dataset = %q, want %q", dataset, tt.wantDataset)
 			}
 		})
 	}
